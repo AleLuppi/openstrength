@@ -24,6 +24,17 @@
             <q-item-label caption>pagina principale</q-item-label>
           </q-item-section>
         </q-item>
+
+        <q-item clickable tag="a" :to="{ name: 'dashboard' }">
+          <q-item-section avatar>
+            <q-icon name="timeline" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Dashboard</q-item-label>
+            <q-item-label caption>See your data</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item clickable tag="a" :to="{ name: 'about' }">
           <q-item-section avatar>
             <q-icon name="code" />
@@ -33,6 +44,7 @@
             <q-item-label caption>scopri di più</q-item-label>
           </q-item-section>
         </q-item>
+       
       </q-list>
     </q-drawer>
 
