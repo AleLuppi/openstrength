@@ -5,8 +5,8 @@
     },
     "drawer": {
       "home": "Home",
-      "home_caption": "main page",
-      "library": "Library",
+      "home_caption": "pagina principale",
+      "library": "Libreria",
       "library_caption": ""
     }
   }
