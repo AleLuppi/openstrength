@@ -9,7 +9,8 @@
   </template>
   
   <script>
-  import Chart from 'chart.js';
+import { Chart, LinearScale, CategoryScale, PointElement, LineElement, LineController, Tooltip, Legend } from 'chart.js';
+Chart.register(LinearScale, CategoryScale, PointElement, LineElement, LineController, Tooltip, Legend);
   
   export default {
     props: {
@@ -60,6 +61,8 @@
     border: 1px solid #ccc;
     padding: 10px;
     background-color: #f5f5f5;
+    display: flex; /* Use flexbox layout */
+    flex-direction: column; /* Arrange children in a column */
   }
   
   .chart-header {
@@ -74,6 +77,10 @@
   p {
     font-size: 1rem;
     margin: 0;
+  }
+
+  canvas {
+  max-height: 400px; /* workaround to make it fixed height */
   }
   </style>
   

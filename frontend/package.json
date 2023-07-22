@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
+    "chart.js": "^3.9.1",
     "core-js": "^3.8.3",
     "quasar": "^2.0.0",
     "vue": "^3.2.13",
