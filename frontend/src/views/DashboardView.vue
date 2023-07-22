@@ -1,69 +1,78 @@
-<!-- <template>
-    <div class="dashboard">
-      <h1>This is a dashboard</h1>
-    </div>
-  </template>
-  
-  <script setup>
-  </script>
-   -->
+<template>
+  <div class="dashboard">
+    <chart-component
+      title="Workout Volume"
+      description="Volume of workouts over time"
+      :data="chartData"
+      :options="chartOptions"
+      :width="400"
+      :height="200"
+    />
+  </div>
+</template>
 
-   <template>
-    <div class="dashboard">
-      <chart-component
-        title="Workout Volume"
-        description="Volume of workouts over time"
-        :data="chartData"
-        :options="chartOptions"
-        :width="400"
-        :height="200"
-      />
-    </div>
-  </template>
-  
-  <script>
-  import ChartComponent from '@/components/ChartComponent.vue';
-  
-  export default {
-    components: {
-      ChartComponent,
-    },
-    data() {
-      return {
-        chartData: {
-          labels: ['2023-07-01', '2023-07-02', '2023-07-03', '2023-07-04', '2023-07-05'],
-          datasets: [
-            {
-              label: 'Workout Volume',
-              data: [2500, 2200, 2800, 2600, 2400],
-              borderColor: 'rgba(0, 123, 255, 1)',
-              backgroundColor: 'rgba(0, 123, 255, 0.2)',
-              fill: true,
-            },
-          ],
-        },
-        chartOptions: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: {
+<script>
+import ChartComponent from '@/components/ChartComponent.vue';
+
+export default {
+  components: {
+    ChartComponent,
+  },
+  data() {
+    return {
+      chartData: {
+        datasets: [
+          {
+            label: 'Giorno A',
+            data: [2500, 2300, 2800, 2600, 2400, 2600, 2400, 2600, 2400],
+            borderColor: 'rgba(0, 123, 255, 1)',
+            backgroundColor: 'rgba(0, 123, 255, 0.2)',
+            fill: false,
+            cubicInterpolationMode: 'monotone',
+            tension: 0.1,
+          },
+          {
+            label: 'Giorno B',
+            data: [2000, 1900, 1800, 1600, 1400, 1600, 1400, 1600, 1400],
+            borderColor: 'red',
+            backgroundColor: 'rgba(255, 0, 0, 0.2)',
+            fill: false,
+            cubicInterpolationMode: 'monotone',
+            tension: 0.1,
+          },
+          {
+            label: 'Giorno C',
+            data: [2200, 2300, 2600, 2600, 2400, 1900, 1800, 1700, 1800],
+            borderColor: 'green',
+            backgroundColor: 'rgba(255, 0, 0, 0.2)',
+            fill: false,
+            cubicInterpolationMode: 'monotone',
+            tension: 0.1,
+          },
+        ],
+        labels: ['2023-07-01', '2023-07-04', '2023-07-07', '2023-07-10', '2023-07-13', '2023-07-16', '2023-07-17', '2023-07-22', '2023-07-25'],
+      },
+      chartOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            display: true,
+            title: {
               display: true,
-              title: {
-                display: true,
-                text: 'Date',
-              },
+              text: 'Date',
             },
-            y: {
+          },
+          y: {
+            display: true,
+            title: {
               display: true,
-              title: {
-                display: true,
-                text: 'Volume',
-              },
+              text: 'Volume',
             },
           },
         },
-      };
-    },
-  };
-  </script>
-  
+      },
+    };
+  },
+};
+</script>

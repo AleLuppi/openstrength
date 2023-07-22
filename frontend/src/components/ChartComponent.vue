@@ -31,7 +31,7 @@ Chart.register(LinearScale, CategoryScale, PointElement, LineElement, LineContro
         default: 200,
       },
       data: {
-        type: Object,
+        type: Array,
         required: true,
       },
       options: {
