@@ -6,6 +6,8 @@
     "drawer": {
       "home": "Home",
       "home_caption": "main page",
+      "dashboard": "Dashboard",
+      "dashboard_caption": "see your data",
       "library": "Library",
       "library_caption": ""
     }

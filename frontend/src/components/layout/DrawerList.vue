@@ -14,6 +14,17 @@
       </q-item-section>
     </q-item>
 
+    <q-item clickable tag="a" :to="{ name: 'dashboard' }">
+      <q-item-section avatar>
+        <q-icon name="timeline" />
+      </q-item-section>
+      <q-item-section>
+        <q-item-label>{{ $t("layout.drawer.dashboard") }}</q-item-label>
+        <q-item-label caption v-if="$t('layout.drawer.dashboard_caption')">{{ $t("layout.drawer.dashboard_caption")
+        }}</q-item-label>
+      </q-item-section>
+    </q-item>
+
     <q-item clickable tag="a" :to="{ name: 'about' }">
       <q-item-section avatar>
         <q-icon name="fa-solid fa-stream" />
