@@ -3,6 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 /* (dinamically) import the views */
 import HomeView from '../views/HomeView.vue'
 const AboutView = () => import('@/views/AboutView.vue');
+const DashboardView = () => import('@/views/DashboardView.vue');
+
 
 const routes = [
   {
@@ -11,6 +13,14 @@ const routes = [
     component: HomeView,
     meta: {
       title: "Home",
+    },
+  },
+  {
+    path: '/',
+    name: 'dashboard',
+    component: DashboardView,
+    meta: {
+      title: "Dashboard",
     },
   },
   {
