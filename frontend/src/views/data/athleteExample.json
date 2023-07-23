@@ -1,0 +1,159 @@
+{
+    "genericData": [
+      {
+        "anagraficData": [
+          {
+            "name": "Lorenzo",
+            "surname": "Culurgioni",
+            "birth": "09/12/1970",
+            "sex": "Male"
+          }
+        ],
+        "physicalData": [
+          {
+            "weight": "88kg",
+            "height": "194cm",
+            "bodyFat": "13%"
+          }
+        ],
+        "personalBest": [
+          {
+            "record": [
+              {
+                "type": "1RM",
+                "exercise": [
+                  {
+                    "name": "Weighted Pull up",
+                    "variant": "Full ROM",
+                    "reps": "1",
+                    "load": "45kg",
+                    "date": "07/05/2023"
+                  }
+                ]
+              },
+              {
+                "type": "AMRAP",
+                "exercise": [
+                  {
+                    "name": "Pull Up",
+                    "variant": "Full ROM",
+                    "reps": "18",
+                    "load": "BW",
+                    "date": "20/06/2023"
+                  }
+                ]
+              },
+              {
+                "type": "5RM",
+                "exercise": [
+                  {
+                    "name": "Bench Press",
+                    "variant": "Standard",
+                    "reps": "5",
+                    "load": "110kg",
+                    "date": "27/07/2023"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "assignedFitness": [
+      {
+        "mesocycleEntry": [
+          {
+            "mesocycleName": "Mesociclo Forza",
+            "weekEntry": [
+              {
+                "weekName": "Week 1",
+                "workoutEntry": [
+                  {
+                    "workoutName": "Giorno A",
+                    "workoutType": "Workout",
+                    "exercise": [
+                      {
+                        "name": "Bench Press",
+                        "variant": "Gomiti stretti",
+                        "protocol": "Set&Rep",
+                        "series": "4",
+                        "reps": "[8,10,12,12]",
+                        "load": "[70,60,50,50]",
+                        "rest": {},
+                        "tool": "Panca piana",
+                        "additional": [
+                          {
+                            "note": "Fare attenzione alla traiettoria",
+                            "tomeasure": "RPE, RIR",
+                            "videolink": "www.youtube.com/panca-tutorial",
+                            "requirefeedback": true,
+                            "requirevideo": true,
+                            "test": false
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Weighted Pull Up",
+                        "variant": "ROM Inferiore",
+                        "protocol": "Ladder",
+                        "series": "9",
+                        "reps": "[1,2,3,4,5,4,3,2,1]",
+                        "load": "BW",
+                        "rest": "[10s,20s,30s,40s,50s,40s,30s,20s,10s]",
+                        "tool": "Bar",
+                        "additional": [
+                          {
+                            "note": "Rispettare i riposi",
+                            "tomeasure": {},
+                            "videolink": "www.youtube.com/ladder",
+                            "requirefeedback": true,
+                            "requirevideo": false,
+                            "test": false
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "registeredFitness": [
+      {
+        "workoutEntry": [
+          {
+            "workoutName": "Giorno A",
+            "workoutType": "Workout",
+            "workoutDate": "20/07/2023",
+            "exercise": [
+              {
+                "name": "Bench Press",
+                "variant": "Standard",
+                "protocol": "Set&Rep",
+                "series": "4",
+                "reps": "[8,9,9,10]",
+                "load": "[70,60,40,40]",
+                "rest": {},
+                "tool": {}
+              }
+            ],
+            "additional": [
+              {
+                "note": "Ho avuto difficolta con i carichi",
+                "rpe": "[8, 9.5, 9, 9]",
+                "videolink": {},
+                "feedback": "Esercizio andato male",
+                "video": {},
+                "test": false,
+                "rating": "5"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }

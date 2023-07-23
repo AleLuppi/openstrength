@@ -1,0 +1,115 @@
+{
+  "genericData": [
+    {
+      "anagraficData": [
+        {
+          "name": {},
+          "surname": {},
+          "birth": {},
+          "sex": {}
+        }
+      ],
+      "physicalData": [
+        {
+          "weight": {},
+          "height": {},
+          "bodyFat": {}
+        }
+      ],
+      "personalBest": [
+        {
+          "record": [
+            {
+              "type": {},
+              "exercise": [
+                {
+                  "name": {},
+                  "variant": {},
+                  "reps": {},
+                  "load": {},
+                  "date": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "assignedFitness": [
+    {
+      "mesocycleEntry": [
+        {
+          "mesocycleName": {},
+          "weekEntry": [
+            {
+              "weekName": {},
+              "workoutEntry": [
+                {
+                  "workoutName": {},
+                  "workoutType": {},
+                  "exercise": [
+                    {
+                      "name": {},
+                      "variant": {},
+                      "protocol": {},
+                      "series": {},
+                      "reps": {},
+                      "load": {},
+                      "rest": {},
+                      "tool": {},
+                      "additional": [
+                        {
+                          "note": {},
+                          "tomeasure": {},
+                          "videolink": {},
+                          "requirefeedback": {},
+                          "requirevideo": {},
+                          "test": {}
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "registeredFitness": [
+    {
+      "workoutEntry": [
+        {
+          "workoutName": {},
+          "workoutType": {},
+          "workoutDate": {},
+          "exercise": [
+            {
+              "name": {},
+              "variant": {},
+              "protocol": {},
+              "series": {},
+              "reps": {},
+              "load": {},
+              "rest": {},
+              "tool": {}
+            }
+          ],
+          "additional": [
+            {
+              "note": {},
+              "rpe": {},
+              "videolink": {},
+              "feedback": {},
+              "video": {},
+              "test": {},
+              "rating": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
