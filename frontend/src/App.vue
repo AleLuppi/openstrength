@@ -15,6 +15,7 @@
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-grey-2">
       <q-list>
         <q-item-label header>Naviga</q-item-label>
+        
         <q-item clickable tag="a" :to="{ name: 'home' }">
           <q-item-section avatar>
             <q-icon name="school" />

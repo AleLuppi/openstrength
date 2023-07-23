@@ -29,6 +29,12 @@
 
 <script>
 import ChartComponent from '@/components/ChartComponent.vue';
+import chartData from '@/views/chartdata/chartData.json';
+import chartOptions from '@/views/chartdata/chartOptions.json';
+import chartData2 from '@/views/chartdata/chartData2.json';
+import chartOptions2 from '@/views/chartdata/chartOptions2.json';
+import chartData1RM from '@/views/chartdata/chartData1RM.json';
+import chartOptions1RM from '@/views/chartdata/chartOptions1RM.json'; 
 
 export default {
   components: {
@@ -36,162 +42,12 @@ export default {
   },
   data() {
     return {
-      chartData: {
-        datasets: [
-          {
-            label: 'Giorno A',
-            data: [2500, 2300, 2800, 2600, 2400, 2600, 2400, 2600, 2400],
-            borderColor: 'rgba(0, 123, 255, 1)',
-            backgroundColor: 'rgba(0, 123, 255, 0.2)',
-            fill: false,
-            cubicInterpolationMode: 'monotone',
-            tension: 0.1,
-          },
-          {
-            label: 'Giorno B',
-            data: [2000, 1900, 1800, 1600, 1400, 1600, 1400, 1600, 1400],
-            borderColor: 'red',
-            backgroundColor: 'rgba(255, 0, 0, 0.2)',
-            fill: false,
-            cubicInterpolationMode: 'monotone',
-            tension: 0.1,
-          },
-          {
-            label: 'Giorno C',
-            data: [2200, 2300, 2600, 2600, 2400, 1900, 1800, 1700, 1800],
-            borderColor: 'green',
-            backgroundColor: 'rgba(255, 0, 0, 0.2)',
-            fill: false,
-            cubicInterpolationMode: 'monotone',
-            tension: 0.1,
-          },
-        ],
-        labels: ['2023-07-01', '2023-07-04', '2023-07-07', '2023-07-10', '2023-07-13', '2023-07-16', '2023-07-17', '2023-07-22', '2023-07-25'],
-      },
-      chartOptions: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Date',
-            },
-          },
-          y: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Volume',
-            },
-          },
-        },
-      },
-      chartData2: {
-        datasets: [
-          {
-            label: 'Squat',
-            data: [200, 600, 1000, 1600, 2000, 2300, 1600, 1000, 600],
-            borderColor: 'rgba(0, 123, 255, 1)',
-            backgroundColor: 'rgba(0, 123, 255, 0.2)',
-            fill: false,
-            cubicInterpolationMode: 'monotone',
-            tension: 0.1,
-          },
-          {
-            label: 'Panca',
-            data: [1600, 1400, 1300, 1000, 1400, 1600, 1900, 2000, 2400],
-            borderColor: 'red',
-            backgroundColor: 'rgba(255, 0, 0, 0.2)',
-            fill: false,
-            cubicInterpolationMode: 'monotone',
-            tension: 0.1,
-          },
-          {
-            label: 'Stacco',
-            data: [1500, 1600, 2000, 1000, 500, 800, 1800, 2000, 2500],
-            borderColor: 'green',
-            backgroundColor: 'rgba(255, 0, 0, 0.2)',
-            fill: false,
-            cubicInterpolationMode: 'monotone',
-            tension: 0.1,
-          },
-        ],
-        labels: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre'],
-      },
-      chartOptions2: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Mese',
-            },
-          },
-          y: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Volume',
-            },
-          },
-        },
-      },
-      chartData1RM: {
-        datasets: [
-          {
-            label: 'Squat',
-            data: [180, 185, 192.5, 200, 205, 215],
-            borderColor: 'rgba(0, 123, 255, 1)',
-            backgroundColor: 'rgba(0, 123, 255, 0.2)',
-            fill: false,
-            cubicInterpolationMode: 'monotone',
-            tension: 0.1,
-          },
-          {
-            label: 'Panca',
-            data: [105, 107.5, 112.5, 120, 120, 122.5],
-            borderColor: 'red',
-            backgroundColor: 'rgba(255, 0, 0, 0.2)',
-            fill: false,
-            cubicInterpolationMode: 'monotone',
-            tension: 0.1,
-          },
-          {
-            label: 'Stacco',
-            data: [190, 205, 210, 210, 215, 220],
-            borderColor: 'green',
-            backgroundColor: 'rgba(255, 0, 0, 0.2)',
-            fill: false,
-            cubicInterpolationMode: 'monotone',
-            tension: 0.1,
-          },
-        ],
-        labels: ['Gennaio', 'Marzo', 'Maggio', 'Luglio', 'Settembre', 'Dicembre'],
-      },
-      chartOptions1RM: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Mese',
-            },
-          },
-          y: {
-            display: true,
-            title: {
-              display: true,
-              text: '1RM [kg]',
-            },
-          },
-        },
-      },
+      chartData,
+      chartOptions,
+      chartData2,
+      chartOptions2,
+      chartData1RM,
+      chartOptions1RM,
     };
   },
 };
