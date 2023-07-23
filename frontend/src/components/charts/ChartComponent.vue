@@ -1,11 +1,11 @@
 <template>
   <div class="chart-container bg-grey-1">
     <div class="q-mb-md">
-      <h2>{{ props.title }}</h2>
-      <p>{{ props.description }}</p>
+      <h2>{{ title }}</h2>
+      <p>{{ description }}</p>
     </div>
     <div>
-      <canvas ref="chartCanvas" :width="props.width" :height="props.height"></canvas>
+      <canvas ref="chartCanvas" :width="width" :height="height"></canvas>
     </div>
   </div>
 </template>
@@ -50,10 +50,10 @@ export default {
   },
   setup(props) {
     const chartCanvas = ref(null);
-    /**
-     * 
-     */
+    
     function renderChart() {
+      if (!chartCanvas.value) return; // Check if chartCanvas.value exists
+      
       const ctx = chartCanvas.value.getContext('2d');
       new Chart(ctx, {
         type: props.type,
@@ -80,13 +80,11 @@ export default {
   padding: 10px;
 }
 
-// TODO move outside of component
 h2 {
   font-size: 1.5rem;
   margin: 0;
 }
 
-// TODO move outside of component
 p {
   font-size: 1rem;
   margin: 0;
