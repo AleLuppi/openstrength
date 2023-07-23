@@ -1,0 +1,33 @@
+{
+  "datasets": [
+    {
+      "label": "Series",
+      "data": [10, 8, 6, 9, 7, 5],
+      "backgroundColor": "rgba(255, 99, 132, 0.5)"
+    },
+    {
+      "label": "Repetition",
+      "data": [15, 12, 10, 14, 11, 9],
+      "backgroundColor": "rgba(54, 162, 235, 0.5)"
+    },
+    {
+      "label": "Load",
+      "data": [20, 18, 16, 19, 17, 15],
+      "backgroundColor": "rgba(75, 192, 192, 0.5)"
+    },
+    {
+      "label": "Series x Repetition x Load",
+      "data": [1500, 1152, 960, 1764, 833, 675], 
+      "type": "line",
+      "borderColor": "rgba(255, 206, 86, 1)",
+      "fill": false
+    },
+    {
+      "label": "Load / 100",
+      "data": [0.2, 0.18, 0.16, 0.19, 0.17, 0.15], 
+      "type": "line",
+      "borderColor": "rgba(153, 102, 255, 1)",
+      "fill": false
+    }
+  ]
+}
