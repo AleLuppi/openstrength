@@ -29,5 +29,6 @@
       "borderColor": "rgba(153, 102, 255, 1)",
       "fill": false
     }
-  ]
+  ],
+    "labels": ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"]
 }
