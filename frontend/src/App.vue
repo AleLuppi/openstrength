@@ -1,52 +1,25 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header v-if="showHeader" elevated class="glossy">
+    <q-header v-if="showHeader" elevated>
       <q-toolbar>
-        <q-btn flat dense round @click="leftDrawerOpen = !leftDrawerOpen" aria-label="Menu" icon="menu" />
+        <q-btn v-if="!leftDrawerOpen || $q.screen.lt.md" flat dense round @click="leftDrawerOpen = !leftDrawerOpen"
+          aria-label="Menu" icon="menu" />
 
         <q-toolbar-title>
           DBM
         </q-toolbar-title>
 
-        <div>login placeholder</div>
+        <!-- TODO action to buttons -->
+        <q-btn icon="question_answer" :label="$q.screen.gt.sm ? $t('layout.header.button_feedback') : ''"
+          :round="!$q.screen.gt.sm" no-caps flat />
+        <q-btn icon="notifications" flat round />
+        <q-btn icon="help" flat round />
+        <q-btn icon="person" flat round />
       </q-toolbar>
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-grey-2">
-      <q-list>
-        <q-item-label header>Naviga</q-item-label>
-        
-        <q-item clickable tag="a" :to="{ name: 'home' }">
-          <q-item-section avatar>
-            <q-icon name="school" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Home</q-item-label>
-            <q-item-label caption>pagina principale</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item clickable tag="a" :to="{ name: 'dashboard' }">
-          <q-item-section avatar>
-            <q-icon name="timeline" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Dashboard</q-item-label>
-            <q-item-label caption>See your data</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item clickable tag="a" :to="{ name: 'about' }">
-          <q-item-section avatar>
-            <q-icon name="code" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>About</q-item-label>
-            <q-item-label caption>scopri di più</q-item-label>
-          </q-item-section>
-        </q-item>
-       
-      </q-list>
+      <DrawerList />
     </q-drawer>
 
     <q-page-container>
@@ -62,6 +35,10 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute } from "vue-router";
+import { useQuasar } from 'quasar';
+import DrawerList from '@/components/layout/DrawerList.vue'
+
+const $q = useQuasar();
 
 // Set ref
 const route = useRoute();
