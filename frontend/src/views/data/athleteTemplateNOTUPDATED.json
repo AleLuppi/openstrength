@@ -6,7 +6,9 @@
           "name": {},
           "surname": {},
           "birth": {},
-          "sex": {}
+          "sex": {},
+          "mail": {},
+          "cell": {}
         }
       ],
       "physicalData": [
@@ -39,6 +41,8 @@
   ],
   "assignedFitness": [
     {
+      "coachID": {},
+      "licenseID": {},
       "mesocycleEntry": [
         {
           "mesocycleName": {},

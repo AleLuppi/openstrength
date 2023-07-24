@@ -6,7 +6,9 @@
             "name": "Lorenzo",
             "surname": "Culurgioni",
             "birth": "09/12/1970",
-            "sex": "Male"
+            "sex": "Male",
+            "mail": "lollobo2009@live.it",
+            "cell": "352445267"
           }
         ],
         "physicalData": [
@@ -62,9 +64,12 @@
     ],
     "assignedFitness": [
       {
+        "coachID": "KHR45981",
+        "licenseID": "LIC249751",
         "mesocycleEntry": [
           {
-            "mesocycleName": "Mesociclo Forza",
+            "mesocycleName": "Microciclo Forza",
+            "mesocycleNote": "Ritornare in 5 settimane a fare volume su alzate principali.",
             "weekEntry": [
               {
                 "weekName": "Week 1",
@@ -80,6 +85,9 @@
                         "series": "4",
                         "reps": "[8,10,12,12]",
                         "load": "[70,60,50,50]",
+                        "requirevideo": [true, false, false, true],
+                        "requirefeedback": [true, false, false, true],
+                        "coefficient":{},
                         "measurementUnit": "rep",
                         "rest": {},
                         "tool": "Panca piana",
@@ -95,12 +103,37 @@
                         ]
                       },
                       {
+                        "name": "Stacco",
+                        "variant": "Gomiti stretti",
+                        "protocol": "MAV + Backoff",
+                        "series": "4",
+                        "reps": "[5,5,5,5]",
+                        "load": "[1,1,1,1]",
+                        "coefficient": "[1,0.85,0.8,0.5]",
+                        "requirevideo": [true, false, false, true],
+                        "requirefeedback": [true, false, false, true],
+                        "measurementUnit": "rep",
+                        "rest": {},
+                        "tool": "Panca piana",
+                        "additional": [
+                          {
+                            "note": "Fare attenzione alla traiettoria",
+                            "tomeasure": "[RPE, RIR]",
+                            "videolink": "www.youtube.com/panca-tutorial",
+                            "test": false
+                          }
+                        ]
+                      },
+                      {
                         "name": "Weighted Pull Up",
                         "variant": "ROM Inferiore",
                         "protocol": "Ladder",
                         "series": "9",
                         "reps": "[1,2,3,4,5,4,3,2,1]",
                         "load": "[1,1,1,1,1,1,1,1,1]",
+                        "coefficient":{},
+                        "requirevideo": {},
+                        "requirefeedback": {},
                         "measurementUnit": "rep",
                         "rest": "[10s,20s,30s,40s,50s,40s,30s,20s,10s]",
                         "tool": "Bar",
@@ -108,9 +141,7 @@
                           {
                             "note": "Rispettare i riposi",
                             "tomeasure": {},
-                            "videolink": "www.youtube.com/ladder",
-                            "requirefeedback": true,
-                            "requirevideo": false,
+                            "videolink": "www.youtube.com/ladder",                            
                             "test": false
                           }
                         ]
@@ -133,6 +164,9 @@
                         "series": "4",
                         "reps": "[9,12,13,12]",
                         "load": "[70,65,60,60]",
+                        "requirevideo": [true, false, false, true],
+                        "requirefeedback": [true, false, false, true],
+                        "coefficient":{},
                         "measurementUnit": "rep",
                         "rest": {},
                         "tool": "Panca piana",
@@ -154,6 +188,7 @@
                         "series": "9",
                         "reps": "[1,2,3,4,5,4,3,2,1]",
                         "load": "[1,1,1,1,1,1,1,1,1]",
+                        "coefficient":{},
                         "measurementUnit": "rep",
                         "rest": "[10s,20s,30s,40s,50s,40s,30s,20s,10s]",
                         "tool": "Bar",
@@ -192,15 +227,14 @@
                 "series": "4",
                 "reps": "[8,9,9,10]",
                 "measurementUnit": "rep",
-                "load": "[70,60,40,40]",
-                "rest": {},
-                "tool": {}
+                "load": "[70,60,40,40]",        
+                "rpe": "[8, 9.5, 9, 9]",       
+                "rest": {}
               }
             ],
             "additional": [
               {
                 "note": "Ho avuto difficolta con i carichi",
-                "rpe": "[8, 9.5, 9, 9]",
                 "videolink": {},
                 "feedback": "Esercizio andato male",
                 "video": {},
