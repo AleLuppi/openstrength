@@ -100,7 +100,60 @@
                         "protocol": "Ladder",
                         "series": "9",
                         "reps": "[1,2,3,4,5,4,3,2,1]",
-                        "load": "Bodyweight",
+                        "load": "[1,1,1,1,1,1,1,1,1]",
+                        "measurementUnit": "rep",
+                        "rest": "[10s,20s,30s,40s,50s,40s,30s,20s,10s]",
+                        "tool": "Bar",
+                        "additional": [
+                          {
+                            "note": "Rispettare i riposi",
+                            "tomeasure": {},
+                            "videolink": "www.youtube.com/ladder",
+                            "requirefeedback": true,
+                            "requirevideo": false,
+                            "test": false
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "weekName": "Week 2",
+                "workoutEntry": [
+                  {
+                    "workoutName": "Giorno A",
+                    "workoutType": "Workout",
+                    "exercise": [
+                      {
+                        "name": "Bench Press",
+                        "variant": "Gomiti stretti",
+                        "protocol": "Set&Rep",
+                        "series": "4",
+                        "reps": "[9,12,13,12]",
+                        "load": "[70,65,60,60]",
+                        "measurementUnit": "rep",
+                        "rest": {},
+                        "tool": "Panca piana",
+                        "additional": [
+                          {
+                            "note": "Fare attenzione alla traiettoria",
+                            "tomeasure": "RPE, RIR",
+                            "videolink": "www.youtube.com/panca-tutorial",
+                            "requirefeedback": true,
+                            "requirevideo": true,
+                            "test": false
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Weighted Pull Up",
+                        "variant": "ROM Inferiore",
+                        "protocol": "Ladder",
+                        "series": "9",
+                        "reps": "[1,2,3,4,5,4,3,2,1]",
+                        "load": "[1,1,1,1,1,1,1,1,1]",
                         "measurementUnit": "rep",
                         "rest": "[10s,20s,30s,40s,50s,40s,30s,20s,10s]",
                         "tool": "Bar",

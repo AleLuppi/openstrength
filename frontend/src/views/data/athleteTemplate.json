@@ -27,6 +27,7 @@
                   "variant": {},
                   "reps": {},
                   "load": {},
+                  "measurementUnit": {},
                   "date": {}
                 }
               ]
@@ -56,6 +57,7 @@
                       "series": {},
                       "reps": {},
                       "load": {},
+                      "measurementUnit": {},
                       "rest": {},
                       "tool": {},
                       "additional": [
@@ -93,6 +95,7 @@
               "series": {},
               "reps": {},
               "load": {},
+              "measurementUnit": {},
               "rest": {},
               "tool": {}
             }
