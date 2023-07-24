@@ -80,6 +80,7 @@
                         "series": "4",
                         "reps": "[8,10,12,12]",
                         "load": "[70,60,50,50]",
+                        "measurementUnit": "rep",
                         "rest": {},
                         "tool": "Panca piana",
                         "additional": [
@@ -100,6 +101,7 @@
                         "series": "9",
                         "reps": "[1,2,3,4,5,4,3,2,1]",
                         "load": "Bodyweight",
+                        "measurementUnit": "rep",
                         "rest": "[10s,20s,30s,40s,50s,40s,30s,20s,10s]",
                         "tool": "Bar",
                         "additional": [
@@ -136,6 +138,7 @@
                 "protocol": "Set&Rep",
                 "series": "4",
                 "reps": "[8,9,9,10]",
+                "measurementUnit": "rep",
                 "load": "[70,60,40,40]",
                 "rest": {},
                 "tool": {}
