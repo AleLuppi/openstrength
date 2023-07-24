@@ -24,6 +24,10 @@
       :width="400"
       :height="300"
     />
+
+    <complete-chart-component title="Example preprocessing" description="Volume data taken from complete JSON for athlete"
+    :data="data" :options="chartOptions" :width="400" :height="300" />
+
   </div>
 </template>
 
@@ -42,13 +46,15 @@ import barLineChartOptions from '@/views/chartdata/barLineChartOptions.json';
 import barChartData from '@/views/chartdata/barChartData.json';
 import barChartOptions from '@/views/chartdata/barChartOptions.json';
 
-
+import CompleteChartComponent from '@/components/charts/CompleteChartComponent.vue';
+import data from '@/views/data/datapreprocessing.js';
 
 
 
 export default {
   components: {
     ChartComponent,
+    CompleteChartComponent,
     BarLineChartComponent,
   },
   data() {
@@ -63,6 +69,7 @@ export default {
       barLineChartOptions,
       barChartData,
       barChartOptions,
+      data,
     };
   },
 };

@@ -99,7 +99,7 @@
                         "protocol": "Ladder",
                         "series": "9",
                         "reps": "[1,2,3,4,5,4,3,2,1]",
-                        "load": "BW",
+                        "load": "Bodyweight",
                         "rest": "[10s,20s,30s,40s,50s,40s,30s,20s,10s]",
                         "tool": "Bar",
                         "additional": [
