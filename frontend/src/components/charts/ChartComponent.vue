@@ -1,21 +1,38 @@
 <template>
-  <div class="chart-container bg-grey-1">
-    <div class="q-mb-md">
-      <h2>{{ props.title }}</h2>
-      <p>{{ props.description }}</p>
-    </div>
-    <div>
+  <q-card class="shadow-3">
+    <q-card-section class="q-mb-md">
+      <div class="row items-center no-wrap">
+        <div class="col text-h5 text-weight-medium text-grey">
+          {{ props.title }}
+        </div>
+
+        <div class="col-auto">
+          <q-icon name="fas fa-circle-info" size="1.7rem" color="grey-5">
+            <q-tooltip anchor="center left" self="center right" transition-show="fade" transition-hide="fade"
+              class="bg-primary text-body2">
+              {{ props.description }}
+            </q-tooltip>
+          </q-icon>
+        </div>
+      </div>
+    </q-card-section>
+
+    <q-separator spaced="lg" size="2px" />
+
+    <q-card-section>
       <canvas ref="chartCanvas" :width="props.width" :height="props.height"></canvas>
-    </div>
-  </div>
+    </q-card-section>
+  </q-card>
 </template>
   
 <script setup>
 import { ref, onMounted } from 'vue';
-import { Chart, LinearScale, CategoryScale, PointElement, LineElement, LineController, Tooltip, Legend } from 'chart.js';
+import { colors } from 'quasar'
+import { Chart, LinearScale, CategoryScale, PointElement, LineElement, LineController, BarElement, BarController, Tooltip, Legend } from 'chart.js';
 
 // Init plugins
-Chart.register(LinearScale, CategoryScale, PointElement, LineElement, LineController, Tooltip, Legend);
+Chart.register(LinearScale, CategoryScale, PointElement, LineElement, LineController, BarElement, BarController, Tooltip, Legend);
+const { getPaletteColor, lighten } = colors
 
 // Define props
 const props = defineProps({
@@ -56,8 +73,21 @@ const chartCanvas = ref(null);
  * 
  */
 function renderChart() {
-  if (!chartCanvas.value) return; // Check if chartCanvas.value exists
+  // Ensure canvas reference exists
+  if (!chartCanvas.value) {
+    console.error('Missing reference to canvas element.');
+    return
+  }
 
+  // Add background color to datasets
+  props.data.datasets.forEach((el, idx) => {
+    let currColor = getPaletteColor('chart-color' + (idx + 1));
+    console.log(currColor)
+    el.borderColor = currColor;
+    el.backgroundColor = lighten(currColor, 25);
+  });
+
+  // Fill canvas
   const ctx = chartCanvas.value.getContext('2d');
   new Chart(ctx, {
     type: props.type,
@@ -72,11 +102,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.chart-container {
-  margin: 20px;
-  border: 1px solid #ccc;
-  padding: 10px;
-}
+@import '@/styles/quasar.scss';
 
 // TODO move outside of component
 h2 {

@@ -46,3 +46,20 @@ const leftDrawerOpen = ref(false);
 const showHeader = computed(() => route.meta?.showHeader ?? true);
 const showFooter = computed(() => route.meta?.showFooterElevated ?? true);
 </script>
+
+<style lang="scss">
+@import '@/styles/quasar.variables.scss';
+
+// Setup chart colors
+.text-chart-color1 {
+  color: $chart-color1 !important;
+}
+
+.text-chart-color2 {
+  color: $chart-color2 !important;
+}
+
+.text-chart-color3 {
+  color: $chart-color3 !important;
+}
+</style>
