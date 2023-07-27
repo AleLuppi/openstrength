@@ -26,7 +26,7 @@
       <RouterView />
     </q-page-container>
 
-    <q-footer v-if="showFooter" :elevated="elevatedFooter">
+    <q-footer v-if="showFooter">
       <!-- TODO -->
     </q-footer>
   </q-layout>
@@ -44,7 +44,7 @@ const $q = useQuasar();
 const route = useRoute();
 const leftDrawerOpen = ref(false);
 const showHeader = computed(() => route.meta?.showHeader ?? true);
-const showFooter = computed(() => route.meta?.showFooterElevated ?? true);
+const showFooter = computed(() => route.meta?.showFooter ?? true);
 </script>
 
 <style lang="scss">
