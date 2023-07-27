@@ -35,20 +35,18 @@
 
 <script setup>
 import ChartComponent from '@/components/charts/ChartComponent.vue';
-import chartData from '@/views/chartdata/chartData.json';
+import chartData from '@/test/test_data/chartData.json';
 
-console.log("chartdata here it is");
-console.log(chartData);
-import chartData2 from '@/views/chartdata/chartData2.json';
-import chartOptions2 from '@/views/chartdata/chartOptions2.json';
-import chartData1RM from '@/views/chartdata/chartData1RM.json';
-import chartOptions1RM from '@/views/chartdata/chartOptions1RM.json';
+import chartData2 from '@/test/test_data/chartData2.json';
+import chartOptions2 from '@/test/test_data/chartOptions2.json';
+import chartData1RM from '@/test/test_data/chartData1RM.json';
+import chartOptions1RM from '@/test/test_data/chartOptions1RM.json';
 
-import barLineChartData from '@/views/chartdata/barLineChartData.json';
-import barLineChartOptions from '@/views/chartdata/barLineChartOptions.json';
-import barChartData from '@/views/chartdata/barChartData.json';
-import barChartOptions from '@/views/chartdata/barChartOptions.json';
+import barLineChartData from '@/test/test_data/barLineChartData.json';
+import barLineChartOptions from '@/test/test_data/barLineChartOptions.json';
+import barChartData from '@/test/test_data/barChartData.json';
+import barChartOptions from '@/test/test_data/barChartOptions.json';
 
-import chartOptions from '@/views/chartdata/chartOptions.json';
-import data from '@/views/data/datapreprocessing.js';
+import chartOptions from '@/test/test_data/chartOptions.json';
+
 </script>
