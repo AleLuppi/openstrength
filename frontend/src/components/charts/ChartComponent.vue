@@ -82,7 +82,6 @@ function renderChart() {
   // Add background color to datasets
   props.data.datasets.forEach((el, idx) => {
     let currColor = getPaletteColor('chart-color' + (idx + 1));
-    console.log(currColor)
     el.borderColor = currColor;
     el.backgroundColor = lighten(currColor, 25);
   });

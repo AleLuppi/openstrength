@@ -25,15 +25,16 @@
         description="Questo grafico mostra l'andamento di serie e rep all'interno di un mesociclo per un esercizio."
         :data="barChartData" :options="barChartOptions" :width="400" :height="150" />
     </div>
-    <div class="col-5">
+    <!-- <div class="col-5">
       <chart-component title="Example preprocessing" description="Volume data taken from complete JSON for athlete"
         :data="data" :options="chartOptions" :width="400" :height="300" />
-    </div>
+    </div> -->
 
   </div>
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
 import ChartComponent from '@/components/charts/ChartComponent.vue';
 import chartData from '@/test/test_data/chartData.json';
 
@@ -49,4 +50,11 @@ import barChartOptions from '@/test/test_data/barChartOptions.json';
 
 import chartOptions from '@/test/test_data/chartOptions.json';
 
+import { computeVolumeInDateRange } from '@/utils/datamanager/postprocessing.ts';
+import dataInput from '@/test/test_data/finalTemplate.json';
+
+onMounted(() => {
+  dataInput.registeredFitness.forEach((el) => el.date = new Date(el.date))
+  console.log(computeVolumeInDateRange(dataInput.registeredFitness, new Date('2023-07-25'), new Date('2023-07-28')))
+})
 </script>
