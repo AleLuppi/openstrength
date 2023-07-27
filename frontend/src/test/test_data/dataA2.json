@@ -1,0 +1,35 @@
+{
+  "datasets": [
+    {
+      "label": "Volume",
+      "data": [70, 72, 83, 75, 70, 65],
+      "borderColor": "rgba(0, 123, 255, 1)",
+      "backgroundColor": "rgba(0, 123, 255, 0.2)",
+      "fill": false,
+      "cubicInterpolationMode": "monotone",
+      "tension": 0.1,
+      "yAxisID": "y1" 
+    },
+    {
+      "label": "Intensità [%]",
+      "data": [75, 70, 65, 70, 80, 90],
+      "borderColor": "red",
+      "backgroundColor": "rgba(255, 0, 0, 0.2)",
+      "fill": false,
+      "cubicInterpolationMode": "monotone",
+      "tension": 0.1,
+      "yAxisID": "y" 
+    },
+    {
+      "label": "Intensità Relativa",
+      "data": [80, 82, 83, 86, 90, 92],
+      "borderColor": "green",
+      "backgroundColor": "rgba(0, 255, 0, 0.2)",
+      "fill": false,
+      "cubicInterpolationMode": "monotone",
+      "tension": 0.1,
+      "yAxisID": "y" 
+    }
+  ],
+  "labels": ["Settimana 1", "Settimana 2", "Settimana 3", "Settimana 4", "Settimana 5", "Settimana 6"]
+}

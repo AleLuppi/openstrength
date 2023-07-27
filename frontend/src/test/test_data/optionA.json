@@ -1,0 +1,34 @@
+{
+  "responsive": true,
+  "maintainAspectRatio": false,
+  "scales": {
+    "x": {
+      "display": true,
+      "title": {
+        "display": true,
+        "text": "Date"
+      }
+    },
+    "y": {
+      "type": "linear",
+      "display": true,
+      "position": "left",
+      "title": {
+        "display": true,
+        "text": "%"
+      },
+      "min": 0,
+      "max": 100
+    },
+    "y1": {
+      "type": "linear",
+      "display": true,
+      "position": "right",
+      "title": {
+        "display": true,
+        "text": "Volume"
+      },
+      "min": 0
+    }
+  }
+}

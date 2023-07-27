@@ -1,0 +1,15 @@
+{
+    "chartData": {
+      "labels": ["2023-07-01", "2023-07-02", "2023-07-03", "2023-07-04", "2023-07-05"],
+      "datasets": [
+        {
+          "label": "Workout Volume",
+          "data": [2500, 2200, 2800, 2600, 2400],
+          "borderColor": "rgba(0, 123, 255, 1)",
+          "backgroundColor": "rgba(0, 123, 255, 0.2)",
+          "fill": true
+        }
+      ]
+    }
+  }
+  

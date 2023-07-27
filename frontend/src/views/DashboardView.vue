@@ -2,6 +2,28 @@
   <div class="row q-pa-md justify-between q-col-gutter-md">
     <!-- TODO dynamic sizing, and auto add title + description -->
 
+    <!-- A: andamento Volume, Intensita, IRT per esercizio -->
+    <div class="col-12">
+      <chart-component title="Panca - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
+        :data="dataA" :options="optionA" :width="400" :height="300" />
+    </div>
+
+    <div class="col-12">
+      <chart-component title="Stacco - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
+        :data="dataA2" :options="optionA" :width="400" :height="300" />
+    </div>
+
+    <div class="col-12">
+      <chart-component title="Squat - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
+        :data="dataA3" :options="optionA" :width="400" :height="300" />
+    </div>
+
+    <!-- B: andamento Volume x Intensita per ogni seduta-->
+      <div class="col-12">
+      <chart-component title="Andamento Carico di allenamento" description="Andamento dell'intensità x volume nel corso del mesociclo per seduta."
+        :data="dataB" :options="optionB" :width="400" :height="300" />
+      </div>
+
     <div class="col-12">
       <chart-component title="Workout Volume" description="Volume of workouts over time computed as Rep x Set x Load"
         :data="chartData" :options="chartOptions" :width="400" :height="300" />
@@ -52,6 +74,15 @@ import chartOptions from '@/test/test_data/chartOptions.json';
 
 import { computeVolumeInDateRange } from '@/utils/datamanager/postprocessing.ts';
 import dataInput from '@/test/test_data/finalTemplate.json';
+
+// A: dati per andamento Volume, Intensita, IRT per esercizio
+import dataA from '@/test/test_data/dataA.json';
+import dataA2 from '@/test/test_data/dataA2.json';
+import dataA3 from '@/test/test_data/dataA3.json';
+import optionA from '@/test/test_data/optionA.json';
+
+import dataB from '@/test/test_data/dataB.json';
+import optionB from '@/test/test_data/optionB.json';
 
 onMounted(() => {
   dataInput.registeredFitness.forEach((el) => el.date = new Date(el.date))
