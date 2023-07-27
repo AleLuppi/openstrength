@@ -1,0 +1,204 @@
+{
+  "genericData": [
+    {
+      "anagraficData": [
+        {
+          "name": {},
+          "surname": {},
+          "birth": {},
+          "sex": {},
+          "mail": {},
+          "cell": {}
+        }
+      ],
+      "physicalData": [
+        {
+          "weight": {},
+          "height": {},
+          "bodyFat": {}
+        }
+      ],
+      "personalBest": [
+        {
+          "record": [
+            {
+              "type": {},
+              "exercise": [
+                {
+                  "name": {},
+                  "variant": {},
+                  "reps": {},
+                  "load": {},
+                  "measurementUnit": {},
+                  "date": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "assignedFitness": [
+    {
+      "coachID": {},
+      "licenseID": {},
+      "mesocycleEntry": [
+        {
+          "mesocycleName": {},
+          "weekEntry": [
+            {
+              "weekName": {},
+              "workoutEntry": [
+                {
+                  "workoutName": {},
+                  "workoutType": {},
+                  "exercise": [
+                    {
+                      "name": {},
+                      "variant": {},
+                      "protocol": {},
+                      "series": {},
+                      "reps": {},
+                      "load": {},
+                      "measurementUnit": {},
+                      "rest": {},
+                      "tool": {},
+                      "additional": [
+                        {
+                          "note": {},
+                          "tomeasure": {},
+                          "videolink": {},
+                          "requirefeedback": {},
+                          "requirevideo": {},
+                          "test": {}
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "registeredFitness": [
+    {
+      "workoutName": "Giorno A",
+      "workoutType": "Workout",
+      "date": "26/07/2023",
+      "tool": "",
+      "assignedReferenceID": "#12345",
+      "series": [
+        {
+          "name": "Pull up Zavorrati",
+          "variant": "Mezzo ROM superiore",
+          "reps": 10,
+          "load": 30,
+          "rpe": null,
+          "rest": 92,
+          "feedbackID": "#12345",
+          "repsUnit": "rep",
+          "loadUnit": "kg"
+        },
+        {
+          "name": "Pull up Zavorrati",
+          "variant": "Mezzo ROM superiore",
+          "reps": 8,
+          "load": 20,
+          "rpe": null,
+          "rest": "92",
+          "feedbackID": "#12345",
+          "repsUnit": "rep",
+          "loadUnit": "kg"
+        },
+        {
+          "name": "Pull up Zavorrati",
+          "variant": "Mezzo ROM superiore",
+          "reps": 8,
+          "load": 15,
+          "rpe": null,
+          "rest": "92",
+          "feedbackID": "#12345",
+          "repsUnit": "rep",
+          "loadUnit": "kg"
+        },
+        {
+          "name": "Pull up Zavorrati",
+          "variant": "Mezzo ROM superiore",
+          "reps": 6,
+          "load": null,
+          "rpe": null,
+          "rest": "92",
+          "feedbackID": "#12345",
+          "repsUnit": "rep",
+          "loadUnit": "kg"
+        }
+      ]
+    },
+    {
+      "workoutName": "Giorno C",
+      "workoutType": "Workout",
+      "date": "28/07/2023",
+      "tool": "",
+      "assignedReferenceID": "#12345",
+      "series": [
+        {
+          "name": "Pull up Zavorrati",
+          "variant": "Mezzo ROM superiore",
+          "reps": 10,
+          "load": 30,
+          "rpe": null,
+          "rest": 92,
+          "feedbackID": "#12345",
+          "repsUnit": "rep",
+          "loadUnit": "kg"
+        },
+        {
+          "name": "Pull up Zavorrati",
+          "variant": "Mezzo ROM superiore",
+          "reps": 8,
+          "load": 20,
+          "rpe": null,
+          "rest": "92",
+          "feedbackID": "#12345",
+          "repsUnit": "rep",
+          "loadUnit": "kg"
+        },
+        {
+          "name": "Pull up Zavorrati",
+          "variant": "Mezzo ROM superiore",
+          "reps": 8,
+          "load": 15,
+          "rpe": null,
+          "rest": "92",
+          "feedbackID": "#12345",
+          "repsUnit": "rep",
+          "loadUnit": "kg"
+        },
+        {
+          "name": "Pull up Zavorrati",
+          "variant": "Mezzo ROM superiore",
+          "reps": 6,
+          "load": null,
+          "rpe": null,
+          "rest": "92",
+          "feedbackID": "#12345",
+          "repsUnit": "rep",
+          "loadUnit": "kg"
+        }
+      ]
+    }
+  ],
+  "feedbacks": [
+    {
+      "id": "12345",
+      "note": "",
+      "video": [],
+      "test": {},
+      "rating": 0
+    }
+  ]
+}
