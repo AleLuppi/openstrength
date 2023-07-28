@@ -44,6 +44,12 @@
         :data="dataD2" :options="optionD2" :width="400" :height="150" />
     </div>
 
+    <!-- E: Example Grid -->
+    <div class="col-12">
+      <h3>V grid placeholder</h3>
+       <v-grid-component />
+    </div>
+
 
 
 
@@ -116,6 +122,7 @@ import optionD from '@/test/test_data/optionD.json';
 import dataD2 from '@/test/test_data/dataD2.json';
 import optionD2 from '@/test/test_data/optionD2.json';
 
+import VGridComponent from '@/components/charts/VGridComponent.vue';
 
 onMounted(() => {
   dataInput.registeredFitness.forEach((el) => el.date = new Date(el.date))
