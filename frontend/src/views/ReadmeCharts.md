@@ -11,3 +11,6 @@ Solo per spiegare i grafici contenuti in DashboardView.vue
   Calcolo:
 
   - Volume x Intensità: posso usare sia intensità di carico (rispetto al massimale) che intensità di rep o tramite RPE sempre tra 0 e 1.
+
+- Grafico C: (Numero di serie x IRT) x (Sedute)
+  Come il grafico B ma considerando il numero delle serie per IRT (calcolato come grafico A)

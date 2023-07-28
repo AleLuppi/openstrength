@@ -24,6 +24,12 @@
         :data="dataB" :options="optionB" :width="400" :height="300" />
       </div>
 
+    <!-- B: andamento Serie x Intensita Relativa per ogni seduta-->
+      <div class="col-12">
+      <chart-component title="Andamento Carico di allenamento" description="Andamento dell'intensità relativa x volume nel corso del mesociclo per seduta."
+        :data="dataC" :options="optionC" :width="400" :height="300" />
+      </div>
+
     <div class="col-12">
       <chart-component title="Workout Volume" description="Volume of workouts over time computed as Rep x Set x Load"
         :data="chartData" :options="chartOptions" :width="400" :height="300" />
@@ -83,6 +89,9 @@ import optionA from '@/test/test_data/optionA.json';
 
 import dataB from '@/test/test_data/dataB.json';
 import optionB from '@/test/test_data/optionB.json';
+
+import dataC from '@/test/test_data/dataC.json';
+import optionC from '@/test/test_data/optionC.json';
 
 onMounted(() => {
   dataInput.registeredFitness.forEach((el) => el.date = new Date(el.date))
