@@ -4,31 +4,48 @@
 
     <!-- A: andamento Volume, Intensita, IRT per esercizio -->
     <div class="col-12">
-      <chart-component title="Panca - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
+      <chart-component title="A: Panca - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
         :data="dataA" :options="optionA" :width="400" :height="300" />
     </div>
 
     <div class="col-12">
-      <chart-component title="Stacco - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
+      <chart-component title="A2: Stacco - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
         :data="dataA2" :options="optionA" :width="400" :height="300" />
     </div>
 
     <div class="col-12">
-      <chart-component title="Squat - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
+      <chart-component title="A3: Squat - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
         :data="dataA3" :options="optionA" :width="400" :height="300" />
     </div>
 
     <!-- B: andamento Volume x Intensita per ogni seduta-->
       <div class="col-12">
-      <chart-component title="Andamento Carico di allenamento" description="Andamento dell'intensità x volume nel corso del mesociclo per seduta."
+      <chart-component title="B: Andamento Carico di allenamento" description="Andamento dell'intensità x volume nel corso del mesociclo per seduta."
         :data="dataB" :options="optionB" :width="400" :height="300" />
       </div>
 
-    <!-- B: andamento Serie x Intensita Relativa per ogni seduta-->
+    <!-- C: andamento Serie x Intensita Relativa per ogni seduta-->
       <div class="col-12">
-      <chart-component title="Andamento Carico di allenamento" description="Andamento dell'intensità relativa x volume nel corso del mesociclo per seduta."
+      <chart-component title="C: Andamento Carico di allenamento" description="Andamento dell'intensità relativa x volume nel corso del mesociclo per seduta."
         :data="dataC" :options="optionC" :width="400" :height="300" />
       </div>
+
+    <!-- D: Andamento del Volume x Intensità nelle settimane per i singoli esercizi -->
+    <div class="col-12">
+      <chart-component title="D: Andamento Carico di allenamento per esercizio" type="bar"
+        description="Questo grafico mostra l'andamento del Volume x Intensità per singolo esercizio"
+        :data="dataD" :options="optionD" :width="400" :height="150" />
+    </div>
+
+    <!-- D2: Uguale al precedente ma sottoforma di line graph -->
+    <div class="col-12">
+      <chart-component title="D2: Andamento Carico di allenamento per esercizio" type="bar"
+        description="Questo grafico mostra l'andamento del Volume x Intensità per singolo esercizio"
+        :data="dataD2" :options="optionD2" :width="400" :height="150" />
+    </div>
+
+
+
 
     <div class="col-12">
       <chart-component title="Workout Volume" description="Volume of workouts over time computed as Rep x Set x Load"
@@ -92,6 +109,13 @@ import optionB from '@/test/test_data/optionB.json';
 
 import dataC from '@/test/test_data/dataC.json';
 import optionC from '@/test/test_data/optionC.json';
+
+import dataD from '@/test/test_data/dataD.json';
+import optionD from '@/test/test_data/optionD.json';
+
+import dataD2 from '@/test/test_data/dataD2.json';
+import optionD2 from '@/test/test_data/optionD2.json';
+
 
 onMounted(() => {
   dataInput.registeredFitness.forEach((el) => el.date = new Date(el.date))

@@ -1,0 +1,28 @@
+{
+  "responsive": true,
+  "maintainAspectRatio": true,
+  "scales": {
+    "x": {
+      "stacked": false,
+      "display": true,
+      "title": {
+        "display": true,
+        "text": ""
+      }
+    },
+    "y": {
+      "stacked": false,
+      "display": true,
+      "position": "left",
+      "title": {
+        "display": true,
+        "text": "Volume x Intensità"
+      }
+    }
+  },
+  "plugins": {
+    "legend": {
+      "position": "top"
+    }
+  }
+}
