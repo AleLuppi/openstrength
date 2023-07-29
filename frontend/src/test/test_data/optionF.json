@@ -6,14 +6,25 @@
         "display": true,
         "title": {
           "display": true,
-          "text": "Mese"
-        }
+          "text": "Data"
+        } 
       },
       "y": {
+        "type": "linear",
         "display": true,
+        "position": "left",
         "title": {
           "display": true,
           "text": "1RM [kg]"
+        }
+      },
+      "y1": {
+        "type": "linear",
+        "display": true,
+        "position": "right",
+        "title": {
+          "display": true,
+          "text": "Peso Corporeo [kg]"
         }
       }
     }
