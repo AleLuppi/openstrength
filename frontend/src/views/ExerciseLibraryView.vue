@@ -166,11 +166,7 @@ const statuses = ref([
   {label: 'OUTOFSTOCK', value: 'outofstock'}
 ]);
 
-const formatCurrency = (value) => {
-  if(value)
-      return value.toLocaleString('en-US', {style: 'currency', currency: 'USD'});
-  return;
-};
+
 const openNew = () => {
   product.value = {};
   submitted.value = false;
