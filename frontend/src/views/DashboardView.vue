@@ -45,17 +45,51 @@
     </div>
 
     <!-- E: Example Grid -->
-    <div class="col-12">
+<!--     <div class="col-12">
       <h3>V grid placeholder</h3>
        <v-grid-component />
+    </div> -->
+
+  <!-- E2: Andamento del volume a seconda dei livelli di intensità  -->
+    <div class="col-12">
+        <q-card class="shadow-3">
+        <q-card-section class="q-mb-md">
+          <div class="row items-center no-wrap">
+            <div class="col text-h5 text-weight-medium text-grey">
+              {{ "Volume per diversi livelli di intensità" }}
+            </div>
+
+            <div class="col-auto">
+              <q-icon name="fas fa-circle-info" size="1.7rem" color="grey-5">
+                <q-tooltip anchor="center left" self="center right" transition-show="fade" transition-hide="fade"
+                  class="bg-primary text-body2">
+                  {{ "Volume di allenamento per vari livelli di intensità relativa durante le settimane." }}
+                </q-tooltip>
+              </q-icon>
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-separator spaced="lg" size="2px" />
+
+        <q-card-section>
+          <DataTable :value="intensity" showGridlines tableStyle="min-width: 50rem">
+          <Column field="week" header="Settimana"></Column>
+          <Column field="intensity1" header="<69%"></Column>
+          <Column field="intensity2" header="70|75%"></Column>
+          <Column field="intensity3" header="76|80%"></Column>
+          <Column field="intensity4" header="81|85%"></Column>
+          <Column field="intensity5" header="86|90%"></Column>
+          <Column field="intensity6" header="91|95%"></Column>
+          <Column field="intensity7" header="96|100%"></Column>
+          <Column field="total" header="Totale"></Column>
+          <Column field="distribution" header="Distribuzione"></Column>
+      </DataTable>
+        </q-card-section>
+      </q-card>
     </div>
 
-  <!--    E2: Example Grid 
-    <div class="col-12">
-      <h3>Simple Table View</h3>
-      <simple-table-component/>
-    </div>
- -->
+
 
 
     <!-- F: 1RM alzate principali vs peso corporeo -->
@@ -138,8 +172,25 @@ import dataD2 from '@/test/test_data/dataD2.json';
 import optionD2 from '@/test/test_data/optionD2.json';
 
 // E
-import VGridComponent from '@/components/tables/VGridComponent.vue';
+//import VGridComponent from '@/components/tables/VGridComponent.vue';
 
+// E2
+import { ref } from 'vue';
+import { IntensityService } from '@/test/test_data/IntensityService.js';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+
+const intensity = ref(null);
+
+onMounted(async () => {
+  try {
+    const data = await IntensityService.getIntensityData();
+    console.log(data); // Check if the data is fetched successfully
+    intensity.value = data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+});
 
 
 // F
