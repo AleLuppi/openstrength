@@ -62,6 +62,7 @@
     </div> -->
 
 
+
     <div class="col-12">
       <chart-component title="Workout Volume" description="Volume of workouts over time computed as Rep x Set x Load"
         :data="chartData" :options="chartOptions" :width="400" :height="300" />
@@ -129,7 +130,7 @@ import dataD2 from '@/test/test_data/dataD2.json';
 import optionD2 from '@/test/test_data/optionD2.json';
 
 // E
-import VGridComponent from '@/components/charts/VGridComponent.vue';
+import VGridComponent from '@/components/tables/VGridComponent.vue';
 
 // F
 import dataF from '@/test/test_data/dataF.json';
@@ -137,7 +138,6 @@ import optionF from '@/test/test_data/optionF.json';
 
 //G 
 //import RadarComponent from '@/components/charts/RadarComponent.vue';
-
 
 
 onMounted(() => {
