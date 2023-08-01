@@ -25,6 +25,17 @@
       </q-item-section>
     </q-item>
 
+    <q-item clickable tag="a" :to="{ name: 'library' }">
+      <q-item-section avatar>
+        <q-icon name="fa-solid fa-book" />
+      </q-item-section>
+      <q-item-section>
+        <q-item-label>{{ $t("layout.drawer.library") }}</q-item-label>
+        <q-item-label caption v-if="$t('layout.drawer.library_caption')">{{ $t("layout.drawer.library_caption")
+        }}</q-item-label>
+      </q-item-section>
+    </q-item>
+
     <q-item clickable tag="a" :to="{ name: 'about' }">
       <q-item-section avatar>
         <q-icon name="fa-solid fa-stream" />
