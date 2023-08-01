@@ -1,6 +1,5 @@
 <template>
   <div class="exercises">
-    <h1>This is the final library page with exercises</h1>
       <div class="card">
           <Toolbar class="mb-4">
               <template #start>
