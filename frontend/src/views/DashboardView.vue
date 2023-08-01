@@ -50,6 +50,14 @@
        <v-grid-component />
     </div>
 
+  <!--    E2: Example Grid 
+    <div class="col-12">
+      <h3>Simple Table View</h3>
+      <simple-table-component/>
+    </div>
+ -->
+
+
     <!-- F: 1RM alzate principali vs peso corporeo -->
     <div class="col-5">
       <chart-component title="1RM alzate principali" description="Andamento dell'1RM versus peso corporeo."
@@ -132,6 +140,8 @@ import optionD2 from '@/test/test_data/optionD2.json';
 // E
 import VGridComponent from '@/components/tables/VGridComponent.vue';
 
+
+
 // F
 import dataF from '@/test/test_data/dataF.json';
 import optionF from '@/test/test_data/optionF.json';
@@ -139,9 +149,8 @@ import optionF from '@/test/test_data/optionF.json';
 //G 
 //import RadarComponent from '@/components/charts/RadarComponent.vue';
 
-
-onMounted(() => {
-  dataInput.registeredFitness.forEach((el) => el.date = new Date(el.date))
-  console.log(computeVolumeInDateRange(dataInput.registeredFitness, new Date('2023-07-25'), new Date('2023-07-28')))
-})
+onMounted(async () => {
+  dataInput.registeredFitness.forEach((el) => el.date = new Date(el.date));
+  console.log(computeVolumeInDateRange(dataInput.registeredFitness, new Date('2023-07-25'), new Date('2023-07-28')));
+});
 </script>
