@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 const AboutView = () => import('@/views/AboutView.vue');
 const LibraryView = () => import('@/views/LibraryView.vue');
+const ExerciseLibraryView = () => import('@/views/ExerciseLibraryView.vue');
 const DashboardView = () => import('@/views/DashboardView.vue');
 
 
@@ -28,6 +29,14 @@ const routes = [
     path: '/library',
     name: 'library',
     component: LibraryView,
+    meta: {
+      title: "Library",
+    },
+  },
+  {
+    path: '/exercises',
+    name: 'exercises',
+    component: ExerciseLibraryView,
     meta: {
       title: "Library",
     },

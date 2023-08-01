@@ -1,6 +1,6 @@
 <template>
-  <div class="library">
-    <h1>This is the example library page</h1>
+  <div class="exercises">
+    <h1>This is the final library page with exercises</h1>
       <div class="card">
           <Toolbar class="mb-4">
               <template #start>
@@ -20,7 +20,7 @@
               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products">
               <template #header>
                   <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
-                      <h4 class="m-0">Manage Products</h4>
+                      <h4 class="m-0">Manage Exercises Library</h4>
           <span class="p-input-icon-left">
                           <i class="pi pi-search" />
                           <InputText v-model="filters['global'].value" placeholder="Search..." />
@@ -28,31 +28,15 @@
         </div>
               </template>
 
-              <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
-              <Column field="code" header="Code" sortable style="min-width:12rem"></Column>
-              <Column field="name" header="Name" sortable style="min-width:16rem"></Column>
-              <Column header="Image">
-                  <template #body="slotProps">
-                      <img :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.data.image}`" :alt="slotProps.data.image" class="shadow-2 border-round" style="width: 64px" />
-                  </template>
-              </Column>
-              <Column field="price" header="Price" sortable style="min-width:8rem">
-                  <template #body="slotProps">
-                      {{formatCurrency(slotProps.data.price)}}
-                  </template>
-              </Column>
-              <Column field="category" header="Category" sortable style="min-width:10rem"></Column>
-              <Column field="rating" header="Reviews" sortable style="min-width:12rem">
-                  <template #body="slotProps">
-                      <Rating :modelValue="slotProps.data.rating" :readonly="true" :cancel="false" />
-                  </template>
-              </Column>
-              <Column field="inventoryStatus" header="Status" sortable style="min-width:12rem">
-                  <template #body="slotProps">
-                      <Tag :value="slotProps.data.inventoryStatus" :severity="getStatusLabel(slotProps.data.inventoryStatus)" />
-                  </template>
-              </Column>
-              <Column :exportable="false" style="min-width:8rem">
+              <Column selectionMode="multiple" style="width: 2rem" :exportable="false"></Column>
+              <Column field="code" header="Categoria" sortable style="min-width:6rem"></Column>
+              <Column field="name" header="Nome" sortable style="min-width:8rem"></Column>
+              <Column field="price" header="Variante" sortable style="min-width:4rem"></Column>
+              <Column field="category" header="Attrezzo" sortable style="min-width:5rem"></Column>
+              <Column field="rating" header="Unità" sortable style="min-width:6rem"></Column>
+              <Column field="description" header="Spiegazione" sortable style="min-width:6rem"></Column>
+              <Column field="link" header="Link" sortable style="min-width:6rem"></Column>    
+              <Column :exportable="false" style="min-width:4rem">
                   <template #body="slotProps">
                       <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" />
                       <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteProduct(slotProps.data)" />
@@ -61,7 +45,7 @@
           </DataTable>
       </div>
 
-      <Dialog v-model:visible="productDialog" :style="{width: '450px'}" header="Product Details" :modal="true" class="p-fluid">
+      <Dialog v-model:visible="productDialog" :style="{width: '450px'}" header="Dettagli Esercizio" :modal="true" class="p-fluid">
           <img v-if="product.image" :src="`https://primefaces.org/cdn/primevue/images/product/${product.image}`" :alt="product.image" class="block m-auto pb-3" />
           <div class="field">
               <label for="name">Name</label>
