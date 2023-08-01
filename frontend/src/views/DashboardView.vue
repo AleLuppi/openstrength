@@ -89,7 +89,14 @@
       </q-card>
     </div>
 
+  <!-- E3: Volume per zone di intensità -->
+ <!--  <div class="col-6">
+      <chart-component title="E3: Distribuzione del volume per zone di intensità" type="doughnut"
+        description="Questo grafico mostra l'andamento del Volume x Intensità per singolo esercizio"
+        :data="data" :width="400" :height="150" />
+    </div> -->
 
+  <!-- E4: Zone di intensità per volume -->
 
 
     <!-- F: 1RM alzate principali vs peso corporeo -->
@@ -185,12 +192,15 @@ const intensity = ref(null);
 onMounted(async () => {
   try {
     const data = await IntensityService.getIntensityData();
-    console.log(data); // Check if the data is fetched successfully
     intensity.value = data;
   } catch (error) {
     console.error('Error fetching data:', error);
   }
 });
+
+// E3
+
+//import data from '@/test/test_data/dataE3.json';
 
 
 // F
