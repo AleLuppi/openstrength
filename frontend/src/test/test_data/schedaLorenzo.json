@@ -799,7 +799,217 @@
 			"date": "2023-06-27T18:25:43.511Z",
 			"tool": " ",
 			"assignedReferenceID": " ",
-			"series": " "
+			"series": [
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 13,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 16,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 8,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 12,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 7,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM inferiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 9,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": "9.5",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 9,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Curl Bicipiti",
+                    "variant": "Elastico",
+                    "reps": 33,
+                    "load": 20,
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Curl Bicipiti",
+                    "variant": "Elastico",
+                    "reps": 19,
+                    "load": 20,
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Plank",
+                    "variant": "Standard",
+                    "reps": 64,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Plank",
+                    "variant": "Standard",
+                    "reps": 40,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Superman",
+                    "variant": "Standard",
+                    "reps": 22,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Superman",
+                    "variant": "Standard",
+                    "reps": 18,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                }
+            ]
 		},
 		{
 			"workoutName": "Giorno D",
@@ -1558,7 +1768,217 @@
 			"date": "2023-07-06T18:25:43.511Z",
 			"tool": " ",
 			"assignedReferenceID": " ",
-			"series": " "
+			"series": [
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 10,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 10,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 10,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 6,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM inferiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": "8.5",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 9,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Curl Bicipiti",
+                    "variant": "Elastico",
+                    "reps": 22,
+                    "load": 20,
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Curl Bicipiti",
+                    "variant": "Elastico",
+                    "reps": 18,
+                    "load": 20,
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Plank",
+                    "variant": "Standard",
+                    "reps": 71,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Plank",
+                    "variant": "Standard",
+                    "reps": 36,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Superman",
+                    "variant": "Standard",
+                    "reps": 20,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Superman",
+                    "variant": "Standard",
+                    "reps": 20,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                }
+            ]
 		},
 		{
 			"workoutName": "Giorno D",
@@ -2472,7 +2892,217 @@
 			"date": "2023-07-13T18:25:43.511Z",
 			"tool": " ",
 			"assignedReferenceID": " ",
-			"series": " "
+			"series": [
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 10,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 8,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 13,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 10,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 7,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM inferiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Plank",
+                    "variant": "Standard",
+                    "reps": 47,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Plank",
+                    "variant": "Standard",
+                    "reps": 27,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Superman",
+                    "variant": "Standard",
+                    "reps": 20,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Superman",
+                    "variant": "Standard",
+                    "reps": 20,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                }
+            ]
 		},
 		{
 			"workoutName": "Giorno D",
@@ -3408,7 +4038,261 @@
 			"date": "2023-07-20T18:25:43.511Z",
 			"tool": " ",
 			"assignedReferenceID": " ",
-			"series": " "
+			"series": [
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 10,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 6,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 10,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 14,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 8,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 8,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 4,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 4,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 4,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 4,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM inferiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 7,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Curl Bicipiti ",
+                    "variant": "Elastico",
+                    "reps": 25,
+                    "load": 20,
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Curl Bicipiti ",
+                    "variant": "Elastico",
+                    "reps": 21,
+                    "load": 20,
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Plank",
+                    "variant": "Standard",
+                    "reps": 47,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Plank",
+                    "variant": "Standard",
+                    "reps": 34,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Superman",
+                    "variant": "Standard",
+                    "reps": 20,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Superman",
+                    "variant": "Standard",
+                    "reps": 20,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                }
+            ]
 		},
 		{
 			"workoutName": "Giorno D",
@@ -4366,7 +5250,272 @@
 			"date": "2023-07-26T18:25:43.511Z",
 			"tool": " ",
 			"assignedReferenceID": " ",
-			"series": " "
+			"series": [
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 10,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 10,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 10,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 10,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 10,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Handstand",
+                    "variant": "Slanci da pancia a muro",
+                    "reps": 10,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 7,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pike Push up",
+                    "variant": "Standard",
+                    "reps": 3,
+                    "load": "null",
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM inferiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 8,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": "8.5",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": 9,
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": "9.5",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Pull up",
+                    "variant": "Mezzo ROM superiore",
+                    "reps": 5,
+                    "load": 10,
+                    "rpe": "9.5",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Curl Bicipiti ",
+                    "variant": "Elastico",
+                    "reps": 25,
+                    "load": 20,
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Curl Bicipiti ",
+                    "variant": "Elastico",
+                    "reps": 21,
+                    "load": 20,
+                    "rpe": "null",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "rep",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Plank",
+                    "variant": "Standard",
+                    "reps": 62,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Plank",
+                    "variant": "Standard",
+                    "reps": 40,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Superman",
+                    "variant": "Standard",
+                    "reps": 20,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                },
+                {
+                    "name": "Superman",
+                    "variant": "Standard",
+                    "reps": 20,
+                    "load": "null ",
+                    "rpe": "null ",
+                    "rest": "null",
+                    "feedbackid": "null",
+                    "repsunit": "s",
+                    "loadunit": "kg"
+                }
+            ]
 		},
 		{
 			"workoutName": "Giorno D",
