@@ -90,10 +90,10 @@
     </div>
 
   <!-- E3: Volume per zone di intensità -->
- <!--  <div class="col-6">
-      <chart-component title="E3: Distribuzione del volume per zone di intensità" type="doughnut"
-        description="Questo grafico mostra l'andamento del Volume x Intensità per singolo esercizio"
-        :data="data" :width="400" :height="150" />
+<!--   <div class="col-6">
+      <doughnut-component title="E3: Distribuzione del volume per zone di intensità" type="doughnut"
+      description="Questo grafico mostra l'andamento del Volume x Intensità per singolo esercizio"
+        :data="dataE3" :width="400" :height="150" />
     </div> -->
 
   <!-- E4: Zone di intensità per volume -->
@@ -123,7 +123,8 @@
 
 
     <div class="col-6">
-      <chart-component title="Progressi Mesociclo" type="bar"
+      <chart-component title="Progressi Mesociclo" 
+      
         description="Questo grafico mostra l'andamento del volume e intensità all'interno di un mesociclo per un esercizio. Es settimana 1, es 1, settimana 2 es 1 ecc ecc."
         :data="barLineChartData" :options="barLineChartOptions" :width="400" :height="150" />
     </div>
@@ -199,9 +200,8 @@ onMounted(async () => {
 });
 
 // E3
-
-//import data from '@/test/test_data/dataE3.json';
-
+//import dataE3 from '@/test/test_data/dataE3.json';
+//import DoughnutComponent from '@/components/charts/DoughnutChartComponent.vue';
 
 // F
 import dataF from '@/test/test_data/dataF.json';
