@@ -121,23 +121,6 @@
         :data="chartData2" :options="chartOptions2" :width="400" :height="300" />
     </div>
 
-
-    <div class="col-6">
-      <chart-component title="Progressi Mesociclo" 
-      
-        description="Questo grafico mostra l'andamento del volume e intensità all'interno di un mesociclo per un esercizio. Es settimana 1, es 1, settimana 2 es 1 ecc ecc."
-        :data="barLineChartData" :options="barLineChartOptions" :width="400" :height="150" />
-    </div>
-    <div class="col-6">
-      <chart-component title="Progressi Mesociclo" type="bar"
-        description="Questo grafico mostra l'andamento di serie e rep all'interno di un mesociclo per un esercizio."
-        :data="barChartData" :options="barChartOptions" :width="400" :height="150" />
-    </div>
-    <!-- <div class="col-5">
-      <chart-component title="Example preprocessing" description="Volume data taken from complete JSON for athlete"
-        :data="data" :options="chartOptions" :width="400" :height="300" />
-    </div> -->
-
   </div>
 </template>
 
@@ -149,10 +132,6 @@ import chartData from '@/test/test_data/chartData.json';
 import chartData2 from '@/test/test_data/chartData2.json';
 import chartOptions2 from '@/test/test_data/chartOptions2.json';
 
-import barLineChartData from '@/test/test_data/barLineChartData.json';
-import barLineChartOptions from '@/test/test_data/barLineChartOptions.json';
-import barChartData from '@/test/test_data/barChartData.json';
-import barChartOptions from '@/test/test_data/barChartOptions.json';
 
 import chartOptions from '@/test/test_data/chartOptions.json';
 
