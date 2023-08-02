@@ -131,8 +131,6 @@ import chartData from '@/test/test_data/chartData.json';
 
 import chartData2 from '@/test/test_data/chartData2.json';
 import chartOptions2 from '@/test/test_data/chartOptions2.json';
-
-
 import chartOptions from '@/test/test_data/chartOptions.json';
 
 import { computeVolumeInDateRange } from '@/utils/datamanager/postprocessing.ts';

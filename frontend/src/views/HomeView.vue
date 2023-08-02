@@ -1,41 +1,30 @@
 <template>
-  <div class="col-4">
-       <q-card class="shadow-3">
-        <q-card-section class="q-mb-md">
-          <div class="row items-center no-wrap">
-            <div class="col text-h5 text-weight-medium text-grey">
-              {{ "Volume per diversi livelli di intensità" }}
-            </div>
-
-            <div class="col-auto">
-              <q-icon name="fas fa-circle-info" size="1.7rem" color="grey-5">
-                <q-tooltip anchor="center left" self="center right" transition-show="fade" transition-hide="fade"
-                  class="bg-primary text-body2">
-                  {{ "Volume di allenamento per vari livelli di intensità relativa durante le settimane." }}
-                </q-tooltip>
-              </q-icon>
-            </div>
-          </div>
-        </q-card-section>
-
-        <q-separator spaced="lg" size="2px" />
-
-        <q-card-section>
-          <div>
-            <canvas ref="doughnutChart"></canvas>
-          </div>
-        </q-card-section>
-      </q-card>
+    <!-- TO DO: adjust color styling in component or create another component -->
+    <div class="col-4">
+      <chart-component title="Volume per diversi livelli di intensità" 
+      description="Volume di allenamento per vari livelli di intensità relativa durante le settimane." type="doughnut"
+        :data="dataE3" :options="optionsE3" :width="400" :height="300" />
     </div>
+
+    <!-- TO DO: adjust color styling in component or create another component -->
+        <div class="col-4">
+      <chart-component title="Volume nelle settimane" 
+      description="Volume di allenamento per durante le settimane." type="doughnut"
+        :data="dataE4" :options="optionsE4" :width="400" :height="300" />
+    </div>
+
+
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue';
 import Chart from 'chart.js/auto';
+import ChartComponent from '@/components/charts/ChartComponent.vue';
 
-const doughnutChart = ref(null);
+// FIRST GRAPH: E3
+const doughnutChartE3 = ref(null);
 
-const data = {
+const dataE3 = {
   labels: ['<69%', '70|75%', '76|80%', '81|85%', '86|90%', '91|95%', '96|100%'],
   datasets: [
     {
@@ -46,9 +35,9 @@ const data = {
   ],
 };
 
-const options = {
+const optionsE3 = {
   type: 'doughnut',
-  data: data,
+  data: dataE3,
   options: {
     responsive: true,
     maintainAspectRatio: false,
@@ -56,17 +45,54 @@ const options = {
   },
 };
 
-const renderChart = () => {
-  if (!doughnutChart.value || !(doughnutChart.value instanceof HTMLCanvasElement)) {
+const renderChartE3 = () => {
+  if (!doughnutChartE3.value || !(doughnutChartE3.value instanceof HTMLCanvasElement)) {
     console.error('Missing or invalid reference to canvas element.');
     return;
   }
 
-  const ctx = doughnutChart.value.getContext('2d');
-  new Chart(ctx, options);
+  const ctx = doughnutChartE3.value.getContext('2d');
+  new Chart(ctx, optionsE3);
 };
 
-onMounted(renderChart);
+onMounted(renderChartE3);
+
+// SECOND GRAPH E4
+
+const doughnutChartE4 = ref(null);
+
+const dataE4 = {
+  labels: ['Settimana 1', 'Settimana 2', 'Settimana 3', 'Settimana 4'],
+  datasets: [
+    {
+      data: [87, 101, 133, 65],
+      backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)'],
+      hoverOffset: 4,
+    },
+  ],
+};
+
+const optionsE4 = {
+  type: 'doughnut',
+  data: dataE4,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    // Customize chart options here
+  },
+};
+
+const renderChartE4 = () => {
+  if (!doughnutChartE4.value || !(doughnutChartE4.value instanceof HTMLCanvasElement)) {
+    console.error('Missing or invalid reference to canvas element.');
+    return;
+  }
+
+  const ctx = doughnutChartE4.value.getContext('2d');
+  new Chart(ctx, optionsE4);
+};
+
+onMounted(renderChartE4);
 </script>
 
 <style scoped lang="scss">
