@@ -15,7 +15,7 @@
 
   <div class="row q-pa-md justify-between q-col-gutter-md">
     <div class="col-12">
-      <p>Volume, Intensità e IRT</p>
+      <h6 class="text-h6">Volume, Intensità e IRT</h6>
     <TabView>
       <TabPanel header="Per esercizio">
         <div class="chart-container">
@@ -58,8 +58,9 @@
 
 
 <div class="col-12">
+  <h6 class="text-h6">Carico di Allenamento</h6>
     <TabView>
-      <TabPanel header="Carico di allenamento per esercizio">
+      <TabPanel header="Per esercizio">
         <div class="chart-container">
           <!-- D: Andamento del Volume x Intensità nelle settimane per i singoli esercizi -->
           <div class="col-6">
@@ -77,7 +78,7 @@
       </div>
       </TabPanel>
 
-      <TabPanel header="Carico di allenamento per seduta">
+      <TabPanel header="Per seduta">
         <div class="chart-container">
           <!-- B: andamento Volume x Intensita per ogni seduta-->
           <div class="col-6">
@@ -171,20 +172,11 @@
     </div>
 
     <!-- G: 1RM vs Record mondiali per categoria -->
-<!--<div class="col-12">
+    <!--<div class="col-12">
       <radar-component></radar-component>
     </div> -->
 
 
-
-    <div class="col-12">
-      <chart-component title="Workout Volume" description="Volume of workouts over time computed as Rep x Set x Load"
-        :data="chartData" :options="chartOptions" :width="400" :height="300" />
-    </div>
-    <div class="col-7">
-      <chart-component title="Volume alzate principali" description="Just another graph to test multiple components"
-        :data="chartData2" :options="chartOptions2" :width="400" :height="300" />
-    </div>
 
   </div>
 </template>
@@ -193,11 +185,7 @@
 import { onMounted } from 'vue';
 import Chart from 'chart.js/auto';
 import ChartComponent from '@/components/charts/ChartComponent.vue';
-import chartData from '@/test/test_data/chartData.json';
 
-import chartData2 from '@/test/test_data/chartData2.json';
-import chartOptions2 from '@/test/test_data/chartOptions2.json';
-import chartOptions from '@/test/test_data/chartOptions.json';
 
 import { computeVolumeInDateRange } from '@/utils/datamanager/postprocessing.ts';
 import dataInput from '@/test/test_data/finalTemplate.json';
@@ -338,5 +326,9 @@ onMounted(async () => {
   .chart-container {
     display: flex;
     justify-content: space-between;
+  }
+
+  .text-h6{
+    margin: 0px;
   }
 </style>
