@@ -15,8 +15,27 @@
 
   <div class="row q-pa-md justify-between q-col-gutter-md">
     <div class="col-12">
+      <p>Volume, Intensità e IRT</p>
     <TabView>
-      <TabPanel header="Volume, Intensità e IRT">
+      <TabPanel header="Per esercizio">
+        <div class="chart-container">
+          <!-- A4: andamento Volume per tutti gli esercizi -->
+          <div class="col-4">
+            <chart-component title="Volume" description="Andamento del volume per le diverse alzate principali."
+              :data="dataA4" :options="optionA4" :width="400" :height="300" />
+          </div>
+          <div class="col-4">
+            <chart-component title="Intensità" description="Andamento dell'intensità per le diverse alzate principali."
+              :data="dataA5" :options="optionA5" :width="400" :height="300" />
+          </div>
+          <div class="col-4">
+            <chart-component title="IRT" description="Andamento dell'IRT per le diverse alzate principali."
+              :data="dataA6" :options="optionA6" :width="400" :height="300" />
+          </div>
+      </div>
+      </TabPanel>
+
+      <TabPanel header="Totali">
         <div class="chart-container">
         <!-- A: andamento Volume, Intensita, IRT per esercizio -->
         <div class="col-4">
@@ -32,9 +51,7 @@
             :data="dataA3" :options="optionA" :width="400" :height="300" />
         </div>
       </div>
-      </TabPanel>
-
-      
+      </TabPanel>    
 
     </TabView>
 </div>
@@ -187,9 +204,17 @@ import dataInput from '@/test/test_data/finalTemplate.json';
 
 // A: dati per andamento Volume, Intensita, IRT per esercizio
 import dataA from '@/test/test_data/dataA.json';
+import optionA from '@/test/test_data/optionA.json';
+
 import dataA2 from '@/test/test_data/dataA2.json';
 import dataA3 from '@/test/test_data/dataA3.json';
-import optionA from '@/test/test_data/optionA.json';
+
+import dataA4 from '@/test/test_data/dataA4.json';
+import optionA4 from '@/test/test_data/optionA4.json';
+import dataA5 from '@/test/test_data/dataA5.json';
+import optionA5 from '@/test/test_data/optionA5.json';
+import dataA6 from '@/test/test_data/dataA6.json';
+import optionA6 from '@/test/test_data/optionA6.json';
 
 // B
 import dataB from '@/test/test_data/dataB.json';
