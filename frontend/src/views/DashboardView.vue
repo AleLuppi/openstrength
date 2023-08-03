@@ -116,76 +116,89 @@
 
 
 
+<div class="col-12">
+      <h6 class="text-h6">Distribuzione Volume e Intensità</h6>
+        <TabView>
+          <TabPanel header="Distribuzioni">
+              <!-- E2: Andamento del volume a seconda dei livelli di intensità  -->
+            <div class="col-12">
+              <div class="chart-container">
+                 <!-- F: 1RM alzate principali vs peso corporeo -->
+                <div class="col-6">
+                  <chart-component title="1RM alzate principali" description="Andamento dell'1RM versus peso corporeo."
+                    :data="dataF" :options="optionF" :width="400" :height="300" />
+                </div>
+                <!-- E3: Volume per zone di intensità -->
+                <!-- E3: TO DO: adjust color styling in component or create another component -->
+                <div class="col-3">
+                  <chart-component title="Volume per diversi livelli di intensità" 
+                  description="Volume di allenamento per vari livelli di intensità relativa durante le settimane." type="doughnut"
+                    :data="dataE3" :options="optionsE3" :width="400" :height="300" />
+                </div>
+
+                <!-- E4: Volume per settimane -->
+                <!-- E4: TO DO: adjust color styling in component or create another component -->
+                    <div class="col-3">
+                  <chart-component title="Volume nelle settimane" 
+                  description="Volume di allenamento per durante le settimane." type="doughnut"
+                    :data="dataE4" :options="optionsE4" :width="400" :height="300" />
+                </div>
 
 
-
-
-    <!-- E: Example Grid -->
-<!--     <div class="col-12">
-      <h3>V grid placeholder</h3>
-       <v-grid-component />
-    </div> -->
-
-  <!-- E2: Andamento del volume a seconda dei livelli di intensità  -->
-    <div class="col-12">
-        <q-card class="shadow-3">
-        <q-card-section class="q-mb-md">
-          <div class="row items-center no-wrap">
-            <div class="col text-h5 text-weight-medium text-grey">
-              {{ "Volume per diversi livelli di intensità" }}
+              </div>
             </div>
 
-            <div class="col-auto">
-              <q-icon name="fas fa-circle-info" size="1.7rem" color="grey-5">
-                <q-tooltip anchor="center left" self="center right" transition-show="fade" transition-hide="fade"
-                  class="bg-primary text-body2">
-                  {{ "Volume di allenamento per vari livelli di intensità relativa durante le settimane." }}
-                </q-tooltip>
-              </q-icon>
-            </div>
-          </div>
-        </q-card-section>
+          </TabPanel>
 
-        <q-separator spaced="lg" size="2px" />
+          
+          <TabPanel header="Dati">
+              <!-- E2: Andamento del volume a seconda dei livelli di intensità  -->
+        <div class="col-12">
+            <q-card class="shadow-3">
+            <q-card-section class="q-mb-md">
+              <div class="row items-center no-wrap">
+                <div class="col text-h5 text-weight-medium text-grey">
+                  {{ "Volume per diversi livelli di intensità" }}
+                </div>
 
-        <q-card-section>
-          <DataTable :value="intensity" showGridlines tableStyle="min-width: 50rem">
-          <Column field="week" header="Settimana"></Column>
-          <Column field="intensity1" header="<69%"></Column>
-          <Column field="intensity2" header="70|75%"></Column>
-          <Column field="intensity3" header="76|80%"></Column>
-          <Column field="intensity4" header="81|85%"></Column>
-          <Column field="intensity5" header="86|90%"></Column>
-          <Column field="intensity6" header="91|95%"></Column>
-          <Column field="intensity7" header="96|100%"></Column>
-          <Column field="total" header="Totale"></Column>
-          <Column field="distribution" header="Distribuzione"></Column>
-      </DataTable>
-        </q-card-section>
-      </q-card>
+                <div class="col-auto">
+                  <q-icon name="fas fa-circle-info" size="1.7rem" color="grey-5">
+                    <q-tooltip anchor="center left" self="center right" transition-show="fade" transition-hide="fade"
+                      class="bg-primary text-body2">
+                      {{ "Volume di allenamento per vari livelli di intensità relativa durante le settimane." }}
+                    </q-tooltip>
+                  </q-icon>
+                </div>
+              </div>
+            </q-card-section>
+
+            <q-separator spaced="lg" size="2px" />
+
+            <q-card-section>
+              <DataTable :value="intensity" showGridlines tableStyle="min-width: 50rem">
+              <Column field="week" header="Settimana"></Column>
+              <Column field="intensity1" header="<69%"></Column>
+              <Column field="intensity2" header="70|75%"></Column>
+              <Column field="intensity3" header="76|80%"></Column>
+              <Column field="intensity4" header="81|85%"></Column>
+              <Column field="intensity5" header="86|90%"></Column>
+              <Column field="intensity6" header="91|95%"></Column>
+              <Column field="intensity7" header="96|100%"></Column>
+              <Column field="total" header="Totale"></Column>
+              <Column field="distribution" header="Distribuzione"></Column>
+          </DataTable>
+            </q-card-section>
+          </q-card>
+        </div>
+
+          </TabPanel>
+
+
+        </TabView>
     </div>
 
-  <!-- E3: Volume per zone di intensità -->
-    <!-- E3: TO DO: adjust color styling in component or create another component -->
-    <div class="col-4">
-      <chart-component title="Volume per diversi livelli di intensità" 
-      description="Volume di allenamento per vari livelli di intensità relativa durante le settimane." type="doughnut"
-        :data="dataE3" :options="optionsE3" :width="400" :height="300" />
-    </div>
 
-     <!-- E4: Volume per settimane -->
-    <!-- E4: TO DO: adjust color styling in component or create another component -->
-        <div class="col-4">
-      <chart-component title="Volume nelle settimane" 
-      description="Volume di allenamento per durante le settimane." type="doughnut"
-        :data="dataE4" :options="optionsE4" :width="400" :height="300" />
-    </div>
 
-    <!-- F: 1RM alzate principali vs peso corporeo -->
-    <div class="col-5">
-      <chart-component title="1RM alzate principali" description="Andamento dell'1RM versus peso corporeo."
-        :data="dataF" :options="optionF" :width="400" :height="300" />
-    </div>
 
     <!-- G: 1RM vs Record mondiali per categoria -->
     <!--<div class="col-12">
