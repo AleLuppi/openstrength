@@ -21,7 +21,7 @@
       "max": 100
     },
     "y1": {
-      "type": "linear",
+      
       "display": true,
       "position": "right",
       "title": {

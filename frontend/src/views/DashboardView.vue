@@ -11,50 +11,80 @@
               </template>
    </Toolbar>
              
+    <!-- TODO dynamic sizing, and auto add title + description -->
 
   <div class="row q-pa-md justify-between q-col-gutter-md">
-    <!-- TODO dynamic sizing, and auto add title + description -->
-    <!-- A: andamento Volume, Intensita, IRT per esercizio -->
-    <div class="col-4">
-      <chart-component title="A: Panca - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
-        :data="dataA" :options="optionA" :width="400" :height="300" />
-    </div>
-
-    <div class="col-4">
-      <chart-component title="A2: Stacco - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
-        :data="dataA2" :options="optionA" :width="400" :height="300" />
-    </div>
-
-    <div class="col-4">
-      <chart-component title="A3: Squat - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
-        :data="dataA3" :options="optionA" :width="400" :height="300" />
-    </div>
-
-    <!-- B: andamento Volume x Intensita per ogni seduta-->
-      <div class="col-6">
-      <chart-component title="B: Andamento Carico di allenamento" description="Andamento dell'intensità x volume nel corso del mesociclo per seduta."
-        :data="dataB" :options="optionB" :width="400" :height="300" />
+    <div class="col-12">
+    <TabView>
+      <TabPanel header="Volume, Intensità e IRT">
+        <div class="chart-container">
+        <!-- A: andamento Volume, Intensita, IRT per esercizio -->
+        <div class="col-4">
+          <chart-component title="A: Panca - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
+            :data="dataA" :options="optionA" :width="400" :height="300" />
+        </div>
+        <div class="col-4">
+          <chart-component title="A2: Stacco - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
+            :data="dataA2" :options="optionA" :width="400" :height="300" />
+        </div>
+        <div class="col-4">
+          <chart-component title="A3: Squat - Andamento parametri nel mesociclo" description="Andamento dell'intensità, volume e IRT nel mesociclo di riferimento."
+            :data="dataA3" :options="optionA" :width="400" :height="300" />
+        </div>
       </div>
+      </TabPanel>
 
-    <!-- C: andamento Serie x Intensita Relativa per ogni seduta-->
-      <div class="col-6">
-      <chart-component title="C: Andamento Carico di allenamento" description="Andamento dell'intensità relativa x volume nel corso del mesociclo per seduta."
-        :data="dataC" :options="optionC" :width="400" :height="300" />
+      
+
+    </TabView>
+</div>
+
+
+<div class="col-12">
+    <TabView>
+      <TabPanel header="Carico di allenamento per esercizio">
+        <div class="chart-container">
+          <!-- D: Andamento del Volume x Intensità nelle settimane per i singoli esercizi -->
+          <div class="col-6">
+            <chart-component title="D: Andamento Carico di allenamento per esercizio" type="bar"
+              description="Questo grafico mostra l'andamento del Volume x Intensità per singolo esercizio"
+              :data="dataD" :options="optionD" :width="400" :height="150" />
+          </div>
+
+          <!-- D2: Uguale al precedente ma sottoforma di line graph -->
+          <div class="col-6">
+            <chart-component title="D2: Andamento Carico di allenamento per esercizio" type="bar"
+              description="Questo grafico mostra l'andamento del Volume x Intensità per singolo esercizio"
+              :data="dataD2" :options="optionD2" :width="400" :height="150" />
+          </div>
       </div>
+      </TabPanel>
 
-    <!-- D: Andamento del Volume x Intensità nelle settimane per i singoli esercizi -->
-    <div class="col-6">
-      <chart-component title="D: Andamento Carico di allenamento per esercizio" type="bar"
-        description="Questo grafico mostra l'andamento del Volume x Intensità per singolo esercizio"
-        :data="dataD" :options="optionD" :width="400" :height="150" />
-    </div>
+      <TabPanel header="Carico di allenamento per seduta">
+        <div class="chart-container">
+          <!-- B: andamento Volume x Intensita per ogni seduta-->
+          <div class="col-6">
+            <chart-component title="B: Andamento Carico di allenamento" description="Andamento dell'intensità x volume nel corso del mesociclo per seduta."
+            :data="dataB" :options="optionB" :width="400" :height="300" />
+          </div>
 
-    <!-- D2: Uguale al precedente ma sottoforma di line graph -->
-    <div class="col-6">
-      <chart-component title="D2: Andamento Carico di allenamento per esercizio" type="bar"
-        description="Questo grafico mostra l'andamento del Volume x Intensità per singolo esercizio"
-        :data="dataD2" :options="optionD2" :width="400" :height="150" />
-    </div>
+           <!-- C: andamento Serie x Intensita Relativa per ogni seduta-->
+          <div class="col-6">
+            <chart-component title="C: Andamento Carico di allenamento" description="Andamento dell'intensità relativa x volume nel corso del mesociclo per seduta."
+            :data="dataC" :options="optionC" :width="400" :height="300" />
+          </div>
+      </div>
+      </TabPanel>
+
+    </TabView>
+</div>
+
+
+
+
+
+
+
 
     <!-- E: Example Grid -->
 <!--     <div class="col-12">
@@ -278,3 +308,10 @@ onMounted(async () => {
   console.log(computeVolumeInDateRange(dataInput.registeredFitness, new Date('2023-07-25'), new Date('2023-07-28')));
 });
 </script>
+
+<style>
+  .chart-container {
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
