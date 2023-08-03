@@ -1,0 +1,55 @@
+{
+  "datasets": [
+    {
+      "label": "Giorno A",
+      "data": [5.6, 5.3, 5.8, 5.9],
+      "borderColor": "rgba(0, 123, 255, 1)",
+      "backgroundColor": "rgba(0, 123, 255, 0.2)",
+      "fill": false,
+      "cubicInterpolationMode": "monotone",
+      "tension": 0.1,
+      "yAxisID": "y" 
+    },
+    {
+      "label": "Giorno B",
+      "data": [6.7, 6.9, 6.8, 7],
+      "borderColor": "red",
+      "backgroundColor": "rgba(255, 0, 0, 0.2)",
+      "fill": false,
+      "cubicInterpolationMode": "monotone",
+      "tension": 0.1,
+      "yAxisID": "y" 
+    },
+    {
+      "label": "Giorno C",
+      "data": [3.3, 3.5, 3.0, 2.8],
+      "borderColor": "green",
+      "backgroundColor": "rgba(0, 255, 0, 0.2)",
+      "fill": false,
+      "cubicInterpolationMode": "monotone",
+      "tension": 0.1,
+      "yAxisID": "y" 
+    },
+    {
+      "label": "Giorno D",
+      "data": [6.0, 5.7, 6.0, 6.2],
+      "borderColor": "green",
+      "backgroundColor": "rgba(0, 255, 0, 0.2)",
+      "fill": false,
+      "cubicInterpolationMode": "monotone",
+      "tension": 0.1,
+      "yAxisID": "y" 
+    },
+    {
+      "label": "Giorno E",
+      "data": [4.5, 4.7, 4.9, 5.0],
+      "borderColor": "green",
+      "backgroundColor": "rgba(0, 255, 0, 0.2)",
+      "fill": false,
+      "cubicInterpolationMode": "monotone",
+      "tension": 0.1,
+      "yAxisID": "y" 
+    }
+  ],
+  "labels": ["Settimana 1", "Settimana 2", "Settimana 3", "Settimana 4"]
+}

@@ -82,14 +82,30 @@
         <div class="chart-container">
           <!-- B: andamento Volume x Intensita per ogni seduta-->
           <div class="col-6">
-            <chart-component title="B: Andamento Carico di allenamento" description="Andamento dell'intensità x volume nel corso del mesociclo per seduta."
+            <chart-component title="B: Carico di allenamento (bar)" description="Andamento dell'intensità x volume nel corso del mesociclo per seduta."
             :data="dataB" :options="optionB" :width="400" :height="300" />
           </div>
 
            <!-- C: andamento Serie x Intensita Relativa per ogni seduta-->
           <div class="col-6">
-            <chart-component title="C: Andamento Carico di allenamento" description="Andamento dell'intensità relativa x volume nel corso del mesociclo per seduta."
+            <chart-component title="C: Carico di allenamento (line)" description="Andamento dell'intensità relativa x volume nel corso del mesociclo per seduta."
             :data="dataC" :options="optionC" :width="400" :height="300" />
+          </div>
+      </div>
+      </TabPanel>
+
+      <TabPanel header="Per settimana">
+        <div class="chart-container">
+          <!-- B: andamento Volume x Intensita per ogni seduta-->
+          <div class="col-6">
+            <chart-component title="B: Andamento Carico di allenamento" description="Andamento dell'intensità x volume nel corso del mesociclo per seduta."
+            :data="dataB2" :options="optionB2" :width="400" :height="300" />
+          </div>
+
+           <!-- C: andamento Serie x Intensita Relativa per ogni seduta-->
+          <div class="col-6">
+            <chart-component title="C: Andamento Carico di allenamento" description="Andamento dell'intensità relativa x volume nel corso del mesociclo per seduta."
+            :data="dataC2" :options="optionC2" :width="400" :height="300" />
           </div>
       </div>
       </TabPanel>
@@ -207,10 +223,14 @@ import optionA6 from '@/test/test_data/optionA6.json';
 // B
 import dataB from '@/test/test_data/dataB.json';
 import optionB from '@/test/test_data/optionB.json';
+import dataB2 from '@/test/test_data/dataB2.json';
+import optionB2 from '@/test/test_data/optionB2.json';
 
 // C
 import dataC from '@/test/test_data/dataC.json';
 import optionC from '@/test/test_data/optionC.json';
+import dataC2 from '@/test/test_data/dataC2.json';
+import optionC2 from '@/test/test_data/optionC2.json';
 
 // D
 import dataD from '@/test/test_data/dataD.json';
