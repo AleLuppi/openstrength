@@ -22,7 +22,7 @@
               </template>
 
               <template #end>
-                <Calendar v-model="dates" selectionMode="range" :manualInput="false" placeholder="Seleziona date"/>
+                <Calendar v-model="dates" selectionMode="range" :manualInput="false" placeholder="Seleziona date" showIcon showButtonBar />
                 <Button label="Update grafici" icon="pi pi-plus" severity="success" class="mr-2" @click="updateDashboard" />
               </template>
    </Toolbar>
