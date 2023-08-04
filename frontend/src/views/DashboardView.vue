@@ -18,10 +18,12 @@
                           </div>
                       </template>
                   </Dropdown>
+                  
               </template>
 
               <template #end>
-
+                <Calendar v-model="dates" selectionMode="range" :manualInput="false" placeholder="Seleziona date"/>
+                <Button label="Update grafici" icon="pi pi-plus" severity="success" class="mr-2" @click="updateDashboard" />
               </template>
    </Toolbar>
              
@@ -233,8 +235,7 @@ import ChartComponent from '@/components/charts/ChartComponent.vue';
 import { computeVolumeInDateRange } from '@/utils/datamanager/postprocessing.ts';
 import dataInput from '@/test/test_data/finalTemplate.json';
 
-// USER SELECTION: 
-
+// Athlete Selection: 
 const selectedCountry = ref();
 const countries = ref([
     { name: 'Marco Rossi', code: 'AU' },
@@ -245,6 +246,9 @@ const countries = ref([
     { name: 'Alessandro Lupo', code: 'DE' },
     { name: 'Lorenzo Amatore', code: 'IN' }
 ]);
+
+// Date range selection: 
+const dates = ref();
 
 // A: dati per andamento Volume, Intensita, IRT per esercizio
 import dataA from '@/test/test_data/dataA.json';
