@@ -1,13 +1,27 @@
 <template>
     <Toolbar class="mb-4">
               <template #start>
-                  <Button label="New" icon="pi pi-plus" severity="success" class="mr-2" @click="openNew" />
-                  <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected" :disabled="!selectedProducts || !selectedProducts.length" />
+                  <Dropdown v-model="selectedCountry" :options="countries" showClear filter optionLabel="name" :virtualScrollerOptions="{ itemSize: 38 }" placeholder="Seleziona allievo" class="w-full md:w-14rem">
+                      <template #value="slotProps">
+                          <div v-if="slotProps.value" class="flex align-items-center">
+                              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />
+                              <div>{{ slotProps.value.name }}</div>
+                          </div>
+                          <span v-else>
+                              {{ slotProps.placeholder }}
+                          </span>
+                      </template>
+                      <template #option="slotProps">
+                          <div class="flex align-items-center">
+                              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />
+                              <div>{{ slotProps.option.name }}</div>
+                          </div>
+                      </template>
+                  </Dropdown>
               </template>
 
               <template #end>
-                  <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block" />
-                  <Button label="Export" icon="pi pi-upload" severity="help" @click="exportCSV($event)"  />
+
               </template>
    </Toolbar>
              
@@ -218,6 +232,19 @@ import ChartComponent from '@/components/charts/ChartComponent.vue';
 
 import { computeVolumeInDateRange } from '@/utils/datamanager/postprocessing.ts';
 import dataInput from '@/test/test_data/finalTemplate.json';
+
+// USER SELECTION: 
+
+const selectedCountry = ref();
+const countries = ref([
+    { name: 'Marco Rossi', code: 'AU' },
+    { name: 'Giovanni Bianchi', code: 'BR' },
+    { name: 'Luigi Verdi', code: 'CN' },
+    { name: 'Lorenzo Culurgioni', code: 'EG' },
+    { name: 'Francesco Ramadin', code: 'FR' },
+    { name: 'Alessandro Lupo', code: 'DE' },
+    { name: 'Lorenzo Amatore', code: 'IN' }
+]);
 
 // A: dati per andamento Volume, Intensita, IRT per esercizio
 import dataA from '@/test/test_data/dataA.json';
