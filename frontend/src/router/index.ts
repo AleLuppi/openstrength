@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from "vue-router";
 
 /* (dinamically) import the views */
 import HomeView from "../views/HomeView.vue";
-const AboutView = () => import("@/views/AboutView.vue");
 const LibraryView = () => import("@/views/LibraryView.vue");
 const ExerciseLibraryView = () => import("@/views/ExerciseLibraryView.vue");
 const DashboardView = () => import("@/views/DashboardView.vue");
@@ -38,14 +37,6 @@ const routes = [
     component: ExerciseLibraryView,
     meta: {
       title: "Library",
-    },
-  },
-  {
-    path: "/about",
-    name: "about",
-    component: AboutView,
-    meta: {
-      title: "About",
     },
   },
   {
