@@ -2,16 +2,26 @@
   <q-layout view="lHh Lpr lFf">
     <q-header v-if="showHeader" elevated>
       <q-toolbar>
-        <q-btn v-if="!leftDrawerOpen || $q.screen.lt.md" flat dense round @click="leftDrawerOpen = !leftDrawerOpen"
-          aria-label="Menu" icon="menu" />
+        <q-btn
+          v-if="!leftDrawerOpen || $q.screen.lt.md"
+          flat
+          dense
+          round
+          @click="leftDrawerOpen = !leftDrawerOpen"
+          aria-label="Menu"
+          icon="menu"
+        />
 
-        <q-toolbar-title>
-          DBM
-        </q-toolbar-title>
+        <q-toolbar-title> DBM </q-toolbar-title>
 
         <!-- TODO action to buttons -->
-        <q-btn icon="question_answer" :label="$q.screen.gt.sm ? $t('layout.header.button_feedback') : ''"
-          :round="!$q.screen.gt.sm" no-caps flat />
+        <q-btn
+          icon="question_answer"
+          :label="$q.screen.gt.sm ? $t('layout.header.button_feedback') : ''"
+          :round="!$q.screen.gt.sm"
+          no-caps
+          flat
+        />
         <q-btn icon="notifications" flat round />
         <q-btn icon="help" flat round />
         <q-btn icon="person" flat round />
@@ -33,10 +43,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
-import { useQuasar } from 'quasar';
-import DrawerList from '@/components/layout/DrawerList.vue'
+import { useQuasar } from "quasar";
+import DrawerList from "@/components/layout/DrawerList.vue";
 
 const $q = useQuasar();
 
@@ -48,7 +58,7 @@ const showFooter = computed(() => route.meta?.showFooter ?? true);
 </script>
 
 <style lang="scss">
-@import '@/styles/quasar.variables.scss';
+@import "@/styles/quasar.variables.scss";
 
 // Setup chart colors
 .text-chart-color1 {

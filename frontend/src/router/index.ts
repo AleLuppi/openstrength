@@ -1,49 +1,48 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from "vue-router";
 
 /* (dinamically) import the views */
-import HomeView from '../views/HomeView.vue'
-const AboutView = () => import('@/views/AboutView.vue');
-const LibraryView = () => import('@/views/LibraryView.vue');
-const ExerciseLibraryView = () => import('@/views/ExerciseLibraryView.vue');
-const DashboardView = () => import('@/views/DashboardView.vue');
-
+import HomeView from "../views/HomeView.vue";
+const AboutView = () => import("@/views/AboutView.vue");
+const LibraryView = () => import("@/views/LibraryView.vue");
+const ExerciseLibraryView = () => import("@/views/ExerciseLibraryView.vue");
+const DashboardView = () => import("@/views/DashboardView.vue");
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
+    path: "/",
+    name: "home",
     component: HomeView,
     meta: {
       title: "Home",
     },
   },
   {
-    path: '/dashboard',
-    name: 'dashboard',
+    path: "/dashboard",
+    name: "dashboard",
     component: DashboardView,
     meta: {
       title: "Dashboard",
     },
   },
   {
-    path: '/library',
-    name: 'library',
+    path: "/library",
+    name: "library",
     component: LibraryView,
     meta: {
       title: "Library",
     },
   },
   {
-    path: '/exercises',
-    name: 'exercises',
+    path: "/exercises",
+    name: "exercises",
     component: ExerciseLibraryView,
     meta: {
       title: "Library",
     },
   },
   {
-    path: '/about',
-    name: 'about',
+    path: "/about",
+    name: "about",
     component: AboutView,
     meta: {
       title: "About",
@@ -58,17 +57,16 @@ const routes = [
       title: "Page not found",
     },
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
 /* Set the page title */
 router.afterEach((to) => {
-  document.title =
-    (to.meta.title ? to.meta.title + " - " : "") + "";  // TODO + app name
+  document.title = (to.meta.title ? to.meta.title + " - " : "") + ""; // TODO + app name
 });
 
-export default router
+export default router;

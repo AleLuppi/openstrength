@@ -2,12 +2,10 @@
   <p>Home</p>
 </template>
 
-<script setup>
-
-</script>
+<script setup></script>
 
 <style scoped lang="scss">
-@import '@/styles/quasar.scss';
+@import "@/styles/quasar.scss";
 
 // TODO move outside of component
 h2 {

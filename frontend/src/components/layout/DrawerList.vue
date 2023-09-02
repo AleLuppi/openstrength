@@ -9,7 +9,8 @@
       </q-item-section>
       <q-item-section>
         <q-item-label>{{ $t("layout.drawer.home") }}</q-item-label>
-        <q-item-label caption v-if="$t('layout.drawer.home_caption')">{{ $t("layout.drawer.home_caption")
+        <q-item-label caption v-if="$t('layout.drawer.home_caption')">{{
+          $t("layout.drawer.home_caption")
         }}</q-item-label>
       </q-item-section>
     </q-item>
@@ -20,7 +21,8 @@
       </q-item-section>
       <q-item-section>
         <q-item-label>{{ $t("layout.drawer.dashboard") }}</q-item-label>
-        <q-item-label caption v-if="$t('layout.drawer.dashboard_caption')">{{ $t("layout.drawer.dashboard_caption")
+        <q-item-label caption v-if="$t('layout.drawer.dashboard_caption')">{{
+          $t("layout.drawer.dashboard_caption")
         }}</q-item-label>
       </q-item-section>
     </q-item>
@@ -31,7 +33,8 @@
       </q-item-section>
       <q-item-section>
         <q-item-label>{{ $t("layout.drawer.library") }}</q-item-label>
-        <q-item-label caption v-if="$t('layout.drawer.library_caption')">{{ $t("layout.drawer.library_caption")
+        <q-item-label caption v-if="$t('layout.drawer.library_caption')">{{
+          $t("layout.drawer.library_caption")
         }}</q-item-label>
       </q-item-section>
     </q-item>
@@ -42,7 +45,8 @@
       </q-item-section>
       <q-item-section>
         <q-item-label>{{ $t("layout.drawer.library") }}</q-item-label>
-        <q-item-label caption v-if="$t('layout.drawer.library_caption')">{{ $t("layout.drawer.library_caption")
+        <q-item-label caption v-if="$t('layout.drawer.library_caption')">{{
+          $t("layout.drawer.library_caption")
         }}</q-item-label>
       </q-item-section>
     </q-item>
@@ -53,13 +57,12 @@
       </q-item-section>
       <q-item-section>
         <q-item-label>{{ $t("layout.drawer.library") }}</q-item-label>
-        <q-item-label caption v-if="$t('layout.drawer.library_caption')">{{ $t("layout.drawer.library_caption")
+        <q-item-label caption v-if="$t('layout.drawer.library_caption')">{{
+          $t("layout.drawer.library_caption")
         }}</q-item-label>
       </q-item-section>
     </q-item>
-
   </q-list>
 </template>
 
-<script setup>
-</script>
+<script setup></script>

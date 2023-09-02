@@ -8,8 +8,13 @@
 
         <div class="col-auto">
           <q-icon name="fas fa-circle-info" size="1.7rem" color="grey-5">
-            <q-tooltip anchor="center left" self="center right" transition-show="fade" transition-hide="fade"
-              class="bg-primary text-body2">
+            <q-tooltip
+              anchor="center left"
+              self="center right"
+              transition-show="fade"
+              transition-hide="fade"
+              class="bg-primary text-body2"
+            >
               {{ props.description }}
             </q-tooltip>
           </q-icon>
@@ -20,19 +25,44 @@
     <q-separator spaced="lg" size="2px" />
 
     <q-card-section>
-      <canvas ref="chartCanvas" :width="props.width" :height="props.height"></canvas>
+      <canvas
+        ref="chartCanvas"
+        :width="props.width"
+        :height="props.height"
+      ></canvas>
     </q-card-section>
   </q-card>
 </template>
-  
+
 <script setup>
-import { ref, onMounted } from 'vue';
-import { colors } from 'quasar'
-import { Chart, LinearScale, CategoryScale, PointElement, LineElement, LineController, BarElement, BarController, Tooltip, Legend } from 'chart.js';
+import { ref, onMounted } from "vue";
+import { colors } from "quasar";
+import {
+  Chart,
+  LinearScale,
+  CategoryScale,
+  PointElement,
+  LineElement,
+  LineController,
+  BarElement,
+  BarController,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
 // Init plugins
-Chart.register(LinearScale, CategoryScale, PointElement, LineElement, LineController, BarElement, BarController, Tooltip, Legend);
-const { getPaletteColor, lighten } = colors
+Chart.register(
+  LinearScale,
+  CategoryScale,
+  PointElement,
+  LineElement,
+  LineController,
+  BarElement,
+  BarController,
+  Tooltip,
+  Legend,
+);
+const { getPaletteColor, lighten } = colors;
 
 // Define props
 const props = defineProps({
@@ -54,7 +84,7 @@ const props = defineProps({
   },
   type: {
     type: String,
-    default: "line",  // e.g.: 'line', 'bar', 'pie'
+    default: "line", // e.g.: 'line', 'bar', 'pie'
   },
   width: {
     type: [Number, String],
@@ -70,24 +100,24 @@ const props = defineProps({
 const chartCanvas = ref(null);
 
 /**
- * 
+ *
  */
 function renderChart() {
   // Ensure canvas reference exists
   if (!chartCanvas.value) {
-    console.error('Missing reference to canvas element.');
-    return
+    console.error("Missing reference to canvas element.");
+    return;
   }
 
   // Add background color to datasets
   props.data.datasets.forEach((el, idx) => {
-    let currColor = getPaletteColor('chart-color' + (idx + 1));
+    let currColor = getPaletteColor("chart-color" + (idx + 1));
     el.borderColor = currColor;
     el.backgroundColor = lighten(currColor, 25);
   });
 
   // Fill canvas
-  const ctx = chartCanvas.value.getContext('2d');
+  const ctx = chartCanvas.value.getContext("2d");
   new Chart(ctx, {
     type: props.type,
     data: props.data,
@@ -101,7 +131,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/quasar.scss';
+@import "@/styles/quasar.scss";
 
 // TODO move outside of component
 h2 {

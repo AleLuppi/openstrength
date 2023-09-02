@@ -18,5 +18,14 @@ module.exports = defineConfig({
       compositionOnly: false,
       fullInstall: true
     }
-  }
+  },
+
+  chainWebpack: config => {
+    config
+      .plugin("eslint")
+      .tap(args => {
+        args[0].fix = true
+        return args
+      })
+  },
 })
