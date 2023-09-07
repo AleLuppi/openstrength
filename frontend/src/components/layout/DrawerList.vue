@@ -3,58 +3,32 @@
     <!-- TODO replace with logged user info -->
     <q-item-label header>Naviga</q-item-label>
 
-    <!-- Homepage -->
-    <q-item clickable tag="a" :to="{ name: 'home' }">
+    <!-- Display each page title as a separate item -->
+    <q-item
+      v-for="(icon, page) in drawerPages"
+      :key="page"
+      clickable
+      tag="a"
+      :to="{ name: page }"
+    >
       <q-item-section avatar>
-        <q-icon name="fa-solid fa-house-chimney" />
+        <q-icon :name="icon" />
       </q-item-section>
       <q-item-section>
-        <q-item-label>{{ $t("layout.drawer.home") }}</q-item-label>
-        <q-item-label caption v-if="$t('layout.drawer.home_caption')">{{
-          $t("layout.drawer.home_caption")
-        }}</q-item-label>
-      </q-item-section>
-    </q-item>
-
-    <!-- Dashboard and charts -->
-    <q-item clickable tag="a" :to="{ name: 'dashboard' }">
-      <q-item-section avatar>
-        <q-icon name="timeline" />
-      </q-item-section>
-      <q-item-section>
-        <q-item-label>{{ $t("layout.drawer.dashboard") }}</q-item-label>
-        <q-item-label caption v-if="$t('layout.drawer.dashboard_caption')">{{
-          $t("layout.drawer.dashboard_caption")
-        }}</q-item-label>
-      </q-item-section>
-    </q-item>
-
-    <!-- Excercise library -->
-    <q-item clickable tag="a" :to="{ name: 'exercises' }">
-      <q-item-section avatar>
-        <q-icon name="fa-solid fa-dumbbell" />
-      </q-item-section>
-      <q-item-section>
-        <q-item-label>{{ $t("layout.drawer.library") }}</q-item-label>
-        <q-item-label caption v-if="$t('layout.drawer.library_caption')">{{
-          $t("layout.drawer.library_caption")
-        }}</q-item-label>
-      </q-item-section>
-    </q-item>
-
-    <!-- Library -->
-    <q-item clickable tag="a" :to="{ name: 'library' }">
-      <q-item-section avatar>
-        <q-icon name="fa-solid fa-book" />
-      </q-item-section>
-      <q-item-section>
-        <q-item-label>{{ $t("layout.drawer.library") }}</q-item-label>
-        <q-item-label caption v-if="$t('layout.drawer.library_caption')">{{
-          $t("layout.drawer.library_caption")
+        <q-item-label>{{ $t("layout.drawer." + page) }}</q-item-label>
+        <q-item-label caption v-if="$t('layout.drawer.' + page + '_caption')">{{
+          $t("layout.drawer." + page + "_caption")
         }}</q-item-label>
       </q-item-section>
     </q-item>
   </q-list>
 </template>
 
-<script setup></script>
+<script setup lang="ts">
+const drawerPages = {
+  home: "fa-solid fa-house-chimney",
+  dashboard: "timeline",
+  schedule: "fa-solid fa-dumbbell",
+  library: "fa-solid fa-book",
+};
+</script>

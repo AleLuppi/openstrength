@@ -9,7 +9,9 @@
       "dashboard": "Dashboard",
       "dashboard_caption": "see your data",
       "library": "Library",
-      "library_caption": ""
+      "library_caption": "",
+      "schedule": "Schedule",
+      "schedule_caption": ""
     }
   }
 }

@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 /* (dinamically) import the views */
 import HomeView from "../views/HomeView.vue";
 const LibraryView = () => import("@/views/LibraryView.vue");
-const ExerciseLibraryView = () => import("@/views/ExerciseLibraryView.vue");
+const ScheduleView = () => import("@/views/ScheduleView.vue");
 const DashboardView = () => import("@/views/DashboardView.vue");
 
 const routes = [
@@ -32,11 +32,11 @@ const routes = [
     },
   },
   {
-    path: "/exercises",
-    name: "exercises",
-    component: ExerciseLibraryView,
+    path: "/schedule",
+    name: "schedule",
+    component: ScheduleView,
     meta: {
-      title: "Library",
+      title: "Schedule",
     },
   },
   {
