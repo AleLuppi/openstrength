@@ -338,8 +338,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { FilterMatchMode } from "primevue/api";
-import { useToast } from "primevue/usetoast";
-import { ProductService } from "@/views/data/ProductService.js";
+import { ProductService } from "@/test/sample_data/ProductService.js";
 
 import { RadioButton } from "primevue/radiobutton";
 
@@ -347,7 +346,6 @@ onMounted(() => {
   ProductService.getProducts().then((data) => (products.value = data));
 });
 
-const toast = useToast();
 const dt = ref();
 const products = ref();
 const productDialog = ref(false);
@@ -391,12 +389,12 @@ const saveProduct = () => {
         ? product.value.inventoryStatus.value
         : product.value.inventoryStatus;
       products.value[findIndexById(product.value.id)] = product.value;
-      toast.add({
-        severity: "success",
-        summary: "Successful",
-        detail: "Product Updated",
-        life: 3000,
-      });
+      // toast.add({
+      //   severity: "success",
+      //   summary: "Successful",
+      //   detail: "Product Updated",
+      //   life: 3000,
+      // });
     } else {
       product.value.id = createId();
       product.value.code = createId();
@@ -405,12 +403,12 @@ const saveProduct = () => {
         ? product.value.inventoryStatus.value
         : "INSTOCK";
       products.value.push(product.value);
-      toast.add({
-        severity: "success",
-        summary: "Successful",
-        detail: "Product Created",
-        life: 3000,
-      });
+      // toast.add({
+      //   severity: "success",
+      //   summary: "Successful",
+      //   detail: "Product Created",
+      //   life: 3000,
+      // });
     }
 
     productDialog.value = false;
@@ -429,12 +427,12 @@ const deleteProduct = () => {
   products.value = products.value.filter((val) => val.id !== product.value.id);
   deleteProductDialog.value = false;
   product.value = {};
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "Product Deleted",
-    life: 3000,
-  });
+  // toast.add({
+  //   severity: "success",
+  //   summary: "Successful",
+  //   detail: "Product Deleted",
+  //   life: 3000,
+  // });
 };
 const findIndexById = (id) => {
   let index = -1;
@@ -467,12 +465,12 @@ const deleteSelectedProducts = () => {
   );
   deleteProductsDialog.value = false;
   selectedProducts.value = null;
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "Products Deleted",
-    life: 3000,
-  });
+  // toast.add({
+  //   severity: "success",
+  //   summary: "Successful",
+  //   detail: "Products Deleted",
+  //   life: 3000,
+  // });
 };
 
 const getStatusLabel = (status) => {
