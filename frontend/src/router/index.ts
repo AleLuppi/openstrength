@@ -1,4 +1,5 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, RouteRecordName } from "vue-router";
+import { useUserStore } from "@/stores/user";
 
 /* (dinamically) import the views */
 import HomeView from "../views/HomeView.vue";
@@ -7,6 +8,7 @@ const ScheduleView = () => import("@/views/ScheduleView.vue");
 const DashboardView = () => import("@/views/DashboardView.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
+const UserProfileView = () => import("@/views/UserProfileView.vue");
 
 const routes = [
   {
@@ -48,6 +50,7 @@ const routes = [
     props: true,
     meta: {
       title: "Login",
+      redirectAuthenticated: "profile",
     },
   },
   {
@@ -56,6 +59,16 @@ const routes = [
     component: UserRegisterView,
     meta: {
       title: "register",
+      redirectAuthenticated: "profile",
+    },
+  },
+  {
+    path: "/profile",
+    name: "profile",
+    component: UserProfileView,
+    meta: {
+      title: "profile",
+      redirectNotAuthenticated: "login",
     },
   },
   {
@@ -88,6 +101,32 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+/* Optional redirects */
+router.beforeEach(async (to) => {
+  const user = useUserStore();
+  console.log(user.uid);
+
+  // Check if authenticated user needs to be redirected
+  if (
+    user.isSignedIn &&
+    to.meta.redirectAuthenticated &&
+    to.name !== to.meta.redirectAuthenticated
+  ) {
+    // Redirect user
+    return { name: to.meta.redirectAuthenticated as RouteRecordName };
+  }
+
+  // Check if not authenticated user needs to be redirected
+  if (
+    !user.isSignedIn &&
+    to.meta.redirectNotAuthenticated &&
+    to.name !== to.meta.redirectNotAuthenticated
+  ) {
+    // Redirect user
+    return { name: to.meta.redirectNotAuthenticated as RouteRecordName };
+  }
 });
 
 /* Set the page title */

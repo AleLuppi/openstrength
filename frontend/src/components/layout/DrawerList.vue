@@ -1,7 +1,7 @@
 <template>
   <q-list>
-    <!-- TODO replace with logged user info -->
-    <q-item-label header>Naviga</q-item-label>
+    <!-- Greet with user -->
+    <q-item-label header>{{ user.name }}</q-item-label>
 
     <!-- Display each page title as a separate item -->
     <q-item
@@ -25,6 +25,12 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from "@/stores/user";
+
+// Get user state
+const user = useUserStore();
+
+// Set navigation in drawer
 const drawerPages = {
   home: "fa-solid fa-house-chimney",
   dashboard: "timeline",

@@ -97,6 +97,7 @@ import {
 } from "@/helpers/users/auth";
 import { validateEmail, validatePassword } from "@/helpers/users/validate";
 
+// Init plugin
 const $q = useQuasar();
 const i18n = useI18n();
 
@@ -176,7 +177,7 @@ function onSubmitFailure(authError: AuthError) {
     default:
       $q.notify({
         type: "negative",
-        message: i18n.t("user.auth.error_signup"),
+        message: i18n.t("user.auth.signup_error"),
         position: "bottom",
       });
       break;

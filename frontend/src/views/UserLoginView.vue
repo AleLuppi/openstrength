@@ -123,7 +123,7 @@ function onSubmitFailure(authError: AuthError) {
     default:
       $q.notify({
         type: "negative",
-        message: i18n.t("user.auth.error_signin"),
+        message: i18n.t("user.auth.signin_error"),
         position: "bottom",
       });
       break;

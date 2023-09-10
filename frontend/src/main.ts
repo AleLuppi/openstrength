@@ -3,6 +3,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
+import { createPinia } from "pinia";
 
 // Additional styling and frontend management
 import { Quasar } from "quasar";
@@ -30,6 +31,7 @@ app.config.globalProperties.$globalProperties = globalProperties;
 // Add plugins and start the application
 app
   .use(router)
+  .use(createPinia())
   .use(i18n)
   .use(Quasar, quasarUserOptions)
   .use(PrimeVue, { ripple: true });

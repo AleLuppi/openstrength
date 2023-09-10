@@ -42,12 +42,13 @@
   </q-layout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 import DrawerList from "@/components/layout/DrawerList.vue";
 
+// Init plugin
 const $q = useQuasar();
 
 // Set ref

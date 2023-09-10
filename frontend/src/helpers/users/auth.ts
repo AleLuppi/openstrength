@@ -4,8 +4,26 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  User,
 } from "firebase/auth";
 import { auth } from "@/firebase";
+import { useUserStore } from "@/stores/user";
+
+// Get user state
+const _user = useUserStore();
+
+/**
+ * Update user at each auth update
+ */
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in, see docs for a list of available properties
+    // https://firebase.google.com/docs/reference/js/auth.user
+    _user.loadFirebaseUser(user);
+  } else {
+    _user.$reset();
+  }
+});
 
 export enum AuthError {
   emailError,
