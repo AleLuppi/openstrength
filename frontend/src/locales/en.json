@@ -3,7 +3,7 @@
     "header": {
       "button_feedback": "feedback?"
     },
-    "drawer": {
+    "views": {
       "home": "Home",
       "home_caption": "main page",
       "dashboard": "Dashboard",
@@ -11,7 +11,35 @@
       "library": "Library",
       "library_caption": "",
       "schedule": "Schedule",
-      "schedule_caption": ""
+      "schedule_caption": "",
+      "privacy_policy": "privacy policy",
+      "terms_conditions": "terms and conditions"
     }
+  },
+  "user": {
+    "auth": {
+      "name_required": "Please, insert your full name",
+      "user_already_exist": "An account using this email address already exists",
+      "user_not_exist": "No account found with specified credentials, please retry",
+      "email_required": "Please, insert your email",
+      "email_invalid": "Please, insert a valid email address",
+      "password_invalid": "Password must be at least 8 characters long, and should include one uppercase letter, one lowercase letter, and one number",
+      "password_wrong": "Wrong password, please retry",
+      "acceptance_required": "To continue, you must first read and accept our terms",
+      "acceptance_before": "By clicking here, you declare to have read and accepted our ",
+      "acceptance_between": " and our ",
+      "acceptance_after": ".",
+      "login_button": "Continue",
+      "register_button": "Join us",
+      "error_signup": "An unknown error has occurred, please retry in few minutes",
+      "error_signin": "An unknown error has occurred, please retry in few minutes",
+      "signup_title": "Register",
+      "signup_to_signin": "Already registered? Go to sign in",
+      "signin_title": "Sign in",
+      "signin_to_signup": "You don't have an account yet? Register now"
+    }
+  },
+  "common": {
+    "or": "or"
   }
 }

@@ -15,9 +15,9 @@
         <q-icon :name="icon" />
       </q-item-section>
       <q-item-section>
-        <q-item-label>{{ $t("layout.drawer." + page) }}</q-item-label>
-        <q-item-label caption v-if="$t('layout.drawer.' + page + '_caption')">{{
-          $t("layout.drawer." + page + "_caption")
+        <q-item-label>{{ $t("layout.views." + page) }}</q-item-label>
+        <q-item-label caption v-if="$t('layout.views.' + page + '_caption')">{{
+          $t("layout.views." + page + "_caption")
         }}</q-item-label>
       </q-item-section>
     </q-item>

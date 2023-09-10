@@ -15,9 +15,8 @@ const firebaseConfig = {
   storageBucket: "openstrength.appspot.com",
   messagingSenderId: "512957046617",
   appId: "1:512957046617:web:72b3115ebab7d33a217648",
-  measurementId: "G-XB71BH7FWM"
+  measurementId: "G-XB71BH7FWM",
 };
-
 
 /* ----- Initialization ----- */
 // Initialize Firebase

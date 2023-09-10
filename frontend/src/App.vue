@@ -24,7 +24,7 @@
         />
         <q-btn icon="notifications" flat round />
         <q-btn icon="help" flat round />
-        <q-btn icon="person" flat round />
+        <q-btn icon="person" flat round :to="{ name: 'login' }" />
       </q-toolbar>
     </q-header>
 
@@ -71,5 +71,11 @@ const showFooter = computed(() => route.meta?.showFooter ?? true);
 
 .text-chart-color3 {
   color: $chart-color3 !important;
+}
+
+.prevent-select {
+  -webkit-user-select: none; // Safari
+  -ms-user-select: none; // IE 10 and IE 11
+  user-select: none; // Standard syntax
 }
 </style>
