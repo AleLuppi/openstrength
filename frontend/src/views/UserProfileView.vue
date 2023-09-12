@@ -5,7 +5,6 @@
 </template>
 
 <script setup lang="ts">
-import router from "@/router";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { doSignOut } from "@/helpers/users/auth";
@@ -19,7 +18,7 @@ const i18n = useI18n();
  */
 function signOut() {
   doSignOut(
-    () => router.push({ name: "home" }),
+    () => {},
     () => {
       $q.notify({
         type: "negative",

@@ -106,7 +106,6 @@ const router = createRouter({
 /* Optional redirects */
 router.beforeEach(async (to) => {
   const user = useUserStore();
-  console.log(user.uid);
 
   // Check if authenticated user needs to be redirected
   if (

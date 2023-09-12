@@ -7,6 +7,7 @@ import {
   User,
 } from "firebase/auth";
 import { auth } from "@/firebase";
+import router from "@/router";
 import { useUserStore } from "@/stores/user";
 
 // Get user state
@@ -23,6 +24,11 @@ onAuthStateChanged(auth, (user) => {
   } else {
     _user.$reset();
   }
+
+  // Refresh page to ensure user info change accordingly
+  router.replace({
+    params: { auth: "changed" },
+  });
 });
 
 export enum AuthError {
