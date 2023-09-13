@@ -1,5 +1,5 @@
 <template>
-  <p>Home</p>
+  <h2>{{ $t("layout.views.home") }}</h2>
 </template>
 
 <script setup></script>

@@ -1,3 +1,62 @@
 @import './quasar.variables.scss';
 @import '~quasar-styl';
 // @import '~quasar-addon-styl';
+
+/***** Setup fonts *****/
+h2 {
+  font-weight: bold;
+}
+
+/***** Setup colors *****/
+.text-lightest {
+  color: $lightest !important;
+}
+
+.bg-lightest {
+  background: $lightest !important;
+}
+
+.text-lighter {
+  color: $lighter !important;
+}
+
+.bg-lighter {
+  background: $lighter !important;
+}
+
+.text-light {
+  color: $light !important;
+}
+
+.bg-light {
+  background: $light !important;
+}
+
+.text-light-dark {
+  color: $light-dark !important;
+}
+
+.bg-light-dark {
+  background: $light-dark !important;
+}
+
+.text-chart-color1 {
+  color: $chart-color1 !important;
+}
+
+.text-chart-color2 {
+  color: $chart-color2 !important;
+}
+
+.text-chart-color3 {
+  color: $chart-color3 !important;
+}
+
+/***** Useful classes *****/
+
+// Prevent text selection
+.prevent-select {
+  -webkit-user-select: none; // Safari
+  -ms-user-select: none; // IE 10 and IE 11
+  user-select: none; // Standard syntax
+}
