@@ -27,7 +27,7 @@ onAuthStateChanged(auth, (user) => {
 
   // Refresh page to ensure user info change accordingly
   router.replace({
-    params: { auth: "changed" },
+    params: { userid: _user.uid as string },
   });
 });
 

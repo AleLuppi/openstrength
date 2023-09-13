@@ -1,5 +1,10 @@
 {
   "layout": {
+    "drawer": {
+      "welcome_logged_in": "Hi, { name }",
+      "welcome_logged_in_noname": "Welcome back!",
+      "welcome_logged_out": "Sign in / Register"
+    },
     "header": {
       "button_feedback": "feedback?"
     },

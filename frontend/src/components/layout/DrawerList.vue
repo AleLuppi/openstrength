@@ -1,7 +1,15 @@
 <template>
   <q-list>
     <!-- Greet with user -->
-    <q-item-label header>{{ user.name }}</q-item-label>
+    <q-item-label header
+      ><router-link :to="{ name: 'profile' }">{{
+        user.isSignedIn
+          ? user.displayName
+            ? $t("layout.drawer.welcome_logged_in", { name: user.displayName })
+            : $t("layout.drawer.welcome_logged_in_noname")
+          : $t("layout.drawer.welcome_logged_out")
+      }}</router-link></q-item-label
+    >
 
     <!-- Display each page title as a separate item -->
     <q-item

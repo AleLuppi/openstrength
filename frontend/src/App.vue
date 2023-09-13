@@ -24,7 +24,7 @@
         />
         <q-btn icon="notifications" flat round />
         <q-btn icon="help" flat round />
-        <q-btn icon="person" flat round :to="{ name: 'login' }" />
+        <q-btn icon="person" flat round :to="{ name: 'profile' }" />
       </q-toolbar>
     </q-header>
 
