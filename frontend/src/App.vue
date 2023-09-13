@@ -19,12 +19,18 @@
           icon="question_answer"
           :label="$q.screen.gt.sm ? $t('layout.header.button_feedback') : ''"
           :round="!$q.screen.gt.sm"
-          no-caps
           flat
+          color="text-light"
         />
-        <q-btn icon="notifications" flat round />
-        <q-btn icon="help" flat round />
-        <q-btn icon="person" flat round :to="{ name: 'profile' }" />
+        <q-btn icon="notifications" flat round color="text-light" />
+        <q-btn icon="help" flat round color="text-light" />
+        <q-btn
+          icon="person"
+          flat
+          round
+          :to="{ name: 'profile' }"
+          color="text-light"
+        />
       </q-toolbar>
     </q-header>
 
@@ -48,9 +54,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
+import setdefaults from "@/boot/setQuasarDefaultProps";
 import DrawerList from "@/components/layout/DrawerList.vue";
 
 // Init plugin
@@ -61,4 +68,9 @@ const route = useRoute();
 const leftDrawerOpen = ref(false);
 const showHeader = computed(() => route.meta?.showHeader ?? true);
 const showFooter = computed(() => route.meta?.showFooter ?? true);
+
+// Run few useful things befor app starts rendering
+onBeforeMount(() => {
+  setdefaults();
+});
 </script>

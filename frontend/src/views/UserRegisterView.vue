@@ -73,11 +73,7 @@
         </p>
       </div>
 
-      <q-btn
-        :label="$t('user.auth.register_button')"
-        type="submit"
-        color="primary"
-      />
+      <q-btn :label="$t('user.auth.register_button')" type="submit" />
     </q-form>
 
     <router-link :to="{ name: 'login' }">{{

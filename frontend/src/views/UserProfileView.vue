@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md">
-    <q-btn :label="$t('user.auth.signout_title')" @click="signOut"></q-btn>
+    <q-btn :label="$t('user.auth.signout_title')" @click="signOut" />
   </div>
 </template>
 

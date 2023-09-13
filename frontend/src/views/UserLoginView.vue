@@ -35,11 +35,7 @@
         </template>
       </q-input>
 
-      <q-btn
-        :label="$t('user.auth.login_button')"
-        type="submit"
-        color="primary"
-      />
+      <q-btn :label="$t('user.auth.login_button')" type="submit" />
     </q-form>
 
     <router-link :to="{ name: 'register' }">{{
