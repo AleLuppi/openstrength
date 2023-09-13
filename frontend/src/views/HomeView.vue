@@ -1,21 +1,26 @@
 <template>
-  <h2>{{ $t("layout.views.home") }}</h2>
+  <div class="q-pa-md">
+    <!-- Title -->
+    <div class="row items-center">
+      <h2 class="col">{{ $t("layout.views.home") }}</h2>
+
+      <!-- TODO -->
+      <q-btn icon="add" label="Add athlete" />
+    </div>
+
+    <!-- TODO Navigation -->
+    <q-tabs v-model="selectedTab" align="left" class="text-dark">
+      <q-tab name="mails" label="Mails" />
+      <q-tab name="alarms" label="Alarms" />
+      <q-tab name="movies" label="Movies" />
+    </q-tabs>
+  </div>
 </template>
 
-<script setup></script>
+<script setup lang="ts">
+import { ref } from "vue";
 
-<style scoped lang="scss">
-@import "@/styles/quasar.scss";
+const selectedTab = ref("mails");
+</script>
 
-// TODO move outside of component
-h2 {
-  font-size: 1.5rem;
-  margin: 0;
-}
-
-// TODO move outside of component
-p {
-  font-size: 1rem;
-  margin: 0;
-}
-</style>
+<style scoped lang="scss"></style>
