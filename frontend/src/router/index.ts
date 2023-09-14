@@ -5,7 +5,6 @@ import { useUserStore } from "@/stores/user";
 import HomeView from "../views/HomeView.vue";
 const LibraryView = () => import("@/views/LibraryView.vue");
 const ScheduleView = () => import("@/views/ScheduleView.vue");
-const DashboardView = () => import("@/views/DashboardView.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
@@ -17,14 +16,6 @@ const routes = [
     component: HomeView,
     meta: {
       title: "Home",
-    },
-  },
-  {
-    path: "/dashboard",
-    name: "dashboard",
-    component: DashboardView,
-    meta: {
-      title: "Dashboard",
     },
   },
   {
