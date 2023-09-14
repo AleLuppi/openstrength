@@ -1,5 +1,5 @@
 import type { ComponentConstructor } from "quasar";
-import { QBtn, QTab, QTabs } from "quasar";
+import { QBtn, QTab, QTabs, QTabPanels } from "quasar";
 
 // Set default props
 export default () => {
@@ -10,10 +10,14 @@ export default () => {
   setQuasarComponentDefaultPropValues(QTabs, {
     narrowIndicator: true,
     dense: true,
+    align: "left",
   });
   setQuasarComponentDefaultPropValues(QTab, {
     noCaps: true,
     ripple: false,
+  });
+  setQuasarComponentDefaultPropValues(QTabPanels, {
+    animated: true,
   });
 };
 

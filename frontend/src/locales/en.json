@@ -44,6 +44,15 @@
       "signout_title": "Sign out"
     }
   },
+  "coach": {
+    "athlete_management": {
+      "filter": {
+        "all": "All",
+        "scheduled": "With schedule",
+        "unscheduled": "Missing schedule"
+      }
+    }
+  },
   "common": {
     "or": "or"
   }
