@@ -48,6 +48,9 @@
       "signin_title": "Sign in",
       "signin_to_signup": "You don't have an account yet? Register now",
       "signout_title": "Sign out"
+    },
+    "profile": {
+      "profile_title": "Profile"
     }
   },
   "coach": {

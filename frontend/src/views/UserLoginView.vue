@@ -1,8 +1,10 @@
 <template>
-  <div class="q-pa-md">
-    <q-form @submit="onSubmit" class="q-my-md q-gutter-sm column">
-      <h3 class="text-primary">{{ $t("user.auth.signin_title") }}</h3>
+  <div class="q-pa-md q-mx-auto limit-max-width">
+    <!-- Title -->
+    <h2>{{ $t("user.auth.signin_title") }}</h2>
 
+    <!-- Access form -->
+    <q-form @submit="onSubmit" class="q-my-md q-gutter-sm column">
       <os-input
         ref="emailInput"
         v-model="email"
@@ -38,6 +40,7 @@
       <q-btn :label="$t('user.auth.login_button')" type="submit" />
     </q-form>
 
+    <!-- Redirect to registration -->
     <router-link :to="{ name: 'register' }">{{
       $t("user.auth.signin_to_signup")
     }}</router-link>
@@ -51,9 +54,11 @@ import { useI18n } from "vue-i18n";
 import { User } from "firebase/auth";
 import { AuthError, doSignInWithEmailAndPassword } from "@/helpers/users/auth";
 
+// Init plugin
 const $q = useQuasar();
 const i18n = useI18n();
 
+// Set ref
 const emailInput = ref<QInput>();
 const passwordInput = ref<QInput>();
 const email = ref("");

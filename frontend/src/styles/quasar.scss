@@ -2,6 +2,7 @@
 @import '~quasar-styl';
 // @import '~quasar-addon-styl';
 
+
 /***** Setup fonts *****/
 h1,
 .text-h1,
@@ -24,6 +25,7 @@ h6,
   font-size: 0.9rem;
   color: $light-dark;
 }
+
 
 /***** Setup colors *****/
 .text-lightest {
@@ -69,6 +71,13 @@ h6,
 .text-chart-color3 {
   color: $chart-color3 !important;
 }
+
+
+/***** Setup sizes *****/
+.limit-max-width {
+  max-width: min(50em, 700px);
+}
+
 
 /***** Useful classes *****/
 

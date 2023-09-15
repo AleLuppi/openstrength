@@ -1,8 +1,10 @@
 <template>
-  <div class="q-pa-md">
-    <q-form @submit="onSubmit" class="q-my-md q-gutter-sm column">
-      <h3 class="text-primary">{{ $t("user.auth.signup_title") }}</h3>
+  <div class="q-pa-md q-mx-auto limit-max-width">
+    <!-- Title -->
+    <h2>{{ $t("user.auth.signup_title") }}</h2>
 
+    <!-- Registration form -->
+    <q-form @submit="onSubmit" class="q-my-md q-gutter-sm column">
       <os-input
         v-model="name"
         type="text"
@@ -50,6 +52,7 @@
         </template>
       </os-input>
 
+      <!-- Acceptance flag -->
       <div class="row items-center">
         <q-toggle
           v-model="accept"
@@ -74,6 +77,7 @@
       <q-btn :label="$t('user.auth.register_button')" type="submit" />
     </q-form>
 
+    <!-- Redirect to login -->
     <router-link :to="{ name: 'login' }">{{
       $t("user.auth.signup_to_signin")
     }}</router-link>
@@ -95,6 +99,7 @@ import { validateEmail, validatePassword } from "@/helpers/users/validate";
 const $q = useQuasar();
 const i18n = useI18n();
 
+// Set ref
 const emailInput = ref<QInput>();
 const passwordInput = ref<QInput>();
 const name = ref("");

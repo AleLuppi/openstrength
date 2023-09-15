@@ -1,5 +1,6 @@
 <template>
   <div class="q-pa-md">
+    <h2>{{ $t("user.profile.profile_title") }}</h2>
     <q-btn :label="$t('user.auth.signout_title')" @click="signOut" />
   </div>
 </template>
