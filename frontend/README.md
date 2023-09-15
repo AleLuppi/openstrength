@@ -40,7 +40,7 @@ Deploy the web app Firebase's hosting domains (_login is required via_ `firebase
 ```
 firebase deploy --only hosting
 ```
-Optionally, it is possible to deploy other services too, separated by commas. See here for more details: [https://firebase.google.com/docs/cli#partial_deploys](https://firebase.google.com/docs/cli#partial_deploys).
+Optionally, it is possible to deploy other services too (database, storage, firestore, functions), separated by commas. See documentation for more details: [https://firebase.google.com/docs/cli#partial_deploys](https://firebase.google.com/docs/cli#partial_deploys).
 
 ## Customize configuration
 To update Vue CLI configuration, see [Configuration Reference](https://cli.vuejs.org/config/).

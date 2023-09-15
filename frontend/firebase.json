@@ -14,10 +14,10 @@
     ]
   },
   "firestore": {
-    "rules": "backend/firestore/firestore.rules",
-    "indexes": "backend/firestore/firestore.indexes.json"
+    "rules": "baas/firestore/firestore.rules",
+    "indexes": "baas/firestore/firestore.indexes.json"
   },
   "functions": {
-    "source": "backend/functions"
+    "source": "baas/functions"
   }
 }

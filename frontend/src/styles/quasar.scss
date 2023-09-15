@@ -78,6 +78,10 @@ h6,
   max-width: min(50em, 700px);
 }
 
+.dialog-min-width {
+  min-width: min(max(40em, 500px), 96vw);
+}
+
 
 /***** Useful classes *****/
 
