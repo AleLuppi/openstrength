@@ -3,26 +3,26 @@
     <q-form @submit="onSubmit" class="q-my-md q-gutter-sm column">
       <h3 class="text-primary">{{ $t("user.auth.signin_title") }}</h3>
 
-      <q-input
+      <os-input
         ref="emailInput"
         v-model="email"
-        outlined
+        required
         type="email"
-        label="Email"
+        :label="$t('user.auth.email')"
         :rules="[
-          (val) => (val && val.length > 2) || $t('user.auth.email_required'),
+          (val: string) =>
+            (val && val.length > 2) || $t('user.auth.email_required'),
         ]"
-        lazy-rules
         :error="emailError"
         :error-message="emailErrorMessage"
       />
 
-      <q-input
+      <os-input
         ref="passwordInput"
         v-model="password"
-        outlined
+        required
         :type="passwordVisible ? 'text' : 'password'"
-        label="Password"
+        :label="$t('user.auth.password')"
         :error="passwordError"
         :error-message="passwordErrorMessage"
       >
@@ -33,7 +33,7 @@
             @click="passwordVisible = !passwordVisible"
           />
         </template>
-      </q-input>
+      </os-input>
 
       <q-btn :label="$t('user.auth.login_button')" type="submit" />
     </q-form>

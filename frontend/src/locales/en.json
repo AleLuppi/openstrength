@@ -8,6 +8,9 @@
     "header": {
       "button_feedback": "feedback?"
     },
+    "interaction": {
+      "input_required": "This field is required"
+    },
     "views": {
       "home": "Home",
       "home_caption": "main page",
@@ -21,11 +24,14 @@
   },
   "user": {
     "auth": {
+      "name": "Your name",
       "name_required": "Please, insert your full name",
       "user_already_exist": "An account using this email address already exists",
       "user_not_exist": "No account found with specified credentials, please retry",
+      "email": "Email",
       "email_required": "Please, insert your email",
       "email_invalid": "Please, insert a valid email address",
+      "password": "Password",
       "password_invalid": "Password must be at least 8 characters long, and should include one uppercase letter, one lowercase letter, and one number",
       "password_wrong": "Wrong password, please retry",
       "acceptance_required": "To continue, you must first read and accept our terms",
@@ -46,6 +52,14 @@
   },
   "coach": {
     "athlete_management": {
+      "list": {
+        "add": "Add athlete",
+        "add_proceed": "Proceed",
+        "remove": "Remove athlete",
+        "remove_confirm": "Are you sure you want to remove { name }?",
+        "prompt_name": "Athlete's name",
+        "prompt_note": "Add a note"
+      },
       "filter": {
         "all": "All",
         "scheduled": "With schedule",
@@ -54,6 +68,7 @@
     }
   },
   "common": {
+    "cancel": "Cancel",
     "or": "or"
   }
 }

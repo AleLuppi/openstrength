@@ -10,6 +10,9 @@ import { Quasar } from "quasar";
 import quasarUserOptions from "./quasar-user-options";
 import i18n from "./i18n";
 
+// Custom components to register
+import osInput from "./components/basic/osInput.vue";
+
 /***** Set constant global properties *****/
 export const globalProperties = {};
 
@@ -21,7 +24,11 @@ const app = createApp(App);
 app.provide("globalProperties", globalProperties);
 app.config.globalProperties.$globalProperties = globalProperties;
 
-// Add plugins and start the application
+// Register components
+app.component("osInput", osInput);
+
+// Add plugins
 app.use(router).use(createPinia()).use(i18n).use(Quasar, quasarUserOptions);
 
+// Mount the application
 app.mount("#app");

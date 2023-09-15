@@ -3,43 +3,41 @@
     <q-form @submit="onSubmit" class="q-my-md q-gutter-sm column">
       <h3 class="text-primary">{{ $t("user.auth.signup_title") }}</h3>
 
-      <q-input
+      <os-input
         v-model="name"
-        outlined
         type="text"
-        label="Full name"
+        :label="$t('user.auth.name')"
         :rules="[
-          (val) => (val && val.length > 2) || $t('user.auth.name_required'),
+          (val: string) =>
+            (val && val.length > 2) || $t('user.auth.name_required'),
         ]"
-        lazy-rules
       />
 
-      <q-input
+      <os-input
         ref="emailInput"
         v-model="email"
-        outlined
+        required
         type="email"
-        label="Email"
+        :label="$t('user.auth.email')"
         :rules="[
-          (val) => (val && val.length > 2) || $t('user.auth.email_required'),
-          (val) => validateEmail(val) || $t('user.auth.email_invalid'),
+          (val: string) =>
+            (val && val.length > 2) || $t('user.auth.email_required'),
+          (val: string) => validateEmail(val) || $t('user.auth.email_invalid'),
         ]"
-        lazy-rules
         :error="emailError"
         :error-message="emailErrorMessage"
       />
 
-      <q-input
+      <os-input
         ref="passwordInput"
         v-model="password"
-        outlined
+        required
         :type="passwordVisible ? 'text' : 'password'"
-        label="Password"
+        :label="$t('user.auth.password')"
         :rules="[
-          (val) =>
+          (val: string) =>
             (val && validatePassword(val)) || $t('user.auth.password_invalid'),
         ]"
-        lazy-rules
         :error="passwordError"
         :error-message="passwordErrorMessage"
       >
@@ -50,9 +48,9 @@
             @click="passwordVisible = !passwordVisible"
           />
         </template>
-      </q-input>
+      </os-input>
 
-      <div class="row">
+      <div class="row items-center">
         <q-toggle
           v-model="accept"
           checked-icon="check"
@@ -60,7 +58,7 @@
           unchecked-icon="clear"
         />
 
-        <p class="col" style="min-width: 8em">
+        <span class="col" style="min-width: 8em">
           {{ $t("user.auth.acceptance_before")
           }}<router-link :to="{ name: 'privacy_policy' }" @click.stop="">{{
             $t("layout.views.privacy_policy")
@@ -70,7 +68,7 @@
             $t("layout.views.terms_conditions")
           }}</router-link
           >{{ $t("user.auth.acceptance_after") }}
-        </p>
+        </span>
       </div>
 
       <q-btn :label="$t('user.auth.register_button')" type="submit" />
