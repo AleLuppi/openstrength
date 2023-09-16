@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md q-mx-auto limit-max-width">
+  <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
     <!-- Title -->
     <h2>{{ $t("user.auth.signin_title") }}</h2>
 
@@ -37,7 +37,11 @@
         </template>
       </os-input>
 
-      <q-btn :label="$t('user.auth.login_button')" type="submit" />
+      <q-btn
+        :label="$t('user.auth.login_button')"
+        type="submit"
+        class="q-my-lg"
+      />
     </q-form>
 
     <!-- Redirect to registration -->

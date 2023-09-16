@@ -1,18 +1,16 @@
 <template>
-  <div class="q-pa-md q-mx-auto limit-max-width">
+  <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
     <!-- Title -->
     <h2>{{ $t("user.auth.signup_title") }}</h2>
 
     <!-- Registration form -->
     <q-form @submit="onSubmit" class="q-my-md q-gutter-sm column">
+      <os-input v-model="userName" type="text" :label="$t('user.auth.name')" />
+
       <os-input
-        v-model="name"
+        v-model="userSurname"
         type="text"
-        :label="$t('user.auth.name')"
-        :rules="[
-          (val: string) =>
-            (val && val.length > 2) || $t('user.auth.name_required'),
-        ]"
+        :label="$t('user.auth.surname')"
       />
 
       <os-input
@@ -74,7 +72,11 @@
         </span>
       </div>
 
-      <q-btn :label="$t('user.auth.register_button')" type="submit" />
+      <q-btn
+        :label="$t('user.auth.register_button')"
+        type="submit"
+        class="q-my-lg"
+      />
     </q-form>
 
     <!-- Redirect to login -->
@@ -102,7 +104,8 @@ const i18n = useI18n();
 // Set ref
 const emailInput = ref<QInput>();
 const passwordInput = ref<QInput>();
-const name = ref("");
+const userName = ref("");
+const userSurname = ref("");
 const email = ref("");
 const emailError = ref(false);
 const emailErrorMessage = ref("");
@@ -127,6 +130,7 @@ watch(password, () => {
  */
 function onSubmit() {
   if (accept.value == true) {
+    // TODO add name and surname
     doCreateUserWithEmailAndPassword(
       email.value ?? "",
       password.value ?? "",

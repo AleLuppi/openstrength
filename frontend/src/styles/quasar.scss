@@ -21,6 +21,16 @@ h6,
   font-weight: bold;
 }
 
+a {
+  font-weight: bolder;
+
+  color: $dark-light;
+
+  &:hover {
+    color: $light-dark;
+  }
+}
+
 .text-input-top-label {
   font-size: 0.9rem;
   color: $light-dark;

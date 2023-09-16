@@ -25,7 +25,9 @@
   "user": {
     "auth": {
       "name": "Your name",
-      "name_required": "Please, insert your full name",
+      "name_required": "Please, insert your first name",
+      "surname": "Your last name",
+      "surname_required": "Please, insert your last name",
       "user_already_exist": "An account using this email address already exists",
       "user_not_exist": "No account found with specified credentials, please retry",
       "email": "Email",
@@ -58,6 +60,7 @@
       "list": {
         "add": "Add athlete",
         "add_proceed": "Proceed",
+        "add_error": "It was not possible to add the athlete, please retry",
         "remove": "Remove athlete",
         "remove_confirm": "Are you sure you want to remove { name }?",
         "prompt_name": "Athlete's name",

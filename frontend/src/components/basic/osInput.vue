@@ -24,12 +24,16 @@
         ])
       "
       lazy-rules
-    />
+    >
+      <template v-for="(_, slot) in $slots as Readonly<QInputSlots>" #[slot]>
+        <slot :name="slot" />
+      </template>
+    </q-input>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { QInputProps } from "quasar";
+import type { QInputProps, QInputSlots } from "quasar";
 
 interface extendedInputProps extends QInputProps {
   required?: boolean;
