@@ -6,29 +6,6 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "@/firebase";
-import router from "@/router";
-import { useUserStore } from "@/stores/user";
-
-// Get user state
-const _user = useUserStore();
-
-/**
- * Update user at each auth update
- */
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // User is signed in, see docs for a list of available properties
-    // https://firebase.google.com/docs/reference/js/auth.user
-    _user.loadFirebaseUser(user);
-  } else {
-    _user.$reset();
-  }
-
-  // Refresh page to ensure user info change accordingly
-  router.replace({
-    params: { userid: _user.uid as string },
-  });
-});
 
 export enum AuthError {
   emailError,
@@ -132,21 +109,35 @@ export function doSignOut(onSuccess?: Function, onError?: Function) {
     });
 }
 
-export function addCallbackOnAuthStateChanged(
-  userIn?: Function,
-  userOut?: Function,
-) {
+/**
+ * Register callback triggered on auth state change.
+ *
+ * @param onUserIn function to call when user signs in.
+ * @param onUserOut function to call when user signs out.
+ * @param onUserChange function to call at any auth change.
+ */
+export function addCallbackOnAuthStateChanged({
+  onUserIn,
+  onUserOut,
+  onUserChange,
+}: {
+  onUserIn?: Function;
+  onUserOut?: Function;
+  onUserChange?: Function;
+} = {}) {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       // User is signed in, see docs for a list of available properties
       // https://firebase.google.com/docs/reference/js/auth.user
-      const uid = user.uid;
 
       // Callback registered function
-      userIn?.(user);
+      onUserIn?.(user);
     } else {
       // User is signed out
-      userOut?.();
+      onUserOut?.();
     }
+
+    // Auth state changed
+    onUserChange?.();
   });
 }

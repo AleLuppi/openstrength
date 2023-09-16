@@ -57,11 +57,18 @@
 import { ref, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
+import { User as FirebaseUser } from "firebase/auth";
+import router from "@/router";
 import setdefaults from "@/boot/setQuasarDefaultProps";
+import { useUserStore } from "@/stores/user";
+import { addCallbackOnAuthStateChanged } from "@/helpers/users/auth";
 import DrawerList from "@/components/layout/DrawerList.vue";
 
 // Init plugin
 const $q = useQuasar();
+
+// Get state
+const user = useUserStore();
 
 // Set ref
 const route = useRoute();
@@ -71,6 +78,20 @@ const showFooter = computed(() => route.meta?.showFooter ?? true);
 
 // Run few useful things befor app starts rendering
 onBeforeMount(() => {
+  // Set default props of components
   setdefaults();
+
+  // Ensure user storage is up to date with auth
+  addCallbackOnAuthStateChanged({
+    onUserIn: (firebaseUser: FirebaseUser) =>
+      user.loadFirebaseUser(firebaseUser),
+    onUserOut: () => user.$reset(),
+    onUserChange: () => {
+      // Refresh page to ensure user info change accordingly
+      router.replace({
+        params: { uid: user.uid as string },
+      });
+    },
+  });
 });
 </script>
