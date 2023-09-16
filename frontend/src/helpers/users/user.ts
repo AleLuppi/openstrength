@@ -1,6 +1,9 @@
 import { DocumentReference } from "firebase/firestore";
 import { doAddDoc } from "@/helpers/database/readwrite";
 
+/**
+ * Define available user roles.
+ */
 enum UserRole {
   admin = "admin",
   coach = "coach",
@@ -10,6 +13,24 @@ enum UserRole {
 
 // DB collection where users are stored
 export const userCollection = "users";
+
+/**
+ * User properties.
+ */
+export type UserProps = {
+  uid?: string;
+  name?: string;
+  surname?: string;
+  middlename?: string;
+  birthday?: Date;
+  address?: string;
+  createdOn?: Date;
+  createdBy?: string;
+  locale?: string;
+  role?: UserRole;
+  lastAccess?: Date;
+  lastNotificationRead?: Date;
+};
 
 /**
  * User entity.
@@ -50,20 +71,7 @@ export class User {
     role,
     lastAccess,
     lastNotificationRead,
-  }: {
-    uid?: string;
-    name?: string;
-    surname?: string;
-    middlename?: string;
-    birthday?: Date;
-    address?: string;
-    createdOn?: Date;
-    createdBy?: string;
-    locale?: string;
-    role?: UserRole;
-    lastAccess?: Date;
-    lastNotificationRead?: Date;
-  } = {}) {
+  }: UserProps = {}) {
     this.uid = uid;
     this.name = name;
     this.surname = surname;
@@ -80,12 +88,17 @@ export class User {
 }
 
 /**
+ * Coach user properties.
+ */
+export type CoachUserProps = UserProps & {};
+
+/**
  * Coach user.
  *
  * @public
  */
 export class CoachUser extends User {
-  constructor(props?: {}) {
+  constructor({ ...props }: CoachUserProps = {}) {
     // Set super properties
     const superProps = { ...props, role: UserRole.coach };
     super(superProps);
@@ -95,7 +108,15 @@ export class CoachUser extends User {
 }
 
 /**
- * Coach user.
+ * Athlete user properties.
+ */
+export type AthleteUserProps = UserProps & {
+  coachId?: string;
+  coachNote?: string;
+};
+
+/**
+ * Athlete user.
  *
  * @public
  */
@@ -104,11 +125,7 @@ export class AthleteUser extends User {
   coachId?: string;
   coachNote?: string;
 
-  constructor({
-    coachId,
-    coachNote,
-    ...props
-  }: { coachId?: string; coachNote?: string } = {}) {
+  constructor({ coachId, coachNote, ...props }: AthleteUserProps = {}) {
     // Set super properties
     const superProps = { ...props, role: UserRole.athlete };
     super(superProps);
@@ -124,10 +141,17 @@ export class AthleteUser extends User {
  *
  * @param user user to store on database.
  */
-export function addDocUser(user: User | CoachUser | AthleteUser) {
+export function addDocUser(
+  user: User | CoachUser | AthleteUser,
+  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+) {
   const { uid: _, ...userObj } = user;
   console.log(userObj);
   doAddDoc(userCollection, userObj, {
-    onSuccess: (docRef: DocumentReference) => (user.uid = docRef.id),
+    onSuccess: (docRef: DocumentReference) => {
+      onSuccess?.();
+      user.uid = docRef.id;
+    },
+    onError: onError,
   });
 }
