@@ -5,18 +5,18 @@ import { User as FirebaseUser } from "firebase/auth";
 export const useUserStore = defineStore("user", () => {
   // Basic user info
   // From "UserInfo" interface https://firebase.google.com/docs/reference/js/auth.userinfo.md
-  const uid = ref<String>("");
-  const email = ref<String | null>(null);
-  const displayName = ref<String | null>(null);
-  const photoUrl = ref<String | null>(null);
-  const phoneNumber = ref<String | null>(null);
+  const uid = ref<string>();
+  const email = ref<string>();
+  const displayName = ref<string>();
+  const photoUrl = ref<string>();
+  const phoneNumber = ref<string>();
 
   // Advanced user info
   // From "User" interface https://firebase.google.com/docs/reference/js/auth.user
   const emailVerified = ref<Boolean>(false);
 
   // User is signed in
-  const isSignedIn = computed(() => Boolean(uid.value.trim()));
+  const isSignedIn = computed(() => Boolean(uid.value && uid.value.trim()));
 
   /**
    * Update user storage from Firebase auth instance.
@@ -25,10 +25,10 @@ export const useUserStore = defineStore("user", () => {
    */
   function loadFirebaseUser(user: FirebaseUser) {
     uid.value = user.uid;
-    email.value = user.email;
-    displayName.value = user.displayName;
-    photoUrl.value = user.photoURL;
-    phoneNumber.value = user.phoneNumber;
+    email.value = user.email ?? undefined;
+    displayName.value = user.displayName ?? undefined;
+    photoUrl.value = user.photoURL ?? undefined;
+    phoneNumber.value = user.phoneNumber ?? undefined;
     emailVerified.value = user.emailVerified;
   }
 
@@ -36,11 +36,11 @@ export const useUserStore = defineStore("user", () => {
    * Reset value in user storage.
    */
   function $reset() {
-    uid.value = "";
-    email.value = null;
-    displayName.value = null;
-    photoUrl.value = null;
-    phoneNumber.value = null;
+    uid.value = undefined;
+    email.value = undefined;
+    displayName.value = undefined;
+    photoUrl.value = undefined;
+    phoneNumber.value = undefined;
     emailVerified.value = false;
   }
 
