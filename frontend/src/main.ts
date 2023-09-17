@@ -12,6 +12,7 @@ import i18n from "./i18n";
 
 // Custom components to register
 import osInput from "./components/basic/osInput.vue";
+import osTable from "./components/basic/osTable.vue";
 
 /***** Set constant global properties *****/
 export const globalProperties = {};
@@ -26,6 +27,7 @@ app.config.globalProperties.$globalProperties = globalProperties;
 
 // Register components
 app.component("osInput", osInput);
+app.component("osTable", osTable);
 
 // Add plugins
 app.use(router).use(createPinia()).use(i18n).use(Quasar, quasarUserOptions);
