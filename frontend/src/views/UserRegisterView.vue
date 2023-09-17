@@ -95,7 +95,7 @@ import {
   AuthError,
   doCreateUserWithEmailAndPassword,
 } from "@/helpers/users/auth";
-import { validateEmail, validatePassword } from "@/helpers/users/validate";
+import { validateEmail, validatePassword } from "@/helpers/validate";
 
 // Init plugin
 const $q = useQuasar();
@@ -187,3 +187,4 @@ function onSubmitFailure(authError: AuthError) {
   }
 }
 </script>
+@/helpers/validate

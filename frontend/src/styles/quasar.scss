@@ -31,7 +31,8 @@ a {
   }
 }
 
-.text-input-top-label {
+.text-input-top-label,
+.text-table-header {
   font-size: 0.9rem;
   color: $light-dark;
 }
@@ -67,6 +68,14 @@ a {
 }
 
 .bg-light-dark {
+  background: $light-dark !important;
+}
+
+.text-dark-light {
+  color: $light-dark !important;
+}
+
+.bg-dark-light {
   background: $light-dark !important;
 }
 
