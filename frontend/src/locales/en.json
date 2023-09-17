@@ -70,7 +70,11 @@
       "filter": {
         "all": "All",
         "scheduled": "With schedule",
-        "unscheduled": "Missing schedule"
+        "unscheduled": "Missing schedule",
+        "active": "Active",
+        "inactive": "Inactive",
+        "new": "New",
+        "old": "Old"
       }
     }
   },

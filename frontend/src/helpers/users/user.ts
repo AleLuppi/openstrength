@@ -19,6 +19,10 @@ export const userCollection = "users";
  */
 export type UserProps = {
   uid?: string;
+  email?: string;
+  displayName?: string;
+  photoUrl?: string;
+  phoneNumber?: string;
   name?: string;
   surname?: string;
   middlename?: string;
@@ -40,6 +44,10 @@ export type UserProps = {
 export class User {
   // Connect to DB info
   uid?: string;
+  email?: string;
+  displayName?: string;
+  photoUrl?: string;
+  phoneNumber?: string;
 
   // Anagraphic
   name?: string;
@@ -60,6 +68,10 @@ export class User {
 
   constructor({
     uid,
+    email,
+    displayName,
+    photoUrl,
+    phoneNumber,
     name,
     surname,
     middlename,
@@ -73,6 +85,10 @@ export class User {
     lastNotificationRead,
   }: UserProps = {}) {
     this.uid = uid;
+    this.email = email;
+    this.displayName = displayName;
+    this.photoUrl = photoUrl;
+    this.phoneNumber = phoneNumber;
     this.name = name;
     this.surname = surname;
     this.middlename = middlename;
@@ -146,7 +162,6 @@ export function addDocUser(
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
   const { uid: _, ...userObj } = user;
-  console.log(userObj);
   doAddDoc(userCollection, userObj, {
     onSuccess: (docRef: DocumentReference) => {
       onSuccess?.();
