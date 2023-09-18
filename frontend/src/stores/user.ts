@@ -33,7 +33,7 @@ export const useUserStore = defineStore("user", () => {
   }
 
   /**
-   * Reset value in user storage.
+   * Reset values in user storage.
    */
   function $reset() {
     uid.value = undefined;

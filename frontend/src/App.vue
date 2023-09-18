@@ -61,6 +61,7 @@ import { User as FirebaseUser } from "firebase/auth";
 import router from "@/router";
 import setdefaults from "@/boot/setQuasarDefaultProps";
 import { useUserStore } from "@/stores/user";
+import { useCoachInfoStore } from "@/stores/coachInfo";
 import { addCallbackOnAuthStateChanged } from "@/helpers/users/auth";
 import DrawerList from "@/components/layout/DrawerList.vue";
 
@@ -69,6 +70,7 @@ const $q = useQuasar();
 
 // Get state
 const user = useUserStore();
+const coachInfo = useCoachInfoStore();
 
 // Set ref
 const route = useRoute();
@@ -85,7 +87,10 @@ onBeforeMount(() => {
   addCallbackOnAuthStateChanged({
     onUserIn: (firebaseUser: FirebaseUser) =>
       user.loadFirebaseUser(firebaseUser),
-    onUserOut: () => user.$reset(),
+    onUserOut: () => {
+      user.$reset();
+      coachInfo.$reset();
+    },
     onUserChange: () => {
       // Refresh page to ensure user info change accordingly
       router.replace({
