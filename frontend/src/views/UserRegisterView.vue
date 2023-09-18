@@ -187,4 +187,3 @@ function onSubmitFailure(authError: AuthError) {
   }
 }
 </script>
-@/helpers/validate
