@@ -89,7 +89,7 @@ onBeforeMount(() => {
     onUserChange: () => {
       // Refresh page to ensure user info change accordingly
       router.replace({
-        query: { uid: user.uid ?? "" },
+        params: { uid: user.uid ?? "" },
       });
     },
   });
