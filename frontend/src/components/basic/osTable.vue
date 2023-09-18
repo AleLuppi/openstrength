@@ -1,10 +1,12 @@
 <template>
   <q-table
-    v-bind="props"
+    v-bind="$attrs"
     flat
     wrap-cells
     separator="none"
     :pagination="{ rowsPerPage: 0 }"
+    :hide-pagination="($attrs.rows ?? []).length < 10"
+    :rows-per-page-options="[10, 25, 50, 100, 0]"
     row-key="name"
   >
     <!-- Set header style -->
@@ -52,8 +54,3 @@
     </template>
   </q-table>
 </template>
-
-<script setup lang="ts">
-// FIXME use QTableProps: import type { QTableProps } from "quasar"
-const props = defineProps<{}>();
-</script>

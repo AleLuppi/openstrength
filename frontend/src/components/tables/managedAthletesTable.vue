@@ -12,6 +12,11 @@ const props = defineProps({
     type: Array as PropType<AthleteUser[]>,
     required: true,
   },
+  onUpdate: {
+    type: Function,
+    required: false,
+    default: () => {},
+  },
 });
 
 // Set table columns
@@ -61,7 +66,7 @@ const rows = computed(() => {
     note: athlete.coachNote,
     update: {
       element: "button",
-      on: { click: () => console.log("Test") },
+      on: { click: () => props.onUpdate(athlete) },
       label: "Update",
       rounded: true,
     },

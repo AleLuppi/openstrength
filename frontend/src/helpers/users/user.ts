@@ -1,5 +1,5 @@
 import { DocumentReference } from "firebase/firestore";
-import { doAddDoc } from "@/helpers/database/readwrite";
+import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
 
 /**
  * Define available user roles.
@@ -18,31 +18,7 @@ export const userCollection = "users";
  * User properties.
  */
 export type UserProps = {
-  uid?: string;
-  email?: string;
-  displayName?: string;
-  photoUrl?: string;
-  phoneNumber?: string;
-  name?: string;
-  surname?: string;
-  middlename?: string;
-  birthday?: Date;
-  address?: string;
-  createdOn?: Date;
-  createdBy?: string;
-  locale?: string;
-  role?: UserRole;
-  lastAccess?: Date;
-  lastNotificationRead?: Date;
-};
-
-/**
- * User entity.
- *
- * @public
- */
-export class User {
-  // Connect to DB info
+  // Default user info
   uid?: string;
   email?: string;
   displayName?: string;
@@ -59,6 +35,39 @@ export class User {
   // Account info
   createdOn?: Date;
   createdBy?: string;
+  lastUpdated?: Date;
+  locale?: string;
+
+  // App specific
+  role?: UserRole;
+  lastAccess?: Date;
+  lastNotificationRead?: Date;
+};
+
+/**
+ * User entity.
+ *
+ * @public
+ */
+export class User {
+  // Default user info
+  uid?: string;
+  email?: string;
+  displayName?: string;
+  photoUrl?: string;
+  phoneNumber?: string;
+
+  // Anagraphic
+  name?: string;
+  surname?: string;
+  middlename?: string;
+  birthday?: Date;
+  address?: string;
+
+  // Account info
+  createdOn?: Date;
+  createdBy?: string;
+  lastUpdated?: Date;
   locale?: string;
 
   // App specific
@@ -79,6 +88,7 @@ export class User {
     address,
     createdOn,
     createdBy,
+    lastUpdated,
     locale,
     role,
     lastAccess,
@@ -96,10 +106,35 @@ export class User {
     this.address = address;
     this.createdOn = createdOn;
     this.createdBy = createdBy;
+    this.lastUpdated = lastUpdated;
     this.locale = locale;
     this.role = role ?? UserRole.unknown;
     this.lastAccess = lastAccess;
     this.lastNotificationRead = lastNotificationRead;
+  }
+
+  saveNew({
+    user,
+    onSuccess,
+    onError,
+  }: {
+    user?: User | CoachUser | AthleteUser;
+    onSuccess?: Function;
+    onError?: Function;
+  } = {}) {
+    addDocUser(user || this, { onSuccess: onSuccess, onError: onError });
+  }
+
+  saveUpdate({
+    user,
+    onSuccess,
+    onError,
+  }: {
+    user?: User | CoachUser | AthleteUser;
+    onSuccess?: Function;
+    onError?: Function;
+  } = {}) {
+    updateDocUser(user || this, { onSuccess: onSuccess, onError: onError });
   }
 }
 
@@ -127,8 +162,12 @@ export class CoachUser extends User {
  * Athlete user properties.
  */
 export type AthleteUserProps = UserProps & {
+  // Athlete specific
   coachId?: string;
   coachNote?: string;
+  coaches?: string[];
+  coachesFrom?: (Date | null)[];
+  coachesTo?: (Date | null)[];
 };
 
 /**
@@ -140,8 +179,18 @@ export class AthleteUser extends User {
   // Athlete specific
   coachId?: string;
   coachNote?: string;
+  coaches?: string[];
+  coachesFrom?: (Date | null)[];
+  coachesTo?: (Date | null)[];
 
-  constructor({ coachId, coachNote, ...props }: AthleteUserProps = {}) {
+  constructor({
+    coachId,
+    coachNote,
+    coaches,
+    coachesFrom,
+    coachesTo,
+    ...props
+  }: AthleteUserProps = {}) {
     // Set super properties
     const superProps = { ...props, role: UserRole.athlete };
     super(superProps);
@@ -149,6 +198,9 @@ export class AthleteUser extends User {
     // Set specific properties
     this.coachId = coachId;
     this.coachNote = coachNote;
+    this.coaches = coaches;
+    this.coachesFrom = coachesFrom;
+    this.coachesTo = coachesTo;
   }
 }
 
@@ -169,4 +221,25 @@ export function addDocUser(
     },
     onError: onError,
   });
+}
+
+/**
+ * Update user on database.
+ *
+ * @param user user to store on database.
+ */
+export function updateDocUser(
+  user: User | CoachUser | AthleteUser,
+  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+) {
+  const { uid: docId, ...userObj } = user;
+  userObj.lastUpdated = new Date();
+  if (docId)
+    doUpdateDoc(userCollection, docId, userObj, {
+      onSuccess: (docRef: DocumentReference) => {
+        onSuccess?.();
+      },
+      onError: onError,
+    });
+  else onError?.();
 }
