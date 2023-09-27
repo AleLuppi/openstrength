@@ -38,6 +38,7 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
+      :width="96"
       class="bg-lighter"
     >
       <DrawerList />

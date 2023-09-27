@@ -16,17 +16,13 @@
       v-for="(icon, page) in drawerPages"
       :key="page"
       clickable
+      class="justify-center"
       tag="a"
       :to="{ name: page }"
     >
-      <q-item-section avatar>
-        <q-icon :name="icon" />
-      </q-item-section>
-      <q-item-section>
+      <q-item-section avatar class="drawer-selection">
+        <q-icon :name="icon" class="q-px-md" />
         <q-item-label>{{ $t("layout.views." + page) }}</q-item-label>
-        <q-item-label caption v-if="$t('layout.views.' + page + '_caption')">{{
-          $t("layout.views." + page + "_caption")
-        }}</q-item-label>
       </q-item-section>
     </q-item>
   </q-list>
@@ -46,3 +42,17 @@ const drawerPages = {
   library: "fa-solid fa-book",
 };
 </script>
+
+<style>
+.drawer-selection {
+  display: flex;
+  flex-direction: column;
+  width: 80px;
+  height: 80px;
+  justify-content: center;
+  align-items: center;
+
+  gap: 7px;
+  flex-shrink: 0;
+}
+</style>
