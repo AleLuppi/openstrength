@@ -41,6 +41,7 @@ const user = useUserStore();
 // Set navigation in drawer
 const drawerPages = {
   home: "fa-solid fa-house-chimney",
+  athletes: "fa-solid fa-users",
   schedule: "fa-solid fa-dumbbell",
   library: "fa-solid fa-book",
 };

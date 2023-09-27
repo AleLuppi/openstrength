@@ -3,6 +3,7 @@ import { useUserStore } from "@/stores/user";
 
 /* (dinamically) import the views */
 import HomeView from "../views/HomeView.vue";
+const AthletesView = () => import("@/views/AthletesView.vue");
 const LibraryView = () => import("@/views/LibraryView.vue");
 const ScheduleView = () => import("@/views/ScheduleView.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
@@ -16,6 +17,14 @@ const routes = [
     component: HomeView,
     meta: {
       title: "Home",
+    },
+  },
+  {
+    path: "/athletes",
+    name: "athletes",
+    component: AthletesView,
+    meta: {
+      title: "Athletes",
     },
   },
   {
