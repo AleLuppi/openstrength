@@ -19,12 +19,7 @@
 
       <!-- Card title-->
       <q-section class="row justify-center">
-        <q-icon
-          name="person_add"
-          size="6em"
-          color="orange-4"
-          class="justify-center"
-        />
+        <q-icon name="person_add" size="6em" class="justify-center card-icon" />
       </q-section>
       <!-- Card title-->
       <q-section>
@@ -54,8 +49,7 @@
         <q-icon
           name="edit_calendar"
           size="6em"
-          color="orange-4"
-          class="justify-center"
+          class="justify-center card-icon"
         />
       </q-section>
       <!-- Card title-->
@@ -86,8 +80,7 @@
         <q-icon
           name="rocket_launch"
           size="6em"
-          color="orange-4"
-          class="justify-center"
+          class="justify-center card-icon"
         />
       </q-section>
       <!-- Card title-->
@@ -126,13 +119,21 @@ const onScheduleCardClick = () => {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .square-card {
   width: 300px; /* Set your desired width for the square card */
   height: 300px; /* Set your desired height for the square card */
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  border-radius: 16px;
+  background: var(--bg-1, #fff);
+  box-shadow: 0px 8px 32px 0px rgba(51, 38, 174, 0.08);
+}
+
+.card-icon {
+  color: $primary;
 }
 </style>
