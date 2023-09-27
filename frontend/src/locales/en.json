@@ -22,6 +22,14 @@
       "schedule_caption": "",
       "privacy_policy": "privacy policy",
       "terms_conditions": "terms and conditions"
+    },
+    "homeview": {
+      "athletecard_title": "Manage your athletes",
+      "athletecard_subtitle": "Add new athletes, view or modify the existing ones",
+      "librarycard_title": "Manage library",
+      "librarycard_subtitle": "Add new exercises to your library, view or modify the existing ones",
+      "schedulecard_title": "Manage programs",
+      "schedulecard_subtitle": "Create new programs, view or modify existing ones"
     }
   },
   "user": {
