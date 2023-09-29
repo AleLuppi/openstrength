@@ -12,6 +12,7 @@ import i18n from "./i18n";
 
 // Custom components to register
 import osInput from "./components/basic/osInput.vue";
+import osSelect from "./components/basic/osSelect.vue";
 import osTable from "./components/basic/osTable.vue";
 
 /***** Set constant global properties *****/
@@ -27,6 +28,7 @@ app.config.globalProperties.$globalProperties = globalProperties;
 
 // Register components
 app.component("osInput", osInput);
+app.component("osSelect", osSelect);
 app.component("osTable", osTable);
 
 // Add plugins

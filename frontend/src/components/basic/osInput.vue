@@ -40,6 +40,7 @@ import type { QInputProps, QInputSlots } from "quasar";
 
 // Define props (from child)
 interface extendedInputProps extends QInputProps {
+  placeholder?: string; // missing in QInputProps
   required?: boolean;
 }
 const props = defineProps<extendedInputProps>();
@@ -50,9 +51,9 @@ defineExpose({
   resetValidation: () => inputElement.value?.resetValidation(),
   validate: (value?: any) => inputElement.value?.validate(value),
   focus: () => inputElement.value?.focus(),
-  blur: () => inputElement.value?.blur,
-  select: () => inputElement.value?.select,
-  getNativeElement: () => inputElement.value?.getNativeElement,
+  blur: () => inputElement.value?.blur(),
+  select: () => inputElement.value?.select(),
+  getNativeElement: () => inputElement.value?.getNativeElement(),
 });
 </script>
 

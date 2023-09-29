@@ -40,6 +40,12 @@
           v-bind="props.value"
         />
 
+        <!-- Optionally render chip -->
+        <q-chip
+          v-else-if="props.value && props.value.element == 'chip'"
+          v-bind="props.value"
+        />
+
         <!-- Optionally render avatar -->
         <q-avatar
           v-else-if="props.value && props.value.element == 'avatar'"
