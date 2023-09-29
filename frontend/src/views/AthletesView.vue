@@ -2,7 +2,7 @@
   <div class="q-pa-md">
     <!-- Title and actions -->
     <div class="row items-center">
-      <h2 class="col">{{ $t("layout.views.athletes") }}</h2>
+      <h2 class="col">{{ $t("layout.views.home_title") }}</h2>
 
       <!-- Add new athlete -->
       <q-btn
@@ -38,7 +38,7 @@
           @reset="clearAthlete"
           class="q-my-md q-gutter-sm column"
         >
-          <q-card-section class="q-gutter-xs">
+          <q-card-section class="q-gutter-x-xs">
             <os-input
               v-model="athleteName"
               required
@@ -83,7 +83,7 @@
     <!-- TODO Display resources -->
     <q-tab-panels v-model="selectedTab">
       <q-tab-panel name="all">
-        <managedAthletesTable
+        <tableManagedAthletes
           :athletes="athletes"
           :on-update="onUpdateAthlete"
         />
@@ -109,7 +109,7 @@ import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { AthleteUser } from "@/helpers/users/user";
-import managedAthletesTable from "@/components/tables/managedAthletesTable.vue";
+import tableManagedAthletes from "@/components/tables/tableManagedAthletes.vue";
 
 // Init plugin
 const $q = useQuasar();

@@ -14,12 +14,15 @@
     "views": {
       "home": "Home",
       "home_caption": "main page",
-      "athletes": "Athletes",
+      "home_title": "Homepage",
       "athletes_caption": "",
+      "athletes": "Athletes",
       "library": "Library",
       "library_caption": "",
+      "library_title": "Excercise library",
       "schedule": "Schedule",
       "schedule_caption": "",
+      "schedule_title": "Schedule",
       "privacy_policy": "privacy policy",
       "terms_conditions": "terms and conditions"
     },
@@ -89,6 +92,18 @@
         "new": "New",
         "old": "Old"
       }
+    },
+    "excercise_management": {
+      "list_title": "Exercises",
+      "list_search": "Search exercise...",
+      "add": "Add a new exercise",
+      "add_button": "Add new",
+      "add_proceed": "Save",
+      "add_error": "Could not save exercise, please retry",
+      "exercise_name": "Name",
+      "exercise_variant": "Variant",
+      "exercise_video": "Video link",
+      "exercise_note": "Note"
     }
   },
   "common": {
