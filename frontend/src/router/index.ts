@@ -9,6 +9,7 @@ const ScheduleView = () => import("@/views/ScheduleView.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
+const UserOnboardingView = () => import("@/views/UserOnboardingView.vue");
 
 const routes = [
   {
@@ -60,6 +61,14 @@ const routes = [
     meta: {
       title: "register",
       redirectAuthenticated: "profile",
+    },
+  },
+  {
+    path: "/onboarding",
+    name: "onboarding",
+    component: UserOnboardingView,
+    meta: {
+      title: "onboarding",
     },
   },
   {
