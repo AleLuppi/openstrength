@@ -10,6 +10,7 @@ const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
 const UserOnboardingView = () => import("@/views/UserOnboardingView.vue");
+const UserComingSoonView = () => import("@/views/UserComingSoonView.vue");
 
 const routes = [
   {
@@ -69,6 +70,14 @@ const routes = [
     component: UserOnboardingView,
     meta: {
       title: "onboarding",
+    },
+  },
+  {
+    path: "/coming-soon",
+    name: "comingsoon",
+    component: UserComingSoonView,
+    meta: {
+      title: "comingsoon",
     },
   },
   {

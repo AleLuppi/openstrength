@@ -115,6 +115,7 @@
 <script>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+
 const router = useRouter();
 
 export default {
@@ -165,7 +166,7 @@ export default {
       console.log(selectedLabels);
     },
     onFinishRedirect() {
-      router.push({ name: "home" }); // Use the name of your home route
+      router.push({ name: "home" });
     },
   },
 };

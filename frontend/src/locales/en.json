@@ -66,6 +66,10 @@
     },
     "profile": {
       "profile_title": "Profile"
+    },
+    "comingsoon": {
+      "title": "Coming soon!",
+      "subtitle": "You have to wait a bit more for the athlete version. We’ll inform you via mail when it will be ready. It’ll be worth it, we promise. Keep training!"
     }
   },
   "coach": {
