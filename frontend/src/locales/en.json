@@ -65,7 +65,15 @@
       "signout_title": "Sign out"
     },
     "profile": {
-      "profile_title": "Profile"
+      "profile_title": "Profile",
+      "card_title": "Your details",
+      "cardlabel_name": "Name",
+      "cardlabel_mail": "Email",
+      "cardlabel_role": "Role",
+      "cardlabel_status": "Status",
+      "cardlabel_coachID": "Coach ID",
+      "cardbutton_edit": "Edit your info"
+
     },
     "comingsoon": {
       "title": "Coming soon!",
