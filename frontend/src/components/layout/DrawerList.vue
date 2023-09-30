@@ -1,14 +1,14 @@
 <template>
   <q-list>
     <!-- Greet with user -->
-    <q-item-label header
-      ><router-link :to="{ name: 'profile' }">{{
+    <router-link :to="{ name: 'profile' }"
+      ><q-item-label header>{{
         user.isSignedIn
           ? user.displayName
             ? $t("layout.drawer.welcome_logged_in", { name: user.displayName })
             : $t("layout.drawer.welcome_logged_in_noname")
           : $t("layout.drawer.welcome_logged_out")
-      }}</router-link></q-item-label
+      }}</q-item-label></router-link
     >
 
     <!-- Display each page title as a separate item -->
@@ -16,20 +16,37 @@
       v-for="(icon, page) in drawerPages"
       :key="page"
       clickable
-      class="justify-center"
       tag="a"
       :to="{ name: page }"
+      active-class="os-child-bg-primary"
     >
-      <q-item-section avatar class="drawer-selection">
-        <q-icon :name="icon" class="q-px-md" />
+      <!-- Icon near text on expanded drawer -->
+      <q-item-section v-if="!props.mini" avatar>
+        <q-icon :name="icon" />
+      </q-item-section>
+      <q-item-section v-if="!props.mini">
         <q-item-label>{{ $t("layout.views." + page) }}</q-item-label>
       </q-item-section>
+
+      <!-- Icon over text on mini drawer -->
+      <q-card v-else flat class="q-py-sm bg-inherit width-90">
+        <q-avatar :icon="icon" />
+        <p>{{ $t("layout.views." + page) }}</p>
+      </q-card>
     </q-item>
   </q-list>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
+
+// Set props
+const props = defineProps({
+  mini: {
+    type: Boolean,
+    default: false,
+  },
+});
 
 // Get user state
 const user = useUserStore();
@@ -43,16 +60,9 @@ const drawerPages = {
 };
 </script>
 
-<style>
-.drawer-selection {
-  display: flex;
-  flex-direction: column;
-  width: 80px;
-  height: 80px;
-  justify-content: center;
-  align-items: center;
-
-  gap: 7px;
-  flex-shrink: 0;
+<style scoped lang="scss">
+.os-child-bg-primary > .q-card {
+  background: $primary;
+  color: $lightest;
 }
 </style>

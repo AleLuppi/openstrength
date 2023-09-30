@@ -21,6 +21,11 @@ h6,
   font-weight: bold;
 }
 
+p {
+  margin-block-start: 0;
+  margin-block-end: 0.2em;
+}
+
 a {
   font-weight: bolder;
 
@@ -91,6 +96,10 @@ a {
   color: $chart-color3 !important;
 }
 
+.bg-inherit {
+  background: inherit;
+}
+
 
 /***** Setup sizes *****/
 .limit-max-width {
@@ -99,6 +108,10 @@ a {
 
 .dialog-min-width {
   min-width: min(max(40em, 500px), 96vw);
+}
+
+.width-90 {
+  width: 90%;
 }
 
 

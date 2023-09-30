@@ -38,10 +38,15 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
-      :width="96"
+      mini
+      :mini-width="100"
       class="bg-lighter"
     >
       <DrawerList />
+
+      <template v-slot:mini>
+        <DrawerList :mini="true" />
+      </template>
     </q-drawer>
 
     <q-page-container>
