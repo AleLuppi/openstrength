@@ -1,5 +1,6 @@
 import { DocumentReference } from "firebase/firestore";
 import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
+import { usersCollection } from "../database/collections";
 
 /**
  * Define available user roles.
@@ -10,9 +11,6 @@ enum UserRole {
   athlete = "athlete",
   unknown = "unknown",
 }
-
-// DB collection where users are stored
-export const userCollection = "users";
 
 /**
  * User properties.
@@ -208,13 +206,15 @@ export class AthleteUser extends User {
  * Store user on database.
  *
  * @param user user to store on database.
+ * @param onSuccess function to execute when operation is successful.
+ * @param onError function to execute when operation fails.
  */
 export function addDocUser(
   user: User | CoachUser | AthleteUser,
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
   const { uid: _, ...userObj } = user;
-  doAddDoc(userCollection, userObj, {
+  doAddDoc(usersCollection, userObj, {
     onSuccess: (docRef: DocumentReference) => {
       onSuccess?.();
       user.uid = docRef.id;
@@ -227,6 +227,8 @@ export function addDocUser(
  * Update user on database.
  *
  * @param user user to store on database.
+ * @param onSuccess function to execute when operation is successful.
+ * @param onError function to execute when operation fails.
  */
 export function updateDocUser(
   user: User | CoachUser | AthleteUser,
@@ -235,9 +237,9 @@ export function updateDocUser(
   const { uid: docId, ...userObj } = user;
   userObj.lastUpdated = new Date();
   if (docId)
-    doUpdateDoc(userCollection, docId, userObj, {
+    doUpdateDoc(usersCollection, docId, userObj, {
       onSuccess: (docRef: DocumentReference) => {
-        onSuccess?.();
+        onSuccess?.(docRef);
       },
       onError: onError,
     });
