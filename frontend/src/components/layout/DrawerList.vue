@@ -34,6 +34,46 @@
         <p>{{ $t("layout.views." + page) }}</p>
       </q-card>
     </q-item>
+
+    <!-- TODO add space -->
+
+    <!-- Finally display profile item -->
+    <q-item
+      clickable
+      tag="a"
+      :to="{ name: user.isSignedIn ? 'profile' : 'login' }"
+      active-class="os-child-bg-primary"
+    >
+      <!-- Icon near text on expanded drawer -->
+      <q-item-section v-if="!props.mini" avatar>
+        <q-icon
+          :name="
+            user.isSignedIn
+              ? 'fa-solid fa-circle-user'
+              : 'fa-solid fa-right-to-bracket'
+          "
+        />
+      </q-item-section>
+      <q-item-section v-if="!props.mini">
+        <q-item-label>{{
+          $t("layout.views." + (user.isSignedIn ? "profile" : "signin"))
+        }}</q-item-label>
+      </q-item-section>
+
+      <!-- Icon over text on mini drawer -->
+      <q-card v-else flat class="q-py-sm bg-inherit width-90">
+        <q-avatar
+          :icon="
+            user.isSignedIn
+              ? 'fa-solid fa-circle-user'
+              : 'fa-solid fa-right-to-bracket'
+          "
+        />
+        <p>
+          {{ $t("layout.views." + (user.isSignedIn ? "profile" : "signin")) }}
+        </p>
+      </q-card>
+    </q-item>
   </q-list>
 </template>
 

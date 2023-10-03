@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header v-if="showHeader" bordered class="bg-lightest text-light">
-      <q-toolbar>
+      <q-toolbar v-if="$q.screen.lt.md">
         <q-btn
           v-if="!leftDrawerOpen || $q.screen.lt.md"
           flat
@@ -12,18 +12,9 @@
           icon="menu"
         />
 
-        <q-toolbar-title></q-toolbar-title>
+        <q-space />
 
-        <!-- TODO action to buttons -->
-        <q-btn
-          icon="question_answer"
-          :label="$q.screen.gt.sm ? $t('layout.header.button_feedback') : ''"
-          :round="!$q.screen.gt.sm"
-          flat
-          color="text-light"
-        />
-        <q-btn icon="notifications" flat round color="text-light" />
-        <q-btn icon="help" flat round color="text-light" />
+        <!-- Action buttons -->
         <q-btn
           icon="person"
           flat
