@@ -5,7 +5,9 @@
     wrap-cells
     separator="none"
     :pagination="{ rowsPerPage: 0 }"
-    :hide-pagination="($attrs.rows ?? []).length < 10"
+    :hide-pagination="
+      Boolean($attrs.hidePagination) || ($attrs.rows ?? []).length < 10
+    "
     :rows-per-page-options="[10, 25, 50, 100, 0]"
     row-key="name"
   >
