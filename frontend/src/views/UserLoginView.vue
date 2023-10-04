@@ -44,15 +44,18 @@
       />
     </q-form>
 
+    <q-form @submit="googleSignIn" class="q-my-md q-gutter-sm column">
+      <q-btn
+        :label="$t('user.auth.signin_google')"
+        type="submit"
+        class="q-my-lg"
+      />
+    </q-form>
+
     <!-- Redirect to registration -->
     <router-link :to="{ name: 'register' }">{{
       $t("user.auth.signin_to_signup")
     }}</router-link>
-  </div>
-  <div>
-    <button @click="googleSignIn">Sign In with Google</button>
-    <div v-if="user">{{ user.displayName }} Logged In!</div>
-    <div v-else>Not Logged In</div>
   </div>
 </template>
 

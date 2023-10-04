@@ -52,6 +52,7 @@
       "acceptance_between": " and our ",
       "acceptance_after": ".",
       "login_button": "Continue",
+      "signin_google": "Sign In With Google",
       "register_button": "Join us",
       "signup_error": "An unknown error has occurred, please retry in few minutes",
       "signin_error": "An unknown error has occurred, please retry in few minutes",
