@@ -159,23 +159,37 @@ export function addDocExercise(
   exercise: Exercise,
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
-  const { uid: _, name: __, variants: ___, ...exerciseObj } = exercise;
-  exercise.variants?.forEach((variant) => {
-    const { uid: _, name: __, ...variantObj } = variant;
-    const extendedVariantObj = {
-      ...variantObj,
-      ...exerciseObj,
-      variant: variant.name,
-      exercise: exercise.name,
-    };
-    doAddDoc(exercisesCollection, extendedVariantObj, {
-      onSuccess: (docRef: DocumentReference) => {
-        onSuccess?.();
-        variant.uid = docRef.id;
-        if (!variant.name) exercise.uid = docRef.id;
-      },
+  exercise.variants?.forEach((variant) =>
+    addDocExerciseVariant(variant, exercise, {
+      onSuccess: onSuccess,
       onError: onError,
-    });
+    }),
+  );
+}
+
+/**
+ * Store exercise variant on database.
+ *
+ * @param exerciseVariant element to store on database.
+ * @param exercise force a parent exercise for the variant.
+ * @param onSuccess function to execute when operation is successful.
+ * @param onError function to execute when operation fails.
+ */
+export function addDocExerciseVariant(
+  exerciseVariant: ExerciseVariant,
+  exercise?: Exercise,
+  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+) {
+  const extendedVariantObj = extractFullExerciseVariantInfo(
+    exerciseVariant,
+    exercise,
+  );
+  doAddDoc(exercisesCollection, extendedVariantObj, {
+    onSuccess: (docRef: DocumentReference) => {
+      onSuccess?.(docRef);
+      exerciseVariant.uid = docRef.id;
+    },
+    onError: onError,
   });
 }
 
@@ -190,23 +204,70 @@ export function updateDocExercise(
   exercise: Exercise,
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
-  // TODO update only interesting variants, or create a new document for new variants
-  const { uid: _, name: __, variants: ___, ...exerciseObj } = exercise;
+  // Update existing variants, or create a new document for new variants
   exercise.variants?.forEach((variant) => {
-    const { uid: docId, name: __, ...variantObj } = variant;
-    const extendedVariantObj = {
-      ...variantObj,
-      ...exerciseObj,
-      variant: variant.name,
-      exercise: exercise.name,
-    };
-    if (docId)
-      doUpdateDoc(exercisesCollection, docId, extendedVariantObj, {
-        onSuccess: (docRef: DocumentReference) => {
-          onSuccess?.(docRef);
-        },
+    if (variant.uid)
+      updateDocExerciseVariant(variant, exercise, {
+        onSuccess: onSuccess,
         onError: onError,
       });
-    else onError?.();
+    else
+      addDocExerciseVariant(variant, exercise, {
+        onSuccess: onSuccess,
+        onError: onError,
+      });
   });
+}
+
+/**
+ * Update exercise variant on database.
+ *
+ * @param exerciseVariant element to update on database.
+ * @param exercise force a parent exercise for the variant.
+ * @param onSuccess function to execute when operation is successful.
+ * @param onError function to execute when operation fails.
+ */
+export function updateDocExerciseVariant(
+  exerciseVariant: ExerciseVariant,
+  exercise?: Exercise,
+  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+) {
+  const extendedVariantObj = extractFullExerciseVariantInfo(
+    exerciseVariant,
+    exercise,
+  );
+  const docId = exerciseVariant.uid;
+  if (docId)
+    doUpdateDoc(exercisesCollection, docId, extendedVariantObj, {
+      onSuccess: (docRef: DocumentReference) => {
+        onSuccess?.(docRef);
+      },
+      onError: onError,
+    });
+  else onError?.();
+}
+
+/**
+ * Extract the variant infor ready to be stored on DB.
+ *
+ * @param exerciseVariant element from which info shall be extracted.
+ * @param exercise force a parent exercise for the variant.
+ * @returns an object containing all the variant info.
+ */
+function extractFullExerciseVariantInfo(
+  exerciseVariant: ExerciseVariant,
+  exercise?: Exercise,
+) {
+  const { uid: _0, name: _1, exercise: _2, ...variantObj } = exerciseVariant;
+  const variantExercise =
+    exercise ?? exerciseVariant.exercise ?? new Exercise();
+  const { uid: _3, name: _4, variants: _5, ...exerciseObj } = variantExercise;
+  const fullVariantObj = {
+    ...variantObj,
+    ...exerciseObj,
+    variant: exerciseVariant.name,
+    exercise: variantExercise.name,
+  };
+
+  return fullVariantObj;
 }
