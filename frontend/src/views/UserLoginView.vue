@@ -49,6 +49,11 @@
       $t("user.auth.signin_to_signup")
     }}</router-link>
   </div>
+  <div>
+    <button @click="googleSignIn">Sign In with Google</button>
+    <div v-if="user">{{ user.displayName }} Logged In!</div>
+    <div v-else>Not Logged In</div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -57,12 +62,14 @@ import { useQuasar, QInput } from "quasar";
 import { useI18n } from "vue-i18n";
 import { User } from "firebase/auth";
 import { AuthError, doSignInWithEmailAndPassword } from "@/helpers/users/auth";
+import { signInWithGoogle } from "@/helpers/users/auth";
 
 // Init plugin
 const $q = useQuasar();
 const i18n = useI18n();
 
 // Set ref
+const user = ref<User | null>(null);
 const emailInput = ref<QInput>();
 const passwordInput = ref<QInput>();
 const email = ref("");
@@ -82,6 +89,18 @@ watch(password, () => {
   passwordError.value = false;
   passwordErrorMessage.value = "";
 });
+
+/**
+ * Google Authentication
+ */
+async function googleSignIn() {
+  try {
+    const result = await signInWithGoogle();
+    user.value = result;
+  } catch (error) {
+    console.log("Login error", error);
+  }
+}
 
 /**
  * Submit form according to inputs' values

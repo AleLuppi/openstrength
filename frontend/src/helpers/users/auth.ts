@@ -4,6 +4,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import { auth } from "@/firebase";
 
@@ -12,6 +14,16 @@ export enum AuthError {
   passwordError,
   userError,
   genericError,
+}
+
+export async function signInWithGoogle() {
+  try {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    return result.user;
+  } catch (error) {
+    throw Error;
+  }
 }
 
 export function doCreateUserWithEmailAndPassword(
