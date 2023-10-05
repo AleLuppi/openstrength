@@ -78,6 +78,31 @@
     "comingsoon": {
       "title": "Coming soon!",
       "subtitle": "You have to wait a bit more for the athlete version. We’ll inform you via mail when it will be ready. It’ll be worth it, we promise. Keep training!"
+    },
+    "onboarding":{
+      "bartitle_step1": "Step 1",
+      "barcaption_step1": "",
+      "title_step1": "Tell us more",
+      "subtitle_step1": "How will you be using the app? Select one. Note: if you want to both train and be trained select coach.",
+      "bartitle_step2": "Step 2",
+      "barcaption_step2": "Optional",
+      "title_step2": "Let's meet better",
+      "subtitle_step2": "Select the most common disciplines among your athletes:",
+      "bartitle_step3": "Step 3",
+      "barcaption_step3": "Optional",
+      "title_step3": "We're almost there",
+      "subtitle_step3": "Select the average number of athletes you work with at the same time:",
+      "athlete": "Athlete",
+      "coach": "Coach",
+      "powerlifting" : "Powerlifting",
+      "bodybuilding" : "Bodybuilding",
+      "calisthenics" : "Calisthenics",
+      "powerbuilding": "Powerbuilding",
+      "crossfit": "Crossfit",
+      "weightlifting": "Weightlifting",
+      "fitness": "Fitness",
+      "streetlifting": "Streetlifting"
+
     }
   },
   "coach": {
@@ -120,6 +145,10 @@
   },
   "common": {
     "cancel": "Cancel",
-    "or": "or"
+    "or": "or",
+    "continue": "Continue",
+    "back": "Back",
+    "finish": "Finish",
+    "other": "Other"
   }
 }
