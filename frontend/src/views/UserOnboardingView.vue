@@ -9,7 +9,27 @@
     >
       <!-- Step 1-->
       <q-step :name="1" title="Step 1" icon="settings" :done="step > 1">
-        TO DO
+        <div class="image-container">
+          <img :src="imageSrc" alt="Logo" class="centered-image" />
+        </div>
+        <h3 class="text-center">Tell us more</h3>
+        <p class="text-center">
+          How will you be using the app? Select one. Note: if you want to both
+          train and be trained select coach.
+        </p>
+
+        <div class="row justify-center q-gutter-sm">
+          <q-btn
+            class="q-ma-sm my-selectable-button"
+            v-for="button in buttonsRoles"
+            :key="button.id"
+            :color="button.selected ? 'primary' : 'lighter'"
+            :text-color="button.selected ? 'lighter' : 'dark'"
+            @click="toggleUniqueButton(button, 'buttonsRoles')"
+          >
+            {{ button.label }}
+          </q-btn>
+        </div>
       </q-step>
 
       <!-- Step 2-->
@@ -20,6 +40,9 @@
         icon="info"
         :done="step > 2"
       >
+        <div class="image-container">
+          <img :src="imageSrc" alt="Logo" class="centered-image" />
+        </div>
         <h3 class="text-center">Let's meet better!</h3>
         <p class="text-center">
           Select the most common disciplines among your athletes:
@@ -49,6 +72,9 @@
         icon="info"
         :done="step > 3"
       >
+        <div class="image-container">
+          <img :src="imageSrc" alt="Logo" class="centered-image" />
+        </div>
         <h3 class="text-center">We are almost there!</h3>
         <p class="text-center">
           Select the average number of athletes you work with at the same time:
@@ -62,7 +88,7 @@
               :key="button.id"
               :color="button.selected ? 'primary' : 'lighter'"
               :text-color="button.selected ? 'lighter' : 'dark'"
-              @click="toggleButton(button)"
+              @click="toggleUniqueButton(button, 'buttonsAthletesRange')"
             >
               {{ button.label }}
             </q-btn>
@@ -70,11 +96,14 @@
         </div>
       </q-step>
 
+      <!-- Stepper navigation controls -->
       <template v-slot:navigation>
         <q-stepper-navigation>
           <q-btn
             v-if="step === 1"
-            @click="$refs.stepper.next()"
+            @click="
+              exportSelectedRole(), onAthleteRedirect(), $refs.stepper.next()
+            "
             color="primary"
             label="Continue"
           />
@@ -112,66 +141,111 @@
   <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width"></div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
+const imageSrc = ref("/assets/logo.png");
+
 const router = useRouter();
 
-export default {
-  setup() {
-    return {
-      step: ref(1),
-    };
-  },
-  name: "MyComponent",
-  data() {
-    return {
-      buttonsSports: [
-        { id: 1, label: "Powerlifting", selected: false },
-        { id: 2, label: "Bodybuilding", selected: false },
-        { id: 3, label: "Calisthenics", selected: false },
-        { id: 4, label: "Powerbuilding", selected: false },
-        { id: 5, label: "Crossfit", selected: false },
-        { id: 6, label: "Weightlifting", selected: false },
-        { id: 7, label: "Fitness", selected: false },
-        { id: 8, label: "Streetlifting", selected: false },
-        { id: 9, label: "Generic", selected: false },
-        { id: 10, label: "Other", selected: false },
-      ],
-      buttonsAthletesRange: [
-        { id: 11, label: "1-10", selected: false },
-        { id: 12, label: "10-20", selected: false },
-        { id: 13, label: "20-30", selected: false },
-        { id: 14, label: "30+", selected: false },
-      ],
-    };
-  },
-  methods: {
-    toggleButton(button) {
-      button.selected = !button.selected;
-    },
-    exportSelectedSports() {
-      const selectedLabels = this.buttonsSports
-        .filter((button) => button.selected)
-        .map((button) => button.label);
-      // Export the selected labels here
-      console.log(selectedLabels);
-    },
-    exportSelectedAthletesRange() {
-      const selectedLabels = this.buttonsAthletesRange
-        .filter((button) => button.selected)
-        .map((button) => button.label);
-      // Export the selected labels here
-      console.log(selectedLabels);
-    },
-    onFinishRedirect() {
-      router.push({ name: "home" });
-    },
-  },
+const step = ref(1);
+
+const buttonsSports = ref([
+  { id: 1, label: "Powerlifting", selected: ref(false) },
+  { id: 2, label: "Bodybuilding", selected: ref(false) },
+  { id: 3, label: "Calisthenics", selected: ref(false) },
+  { id: 4, label: "Powerbuilding", selected: ref(false) },
+  { id: 5, label: "Crossfit", selected: ref(false) },
+  { id: 6, label: "Weightlifting", selected: ref(false) },
+  { id: 7, label: "Fitness", selected: ref(false) },
+  { id: 8, label: "Streetlifting", selected: ref(false) },
+  { id: 9, label: "Generic", selected: ref(false) },
+  { id: 10, label: "Other", selected: ref(false) },
+]);
+
+const buttonsAthletesRange = ref([
+  { id: 11, label: "1-5", selected: ref(false) },
+  { id: 12, label: "6-10", selected: ref(false) },
+  { id: 13, label: "11-20", selected: ref(false) },
+  { id: 14, label: "21-30", selected: ref(false) },
+  { id: 15, label: "30+", selected: ref(false) },
+]);
+
+const buttonsRoles = ref([
+  { id: 16, label: "Athlete", selected: ref(false) },
+  { id: 17, label: "Coach", selected: ref(false) },
+]);
+
+// BUTTON SELECTION METHODS
+const toggleButton = (button: { selected: boolean }) => {
+  button.selected = !button.selected;
+};
+
+const toggleUniqueButton = (button, group) => {
+  const groupToToggle =
+    group === "buttonsRoles" ? buttonsRoles : buttonsAthletesRange;
+
+  groupToToggle.value.forEach((btn) => {
+    btn.selected = false;
+  });
+
+  button.selected = true;
+};
+
+// EXPORT METHODS
+const exportSelectedRole = () => {
+  const selectedLabels = buttonsRoles.value
+    .filter((button) => button.selected)
+    .map((button) => button.label);
+
+  //TODO: write in user document
+  console.log(selectedLabels);
+};
+
+const exportSelectedSports = () => {
+  const selectedLabels = buttonsSports.value
+    .filter((button) => button.selected)
+    .map((button) => button.label);
+
+  // TODO: write in user document
+  console.log(selectedLabels);
+};
+
+const exportSelectedAthletesRange = () => {
+  const selectedLabels = buttonsAthletesRange.value
+    .filter((button) => button.selected)
+    .map((button) => button.label);
+
+  // TODO: write in user document
+  console.log(selectedLabels);
+};
+
+// REDIRECT METHODS
+const onFinishRedirect = () => {
+  router.push({ name: "home" });
+};
+
+const onAthleteRedirect = () => {
+  const selectedLabels = buttonsRoles.value
+    .filter((button) => button.selected)
+    .map((button) => button.label);
+
+  if (selectedLabels.includes("Athlete")) {
+    router.push({ name: "comingsoon" });
+  }
 };
 </script>
+
 <style scoped>
+.image-container {
+  max-width: 100%; /* Set the maximum width to 100% to fit the container */
+  max-height: 100%; /* Set the maximum height to 100% to fit the container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .my-selectable-button {
   border-radius: 39px;
   border: 1px solid var(--typography-2, #555f7e);

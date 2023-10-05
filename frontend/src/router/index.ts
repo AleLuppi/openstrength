@@ -60,7 +60,7 @@ const routes = [
     name: "register",
     component: UserRegisterView,
     meta: {
-      title: "register",
+      title: "Register",
       redirectAuthenticated: "profile",
     },
   },
@@ -69,7 +69,7 @@ const routes = [
     name: "onboarding",
     component: UserOnboardingView,
     meta: {
-      title: "onboarding",
+      title: "Onboarding",
     },
   },
   {
@@ -77,7 +77,7 @@ const routes = [
     name: "comingsoon",
     component: UserComingSoonView,
     meta: {
-      title: "comingsoon",
+      title: "Coming Soon",
     },
   },
   {
@@ -85,7 +85,7 @@ const routes = [
     name: "profile",
     component: UserProfileView,
     meta: {
-      title: "profile",
+      title: "Profile",
       redirectNotAuthenticated: "login",
     },
   },
