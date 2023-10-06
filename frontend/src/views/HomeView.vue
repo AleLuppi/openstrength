@@ -6,117 +6,55 @@
     </h2>
   </div>
 
-  <!-- Create a row of square cards -->
-  <div class="row justify-center items-center">
-    <!-- CARD 1-->
-    <q-card
-      @click="onAthleteCardClick"
-      v-ripple
-      class="q-pa-lg q-ma-md square-card cursor-pointer q-hoverable"
+  <!-- Show common actions -->
+  <div class="row q-gutter-md justify-center items-center">
+    <router-link
+      v-for="buttonInfo in buttonsInfo"
+      :key="buttonInfo.to"
+      :to="{ name: buttonInfo.to }"
+      class="link-child"
     >
-      <!-- Animate when on -->
-      <span class="q-focus-helper"></span>
+      <q-card
+        class="q-pa-lg column items-center justify-center square-card q-hoverable text-center"
+      >
+        <!-- Animate when on -->
+        <span class="q-focus-helper"></span>
 
-      <!-- Card title-->
-      <q-section class="row justify-center">
-        <q-icon name="person_add" size="6em" class="justify-center card-icon" />
-      </q-section>
-      <!-- Card title-->
-      <q-section>
-        <p class="text-h6 text-center">
-          {{ $t("layout.homeview.athletecard_title") }}
+        <!-- Show icon, title, and subtitle -->
+        <q-icon :name="buttonInfo.icon" size="6em" color="primary" />
+        <h6>
+          {{ $t(buttonInfo.title) }}
+        </h6>
+        <p class="q-px-md text-weight-light">
+          {{ $t(buttonInfo.subtitle) }}
         </p>
-      </q-section>
-      <!-- Card subtitle -->
-      <q-section>
-        <p class="text-subtitle2 text-center text-weight-light q-px-md">
-          {{ $t("layout.homeview.athletecard_subtitle") }}
-        </p>
-      </q-section>
-    </q-card>
-
-    <!-- CARD 2-->
-    <q-card
-      @click="onLibraryCardClick"
-      v-ripple
-      class="q-pa-lg q-ma-md square-card cursor-pointer q-hoverable"
-    >
-      <!-- Animate when on-->
-      <span class="q-focus-helper"></span>
-
-      <!-- Card title-->
-      <q-section class="row justify-center">
-        <q-icon
-          name="edit_calendar"
-          size="6em"
-          class="justify-center card-icon"
-        />
-      </q-section>
-      <!-- Card title-->
-      <q-section>
-        <p class="text-h6 text-center">
-          {{ $t("layout.homeview.librarycard_title") }}
-        </p>
-      </q-section>
-      <!-- Card subtitle -->
-      <q-section>
-        <p class="text-subtitle2 text-center text-weight-light q-px-md">
-          {{ $t("layout.homeview.librarycard_subtitle") }}
-        </p>
-      </q-section>
-    </q-card>
-
-    <!-- CARD 3-->
-    <q-card
-      @click="onScheduleCardClick"
-      v-ripple
-      class="q-pa-lg q-ma-md square-card cursor-pointer q-hoverable"
-    >
-      <!-- Animate when on -->
-      <span class="q-focus-helper"></span>
-
-      <!-- Card title-->
-      <q-section class="row justify-center">
-        <q-icon
-          name="rocket_launch"
-          size="6em"
-          class="justify-center card-icon"
-        />
-      </q-section>
-      <!-- Card title-->
-      <q-section>
-        <p class="text-h6 text-center">
-          {{ $t("layout.homeview.schedulecard_title") }}
-        </p>
-      </q-section>
-      <!-- Card subtitle -->
-      <q-section>
-        <p class="text-subtitle2 text-center text-weight-light q-px-md">
-          {{ $t("layout.homeview.schedulecard_subtitle") }}
-        </p>
-      </q-section>
-    </q-card>
+      </q-card>
+    </router-link>
   </div>
 </template>
 
-<script lang="ts" setup>
-import { useRouter } from "vue-router";
-
-// Get the Vue Router instance
-const router = useRouter();
-
-// Function to handle card click and navigate to HomeView.vue
-const onAthleteCardClick = () => {
-  router.push({ name: "athletes" });
-};
-
-const onLibraryCardClick = () => {
-  router.push({ name: "library" });
-};
-
-const onScheduleCardClick = () => {
-  router.push({ name: "schedule" });
-};
+<script setup lang="ts">
+// Set action buttons
+const buttonsInfo = [
+  {
+    to: "athletes",
+    icon: "person_add",
+    title: "layout.homeview.athletecard_title",
+    subtitle: "layout.homeview.athletecard_subtitle",
+  },
+  {
+    to: "library",
+    icon: "edit_calendar",
+    title: "layout.homeview.librarycard_title",
+    subtitle: "layout.homeview.librarycard_subtitle",
+  },
+  {
+    to: "schedule",
+    icon: "rocket_launch",
+    title: "layout.homeview.schedulecard_title",
+    subtitle: "layout.homeview.schedulecard_subtitle",
+  },
+];
 </script>
 
 <style scoped lang="scss">
@@ -125,17 +63,8 @@ const onScheduleCardClick = () => {
   /* Set your desired width for the square card */
   height: 300px;
   /* Set your desired height for the square card */
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
   border-radius: 16px;
   background: var(--bg-1, #fff);
   box-shadow: 0px 8px 32px 0px rgba(51, 38, 174, 0.08);
-}
-
-.card-icon {
-  color: $primary;
 }
 </style>
