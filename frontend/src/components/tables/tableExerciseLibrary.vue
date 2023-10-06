@@ -5,7 +5,8 @@
     virtual-scroll
     table-style="max-height: 60vh"
     hide-pagination
-    @row-click="$props.onUpdate"
+    @row-click="$props.onExerciseUpdate"
+    @sub-row-click="$props.onVariantUpdate"
   ></os-table>
 </template>
 
@@ -19,12 +20,22 @@ const props = defineProps({
     type: Array as PropType<Exercise[]>,
     required: true,
   },
-  onUpdate: {
+  onExerciseUpdate: {
     type: Function,
     required: false,
     default: () => {},
   },
-  onDelete: {
+  onVariantUpdate: {
+    type: Function,
+    required: false,
+    default: () => {},
+  },
+  onExerciseDelete: {
+    type: Function,
+    required: false,
+    default: () => {},
+  },
+  onVariantDelete: {
     type: Function,
     required: false,
     default: () => {},
@@ -36,7 +47,7 @@ const columns = [
   {
     name: "exercise",
     required: true,
-    label: "Exercise", // TODO
+    label: "Exercise", // TODO i18n
     field: "exercise",
     align: "left",
     sortable: true,
@@ -44,7 +55,7 @@ const columns = [
   {
     name: "variants",
     align: "left",
-    label: "# variants", // TODO
+    label: "Variants", // TODO i18n
     field: "variants",
   },
   { name: "delete", align: "center", label: "", field: "delete" },
@@ -55,21 +66,37 @@ const rows = computed(() => {
   return props.exercises.map((exercise) => ({
     uid: exercise.uid,
     exercise: exercise.name,
-    variants: exercise.variants?.length ?? 0,
+    variants: (exercise.variants?.length ?? 0).toString() + " variants", // TODO i18n
     update: {
       element: "button",
-      on: { click: () => props.onUpdate(exercise) },
+      on: { click: () => props.onExerciseUpdate(exercise) },
       icon: "edit",
       flat: true,
       round: true,
     },
     delete: {
       element: "button",
-      on: { click: () => props.onDelete(exercise) },
+      on: { click: () => props.onExerciseDelete(exercise) },
       icon: "delete",
       flat: true,
       round: true,
     },
+    expanded: exercise.variants?.map((variant) => ({
+      icon: {
+        element: "icon",
+        name: "subdirectory_arrow_right",
+        flat: true,
+        round: true,
+      },
+      variant: variant.name,
+      delete: {
+        element: "button",
+        on: { click: () => props.onVariantDelete(variant) },
+        icon: "delete",
+        flat: true,
+        round: true,
+      },
+    })),
   }));
 });
 </script>

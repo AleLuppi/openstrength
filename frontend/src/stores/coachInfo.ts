@@ -1,18 +1,34 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-import { AthleteUser, AthleteUserProps, CoachUser } from "@/helpers/users/user";
+import {
+  UserRole,
+  AthleteUser,
+  AthleteUserProps,
+  CoachUser,
+} from "@/helpers/users/user";
 import { doGetDocs } from "@/helpers/database/readwrite";
-import { usersCollection } from "@/helpers/database/collections";
+import {
+  exercisesCollection,
+  usersCollection,
+} from "@/helpers/database/collections";
+import {
+  Exercise,
+  packExerciseVariantInfo,
+  reduceExercises,
+} from "@/helpers/exercises/exercise";
 
 export const useCoachInfoStore = defineStore("coachInfo", () => {
   // Managed athletes
   const athletes = ref<AthleteUser[]>();
 
+  // Library of exercises
+  const exercises = ref<Exercise[]>();
+
   /**
    * Load list of athletes for a coach.
    *
    * @param coachId ID of the coach for which athletes should be loaded.
-   * @param quiet if true, only load athletes if not done already, otherwise force reload.
+   * @param quiet if true, skip loading if athletes are already present, otherwise force reload.
    */
   async function loadAthletes(
     coachId?: string,
@@ -29,13 +45,54 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     if (!coachId || (quiet && athletes.value)) return;
 
     // Get documents
-    doGetDocs(usersCollection, [["coachId", "==", coachId]], {
-      onSuccess: (docs: { [key: string]: AthleteUserProps }) => {
-        const _athletes: AthleteUser[] = [];
+    doGetDocs(
+      usersCollection,
+      [
+        ["coachId", "==", coachId],
+        ["role", "==", UserRole.athlete],
+      ],
+      {
+        onSuccess: (docs: { [key: string]: AthleteUserProps }) => {
+          const _athletes: AthleteUser[] = [];
+          Object.entries(docs).forEach(([uid, doc]) =>
+            _athletes.push(new AthleteUser({ ...doc, uid: uid })),
+          );
+          athletes.value = _athletes;
+          onSuccess?.(athletes);
+        },
+        onError: onError,
+      },
+    );
+  }
+
+  /**
+   * Load list of exercises for a coach.
+   *
+   * @param coachId ID of the coach for which athletes should be loaded.
+   * @param quiet if true, skip loading if exercises are already present, otherwise force reload.
+   */
+  async function loadExercises(
+    coachId?: string,
+    quiet: boolean = false,
+    {
+      onSuccess,
+      onError,
+    }: {
+      onSuccess?: Function;
+      onError?: Function;
+    } = {},
+  ) {
+    // Abort if there is no need to check
+    if (!coachId || (quiet && exercises.value)) return;
+
+    // Get documents
+    doGetDocs(exercisesCollection, [["userId", "==", coachId]], {
+      onSuccess: (docs: { [key: string]: any }) => {
+        const _exercises: Exercise[] = [];
         Object.entries(docs).forEach(([uid, doc]) =>
-          _athletes.push(new AthleteUser({ ...doc, uid: uid })),
+          _exercises.push(packExerciseVariantInfo(doc, uid)),
         );
-        athletes.value = _athletes;
+        exercises.value = reduceExercises(_exercises);
         onSuccess?.(athletes);
       },
       onError: onError,
@@ -47,7 +104,8 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
    */
   function $reset() {
     athletes.value = undefined;
+    exercises.value = undefined;
   }
 
-  return { athletes, loadAthletes, $reset };
+  return { athletes, exercises, loadAthletes, loadExercises, $reset };
 });

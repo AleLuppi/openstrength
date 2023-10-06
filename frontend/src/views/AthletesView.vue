@@ -130,7 +130,6 @@ const athleteNote = ref(""); // new athlete note
 // Get athletes to display
 const athletes = computed(() => {
   coachInfo.loadAthletes(user.uid, true);
-  console.log(user.uid, coachInfo.athletes);
   return coachInfo.athletes || [];
 });
 
@@ -164,6 +163,9 @@ function createAthlete() {
   showAthleteDialog.value = false;
 }
 
+/**
+ * Update athlete according to inserted values.
+ */
 function updateAthlete() {
   if (updatingAthlete.value) {
     updatingAthlete.value.name = athleteName.value;
@@ -171,7 +173,6 @@ function updateAthlete() {
     updatingAthlete.value.coachNote = athleteNote.value;
     updatingAthlete.value.saveUpdate({
       onSuccess: () => {
-        console.log("Done!");
         clearAthlete();
       },
       onError: () =>
@@ -185,6 +186,11 @@ function updateAthlete() {
   }
 }
 
+/**
+ * Compile form with athlete info to allow coach to update them.
+ *
+ * @param athlete
+ */
 function onUpdateAthlete(athlete: AthleteUser) {
   updatingAthlete.value = athlete;
   showAthleteDialog.value = true;
@@ -194,7 +200,7 @@ function onUpdateAthlete(athlete: AthleteUser) {
 }
 
 /**
- * Create a new athlete user and assign logged coach to him/her
+ * Clear values in athlete insertion form.
  */
 function clearAthlete() {
   athleteName.value = "";
