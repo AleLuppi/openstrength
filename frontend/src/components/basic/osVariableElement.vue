@@ -3,7 +3,7 @@
   <q-btn
     v-if="props && typeof props == 'object' && props.element == 'button'"
     v-bind="props"
-    v-on="typeof props == 'object' ? props.on : {}"
+    @click.stop="typeof props == 'object' ? props.on?.click?.() : {}"
   />
 
   <!-- Optionally render icon -->
