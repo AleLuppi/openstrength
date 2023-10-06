@@ -66,6 +66,7 @@ const rows = computed(() => {
   return props.exercises.map((exercise) => ({
     uid: exercise.uid,
     exercise: exercise.name,
+    name: exercise.name,
     variants: (exercise.variants?.length ?? 0).toString() + " variants", // TODO i18n
     update: {
       element: "button",
