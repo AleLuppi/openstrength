@@ -75,7 +75,7 @@ const leftDrawerOpen = ref(false);
 const showHeader = computed(() => route.meta?.showHeader ?? true);
 const showFooter = computed(() => route.meta?.showFooter ?? true);
 
-// Run few useful things befor app starts rendering
+// Run few useful things before app starts rendering
 onBeforeMount(() => {
   // Set default props of components
   setdefaults();
