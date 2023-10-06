@@ -7,7 +7,7 @@
   </div>
 
   <!-- Show common actions -->
-  <div class="row q-gutter-md justify-center items-center">
+  <div class="row q-gutter-lg justify-center items-center">
     <router-link
       v-for="buttonInfo in buttonsInfo"
       :key="buttonInfo.to"
