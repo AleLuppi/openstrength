@@ -5,9 +5,13 @@
     wrap-cells
     separator="none"
     :pagination="{ rowsPerPage: 0 }"
-    :hide-pagination="($attrs.rows ?? []).length < 10"
+    :hide-pagination="
+      Boolean($attrs.hidePagination) ||
+      (($attrs.rows as any[]) ?? []).length < 10
+    "
     :rows-per-page-options="[10, 25, 50, 100, 0]"
     row-key="name"
+    v-model:selected="selected"
   >
     <!-- Set header style -->
     <template v-slot:header="props">
@@ -24,39 +28,59 @@
       </q-tr>
     </template>
 
-    <!-- Set custom cells -->
-    <template v-slot:body-cell="props">
-      <q-td :props="props">
-        <!-- Optionally render button -->
-        <q-btn
-          v-if="props.value && props.value.element == 'button'"
-          v-bind="props.value"
-          v-on="props.value.on"
-        />
+    <!-- Set custom rows -->
+    <template v-slot:body="props">
+      <q-tr
+        :props="props"
+        @click="
+          ($attrs.onRowClick as Function)?.(undefined, props.row);
+          if ($attrs.selection)
+            onRowClick(undefined, props.row, $attrs.selection as string);
+          props.expand = !props.expand;
+        "
+        :class="{ 'cursor-pointer': $attrs.onRowClick || props.row.expanded }"
+      >
+        <q-td v-for="col in props.cols" :key="col.name" :props="props">
+          <osVariableElement :props="col.value" />
+        </q-td>
+      </q-tr>
 
-        <!-- Optionally render icon -->
-        <q-icon
-          v-else-if="props.value && props.value.element == 'icon'"
-          v-bind="props.value"
-        />
-
-        <!-- Optionally render chip -->
-        <q-chip
-          v-else-if="props.value && props.value.element == 'chip'"
-          v-bind="props.value"
-        />
-
-        <!-- Optionally render avatar -->
-        <q-avatar
-          v-else-if="props.value && props.value.element == 'avatar'"
-          v-bind="props.value"
-        >
-          <img v-if="props.value.src" :src="props.value.src" />
-        </q-avatar>
-
-        <!-- Render string otherwise -->
-        <div v-else>{{ props.value }}</div>
-      </q-td>
+      <q-tr
+        v-show="props.expand"
+        :props="props"
+        v-for="row in props.row.expanded"
+        :key="row"
+        class="q-px-lg bg-lighter"
+        @click="($attrs.onSubRowClick as Function)?.(props.row, row)"
+        :class="{ 'cursor-pointer': $attrs.onSubRowClick }"
+      >
+        <q-td v-for="(colvalue, colname) in row" :key="colname">
+          <osVariableElement :props="colvalue" />
+        </q-td>
+      </q-tr>
     </template>
   </q-table>
 </template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+
+// Set ref
+const selected = ref<{ [key: string]: any }[]>([]);
+
+/**
+ * Perform operations on clicked row.
+ *
+ * @param _ ignored event.
+ * @param row row that has been clicked.
+ */
+function onRowClick(_: any, row: { [key: string]: any }, selection?: string) {
+  if (selection == "multiple")
+    if (selected.value.indexOf(row) == -1) {
+      selected.value.push(row);
+    } else {
+      selected.value.splice(selected.value.indexOf(row), 1);
+    }
+  else if (selection) selected.value = [row];
+}
+</script>

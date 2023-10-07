@@ -3,7 +3,7 @@
     <div class="column align-center justify-center">
       <!-- Logo -->
       <div class="image-container">
-        <img :src="imageSrc" alt="Logo" class="centered-image" />
+        <img src="@/assets/logo.png" alt="Logo" class="centered-image" />
       </div>
       <!-- Title -->
       <h2 class="text-center justify-center">
@@ -31,7 +31,7 @@
 
         <!-- Google Sign up -->
         <q-btn
-          :label="$t('user.auth.google_register_button')"
+          :label="$t('user.auth.register_with_google')"
           @click="googleSignIn"
           type="button"
           icon="fa-brands fa-google"
@@ -41,7 +41,7 @@
         <!-- Text separator-->
         <div class="row">
           <hr />
-          <p>{{ $t("user.auth.signup_notGoogle") }}</p>
+          <p>{{ $t("user.auth.signup_with_email") }}</p>
           <hr />
         </div>
 
@@ -84,16 +84,15 @@
           </template>
         </os-input>
 
-        <!-- Acceptance string -->
+        <!-- Acceptance flag -->
         <div class="row items-center">
-          <!--
           <q-toggle
             v-model="accept"
             checked-icon="check"
             color="green"
             unchecked-icon="clear"
           />
-         -->
+
           <span class="col" style="min-width: 8em">
             {{ $t("user.auth.acceptance_before")
             }}<router-link :to="{ name: 'privacy_policy' }" @click.stop="">{{
@@ -111,7 +110,7 @@
           :label="$t('user.auth.register_button')"
           outline
           type="submit"
-          class="q-my-md my-light-button"
+          class="q-my-lg"
         />
       </q-form>
 
@@ -131,20 +130,16 @@ import { User } from "firebase/auth";
 import {
   AuthError,
   doCreateUserWithEmailAndPassword,
+  doSignInWithGoogle,
 } from "@/helpers/users/auth";
 import { validateEmail, validatePassword } from "@/helpers/validate";
-import { signInWithGoogle } from "@/helpers/users/auth";
 import { useRouter } from "vue-router";
 
 // Init plugin
 const $q = useQuasar();
 const i18n = useI18n();
 
-// Set assets
-const imageSrc = ref("/assets/logo.png");
-
 // Set ref
-const user = ref<User | null>(null);
 const emailInput = ref<QInput>();
 const passwordInput = ref<QInput>();
 //const userName = ref("");
@@ -175,12 +170,13 @@ watch(password, () => {
  * Google Authentication
  */
 async function googleSignIn() {
-  try {
-    const result = await signInWithGoogle();
-    user.value = result;
-  } catch (error) {
-    console.log("Login error", error);
-  }
+  // TODO
+  doSignInWithGoogle({
+    onSuccess: (result: any) => {
+      console.log(result.user.uid);
+    },
+    onError: (error: any) => console.error(error),
+  });
 }
 
 /**
@@ -196,7 +192,6 @@ function onSubmit() {
       onSubmitSuccess,
       onSubmitFailure,
     );
-    userOnboarding();
   } else {
     $q.notify({
       type: "negative",
@@ -207,18 +202,12 @@ function onSubmit() {
 }
 
 /**
- * Redirect to first time questionnaire/onboarding
- */
-const userOnboarding = () => {
-  router.push({ name: "onboarding" });
-};
-
-/**
  * Manage successful form submit
  */
 function onSubmitSuccess(user: User) {
   // TODO
   console.log(user.uid);
+  router.push({ name: "onboarding" });
 }
 
 /**

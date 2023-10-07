@@ -11,7 +11,7 @@ import { usersCollection } from "../database/collections";
 /**
  * Define available user roles.
  */
-enum UserRole {
+export enum UserRole {
   admin = "admin",
   coach = "coach",
   athlete = "athlete",

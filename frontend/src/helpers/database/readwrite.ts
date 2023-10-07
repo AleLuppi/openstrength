@@ -5,6 +5,7 @@ import {
   addDoc,
   updateDoc,
   getDocs,
+  deleteDoc,
   getDoc,
   where,
   serverTimestamp,
@@ -13,6 +14,7 @@ import {
   QuerySnapshot,
 } from "firebase/firestore";
 import { db } from "@/firebase";
+import { useUserStore } from "@/stores/user";
 
 /**
  * Add a document to firestore db.
@@ -27,10 +29,12 @@ export async function doAddDoc(
   collectionName: string,
   data: { [key: string]: any },
   {
+    addUserId = false,
     addCurrentTimestamp = false,
     onSuccess,
     onError,
   }: {
+    addUserId?: boolean;
     addCurrentTimestamp?: boolean;
     onSuccess?: Function;
     onError?: Function;
@@ -40,6 +44,15 @@ export async function doAddDoc(
   Object.keys(data).forEach((key) => {
     data[key] = data[key] ?? null;
   });
+
+  // Add user ID if required
+  if (addUserId) {
+    const user = useUserStore();
+    data = {
+      ...data,
+      userId: user.uid,
+    };
+  }
 
   // Add timestamp if required
   if (addCurrentTimestamp)
@@ -73,10 +86,12 @@ export async function doUpdateDoc(
   docId: string,
   data: { [key: string]: any },
   {
+    addUserId = false,
     addCurrentTimestamp = false,
     onSuccess,
     onError,
   }: {
+    addUserId?: boolean;
     addCurrentTimestamp?: boolean;
     onSuccess?: Function;
     onError?: Function;
@@ -86,6 +101,15 @@ export async function doUpdateDoc(
   Object.keys(data).forEach((key) => {
     data[key] = data[key] ?? null;
   });
+
+  // Add user ID if required
+  if (addUserId) {
+    const user = useUserStore();
+    data = {
+      ...data,
+      userId: user.uid,
+    };
+  }
 
   // Add timestamp if required
   if (addCurrentTimestamp)
@@ -174,6 +198,33 @@ export async function doGetDocs(
         {},
       );
       onSuccess?.(docsData);
+    })
+    .catch((error) => onError?.(error));
+}
+
+/**
+ * Delete a document from firebase db.
+ *
+ * @param collectionName name of the collection where document shall be searched.
+ * @param uid id of the document that shall be deleted.
+ * @param onSuccess function to execute when write operation is successful.
+ * @param onError function to execute when write operation fails.
+ */
+export async function doDeleteDoc(
+  collectionName: string,
+  uid: string,
+  {
+    onSuccess,
+    onError,
+  }: {
+    onSuccess?: Function;
+    onError?: Function;
+  } = {},
+) {
+  // Remove document
+  await deleteDoc(doc(db, collectionName, uid))
+    .then(() => {
+      onSuccess?.();
     })
     .catch((error) => onError?.(error));
 }

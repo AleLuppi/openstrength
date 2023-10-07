@@ -3,7 +3,6 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-
 // Other SDKs for Firebase products at following link
 // https://firebase.google.com/docs/web/setup#available-libraries
 
