@@ -42,12 +42,10 @@
         type="submit"
         class="q-my-lg"
       />
-    </q-form>
 
-    <q-form @submit="googleSignIn" class="q-my-md q-gutter-sm column">
       <q-btn
-        :label="$t('user.auth.signin_google')"
-        type="submit"
+        :label="$t('user.auth.signin_with_google')"
+        @click="googleSignIn"
         class="q-my-lg"
       />
     </q-form>
@@ -64,15 +62,17 @@ import { ref, watch } from "vue";
 import { useQuasar, QInput } from "quasar";
 import { useI18n } from "vue-i18n";
 import { User } from "firebase/auth";
-import { AuthError, doSignInWithEmailAndPassword } from "@/helpers/users/auth";
-import { signInWithGoogle } from "@/helpers/users/auth";
+import {
+  AuthError,
+  doSignInWithEmailAndPassword,
+  doSignInWithGoogle,
+} from "@/helpers/users/auth";
 
 // Init plugin
 const $q = useQuasar();
 const i18n = useI18n();
 
 // Set ref
-const user = ref<User | null>(null);
 const emailInput = ref<QInput>();
 const passwordInput = ref<QInput>();
 const email = ref("");
@@ -97,12 +97,13 @@ watch(password, () => {
  * Google Authentication
  */
 async function googleSignIn() {
-  try {
-    const result = await signInWithGoogle();
-    user.value = result;
-  } catch (error) {
-    console.log("Login error", error);
-  }
+  // TODO
+  doSignInWithGoogle({
+    onSuccess: (result: any) => {
+      console.log(result.user.uid);
+    },
+    onError: (error: any) => console.error(error),
+  });
 }
 
 /**

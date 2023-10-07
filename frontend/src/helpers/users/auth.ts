@@ -2,10 +2,10 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithPopup,
 } from "firebase/auth";
 import { auth } from "@/firebase";
 
@@ -14,16 +14,6 @@ export enum AuthError {
   passwordError,
   userError,
   genericError,
-}
-
-export async function signInWithGoogle() {
-  try {
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    return result.user;
-  } catch (error) {
-    throw Error;
-  }
 }
 
 export function doCreateUserWithEmailAndPassword(
@@ -109,6 +99,25 @@ export function doSignInWithEmailAndPassword(
     });
 }
 
+/**
+ * Sign in using Google auth provider.
+ *
+ * @param onSuccess function to execute when operation is successful.
+ * @param onError function to execute when operation fails.
+ */
+export function doSignInWithGoogle({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: Function;
+  onError?: Function;
+} = {}) {
+  const provider = new GoogleAuthProvider();
+  signInWithPopup(auth, provider)
+    .then((result) => onSuccess?.(result))
+    .catch((error) => onError?.(error));
+}
+
 export function doSignOut(onSuccess?: Function, onError?: Function) {
   signOut(auth)
     .then(() => {
@@ -117,7 +126,7 @@ export function doSignOut(onSuccess?: Function, onError?: Function) {
     })
     .catch((error) => {
       // An error happened.
-      onError?.();
+      onError?.(error);
     });
 }
 

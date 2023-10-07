@@ -3,7 +3,7 @@
     <h2>{{ $t("user.profile.profile_title") }}</h2>
 
     <q-card class="q-mb-lg">
-      <h6 class="q-mx-md q-py-md">{{ $t("user.profile.card_title") }}</h6>
+      <h6 class="q-mx-md q-py-md">{{ $t("user.profile.info_title") }}</h6>
 
       <div class="row justify-between">
         <!-- Profile Image-->
@@ -17,41 +17,41 @@
         <!-- Name and Surname -->
         <q-section class="column align-center q-mx-md">
           <p class="text-h6 text-left">
-            {{ $t("user.profile.cardlabel_name") }}
+            {{ $t("user.profile.name") }}
           </p>
           <p class="text-left">Lorenzo Amatore</p>
         </q-section>
         <!-- Email -->
         <q-section class="column align-center q-mx-md">
           <p class="text-h6 text-left">
-            {{ $t("user.profile.cardlabel_mail") }}
+            {{ $t("user.profile.e_mail") }}
           </p>
           <p class="text-left">lorenzmataore@gmail.com</p>
         </q-section>
         <!-- Role: athlete or coach -->
         <q-section class="column align-center q-mx-md">
           <p class="text-h6 text-left">
-            {{ $t("user.profile.cardlabel_role") }}
+            {{ $t("user.profile.role") }}
           </p>
           <p class="text-left text-primary">Coach</p>
         </q-section>
         <!-- Status: active or inactive-->
         <q-section class="column align-center q-mx-md">
           <p class="text-h6 text-left">
-            {{ $t("user.profile.cardlabel_status") }}
+            {{ $t("user.profile.status") }}
           </p>
           <p class="text-left text-green">Active</p>
         </q-section>
         <q-section class="column align-center q-mx-md q-mr-xl">
           <p class="text-h6 text-left">
-            {{ $t("user.profile.cardlabel_coachID") }}
+            {{ $t("user.profile.uid") }}
           </p>
           <p class="text-left">HSFSODA904730HHK</p>
         </q-section>
       </div>
 
       <q-card-actions class="row justify-end q-mx-xl q-pb-md">
-        <q-btn> {{ $t("user.profile.cardbutton_edit") }}</q-btn>
+        <q-btn> {{ $t("user.profile.info_edit") }}</q-btn>
       </q-card-actions>
     </q-card>
 

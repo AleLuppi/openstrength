@@ -33,6 +33,10 @@
       "schedulecard_subtitle": "Create new programs, view or modify existing ones"
     }
   },
+  "comingsoon": {
+    "title": "Coming soon!",
+    "subtitle": "You have to wait a bit more for the athlete's version. We’ll inform you via email when it will be ready. It’ll be worth it, we promise. Keep training!"
+  },
   "user": {
     "auth": {
       "name": "Name",
@@ -48,41 +52,35 @@
       "password_invalid": "Password must be at least 8 characters long, and should include one uppercase letter, one lowercase letter, and one number",
       "password_wrong": "Wrong password, please retry",
       "acceptance_required": "To continue, you must first read and accept our terms",
-      "acceptance_before": "By registering, you declare to have read and accepted our ",
+      "acceptance_before": "By clicking here, you declare to have read and accepted our ",
       "acceptance_between": " and our ",
       "acceptance_after": ".",
       "login_button": "Continue",
-      "signin_google": "Sign In With Google",
+      "signin_with_google": "Sign in with Google",
       "register_button": "Register me with email",
-      "google_register_button": "Continue with Google",
+      "register_with_google": "Continue with Google",
       "signup_error": "An unknown error has occurred, please retry in few minutes",
       "signin_error": "An unknown error has occurred, please retry in few minutes",
       "signout_error": "An error has occurred while signing out, please retry",
       "signup_title": "Create your account",
       "signup_subtitle": "Your day to day workout planning helper is waiting for you!",
-      "signup_notGoogle": "or sign up with email",
+      "signup_with_email": "or sign up with email",
       "signup_to_signin": "Already registered? Go to sign in",
       "signin_title": "Sign in",
       "signin_to_signup": "You don't have an account yet? Register now",
       "signout_title": "Sign out"
-      
     },
     "profile": {
       "profile_title": "Profile",
-      "card_title": "Your details",
-      "cardlabel_name": "Name",
-      "cardlabel_mail": "Email",
-      "cardlabel_role": "Role",
-      "cardlabel_status": "Status",
-      "cardlabel_coachID": "Coach ID",
-      "cardbutton_edit": "Edit your info"
-
+      "info_title": "Your details",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "uid": "Your ID",
+      "info_edit": "Edit your info"
     },
-    "comingsoon": {
-      "title": "Coming soon!",
-      "subtitle": "You have to wait a bit more for the athlete version. We’ll inform you via mail when it will be ready. It’ll be worth it, we promise. Keep training!"
-    },
-    "onboarding":{
+    "onboarding": {
       "bartitle_step1": "Start here",
       "barcaption_step1": "",
       "title_step1": "Thanks for joining us!",
@@ -101,15 +99,14 @@
       "subtitle_step4": "Select the average number of athletes you work with at the same time:",
       "athlete": "Athlete",
       "coach": "Coach",
-      "powerlifting" : "Powerlifting",
-      "bodybuilding" : "Bodybuilding",
-      "calisthenics" : "Calisthenics",
+      "powerlifting": "Powerlifting",
+      "bodybuilding": "Bodybuilding",
+      "calisthenics": "Calisthenics",
       "powerbuilding": "Powerbuilding",
       "crossfit": "Crossfit",
       "weightlifting": "Weightlifting",
       "fitness": "Fitness",
       "streetlifting": "Streetlifting"
-
     }
   },
   "coach": {
