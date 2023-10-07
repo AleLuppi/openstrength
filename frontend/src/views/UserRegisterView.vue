@@ -134,6 +134,7 @@ import {
 } from "@/helpers/users/auth";
 import { validateEmail, validatePassword } from "@/helpers/validate";
 import { signInWithGoogle } from "@/helpers/users/auth";
+import { useRouter } from "vue-router";
 
 // Init plugin
 const $q = useQuasar();
@@ -156,6 +157,9 @@ const passwordError = ref(false);
 const passwordErrorMessage = ref("");
 const passwordVisible = ref(false);
 const accept = ref(false);
+
+// Init router
+const router = useRouter();
 
 // Clear external errors on user typing
 watch(email, () => {
@@ -192,6 +196,7 @@ function onSubmit() {
       onSubmitSuccess,
       onSubmitFailure,
     );
+    userOnboarding();
   } else {
     $q.notify({
       type: "negative",
@@ -200,6 +205,13 @@ function onSubmit() {
     });
   }
 }
+
+/**
+ * Redirect to first time questionnaire/onboarding
+ */
+const userOnboarding = () => {
+  router.push({ name: "onboarding" });
+};
 
 /**
  * Manage successful form submit

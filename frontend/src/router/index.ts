@@ -9,6 +9,8 @@ const ScheduleView = () => import("@/views/ScheduleView.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
+const UserOnboardingView = () => import("@/views/UserOnboardingView.vue");
+const UserComingSoonView = () => import("@/views/UserComingSoonView.vue");
 
 const routes = [
   {
@@ -58,8 +60,24 @@ const routes = [
     name: "register",
     component: UserRegisterView,
     meta: {
-      title: "register",
+      title: "Register",
       redirectAuthenticated: "profile",
+    },
+  },
+  {
+    path: "/onboarding",
+    name: "onboarding",
+    component: UserOnboardingView,
+    meta: {
+      title: "Onboarding",
+    },
+  },
+  {
+    path: "/coming-soon",
+    name: "comingsoon",
+    component: UserComingSoonView,
+    meta: {
+      title: "Coming Soon",
     },
   },
   {
@@ -67,7 +85,7 @@ const routes = [
     name: "profile",
     component: UserProfileView,
     meta: {
-      title: "profile",
+      title: "Profile",
       redirectNotAuthenticated: "login",
     },
   },

@@ -35,9 +35,9 @@
   },
   "user": {
     "auth": {
-      "name": "Your name",
+      "name": "Name",
       "name_required": "Please, insert your first name",
-      "surname": "Your last name",
+      "surname": "Surname",
       "surname_required": "Please, insert your last name",
       "user_already_exist": "An account using this email address already exists",
       "user_not_exist": "No account found with specified credentials, please retry",
@@ -68,7 +68,48 @@
       
     },
     "profile": {
-      "profile_title": "Profile"
+      "profile_title": "Profile",
+      "card_title": "Your details",
+      "cardlabel_name": "Name",
+      "cardlabel_mail": "Email",
+      "cardlabel_role": "Role",
+      "cardlabel_status": "Status",
+      "cardlabel_coachID": "Coach ID",
+      "cardbutton_edit": "Edit your info"
+
+    },
+    "comingsoon": {
+      "title": "Coming soon!",
+      "subtitle": "You have to wait a bit more for the athlete version. We’ll inform you via mail when it will be ready. It’ll be worth it, we promise. Keep training!"
+    },
+    "onboarding":{
+      "bartitle_step1": "Start here",
+      "barcaption_step1": "",
+      "title_step1": "Thanks for joining us!",
+      "subtitle_step1": "What's your name?",
+      "bartitle_step2": "Step 1",
+      "barcaption_step2": "",
+      "title_step2": "Tell us more",
+      "subtitle_step2": "How will you be using the app? Select one. Note: if you want to both train and be trained select coach.",
+      "bartitle_step3": "Step 2",
+      "barcaption_step3": "Optional",
+      "title_step3": "Let's meet better",
+      "subtitle_step3": "Select the most common disciplines among your athletes:",
+      "bartitle_step4": "Step 3",
+      "barcaption_step4": "Optional",
+      "title_step4": "We're almost there",
+      "subtitle_step4": "Select the average number of athletes you work with at the same time:",
+      "athlete": "Athlete",
+      "coach": "Coach",
+      "powerlifting" : "Powerlifting",
+      "bodybuilding" : "Bodybuilding",
+      "calisthenics" : "Calisthenics",
+      "powerbuilding": "Powerbuilding",
+      "crossfit": "Crossfit",
+      "weightlifting": "Weightlifting",
+      "fitness": "Fitness",
+      "streetlifting": "Streetlifting"
+
     }
   },
   "coach": {
@@ -125,6 +166,10 @@
   },
   "common": {
     "cancel": "Cancel",
-    "or": "or"
+    "or": "or",
+    "continue": "Continue",
+    "back": "Back",
+    "finish": "Finish",
+    "other": "Other"
   }
 }
