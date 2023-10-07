@@ -39,20 +39,20 @@ const buttonsInfo = [
   {
     to: "athletes",
     icon: "person_add",
-    title: "layout.homeview.athletecard_title",
-    subtitle: "layout.homeview.athletecard_subtitle",
+    title: "homepage.actions.to_athlete",
+    subtitle: "homepage.actions.to_athlete_caption",
   },
   {
     to: "library",
     icon: "edit_calendar",
-    title: "layout.homeview.librarycard_title",
-    subtitle: "layout.homeview.librarycard_subtitle",
+    title: "homepage.actions.to_library",
+    subtitle: "homepage.actions.to_library_caption",
   },
   {
     to: "schedule",
     icon: "rocket_launch",
-    title: "layout.homeview.schedulecard_title",
-    subtitle: "layout.homeview.schedulecard_subtitle",
+    title: "homepage.actions.to_schedule",
+    subtitle: "homepage.actions.to_schedule_caption",
   },
 ];
 </script>
