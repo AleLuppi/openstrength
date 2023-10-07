@@ -42,6 +42,12 @@
         type="submit"
         class="q-my-lg"
       />
+
+      <q-btn
+        :label="$t('user.auth.signin_with_google')"
+        @click="googleSignIn"
+        class="q-my-lg"
+      />
     </q-form>
 
     <!-- Redirect to registration -->
@@ -56,7 +62,11 @@ import { ref, watch } from "vue";
 import { useQuasar, QInput } from "quasar";
 import { useI18n } from "vue-i18n";
 import { User } from "firebase/auth";
-import { AuthError, doSignInWithEmailAndPassword } from "@/helpers/users/auth";
+import {
+  AuthError,
+  doSignInWithEmailAndPassword,
+  doSignInWithGoogle,
+} from "@/helpers/users/auth";
 
 // Init plugin
 const $q = useQuasar();
@@ -82,6 +92,19 @@ watch(password, () => {
   passwordError.value = false;
   passwordErrorMessage.value = "";
 });
+
+/**
+ * Google Authentication
+ */
+async function googleSignIn() {
+  // TODO
+  doSignInWithGoogle({
+    onSuccess: (result: any) => {
+      console.log(result.user.uid);
+    },
+    onError: (error: any) => console.error(error),
+  });
+}
 
 /**
  * Submit form according to inputs' values
