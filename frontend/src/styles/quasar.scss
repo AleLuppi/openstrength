@@ -29,10 +29,17 @@ p {
 a {
   font-weight: bolder;
 
-  color: $dark-light;
+  &:not(.link-child) {
+    color: $dark-light;
 
-  &:hover {
-    color: $light-dark;
+    &:hover {
+      color: $light-dark;
+    }
+  }
+
+  &.link-child {
+    color: inherit;
+    @extend .no-decoration;
   }
 }
 
@@ -122,4 +129,9 @@ a {
   -webkit-user-select: none; // Safari
   -ms-user-select: none; // IE 10 and IE 11
   user-select: none; // Standard syntax
+}
+
+// Avoid underline
+.no-decoration {
+  text-decoration: none
 }

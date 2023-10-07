@@ -23,14 +23,16 @@
       "signin": "Sign in",
       "privacy_policy": "privacy policy",
       "terms_conditions": "terms and conditions"
-    },
-    "homeview": {
-      "athletecard_title": "Manage your athletes",
-      "athletecard_subtitle": "Add new athletes, view or modify the existing ones",
-      "librarycard_title": "Manage library",
-      "librarycard_subtitle": "Add new exercises to your library, view or modify the existing ones",
-      "schedulecard_title": "Manage programs",
-      "schedulecard_subtitle": "Create new programs, view or modify existing ones"
+    }
+  },
+  "homepage": {
+    "actions": {
+      "to_athletes": "Manage your athletes",
+      "to_athletes_caption": "Add new athletes, view or modify the existing ones",
+      "to_library": "Manage library",
+      "to_library_caption": "Add new exercises to your library, view or modify the existing ones",
+      "to_schedule": "Manage programs",
+      "to_schedule_caption": "Create new programs, view or modify existing ones"
     }
   },
   "comingsoon": {
@@ -145,8 +147,10 @@
       "update_button": "Update",
       "update_proceed": "Save",
       "update_error": "Could not update exercise, please retry",
+      "delete_exercise": "Delete exercise",
+      "delete_exercise_confirm": "Are you sure you want to delete exercise \"{ exercise }\" and all related variants?",
       "delete_variant": "Delete variant",
-      "delete_variant_confirm": "Are you sure you want to delete { variant } variant from { exercise }?",
+      "delete_variant_confirm": "Are you sure you want to delete \"{ variant }\" variant from \"{ exercise }\"?",
       "exercise_name": "Name",
       "exercise_variant": "Variant",
       "exercise_loadtype": "Load type",
