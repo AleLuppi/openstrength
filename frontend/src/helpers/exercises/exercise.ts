@@ -1,8 +1,7 @@
 /**
  * Exercise properties.
  */
-export type ExerciseProps = {
-};
+export type ExerciseProps = {};
 
 /**
  * Exercise entity.
@@ -10,8 +9,5 @@ export type ExerciseProps = {
  * @public
  */
 export class Exercise {
-
-  constructor({
-  }: ExerciseProps = {}) {
-  }
+  constructor({}: ExerciseProps = {}) {}
 }

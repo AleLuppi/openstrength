@@ -15,6 +15,29 @@
         <h3 class="text-center">{{ $t("user.onboarding.title_step1") }}</h3>
         <p class="text-center">{{ $t("user.onboarding.subtitle_step1") }}</p>
 
+        <div class="row justify-center q-gutter-lg q-my-md">
+          <os-input
+            v-model="userName"
+            type="text"
+            :label="$t('user.auth.name')"
+          />
+
+          <os-input
+            v-model="userSurname"
+            type="text"
+            :label="$t('user.auth.surname')"
+          />
+        </div>
+      </q-step>
+
+      <!-- Step 2-->
+      <q-step :name="2" :title="step2Title" icon="settings" :done="step > 2">
+        <div class="image-container">
+          <img :src="imageSrc" alt="Logo" class="centered-image" />
+        </div>
+        <h3 class="text-center">{{ $t("user.onboarding.title_step2") }}</h3>
+        <p class="text-center">{{ $t("user.onboarding.subtitle_step2") }}</p>
+
         <div class="row justify-center q-gutter-sm">
           <q-btn
             class="q-ma-sm my-selectable-button"
@@ -29,19 +52,19 @@
         </div>
       </q-step>
 
-      <!-- Step 2-->
+      <!-- Step 3-->
       <q-step
-        :name="2"
-        :title="step2Title"
-        :caption="step2Caption"
+        :name="3"
+        :title="step3Title"
+        :caption="step3Caption"
         icon="info"
-        :done="step > 2"
+        :done="step > 3"
       >
         <div class="image-container">
           <img :src="imageSrc" alt="Logo" class="centered-image" />
         </div>
-        <h3 class="text-center">{{ $t("user.onboarding.title_step2") }}</h3>
-        <p class="text-center">{{ $t("user.onboarding.subtitle_step2") }}</p>
+        <h3 class="text-center">{{ $t("user.onboarding.title_step3") }}</h3>
+        <p class="text-center">{{ $t("user.onboarding.subtitle_step3") }}</p>
 
         <div class="row justify-center">
           <q-list>
@@ -59,19 +82,19 @@
         </div>
       </q-step>
 
-      <!-- Step 3-->
+      <!-- Step 4-->
       <q-step
-        :name="3"
-        :title="step3Title"
-        :caption="step3Caption"
+        :name="4"
+        :title="step4Title"
+        :caption="step4Caption"
         icon="info"
-        :done="step > 3"
+        :done="step > 4"
       >
         <div class="image-container">
           <img :src="imageSrc" alt="Logo" class="centered-image" />
         </div>
-        <h3 class="text-center">{{ $t("user.onboarding.title_step3") }}</h3>
-        <p class="text-center">{{ $t("user.onboarding.subtitle_step3") }}</p>
+        <h3 class="text-center">{{ $t("user.onboarding.title_step4") }}</h3>
+        <p class="text-center">{{ $t("user.onboarding.subtitle_step4") }}</p>
 
         <div class="row justify-center">
           <q-list>
@@ -94,6 +117,14 @@
         <q-stepper-navigation>
           <q-btn
             v-if="step === 1"
+            @click="exportNameAndSurname(), $refs.stepper.next()"
+            color="primary"
+          >
+            {{ $t("common.continue") }}
+          </q-btn>
+
+          <q-btn
+            v-if="step === 2"
             @click="
               exportSelectedRole(), onAthleteRedirect(), $refs.stepper.next()
             "
@@ -102,14 +133,14 @@
             {{ $t("common.continue") }}
           </q-btn>
           <q-btn
-            v-else-if="step === 2"
+            v-else-if="step === 3"
             @click="exportSelectedSports(), $refs.stepper.next()"
             color="primary"
           >
             {{ $t("common.continue") }}
           </q-btn>
           <q-btn
-            v-else-if="step === 3"
+            v-else-if="step === 4"
             @click="exportSelectedAthletesRange(), onFinishRedirect()"
             color="primary"
           >
@@ -139,12 +170,16 @@ import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 
 const i18n = useI18n();
+const userName = ref("");
+const userSurname = ref("");
 const step1Title = i18n.t("user.onboarding.bartitle_step1");
 //const step1Caption = i18n.t("user.onboarding.barcaption_step1");
 const step2Title = i18n.t("user.onboarding.bartitle_step2");
-const step2Caption = i18n.t("user.onboarding.barcaption_step2");
+//const step2Caption = i18n.t("user.onboarding.barcaption_step2");
 const step3Title = i18n.t("user.onboarding.bartitle_step3");
 const step3Caption = i18n.t("user.onboarding.barcaption_step3");
+const step4Title = i18n.t("user.onboarding.bartitle_step4");
+const step4Caption = i18n.t("user.onboarding.barcaption_step4");
 
 const imageSrc = ref("/assets/logo.png");
 
@@ -218,6 +253,12 @@ const toggleUniqueButton = (button, group) => {
 };
 
 // EXPORT METHODS
+const exportNameAndSurname = () => {
+  //TODO: write in user document
+  console.log(userName);
+  console.log(userSurname);
+};
+
 const exportSelectedRole = () => {
   const selectedLabels = buttonsRoles.value
     .filter((button) => button.selected)
