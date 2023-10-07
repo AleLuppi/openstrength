@@ -48,20 +48,24 @@
       "password_invalid": "Password must be at least 8 characters long, and should include one uppercase letter, one lowercase letter, and one number",
       "password_wrong": "Wrong password, please retry",
       "acceptance_required": "To continue, you must first read and accept our terms",
-      "acceptance_before": "By clicking here, you declare to have read and accepted our ",
+      "acceptance_before": "By registering, you declare to have read and accepted our ",
       "acceptance_between": " and our ",
       "acceptance_after": ".",
       "login_button": "Continue",
       "signin_google": "Sign In With Google",
-      "register_button": "Join us",
+      "register_button": "Register me with email",
+      "google_register_button": "Continue with Google",
       "signup_error": "An unknown error has occurred, please retry in few minutes",
       "signin_error": "An unknown error has occurred, please retry in few minutes",
       "signout_error": "An error has occurred while signing out, please retry",
-      "signup_title": "Register",
+      "signup_title": "Create your account",
+      "signup_subtitle": "Your day to day workout planning helper is waiting for you!",
+      "signup_notGoogle": "or sign up with email",
       "signup_to_signin": "Already registered? Go to sign in",
       "signin_title": "Sign in",
       "signin_to_signup": "You don't have an account yet? Register now",
       "signout_title": "Sign out"
+      
     },
     "profile": {
       "profile_title": "Profile"
