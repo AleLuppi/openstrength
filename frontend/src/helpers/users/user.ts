@@ -1,5 +1,11 @@
 import { DocumentReference } from "firebase/firestore";
-import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
+import {
+  doAddDoc,
+  doUpdateDoc,
+  doGetOneDoc,
+  doDocExists,
+  doGetDocsWithObj,
+} from "@/helpers/database/readwrite";
 import { usersCollection } from "../database/collections";
 
 /**
@@ -200,6 +206,18 @@ export class AthleteUser extends User {
     this.coachesFrom = coachesFrom;
     this.coachesTo = coachesTo;
   }
+}
+
+export async function getOneUser(uid: string) {
+  return doGetOneDoc(usersCollection, uid);
+}
+
+export async function userExists(uid: string) {
+  return doDocExists(usersCollection, uid);
+}
+
+export async function getUserByEmail(email: string) {
+  return await doGetDocsWithObj(usersCollection, { email: email });
 }
 
 /**

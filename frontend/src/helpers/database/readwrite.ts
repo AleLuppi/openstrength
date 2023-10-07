@@ -5,8 +5,12 @@ import {
   addDoc,
   updateDoc,
   getDocs,
+  getDoc,
   where,
   serverTimestamp,
+  DocumentData,
+  Query,
+  QuerySnapshot,
 } from "firebase/firestore";
 import { db } from "@/firebase";
 
@@ -98,6 +102,44 @@ export async function doUpdateDoc(
       console.error(error);
       onError?.(error);
     });
+}
+
+export async function doGetOneDoc(collectionName: string, docId: string) {
+  const docRef = doc(db, collectionName, docId);
+  try {
+    return await getDoc(docRef);
+  } catch (error) {
+    console.error(error);
+    throw Error;
+  }
+}
+
+export async function doDocExists(collectionName: string, docId: string) {
+  const docRef = doc(db, collectionName, docId);
+  try {
+    const res = await getDoc(docRef);
+    return res.exists();
+  } catch (error) {
+    console.log(error);
+    throw Error;
+  }
+}
+
+export async function doGetDocsWithObj(
+  collectionName: string,
+  conditions: any,
+) {
+  const wheres = Object.keys(conditions).map((k) => {
+    return where(k, "==", conditions[k]);
+  });
+  const q = query(collection(db, collectionName), ...wheres);
+  try {
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs[0];
+  } catch (error) {
+    console.log(error);
+    throw Error;
+  }
 }
 
 /**

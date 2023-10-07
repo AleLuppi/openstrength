@@ -8,6 +8,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth } from "@/firebase";
+import { getOneUser, userExists, getUserByEmail } from "@/helpers/users/user";
 
 export enum AuthError {
   emailError,
@@ -137,13 +138,29 @@ export function addCallbackOnAuthStateChanged({
   onUserOut?: Function;
   onUserChange?: Function;
 } = {}) {
-  onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, async (user) => {
     if (user) {
       // User is signed in, see docs for a list of available properties
       // https://firebase.google.com/docs/reference/js/auth.user
 
-      // Callback registered function
-      onUserIn?.(user);
+      // check if user exists in the database
+      // if not add it
+
+      // console.log("USER -> ", user);
+      const userExistsRes = await userExists(user.uid);
+      if (userExistsRes) {
+        // Callback registered function
+        onUserIn?.(user);
+        return;
+      }
+
+      const userByEmail = await getUserByEmail(user.email!);
+      console.log("user by email -> ", userByEmail);
+      if (userByEmail == undefined || userByEmail == null) {
+        console.log("adding user...");
+      } else {
+        console.log("cloning user...");
+      }
     } else {
       // User is signed out
       onUserOut?.();
