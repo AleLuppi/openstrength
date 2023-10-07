@@ -135,7 +135,7 @@ const athletes = computed(() => {
 });
 
 /**
- * Create a new athlete user and assign logged coach to him/her
+ * Create a new athlete user and assign logged coach to him/her.
  */
 function createAthlete() {
   const newAthlete = new AthleteUser({

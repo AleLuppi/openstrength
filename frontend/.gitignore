@@ -35,8 +35,9 @@ src/assets/**/*.mp4
 src/assets/**/*.ogg
 src/assets/**/*.webm
 
-# Ico
+# Icons
 public/**/*.ico
+public/**/*.png
 
 # Backend-related build files
 .firebase/

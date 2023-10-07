@@ -1,5 +1,12 @@
 <template>
-  <os-table :columns="columns" :rows="rows"></os-table>
+  <os-table
+    :columns="columns"
+    :rows="rows"
+    virtual-scroll
+    table-style="max-height: 60vh"
+    hide-pagination
+    @row-click="$props.onUpdate"
+  ></os-table>
 </template>
 
 <script setup lang="ts">
@@ -30,6 +37,7 @@ const columns = [
     name: "exercise",
     required: true,
     label: "Exercise", // TODO
+    field: "exercise",
     align: "left",
     sortable: true,
   },
@@ -39,20 +47,15 @@ const columns = [
     label: "# variants", // TODO
     field: "variants",
   },
-  {
-    name: "update",
-    align: "center",
-    label: "",
-    field: "update",
-  },
   { name: "delete", align: "center", label: "", field: "delete" },
 ];
 
 // Set table rows
 const rows = computed(() => {
   return props.exercises.map((exercise) => ({
-    exercise: "Prova", // TODO
-    variants: 50, // TODO,
+    uid: exercise.uid,
+    exercise: exercise.name,
+    variants: exercise.variants?.length ?? 0,
     update: {
       element: "button",
       on: { click: () => props.onUpdate(exercise) },

@@ -31,7 +31,6 @@
       "
       lazy-rules
     >
-      <!--   -->
       <template v-for="(_, slot) in $slots as Readonly<QSelectSlots>" #[slot]>
         <slot :name="slot" />
       </template>

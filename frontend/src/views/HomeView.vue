@@ -121,8 +121,10 @@ const onScheduleCardClick = () => {
 
 <style scoped lang="scss">
 .square-card {
-  width: 300px; /* Set your desired width for the square card */
-  height: 300px; /* Set your desired height for the square card */
+  width: 300px;
+  /* Set your desired width for the square card */
+  height: 300px;
+  /* Set your desired height for the square card */
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
