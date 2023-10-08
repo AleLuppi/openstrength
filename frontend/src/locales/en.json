@@ -72,6 +72,11 @@
       "signin_to_signup": "You don't have an account yet? Register now",
       "signout_title": "Sign out"
     },
+    "role": {
+      "athlete": "Athlete",
+      "coach": "Coach",
+      "admin": "Admin"
+    },
     "profile": {
       "profile_title": "Profile",
       "info_title": "Your details",
@@ -83,32 +88,19 @@
       "info_edit": "Edit your info"
     },
     "onboarding": {
-      "bartitle_step1": "Start here",
-      "barcaption_step1": "",
+      "header_step1": "Start here",
+      "header_caption_step1": "",
+      "header_step2": "About you",
+      "header_caption_step2": "",
+      "header_step3": "About your job",
+      "header_caption_step3": "",
       "title_step1": "Thanks for joining us!",
-      "subtitle_step1": "What's your name?",
-      "bartitle_step2": "Step 1",
-      "barcaption_step2": "",
+      "action_step1_a": "What's your name?",
       "title_step2": "Tell us more",
-      "subtitle_step2": "How will you be using the app? Select one. Note: if you want to both train and be trained select coach.",
-      "bartitle_step3": "Step 2",
-      "barcaption_step3": "Optional",
+      "action_step2_a": "How will you be using the app? Select one. Note: if you want to both train and be trained select coach.",
       "title_step3": "Let's meet better",
-      "subtitle_step3": "Select the most common disciplines among your athletes:",
-      "bartitle_step4": "Step 3",
-      "barcaption_step4": "Optional",
-      "title_step4": "We're almost there",
-      "subtitle_step4": "Select the average number of athletes you work with at the same time:",
-      "athlete": "Athlete",
-      "coach": "Coach",
-      "powerlifting": "Powerlifting",
-      "bodybuilding": "Bodybuilding",
-      "calisthenics": "Calisthenics",
-      "powerbuilding": "Powerbuilding",
-      "crossfit": "Crossfit",
-      "weightlifting": "Weightlifting",
-      "fitness": "Fitness",
-      "streetlifting": "Streetlifting"
+      "action_step3_a": "Select the most common disciplines among your athletes:",
+      "action_step3_b": "Select the average number of athletes you work with at the same time:"
     }
   },
   "coach": {
@@ -165,12 +157,23 @@
       "exercise_description": "Description"
     }
   },
+  "sport": {
+    "powerlifting": "Powerlifting",
+    "bodybuilding": "Bodybuilding",
+    "calisthenics": "Calisthenics",
+    "powerbuilding": "Powerbuilding",
+    "crossfit": "Crossfit",
+    "weightlifting": "Weightlifting",
+    "fitness": "Fitness",
+    "streetlifting": "Streetlifting"
+  },
   "common": {
-    "cancel": "Cancel",
-    "or": "or",
-    "continue": "Continue",
     "back": "Back",
+    "cancel": "Cancel",
+    "continue": "Continue",
     "finish": "Finish",
-    "other": "Other"
+    "or": "or",
+    "other": "Other",
+    "submit": "Submit"
   }
 }

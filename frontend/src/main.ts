@@ -14,6 +14,7 @@ import i18n from "./i18n";
 import osInput from "./components/basic/osInput.vue";
 import osSelect from "./components/basic/osSelect.vue";
 import osTable from "./components/basic/osTable.vue";
+import osToggleButtons from "./components/basic/osToggleButtons.vue";
 import osVariableElement from "./components/basic/osVariableElement.vue";
 
 /***** Set constant global properties *****/
@@ -31,6 +32,7 @@ app.config.globalProperties.$globalProperties = globalProperties;
 app.component("osInput", osInput);
 app.component("osSelect", osSelect);
 app.component("osTable", osTable);
+app.component("osToggleButtons", osToggleButtons);
 app.component("osVariableElement", osVariableElement);
 
 // Add plugins
