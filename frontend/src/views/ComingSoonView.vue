@@ -5,10 +5,10 @@
         <img :src="imageSrc" alt="Logo" class="centered-image" />
       </div>
       <h2 class="text-center justify-center">
-        {{ $t("user.comingsoon.title") }}
+        {{ $t("comingsoon.title") }}
       </h2>
       <p class="text-center">
-        {{ $t("user.comingsoon.subtitle") }}
+        {{ $t("comingsoon.subtitle") }}
       </p>
     </div>
   </div>

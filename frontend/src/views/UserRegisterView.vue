@@ -172,12 +172,23 @@ watch(password, () => {
  */
 async function googleSignIn() {
   // TODO
-  doSignInWithGoogle({
-    onSuccess: (result: any) => {
-      console.log(result.user.uid);
-    },
-    onError: (error: any) => console.error(error),
-  });
+  if (accept.value == true) {
+    // TODO add name and surname
+    doSignInWithGoogle({
+      onSuccess: (result: any) => {
+        console.log(result.user.uid);
+        console.log("here");
+        router.push({ name: "onboarding" });
+      },
+      onError: (error: any) => console.error(error),
+    });
+  } else {
+    $q.notify({
+      type: "negative",
+      message: i18n.t("user.auth.acceptance_required"),
+      position: "bottom",
+    });
+  }
 }
 
 /**

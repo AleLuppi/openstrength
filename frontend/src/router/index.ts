@@ -61,7 +61,7 @@ const routes = [
     component: UserRegisterView,
     meta: {
       title: "Register",
-      redirectAuthenticated: "profile",
+      redirectAuthenticated: "onboarding",
     },
   },
   {
