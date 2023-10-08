@@ -3,7 +3,7 @@
     <div class="column align-center justify-center">
       <!-- Logo -->
       <div class="image-container">
-        <img src="@/assets/logo.png" alt="Logo" class="centered-image" />
+        <img :src="imageSrc" alt="Logo" class="centered-image" />
       </div>
       <!-- Title -->
       <h2 class="text-center justify-center">
@@ -140,6 +140,7 @@ const $q = useQuasar();
 const i18n = useI18n();
 
 // Set ref
+const imageSrc = ref("/assets/logo.png");
 const emailInput = ref<QInput>();
 const passwordInput = ref<QInput>();
 //const userName = ref("");

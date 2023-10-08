@@ -39,8 +39,8 @@ const buttonsInfo = [
   {
     to: "athletes",
     icon: "person_add",
-    title: "homepage.actions.to_athlete",
-    subtitle: "homepage.actions.to_athlete_caption",
+    title: "homepage.actions.to_athletes",
+    subtitle: "homepage.actions.to_athletes_caption",
   },
   {
     to: "library",
