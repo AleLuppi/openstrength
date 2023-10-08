@@ -61,11 +61,12 @@ const routes = [
     component: UserRegisterView,
     meta: {
       title: "Register",
-      redirectAuthenticated: "onboarding",
+      redirectAuthenticated: "profile",
     },
   },
   {
-    path: "/onboarding",
+    // TODO delete
+    path: "/onboard",
     name: "onboarding",
     component: UserOnboardingView,
     meta: {

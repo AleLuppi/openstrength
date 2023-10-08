@@ -19,6 +19,7 @@
       tag="a"
       :to="{ name: page }"
       active-class="os-child-bg-primary"
+      class="link-child"
     >
       <!-- Icon near text on expanded drawer -->
       <q-item-section v-if="!props.mini" avatar>
@@ -43,6 +44,7 @@
       tag="a"
       :to="{ name: user.isSignedIn ? 'profile' : 'login' }"
       active-class="os-child-bg-primary"
+      class="link-child"
     >
       <!-- Icon near text on expanded drawer -->
       <q-item-section v-if="!props.mini" avatar>

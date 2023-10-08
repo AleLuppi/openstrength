@@ -24,7 +24,7 @@
         <!-- Email -->
         <q-section class="column align-center q-mx-md">
           <p class="text-h6 text-left">
-            {{ $t("user.profile.e_mail") }}
+            {{ $t("user.profile.email") }}
           </p>
           <p class="text-left">lorenzmataore@gmail.com</p>
         </q-section>

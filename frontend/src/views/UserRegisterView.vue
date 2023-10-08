@@ -3,7 +3,7 @@
     <div class="column align-center justify-center">
       <!-- Logo -->
       <div class="image-container">
-        <img :src="imageSrc" alt="Logo" class="centered-image" />
+        <img :src="logoFullImage" alt="Logo" class="centered-image" />
       </div>
       <!-- Title -->
       <h2 class="text-center justify-center">
@@ -133,14 +133,13 @@ import {
   doSignInWithGoogle,
 } from "@/helpers/users/auth";
 import { validateEmail, validatePassword } from "@/helpers/validate";
-import { useRouter } from "vue-router";
+import { logoFullImage } from "@/assets/sources";
 
 // Init plugin
 const $q = useQuasar();
 const i18n = useI18n();
 
 // Set ref
-const imageSrc = ref("/assets/logo.png");
 const emailInput = ref<QInput>();
 const passwordInput = ref<QInput>();
 //const userName = ref("");
@@ -153,9 +152,6 @@ const passwordError = ref(false);
 const passwordErrorMessage = ref("");
 const passwordVisible = ref(false);
 const accept = ref(false);
-
-// Init router
-const router = useRouter();
 
 // Clear external errors on user typing
 watch(email, () => {
@@ -171,14 +167,11 @@ watch(password, () => {
  * Google Authentication
  */
 async function googleSignIn() {
-  // TODO
   if (accept.value == true) {
-    // TODO add name and surname
+    // TODO manage success and error
     doSignInWithGoogle({
       onSuccess: (result: any) => {
         console.log(result.user.uid);
-        console.log("here");
-        router.push({ name: "onboarding" });
       },
       onError: (error: any) => console.error(error),
     });
@@ -219,7 +212,6 @@ function onSubmit() {
 function onSubmitSuccess(user: User) {
   // TODO
   console.log(user.uid);
-  router.push({ name: "onboarding" });
 }
 
 /**
