@@ -180,6 +180,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import { useQuasar } from "quasar";
+import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import tableExerciseLibrary from "@/components/tables/tableExerciseLibrary.vue";
@@ -189,6 +191,10 @@ import {
   ExerciseLoadType,
   reduceExercises,
 } from "@/helpers/exercises/exercise";
+
+// Use plugins
+const $q = useQuasar();
+const i18n = useI18n();
 
 // Get store
 const user = useUserStore();
@@ -307,9 +313,23 @@ function onSubmit() {
         }),
       );
     exerciseToUpdate.saveUpdate({
-      // TODO inform user about success or error
-      onSuccess: () => console.log("Done"),
-      onError: () => console.log("Error"),
+      // TODO put in a separated method
+      // Variant update
+      onSuccess: () =>
+        $q.notify({
+          type: "positive",
+          message: i18n.t("coach.excercise_management.update_success", {
+            exercise: exerciseToUpdate?.name,
+            variant: variantName.value,
+          }),
+          position: "center",
+        }),
+      onError: () =>
+        $q.notify({
+          type: "negative",
+          message: i18n.t("coach.excercise_management.update_error"),
+          position: "center",
+        }),
     });
   } else {
     // Save new exercise
@@ -334,9 +354,24 @@ function onSubmit() {
         coachInfo.exercises = reduceExercises(
           (coachInfo.exercises || []).concat([newExercise]),
         );
-        // TODO inform user about success
+        // TODO put in a separate method
+        // Success exercise saved
+        $q.notify({
+          type: "positive",
+          message: i18n.t("coach.excercise_management.add_success", {
+            exercise: newExercise?.name,
+          }),
+          position: "center",
+        });
       },
-      // TODO inform user about error
+      // TODO put in a separate method
+      onError: () => {
+        $q.notify({
+          type: "negative",
+          message: i18n.t("coach.excercise_management.add_error"), //"An error occurred, please retry",
+          position: "center",
+        });
+      },
     });
   }
 }
