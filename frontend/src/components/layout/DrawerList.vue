@@ -97,8 +97,8 @@ const user = useUserStore();
 const drawerPages = {
   home: "fa-solid fa-house-chimney",
   athletes: "fa-solid fa-users",
-  schedule: "fa-solid fa-dumbbell",
   library: "fa-solid fa-book",
+  schedule: "fa-solid fa-dumbbell",
 };
 </script>
 
