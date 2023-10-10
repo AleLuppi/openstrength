@@ -128,42 +128,68 @@ export async function doUpdateDoc(
     });
 }
 
-export async function doGetOneDoc(collectionName: string, docId: string) {
+/**
+ * @param collectionName name of the collection where document shall be searched.
+ * @param docId  id of the document to retrieve from the db.
+ * @param errorHand to use to handle onSuccess or onError behaviours.
+ */
+export async function doGetOneDoc(
+  collectionName: string,
+  docId: string,
+  errorHand: ErrorHandling = new ErrorHandling(),
+) {
   const docRef = doc(db, collectionName, docId);
-  try {
-    return await getDoc(docRef);
-  } catch (error) {
-    console.error(error);
-    throw Error;
-  }
+  await getDoc(docRef)
+    .then((querySnapshot) => {
+      errorHand.onSuccess(querySnapshot);
+      return querySnapshot.data();
+    })
+    .catch((error) => errorHand.onError(error));
 }
 
-export async function doDocExists(collectionName: string, docId: string) {
+/**
+ * @param collectionName name of the collection where document shall be searched.
+ * @param docId id of the document to retrieve from the db.
+ * @param errorHand to use to handle onSuccess or onError behaviours.
+ */
+export async function doDocExists(
+  collectionName: string,
+  docId: string,
+  errorHand: ErrorHandling = new ErrorHandling(),
+) {
+  let docExists = false;
   const docRef = doc(db, collectionName, docId);
-  try {
-    const res = await getDoc(docRef);
-    return res.exists();
-  } catch (error) {
-    console.log(error);
-    throw Error;
-  }
+  await getDoc(docRef)
+    .then((querySnapshot) => {
+      errorHand.onSuccess();
+      docExists = querySnapshot.exists();
+    })
+    .catch((error) => {
+      errorHand.onError(error);
+    });
+  return docExists;
 }
 
+/**
+ * @param collectionName name of the collection where document shall be searched.
+ * @param conditions put an object with the parameters used to filter the documents.
+ * @param errorHand to use to handle onSuccess or onError behaviours.
+ */
 export async function doGetDocsWithObj(
   collectionName: string,
   conditions: any,
+  errorHand: ErrorHandling = new ErrorHandling(),
 ) {
   const wheres = Object.keys(conditions).map((k) => {
     return where(k, "==", conditions[k]);
   });
   const q = query(collection(db, collectionName), ...wheres);
-  try {
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs[0];
-  } catch (error) {
-    console.log(error);
-    throw Error;
-  }
+
+  getDocs(q)
+    .then((querySnapshot) => {
+      return querySnapshot.docs[0].data();
+    })
+    .catch((error) => errorHand.onError(error));
 }
 
 /**
