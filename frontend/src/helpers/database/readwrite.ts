@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebase";
 import { useUserStore } from "@/stores/user";
+import { ErrorHandling } from "../ErrorHandling";
 
 /**
  * Add a document to firestore db.
@@ -140,10 +141,7 @@ export async function doGetOneDoc(
 ) {
   const docRef = doc(db, collectionName, docId);
   await getDoc(docRef)
-    .then((querySnapshot) => {
-      errorHand.onSuccess(querySnapshot);
-      return querySnapshot.data();
-    })
+    .then((querySnapshot) => errorHand.onSuccess(querySnapshot.data()))
     .catch((error) => errorHand.onError(error));
 }
 
@@ -157,17 +155,10 @@ export async function doDocExists(
   docId: string,
   errorHand: ErrorHandling = new ErrorHandling(),
 ) {
-  let docExists = false;
   const docRef = doc(db, collectionName, docId);
-  await getDoc(docRef)
-    .then((querySnapshot) => {
-      errorHand.onSuccess();
-      docExists = querySnapshot.exists();
-    })
-    .catch((error) => {
-      errorHand.onError(error);
-    });
-  return docExists;
+  return await getDoc(docRef)
+    .then((querySnapshot) => errorHand.onSuccess(querySnapshot.exists()))
+    .catch((error) => errorHand.onError(error));
 }
 
 /**
@@ -185,10 +176,8 @@ export async function doGetDocsWithObj(
   });
   const q = query(collection(db, collectionName), ...wheres);
 
-  getDocs(q)
-    .then((querySnapshot) => {
-      return querySnapshot.docs[0].data();
-    })
+  return await getDocs(q)
+    .then((querySnapshot) => errorHand.onSuccess(querySnapshot.docs[0].data()))
     .catch((error) => errorHand.onError(error));
 }
 
