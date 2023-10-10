@@ -1,8 +1,10 @@
-class ErrorHandling {
-  onSuccess: Function = (succ: string) => {
-    console.log(succ);
+export class ErrorHandling {
+  onSuccess: Function = (succ: any) => {
+    console.log("onSuccess", succ);
+    return succ;
   };
-  onError: Function = (err: string) => {
-    console.log(err);
+  onError: Function = (err: any) => {
+    console.error("onError", err);
+    return null;
   };
 }
