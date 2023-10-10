@@ -354,16 +354,16 @@ function onSubmit() {
         $q.notify({
           type: "positive",
           message: i18n.t("coach.excercise_management.update_success", {
-            exercise: exerciseToUpdate?.name,
+            exercise: exerciseToUpdate.name,
             variant: variantName.value,
           }),
-          position: "center",
+          position: "bottom",
         }),
       onError: () =>
         $q.notify({
           type: "negative",
           message: i18n.t("coach.excercise_management.update_error"),
-          position: "center",
+          position: "bottom",
         }),
     });
   } else {
@@ -396,15 +396,15 @@ function onSubmit() {
           message: i18n.t("coach.excercise_management.add_success", {
             exercise: newExercise?.name,
           }),
-          position: "center",
+          position: "bottom",
         });
       },
       // TODO put in a separate method
       onError: () => {
         $q.notify({
           type: "negative",
-          message: i18n.t("coach.excercise_management.add_error"), //"An error occurred, please retry",
-          position: "center",
+          message: i18n.t("coach.excercise_management.add_error"),
+          position: "bottom",
         });
       },
     });
