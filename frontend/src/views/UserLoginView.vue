@@ -1,59 +1,90 @@
 <template>
   <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
-    <!-- Title -->
-    <h2>{{ $t("user.auth.signin_title") }}</h2>
+    <div class="column align-center justify-center">
+      <!-- Logo -->
+      <div class="image-container">
+        <img :src="logoFullImage" alt="Logo" class="centered-image" />
+      </div>
+      <!-- Title -->
+      <h2 class="text-center justify-center">
+        {{ $t("user.auth.signin_title") }}
+      </h2>
+      <p class="text-center">
+        {{ $t("user.auth.signin_subtitle") }}
+      </p>
 
-    <!-- Access form -->
-    <q-form @submit="onSubmit" class="q-my-md q-gutter-sm column">
-      <os-input
-        ref="emailInput"
-        v-model="email"
-        required
-        type="email"
-        :label="$t('user.auth.email')"
-        :rules="[
-          (val: string) =>
-            (val && val.length > 2) || $t('user.auth.email_required'),
-        ]"
-        :error="emailError"
-        :error-message="emailErrorMessage"
-      />
+      <!-- Access form -->
+      <q-form @submit="onSubmit" class="q-my-xs q-gutter-xs column">
+        <!-- Google Sign up -->
+        <q-btn
+          :label="$t('user.auth.signin_with_google')"
+          @click="googleSignIn"
+          icon="fa-brands fa-google"
+          class="q-my-md"
+        />
 
-      <os-input
-        ref="passwordInput"
-        v-model="password"
-        required
-        :type="passwordVisible ? 'text' : 'password'"
-        :label="$t('user.auth.password')"
-        :error="passwordError"
-        :error-message="passwordErrorMessage"
-      >
-        <template v-slot:append>
-          <q-icon
-            :name="passwordVisible ? 'visibility' : 'visibility_off'"
-            class="cursor-pointer"
-            @click="passwordVisible = !passwordVisible"
-          />
-        </template>
-      </os-input>
+        <!-- Text separator-->
+        <div class="row">
+          <hr />
+          <p>{{ $t("user.auth.signin_with_email") }}</p>
+          <hr />
+        </div>
 
-      <q-btn
-        :label="$t('user.auth.login_button')"
-        type="submit"
-        class="q-my-lg"
-      />
+        <os-input
+          ref="emailInput"
+          v-model="email"
+          required
+          type="email"
+          :label="$t('user.auth.email')"
+          :rules="[
+            (val: string) =>
+              (val && val.length > 2) || $t('user.auth.email_required'),
+          ]"
+          :error="emailError"
+          :error-message="emailErrorMessage"
+        />
 
-      <q-btn
-        :label="$t('user.auth.signin_with_google')"
-        @click="googleSignIn"
-        class="q-my-lg"
-      />
-    </q-form>
+        <os-input
+          ref="passwordInput"
+          v-model="password"
+          required
+          :type="passwordVisible ? 'text' : 'password'"
+          :label="$t('user.auth.password')"
+          :error="passwordError"
+          :error-message="passwordErrorMessage"
+        >
+          <template v-slot:append>
+            <q-icon
+              :name="passwordVisible ? 'visibility' : 'visibility_off'"
+              class="cursor-pointer"
+              @click="passwordVisible = !passwordVisible"
+            />
+          </template>
+        </os-input>
 
-    <!-- Redirect to registration -->
-    <router-link :to="{ name: 'register' }">{{
-      $t("user.auth.signin_to_signup")
-    }}</router-link>
+        <q-btn
+          :label="$t('user.auth.login_button')"
+          type="submit"
+          outline
+          class="q-my-lg"
+        />
+      </q-form>
+
+      <div class="row justify-between">
+        <!-- Forgot password -->
+        <router-link :to="{ name: 'register' }">{{
+          $t("user.auth.forgot_password")
+        }}</router-link>
+
+        <!-- Redirect to registration -->
+        <p>
+          {{ $t("user.auth.without_account") }}
+          <router-link :to="{ name: 'register' }">{{
+            $t("user.auth.signin_to_signup")
+          }}</router-link>
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -67,6 +98,7 @@ import {
   doSignInWithEmailAndPassword,
   doSignInWithGoogle,
 } from "@/helpers/users/auth";
+import { logoFullImage } from "@/assets/sources";
 
 // Init plugin
 const $q = useQuasar();
@@ -158,3 +190,27 @@ function onSubmitFailure(authError: AuthError) {
   }
 }
 </script>
+
+<style scoped>
+.image-container {
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.centered-image {
+  max-width: 70%;
+  max-height: 70%;
+  width: auto;
+  height: auto;
+}
+
+hr {
+  height: 1px;
+  width: 30%;
+  border-width: 0;
+  background-color: #bebebe;
+}
+</style>

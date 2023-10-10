@@ -59,8 +59,9 @@
       "acceptance_before": "By clicking here, you declare to have read and accepted our ",
       "acceptance_between": " and our ",
       "acceptance_after": ".",
-      "login_button": "Continue",
-      "signin_with_google": "Sign in with Google",
+      "login_button": "Log in with email",
+      "signin_with_google": "Log in with Google",
+      "signin_with_email": "or log in with email",
       "register_button": "Register me with email",
       "register_with_google": "Continue with Google",
       "signup_error": "An unknown error has occurred, please retry in few minutes",
@@ -70,9 +71,12 @@
       "signup_subtitle": "Your day to day workout planning helper is waiting for you!",
       "signup_with_email": "or sign up with email",
       "signup_to_signin": "Already registered? Go to sign in",
-      "signin_title": "Sign in",
-      "signin_to_signup": "You don't have an account yet? Register now",
-      "signout_title": "Sign out"
+      "signin_title": "Log in to your account",
+      "signin_subtitle": "Your day to day helper is waiting for you",
+      "signin_to_signup": " Register now",
+      "signout_title": "Sign out",
+      "forgot_password": "Forgot password?",
+      "without_account": "Don't have an account?"
     },
     "role": {
       "athlete": "Athlete",
