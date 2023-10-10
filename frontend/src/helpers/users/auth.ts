@@ -8,7 +8,12 @@ import {
   GoogleAuthProvider,
 } from "firebase/auth";
 import { auth } from "@/firebase";
-import { getOneUser, userExists, getUserByEmail } from "@/helpers/users/user";
+import {
+  userExists,
+  getUserByEmail,
+  User,
+  AthleteUser,
+} from "@/helpers/users/user";
 
 export enum AuthError {
   emailError,
@@ -156,6 +161,8 @@ export function addCallbackOnAuthStateChanged({
       // if not add it
 
       // console.log("USER -> ", user);
+
+      // user with right uid exists in the db
       const userExistsRes = await userExists(user.uid);
       if (userExistsRes) {
         // Callback registered function
@@ -163,10 +170,33 @@ export function addCallbackOnAuthStateChanged({
         return;
       }
 
+      console.log("Vedemo sta email -> ", user.email);
+
       const userByEmail = await getUserByEmail(user.email!);
       console.log("user by email -> ", userByEmail);
+
       if (userByEmail == undefined || userByEmail == null) {
-        console.log("adding user...");
+        console.log("adding user..." + user.uid);
+        const newUser = new User({
+          uid: user.uid,
+          email: user.email!,
+          displayName: user.displayName!,
+          photoUrl: user.photoURL!,
+          phoneNumber: user.phoneNumber!,
+          name: user.displayName!,
+          surname: user.displayName!,
+          birthday: undefined,
+          address: undefined,
+          createdOn: new Date(),
+          createdBy: undefined,
+          lastUpdated: undefined,
+          locale: undefined,
+          role: undefined,
+          lastAccess: undefined,
+          lastNotificationRead: undefined,
+        });
+        newUser.saveNew();
+        onUserIn?.(user);
       } else {
         console.log("cloning user...");
       }
