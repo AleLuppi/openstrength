@@ -82,6 +82,7 @@ const rows = computed(() => {
       icon: "delete",
       flat: true,
       round: true,
+      color: "dark-light",
     },
     expanded: exercise.variants?.map((variant) => ({
       icon: {
@@ -89,6 +90,7 @@ const rows = computed(() => {
         name: "subdirectory_arrow_right",
         flat: true,
         round: true,
+        color: "dark",
       },
       variant: variant.name,
       delete: {
@@ -97,6 +99,7 @@ const rows = computed(() => {
         icon: "delete",
         flat: true,
         round: true,
+        color: "light",
       },
     })),
   }));

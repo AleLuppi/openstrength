@@ -43,27 +43,10 @@ a {
   }
 }
 
-.text-input-top-label,
-.text-table-header {
-  font-size: 0.9rem;
-  color: $light-dark;
-}
+
 
 
 /***** Setup colors *****/
-.text-brand{
-  color:$os-secondary-3 !important;
-}
-.bg-brand{  
-  background: $os-primary-6 !important;
-}
-
-.text-icon-color {
-  color: $os-primary-4 !important;
-}
-
-
-
 .text-lightest {
   color: $lightest !important;
 }
@@ -153,4 +136,59 @@ a {
 // Avoid underline
 .no-decoration {
   text-decoration: none
+}
+
+
+
+
+/***** Custom classes ******/
+.text-brand{
+  color:$os-secondary-4 !important;
+}
+.bg-brand{  
+  background: $os-primary-6 !important;
+}
+
+
+.text-icon-color {
+  color: $os-primary-4 !important;
+}
+
+
+
+.text-primary-button {
+  color: $os-primary-6 !important;
+}
+.bg-primary-button {
+  background: $os-primary-6 !important;
+}
+
+.text-secondary-button {
+  color: $os-secondary-8 !important;
+}
+.bg-secondary-button {
+  background: $os-secondary-8 !important;
+}
+
+.text-unselected-drawer {
+  color: $os-secondary-6 !important;
+}
+
+
+.bg-table-element {
+  background: $os-grey-0 !important;
+}
+.bg-table-header {
+  background: $os-grey-cold-2 !important;
+}
+.bg-table-element-selected {
+  background: $os-grey-cold-1 !important;
+}
+.bg-table-element-selected-child {
+  background: $os-grey-0 !important;
+}
+.text-input-top-label,
+.text-table-header {
+  font-size: 0.9rem;
+  color: $os-grey-cold-7;
 }

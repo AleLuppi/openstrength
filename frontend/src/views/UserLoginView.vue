@@ -66,6 +66,7 @@
           :label="$t('user.auth.login_button')"
           type="submit"
           outline
+          color="primary-button"
           class="q-my-lg"
         />
       </q-form>

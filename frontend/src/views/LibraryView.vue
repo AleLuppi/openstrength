@@ -44,6 +44,8 @@
                         ? $t('coach.excercise_management.add_button')
                         : undefined
                     "
+                    outline
+                    color="primary-button"
                     @click="onAdd"
                   />
                 </div>

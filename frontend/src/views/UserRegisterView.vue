@@ -111,6 +111,7 @@
           outline
           type="submit"
           class="q-my-lg"
+          color="primary-button"
         />
       </q-form>
 
@@ -123,6 +124,7 @@
 </template>
 
 <script setup lang="ts">
+/* eslint-disable */
 import { ref, watch } from "vue";
 import { useQuasar, QInput } from "quasar";
 import { useI18n } from "vue-i18n";
@@ -134,6 +136,7 @@ import {
 } from "@/helpers/users/auth";
 import { validateEmail, validatePassword } from "@/helpers/validate";
 import { logoFullImage } from "@/assets/sources";
+import UserOnboarding from "@/components/forms/UserOnboarding.vue";
 
 // Init plugin
 const $q = useQuasar();
