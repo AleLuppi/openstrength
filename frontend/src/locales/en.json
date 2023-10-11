@@ -112,6 +112,7 @@
   "coach": {
     "athlete_management": {
       "list": {
+        "title": "Athletes",
         "add": "Add athlete",
         "add_proceed": "Proceed",
         "add_error": "It was not possible to add the athlete, please retry",

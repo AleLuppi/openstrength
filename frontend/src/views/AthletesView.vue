@@ -15,6 +15,15 @@
       />
     </div>
 
+    <!-- Display athletes -->
+    <q-card>
+      <tableManagedAthletes
+        :title="$t('coach.athlete_management.list.title')"
+        :athletes="athletes"
+        :on-update="onUpdateAthlete"
+      />
+    </q-card>
+
     <!-- Dialog to add a new athlete -->
     <q-dialog
       v-model="showAthleteDialog"
@@ -69,36 +78,6 @@
         </q-form>
       </q-card>
     </q-dialog>
-
-    <!-- Navigation -->
-    <q-tabs v-model="selectedTab" class="text-dark">
-      <q-tab
-        v-for="tab in ['all', 'active', 'new']"
-        :key="tab"
-        :name="tab"
-        :label="$t('coach.athlete_management.filter.' + tab)"
-      />
-    </q-tabs>
-
-    <!-- TODO Display resources -->
-    <q-tab-panels v-model="selectedTab">
-      <q-tab-panel name="all">
-        <tableManagedAthletes
-          :athletes="athletes"
-          :on-update="onUpdateAthlete"
-        />
-      </q-tab-panel>
-
-      <q-tab-panel name="active">
-        <div class="text-h5">TODO</div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-      </q-tab-panel>
-
-      <q-tab-panel name="new">
-        <div class="text-h5">TODO</div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-      </q-tab-panel>
-    </q-tab-panels>
   </div>
 </template>
 
@@ -121,7 +100,6 @@ const coachInfo = useCoachInfoStore();
 
 // Set ref
 const updatingAthlete = ref<AthleteUser>(); // athlete that is currently being updated
-const selectedTab = ref("all"); // main tab to show
 const showAthleteDialog = ref(false); // whether to show dialog to add athlete
 const athleteName = ref(""); // new athlete name
 const athleteSurname = ref(""); // new athlete surname
