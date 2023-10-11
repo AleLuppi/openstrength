@@ -19,6 +19,7 @@
       tag="a"
       :to="{ name: page }"
       active-class="os-child-bg-primary"
+      class="link-child"
     >
       <!-- Icon near text on expanded drawer -->
       <q-item-section v-if="!props.mini" avatar>
@@ -43,6 +44,7 @@
       tag="a"
       :to="{ name: user.isSignedIn ? 'profile' : 'login' }"
       active-class="os-child-bg-primary"
+      class="link-child"
     >
       <!-- Icon near text on expanded drawer -->
       <q-item-section v-if="!props.mini" avatar>
@@ -95,8 +97,8 @@ const user = useUserStore();
 const drawerPages = {
   home: "fa-solid fa-house-chimney",
   athletes: "fa-solid fa-users",
-  schedule: "fa-solid fa-dumbbell",
   library: "fa-solid fa-book",
+  schedule: "fa-solid fa-dumbbell",
 };
 </script>
 

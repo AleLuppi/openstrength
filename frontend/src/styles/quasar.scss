@@ -122,6 +122,12 @@ a {
 }
 
 
+/***** Setup appearance *****/
+.bordered {
+  border: 1px solid $dark-light;
+}
+
+
 /***** Useful classes *****/
 
 // Prevent text selection

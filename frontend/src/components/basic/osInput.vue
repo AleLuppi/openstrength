@@ -3,7 +3,7 @@
     <!-- Title -->
     <h6
       v-if="props.label"
-      class="text-input-top-label text-uppercase text-weight-medium q-my-xs"
+      class="q-my-xs text-input-top-label text-uppercase text-weight-medium text-left"
       :class="{ 'input-required': props.required }"
     >
       {{ props.label }}

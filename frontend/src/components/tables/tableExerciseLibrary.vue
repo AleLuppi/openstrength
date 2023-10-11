@@ -7,6 +7,7 @@
     hide-pagination
     @row-click="$props.onExerciseUpdate"
     @sub-row-click="$props.onVariantUpdate"
+    selection="single"
   ></os-table>
 </template>
 

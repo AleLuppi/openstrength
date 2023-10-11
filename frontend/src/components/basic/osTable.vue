@@ -3,25 +3,25 @@
     v-bind="$attrs"
     flat
     wrap-cells
-    separator="none"
+    separator="horizontal"
     :pagination="{ rowsPerPage: 0 }"
     :hide-pagination="
       Boolean($attrs.hidePagination) ||
       (($attrs.rows as any[]) ?? []).length < 10
     "
     :rows-per-page-options="[10, 25, 50, 100, 0]"
+    :hide-selected-banner="true"
     row-key="name"
     v-model:selected="selected"
   >
     <!-- Set header style -->
     <template v-slot:header="props">
-      <q-tr :props="props">
+      <q-tr :props="props" class="bg-lighter">
         <q-th
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
           class="text-h6 text-table-header text-uppercase text-weight-medium"
-          style="border-bottom-width: 1px"
         >
           {{ col.label }}
         </q-th>
@@ -38,9 +38,17 @@
             onRowClick(undefined, props.row, $attrs.selection as string);
           props.expand = !props.expand;
         "
-        :class="{ 'cursor-pointer': $attrs.onRowClick || props.row.expanded }"
+        :class="{
+          'cursor-pointer': $attrs.onRowClick || props.row.expanded,
+          'os-tr-selected': props.selected,
+        }"
       >
-        <q-td v-for="col in props.cols" :key="col.name" :props="props">
+        <q-td
+          v-for="col in props.cols"
+          :key="col.name"
+          :props="props"
+          class="os-td-selected"
+        >
           <osVariableElement :props="col.value" />
         </q-td>
       </q-tr>
@@ -84,3 +92,20 @@ function onRowClick(_: any, row: { [key: string]: any }, selection?: string) {
   else if (selection) selected.value = [row];
 }
 </script>
+
+<style scoped lang="scss">
+.os-tr-selected {
+  & > .os-td-selected {
+    border-color: $primary;
+    border-block-width: 2px;
+
+    &:first-child {
+      border-inline-start-width: 2px;
+    }
+
+    &:last-child {
+      border-inline-end-width: 2px;
+    }
+  }
+}
+</style>
