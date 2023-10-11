@@ -51,6 +51,19 @@ a {
 
 
 /***** Setup colors *****/
+.text-brand{
+  color:$os-secondary-3 !important;
+}
+.bg-brand{  
+  background: $os-primary-6 !important;
+}
+
+.text-icon-color {
+  color: $os-primary-4 !important;
+}
+
+
+
 .text-lightest {
   color: $lightest !important;
 }

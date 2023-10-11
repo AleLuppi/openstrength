@@ -21,7 +21,7 @@
         <span class="q-focus-helper"></span>
 
         <!-- Show icon, title, and subtitle -->
-        <q-icon :name="buttonInfo.icon" size="6em" color="primary" />
+        <q-icon :name="buttonInfo.icon" size="6em" color="icon-color" />
         <h6>
           {{ $t(buttonInfo.title) }}
         </h6>

@@ -8,6 +8,7 @@
       <q-btn
         icon="add"
         :label="$t('coach.athlete_management.list.add')"
+        color="brand"
         @click="
           updatingAthlete = undefined;
           showAthleteDialog = true;

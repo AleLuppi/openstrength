@@ -5,7 +5,7 @@ import { QBtn, QTab, QTabs, QTabPanels } from "quasar";
 export default () => {
   setQuasarComponentDefaultPropValues(QBtn, {
     noCaps: true,
-    color: "primary",
+    color: "brand",
   });
   setQuasarComponentDefaultPropValues(QTabs, {
     narrowIndicator: true,
