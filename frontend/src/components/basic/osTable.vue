@@ -34,7 +34,7 @@
         :props="props"
         @click="
           ($attrs.onRowClick as Function)?.(undefined, props.row);
-          if ($attrs.selection)
+          if ($attrs.selection && $attrs.selection != 'none')
             onRowClick(undefined, props.row, $attrs.selection as string);
           props.expand = !props.expand;
         "

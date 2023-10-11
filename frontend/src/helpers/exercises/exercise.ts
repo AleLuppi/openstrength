@@ -62,6 +62,28 @@ export class Exercise {
   variants?: ExerciseVariant[];
   defaultVariant?: ExerciseVariant;
 
+  // Get all muscle groups and equipments in variants
+  public get muscleGroups() {
+    return [
+      ...new Set(
+        this.variants?.reduce(
+          (outList, variant) => outList.concat(variant.muscleGroups ?? []),
+          [] as string[],
+        ),
+      ),
+    ];
+  }
+  public get equipment() {
+    return [
+      ...new Set(
+        this.variants?.reduce(
+          (outList, variant) => outList.concat(variant.equipment ?? []),
+          [] as string[],
+        ),
+      ),
+    ];
+  }
+
   constructor({ uid, name, variants }: ExerciseProps = {}) {
     this.uid = uid;
     this.name = name;
@@ -69,6 +91,7 @@ export class Exercise {
       if (!variant.exercise) variant.exercise = this;
     });
     this.variants = variants;
+    this.variants ?? this.addDefaultVariant();
     this.defaultVariant = variants?.find((variant) => variant.isDefault);
   }
 
@@ -199,6 +222,50 @@ export class ExerciseVariant {
     this.muscleGroups = muscleGroups;
     this.equipment = equipment;
     this.videoUrl = videoUrl;
+  }
+
+  /**
+   * Store a new variant on database.
+   *
+   * @param variant element that shall be stored.
+   * @param onSuccess function to execute when operation is successful.
+   * @param onError function to execute when operation fails.
+   */
+  saveNew({
+    variant,
+    onSuccess,
+    onError,
+  }: {
+    variant?: ExerciseVariant;
+    onSuccess?: Function;
+    onError?: Function;
+  } = {}) {
+    addDocExerciseVariant(variant || this, (variant || this).exercise, {
+      onSuccess: onSuccess,
+      onError: onError,
+    });
+  }
+
+  /**
+   * Update the variant on database.
+   *
+   * @param variant element that shall be updated.
+   * @param onSuccess function to execute when operation is successful.
+   * @param onError function to execute when operation fails.
+   */
+  saveUpdate({
+    variant,
+    onSuccess,
+    onError,
+  }: {
+    variant?: ExerciseVariant;
+    onSuccess?: Function;
+    onError?: Function;
+  } = {}) {
+    updateDocExerciseVariant(variant || this, (variant || this).exercise, {
+      onSuccess: onSuccess,
+      onError: onError,
+    });
   }
 
   /**

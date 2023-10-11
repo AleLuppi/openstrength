@@ -17,8 +17,6 @@
       "athletes": "Athletes",
       "library": "Library",
       "library_title": "Library",
-      "librarytab_exercises": "Exercises",
-      "librarytab_programs": "Programs",
       "schedule": "Schedule",
       "schedule_title": "Schedule",
       "profile": "Profile",
@@ -135,9 +133,14 @@
         "old": "Old"
       }
     },
-    "excercise_management": {
-      "list_title": "Exercises",
-      "list_search": "Search exercise...",
+    "exercise_management": {
+      "list": {
+        "title": "Exercises library",
+        "title_exercise": "Exercises",
+        "title_variant": "Variants",
+        "search_exercise": "Search exercise...",
+        "search_variant": "Search variant..."
+      },
       "add": "Add a new exercise",
       "add_button": "Add new",
       "add_proceed": "Save",
@@ -152,6 +155,7 @@
       "delete_exercise_confirm": "Are you sure you want to delete exercise \"{ exercise }\" and all related variants?",
       "delete_variant": "Delete variant",
       "delete_variant_confirm": "Are you sure you want to delete \"{ variant }\" variant from \"{ exercise }\"?",
+      "delete_proceed": "Delete it",
       "exercise_name": "Name",
       "exercise_variant": "Variant",
       "exercise_loadtype": "Load type",
@@ -164,6 +168,11 @@
       "exercise_equipment": "Tools",
       "exercise_video": "Video link",
       "exercise_description": "Description"
+    },
+    "schedule_management": {
+      "list": {
+        "title": "Programs library"
+      }
     }
   },
   "sport": {

@@ -124,7 +124,12 @@ a {
 
 /***** Setup appearance *****/
 .bordered {
+  // TODO uniform name with other colors
   border: 1px solid $dark-light;
+}
+
+.border-primary {
+  border: 2px solid $primary;
 }
 
 

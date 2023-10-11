@@ -6,28 +6,33 @@
     <!-- Navigation -->
     <q-tabs v-model="selectedTab" class="text-dark q-pa-md">
       <q-tab
-        v-for="tab in ['exercises', 'programs']"
+        v-for="tab in ['exercise', 'schedule']"
         :key="tab"
         :name="tab"
-        :label="$t('layout.views.librarytab_' + tab)"
+        :label="$t('coach.' + tab + '_management.list.title')"
       />
     </q-tabs>
 
+    <!-- TODO check panels -->
     <!-- First Tab: Exercises -->
     <q-tab-panels v-model="selectedTab">
-      <q-tab-panel name="exercises">
+      <q-tab-panel name="exercise">
         <!-- Excercise cards -->
         <div class="row q-col-gutter-x-md">
           <!-- List exercises -->
           <div class="col-12 col-sm-6">
             <q-card>
               <q-card-section>
-                <h6>{{ $t("coach.excercise_management.list_title") }}</h6>
+                <h6>
+                  {{ $t("coach.exercise_management.list.title_exercise") }}
+                </h6>
 
                 <div class="row q-gutter-x-md items-center">
                   <os-input
                     v-model="searchExercise"
-                    :placeholder="$t('coach.excercise_management.list_search')"
+                    :placeholder="
+                      $t('coach.exercise_management.list.search_exercise')
+                    "
                     hide-bottom-space
                     debounce="500"
                     class="col"
@@ -41,10 +46,10 @@
                     :icon="$q.screen.gt.sm ? undefined : 'add'"
                     :label="
                       $q.screen.gt.sm
-                        ? $t('coach.excercise_management.add_button')
+                        ? $t('coach.exercise_management.add_button')
                         : undefined
                     "
-                    @click="onAdd"
+                    @click="onNewExercise"
                   />
                 </div>
               </q-card-section>
@@ -53,115 +58,95 @@
 
               <TableExerciseLibrary
                 :exercises="exercises"
-                :on-variant-update="onVariantUpdate"
-                :on-exercise-delete="onExerciseDelete"
-                :on-variant-delete="onExerciseVariantDelete"
+                :on-add="onExerciseAdd"
+                :on-update="onExerciseUpdate"
+                :on-delete="onExerciseDelete"
+                :add-new="addingNewExercise"
               />
             </q-card>
           </div>
 
-          <!-- Create or update exercise -->
+          <!-- List variants -->
+          <!-- TODO card or pagination -->
           <div class="col-12 col-sm-6">
-            <q-card v-if="showExerciseForm" class="col-12 col-sm-6">
+            <q-card>
+              <!-- TODO hide everything if exercise is not selected -->
+
               <q-card-section>
                 <h6>
-                  {{
-                    $t(
-                      "coach.excercise_management." +
-                        (selectedExercise ? "update" : "add"),
-                    )
-                  }}
+                  {{ $t("coach.exercise_management.list.title_variant") }}
                 </h6>
-              </q-card-section>
 
-              <q-card-section>
-                <q-form @submit="onSubmit">
-                  <div class="row q-col-gutter-x-md">
-                    <os-input
-                      v-model="exerciseName"
-                      :label="$t('coach.excercise_management.exercise_name')"
-                      class="col-12 col-md-6"
-                    />
-                    <os-select
-                      v-model="variantName"
-                      :label="$t('coach.excercise_management.exercise_variant')"
-                      use-input
-                      :options="
-                        exerciseVariants?.map((variant) => variant.name)
-                      "
-                      class="col-12 col-md-6"
-                    />
-                    <os-select
-                      v-model="variantMuscleGroups"
-                      :label="
-                        $t('coach.excercise_management.exercise_musclegroups')
-                      "
-                      use-input
-                      :options="exerciseMuscleGroupsOptions"
-                      multiple
-                      class="col-12"
-                    />
-                    <os-select
-                      v-model="variantLoadType"
-                      :label="
-                        $t('coach.excercise_management.exercise_loadtype')
-                      "
-                      :options="
-                        (
-                          Object.keys(
-                            ExerciseLoadType,
-                          ) as (keyof typeof ExerciseLoadType)[]
-                        ).map((val) => ({
-                          label: $t(
-                            'coach.excercise_management.exercise_loadtypes.' +
-                              val,
-                          ),
-                          value: val,
-                        }))
-                      "
-                      emit-value
-                      map-options
-                      class="col-12 col-md-6"
-                    />
-                    <os-select
-                      v-model="variantEquipment"
-                      :label="
-                        $t('coach.excercise_management.exercise_equipment')
-                      "
-                      use-input
-                      :options="exerciseEquipmentOptions"
-                      multiple
-                      class="col-12 col-md-6"
-                    />
-                    <os-input
-                      v-model="variantVideo"
-                      :label="$t('coach.excercise_management.exercise_video')"
-                      class="col-12"
-                    />
-                    <os-input
-                      v-model="variantDescription"
-                      :label="
-                        $t('coach.excercise_management.exercise_description')
-                      "
-                      type="textarea"
-                      class="col-12"
-                    />
-                  </div>
+                <div class="row q-gutter-x-md items-center">
+                  <os-input
+                    v-model="searchVariant"
+                    :placeholder="
+                      $t('coach.exercise_management.list.search_variant')
+                    "
+                    hide-bottom-space
+                    debounce="500"
+                    class="col"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="search" />
+                    </template>
+                  </os-input>
 
                   <q-btn
-                    type="submit"
-                    :label="$t('coach.excercise_management.add_proceed')"
-                    class="full-width"
-                  ></q-btn>
-                </q-form>
+                    :icon="$q.screen.gt.sm ? undefined : 'add'"
+                    :label="
+                      $q.screen.gt.sm
+                        ? $t('coach.exercise_management.add_button')
+                        : undefined
+                    "
+                    @click="onNewVariant"
+                  />
+                </div>
               </q-card-section>
+
+              <q-separator />
+
+              <TableExerciseLibrary
+                :exercises="[]"
+                :variants="selectedExercise?.variants"
+                :on-update="onVariantUpdate"
+                :on-delete="onVariantDelete"
+              />
             </q-card>
           </div>
         </div>
 
+        <!-- Dialog to create or update variant -->
+        <q-dialog v-model="showDialogVariantForm" @hide="clearVariant">
+          <q-card>
+            <q-card-section>
+              <h6>
+                {{
+                  $t(
+                    "coach.exercise_management." +
+                      (selectedVariant ? "update" : "add"),
+                  )
+                }}
+              </h6>
+            </q-card-section>
+
+            <q-card-section>
+              <FormExerciseVariantLibrary
+                :variant="
+                  selectedVariant ??
+                  new ExerciseVariant({ exercise: selectedExercise })
+                "
+                :on-submit="onVariantSubmit"
+                :options-muscle-groups="exerciseMuscleGroupsOptions"
+                :options-equipment="exerciseEquipmentOptions"
+              />
+            </q-card-section>
+          </q-card>
+        </q-dialog>
+
         <!-- Dialog delete an exercise or variant -->
         <q-dialog
-          v-model="showDeleteDialog"
+          v-model="showDialogDelete"
           @hide="
             deletingExercise = undefined;
             deletingVariant = undefined;
@@ -172,10 +157,10 @@
               <p>
                 {{
                   deletingExercise
-                    ? $t("coach.excercise_management.delete_exercise_confirm", {
+                    ? $t("coach.exercise_management.delete_exercise_confirm", {
                         exercise: deletingExercise?.name,
                       })
-                    : $t("coach.excercise_management.delete_variant_confirm", {
+                    : $t("coach.exercise_management.delete_variant_confirm", {
                         variant: deletingVariant?.name,
                         exercise: deletingVariant?.exercise?.name,
                       })
@@ -191,7 +176,7 @@
                 v-close-popup
               />
               <q-btn
-                :label="$t('coach.athlete_management.list.add_proceed')"
+                :label="$t('coach.exercise_management.delete_proceed')"
                 @click="
                   if (deletingExercise) deleteExercise(deletingExercise);
                   if (deletingVariant) deleteVariant(deletingVariant);
@@ -202,8 +187,9 @@
           </q-card>
         </q-dialog>
       </q-tab-panel>
-      <!-- Second tab: Programs -->
-      <q-tab-panel name="programs">
+
+      <!-- TODO Second tab: Programs -->
+      <q-tab-panel name="schedule">
         <div class="text-h5">TODO</div>
         Lorem ipsum dolor sit amet consectetur adipisicing elit.
       </q-tab-panel>
@@ -218,10 +204,10 @@ import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import TableExerciseLibrary from "@/components/tables/TableExerciseLibrary.vue";
+import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLibrary.vue";
 import {
   Exercise,
   ExerciseVariant,
-  ExerciseLoadType,
   reduceExercises,
 } from "@/helpers/exercises/exercise";
 
@@ -234,44 +220,37 @@ const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
 // Set ref
-const selectedTab = ref("exercises"); // main tab to show
-const showExerciseForm = ref(false);
-const showDeleteDialog = ref(false);
+const selectedTab = ref("exercise"); // TODO main tab to show
+const searchExercise = ref<string>(); // TODO search
+const searchVariant = ref<string>(); // TODO search
+const addingNewExercise = ref(false);
+const addingNewVariant = ref(false);
 const deletingExercise = ref<Exercise>();
 const deletingVariant = ref<ExerciseVariant>();
-const searchExercise = ref<string>(); // TODO
-const exerciseName = ref<string>();
-const exerciseVariants = ref<ExerciseVariant[]>();
-const variantLoadType = ref<string>();
-const variantMuscleGroups = ref<string[]>();
-const variantName = ref<string>();
-const variantEquipment = ref<string[]>();
-const variantVideo = ref<string>();
-const variantDescription = ref<string>();
-const selectedExercise = computed(() =>
-  exerciseName.value
-    ? exercises.value.find((exercise) => exercise.name == exerciseName.value)
-    : undefined,
+const showDialogDelete = ref(false);
+const selectedExercise = ref<Exercise>();
+const selectedVariant = ref<ExerciseVariant>();
+// TODO const showVariantList = computed(() => Boolean(selectedExercise.value));
+const showVariantForm = computed(() =>
+  Boolean(addingNewVariant.value || selectedVariant.value),
 );
-const selectedVariant = computed(() =>
-  variantName.value
-    ? selectedExercise.value?.variants?.find(
-        (variant) => variant.name == variantName.value,
-      )
-    : undefined,
-);
+const showDialogVariantForm = ref(false);
+
+// Update dialog show status
+watch(showVariantForm, (val) => (showDialogVariantForm.value = val));
+
+// Get exercises to display
+const exercises = computed<Exercise[]>(() => {
+  coachInfo.loadExercises(user.uid, true);
+  return coachInfo.exercises || [];
+});
+
+// Get options to display on variant creation or update
 const exerciseMuscleGroupsOptions = computed(() => {
   return [
     ...new Set(
       exercises.value.reduce(
-        (outList, exercise) =>
-          outList.concat(
-            exercise.variants?.reduce(
-              (outVariantList, variant) =>
-                outVariantList.concat(variant.muscleGroups ?? []),
-              [] as string[],
-            ) ?? [],
-          ),
+        (outList, exercise) => outList.concat(exercise.muscleGroups),
         [] as string[],
       ),
     ),
@@ -281,171 +260,90 @@ const exerciseEquipmentOptions = computed(() => {
   return [
     ...new Set(
       exercises.value.reduce(
-        (outList, exercise) =>
-          outList.concat(
-            exercise.variants?.reduce(
-              (outVariantList, variant) =>
-                outVariantList.concat(variant.equipment ?? []),
-              [] as string[],
-            ) ?? [],
-          ),
+        (outList, exercise) => outList.concat(exercise.equipment),
         [] as string[],
       ),
     ),
   ].sort();
 });
 
-// Get exercises to display
-const exercises = computed<Exercise[]>(() => {
-  coachInfo.loadExercises(user.uid, true);
-  return coachInfo.exercises || [];
-});
-
-// Update texts when selected exercise change
-watch(selectedExercise, (_new) => {
-  // FIXME with current behavior, one cannot have two exercises starting with same string
-  exerciseName.value = _new?.name;
-  exerciseVariants.value = _new?.variants;
-});
-watch(selectedVariant, (_new) => {
-  variantName.value = _new?.name;
-  variantDescription.value = _new?.description;
-  variantLoadType.value = _new?.loadType;
-  variantMuscleGroups.value = _new?.muscleGroups;
-  variantEquipment.value = _new?.equipment;
-  variantVideo.value = _new?.videoUrl;
-});
-
 // Show dialog deleting dialog when required
 watch([deletingExercise, deletingVariant], ([_newExercise, _newVariant]) => {
-  if (_newExercise || _newVariant) showDeleteDialog.value = true;
+  if (_newExercise || _newVariant) showDialogDelete.value = true;
 });
 
 /**
- * Submit new or updated exercise.
+ * Show dialog to add a new exercise.
  */
-function onSubmit() {
-  if (selectedExercise.value) {
-    const exerciseToUpdate = selectedExercise.value;
-    exerciseToUpdate.name = exerciseName.value;
-    if (
-      exerciseToUpdate.variants
-        ?.map((variant) => variant.name)
-        .includes(variantName.value)
-    ) {
-      const variantToUpdate = exerciseToUpdate.variants.find(
-        (variant) => variant.name == variantName.value,
-      );
-      if (variantToUpdate) {
-        variantToUpdate.name = variantName.value;
-        variantToUpdate.description = variantDescription.value;
-        variantToUpdate.loadType = variantLoadType.value as ExerciseLoadType;
-        variantToUpdate.muscleGroups = variantMuscleGroups.value;
-        variantToUpdate.equipment = variantEquipment.value;
-        variantToUpdate.videoUrl = variantVideo.value;
-      }
-    } else
-      exerciseToUpdate.variants?.push(
-        new ExerciseVariant({
-          name: variantName.value,
-          description: variantDescription.value,
-          loadType: variantLoadType.value as ExerciseLoadType,
-          muscleGroups: variantMuscleGroups.value,
-          equipment: variantEquipment.value,
-          videoUrl: variantVideo.value,
-        }),
-      );
-    exerciseToUpdate.saveUpdate({
-      // TODO put in a separated method
-      // Variant update
-      onSuccess: () =>
-        $q.notify({
-          type: "positive",
-          message: i18n.t("coach.excercise_management.update_success", {
-            exercise: exerciseToUpdate.name,
-            variant: variantName.value,
-          }),
-          position: "bottom",
-        }),
-      onError: () =>
-        $q.notify({
-          type: "negative",
-          message: i18n.t("coach.excercise_management.update_error"),
-          position: "bottom",
-        }),
-    });
-  } else {
-    // Save new exercise
-    const newExercise = new Exercise({
-      name: exerciseName.value,
-      variants: variantName.value
-        ? [
-            new ExerciseVariant({
-              name: variantName.value,
-              description: variantDescription.value,
-              loadType: variantLoadType.value as ExerciseLoadType,
-              muscleGroups: variantMuscleGroups.value,
-              equipment: variantEquipment.value,
-              videoUrl: variantVideo.value,
-            }),
-          ]
-        : [],
-    });
-    if (!variantName.value) newExercise.addDefaultVariant();
-    newExercise.saveNew({
-      onSuccess: () => {
-        coachInfo.exercises = reduceExercises(
-          (coachInfo.exercises || []).concat([newExercise]),
-        );
-        // TODO put in a separate method
-        // Success exercise saved
-        $q.notify({
-          type: "positive",
-          message: i18n.t("coach.excercise_management.add_success", {
-            exercise: newExercise?.name,
-          }),
-          position: "bottom",
-        });
-      },
-      // TODO put in a separate method
-      onError: () => {
-        $q.notify({
-          type: "negative",
-          message: i18n.t("coach.excercise_management.add_error"),
-          position: "bottom",
-        });
-      },
-    });
-  }
-}
-
-/**
- * Create a new exercise and add it to list.
- */
-function onAdd() {
+function onNewExercise() {
   clearExercise();
-  showExerciseForm.value = true;
+  addingNewExercise.value = true;
 }
 
 /**
- * Show a dialog to update variant.
+ * Add a new exercise to the list.
  *
- * @param exercise element that needs to be updated.
+ * @param exerciseName name that shall be used when creating the exercise.
  */
-function onVariantUpdate(
-  exerciseRow: { [key: string]: any; exercise?: string },
-  variantRow: { [key: string]: any; variant?: string },
-) {
-  console.log(exerciseRow.exercise, variantRow.variant);
-  if (exerciseRow.exercise && variantRow.variant) {
-    exerciseName.value = exerciseRow.exercise;
-    variantName.value = variantRow.variant;
-    showExerciseForm.value = true;
-    console.log("riciao");
-  } else clearExercise();
+function onExerciseAdd(exerciseName: string) {
+  addingNewExercise.value = false;
+
+  // Ensure a correct name for a new exercise is provided
+  if (
+    !exerciseName ||
+    exercises.value.find((exercise) => exercise.name == exerciseName)
+  )
+    return;
+
+  // Save new exercise
+  const newExercise = new Exercise({
+    name: exerciseName,
+  });
+  newExercise.saveNew({
+    onSuccess: () => {
+      coachInfo.exercises = reduceExercises(
+        [newExercise].concat(coachInfo.exercises || []),
+      );
+      // TODO put in a separate method
+      // Inform user about exercise successfully saved
+      $q.notify({
+        type: "positive",
+        message: i18n.t("coach.exercise_management.add_success", {
+          exercise: newExercise?.name,
+        }),
+        position: "bottom",
+      });
+    },
+    onError: () => {
+      // TODO put in a separate method
+      // Inform user about error while saving exercise
+      $q.notify({
+        type: "negative",
+        message: i18n.t("coach.exercise_management.add_error"),
+        position: "bottom",
+      });
+    },
+  });
 }
 
 /**
+ * Allow exercise modification.
+ *
+ * @param exerciseOrAny might be exercise to be updated, requires type check.
+ * @param row optional row of the table where exercise was selected.
+ */
+function onExerciseUpdate(
+  exerciseOrAny: Exercise | any,
+  row?: { [key: string]: any; name?: string },
+) {
+  if (exerciseOrAny instanceof Exercise) selectedExercise.value = exerciseOrAny;
+  else
+    selectedExercise.value = exercises.value.find(
+      (exercise) => exercise.name && exercise.name == row?.name,
+    );
+}
+
+/** TODO
  * Delete one exercise from list, upon confirmation.
  *
  * @param exercise element that needs to be deleted.
@@ -455,11 +353,82 @@ function onExerciseDelete(exercise: Exercise) {
 }
 
 /**
+ * Show dialog to add a new variant.
+ */
+function onNewVariant() {
+  clearVariant();
+  addingNewVariant.value = true;
+}
+
+/**
+ * Submit new or updated variant.
+ */
+function onVariantSubmit(variant: ExerciseVariant) {
+  const exercise = variant.exercise ?? selectedExercise.value;
+  if (addingNewVariant.value)
+    variant.saveNew({
+      onSuccess: () => {
+        exercise?.variants?.unshift(variant);
+        $q.notify({
+          type: "positive",
+          message: i18n.t("coach.exercise_management.add_success", {
+            exercise: variant.name,
+          }),
+          position: "bottom",
+        });
+      },
+      onError: () =>
+        $q.notify({
+          type: "negative",
+          message: i18n.t("coach.exercise_management.add_error"),
+          position: "bottom",
+        }),
+    });
+  else
+    variant.saveUpdate({
+      // No need to update variant on success as it's done directly in form
+      onSuccess: () =>
+        $q.notify({
+          type: "positive",
+          message: i18n.t("coach.exercise_management.update_success", {
+            exercise: exercise?.name,
+            variant: variant.name,
+          }),
+          position: "bottom",
+        }),
+      onError: () =>
+        $q.notify({
+          type: "negative",
+          message: i18n.t("coach.exercise_management.update_error"),
+          position: "bottom",
+        }),
+    });
+}
+
+/**
+ * Allow variant modification.
+ *
+ * @param variantOrAny might be variant to be updated, requires type check.
+ * @param row optional row of the table where variant was selected.
+ */
+function onVariantUpdate(
+  variantOrAny: ExerciseVariant | any,
+  row?: { [key: string]: any; name?: string },
+) {
+  if (variantOrAny instanceof ExerciseVariant)
+    selectedVariant.value = variantOrAny;
+  else
+    selectedVariant.value = selectedExercise.value?.variants?.find(
+      (variant) => variant.name && variant.name == row?.name,
+    );
+}
+
+/**
  * Delete one variant from list, upon confirmation.
  *
  * @param variant element that needs to be deleted.
  */
-function onExerciseVariantDelete(variant: ExerciseVariant) {
+function onVariantDelete(variant: ExerciseVariant) {
   deletingVariant.value = variant;
 }
 
@@ -480,9 +449,9 @@ function deleteExercise(exercise: Exercise) {
 }
 
 /**
- * Actually delete the selected exercise.
+ * Actually delete the selected variant.
  *
- * @param exercise element that shall be removed.
+ * @param variant element that shall be removed.
  */
 function deleteVariant(variant: ExerciseVariant) {
   variant.remove({
@@ -496,7 +465,7 @@ function deleteVariant(variant: ExerciseVariant) {
         (coachExercise) =>
           coachExercise.variants && coachExercise.variants.length > 0,
       );
-      clearExercise();
+      clearVariant();
     },
   });
 }
@@ -505,8 +474,18 @@ function deleteVariant(variant: ExerciseVariant) {
  * Clear exercise form and hide it.
  */
 function clearExercise() {
-  exerciseName.value = undefined;
-  variantName.value = undefined;
-  showExerciseForm.value = false;
+  addingNewExercise.value = false;
+  selectedExercise.value = undefined;
+  deletingExercise.value = undefined;
+  clearVariant();
+}
+
+/**
+ * Clear variant form and hide it.
+ */
+function clearVariant() {
+  addingNewVariant.value = false;
+  selectedVariant.value = undefined;
+  deletingVariant.value = undefined;
 }
 </script>
