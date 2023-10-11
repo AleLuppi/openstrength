@@ -16,21 +16,12 @@ export enum ExerciseLoadType {
 }
 
 /**
- * Define the name of the default exercise variant.
- */
-export const defaultExerciseVariant = "default";
-
-/**
  * Exercise properties.
  */
 export type ExerciseProps = {
   // Basic info
   uid?: string;
   name?: string;
-
-  // Exercise info
-  loadType?: ExerciseLoadType;
-  muscleGroups?: string[];
 
   // Variants
   variants?: ExerciseVariant[];
@@ -49,6 +40,8 @@ export type ExerciseVariantProps = {
 
   // Variant info
   description?: string;
+  loadType?: ExerciseLoadType;
+  muscleGroups?: string[];
   equipment?: string[];
 
   // Additional info
@@ -65,28 +58,18 @@ export class Exercise {
   uid?: string;
   name?: string;
 
-  // Exercise info
-  loadType?: ExerciseLoadType;
-  muscleGroups?: string[];
-
   // Variants
   variants?: ExerciseVariant[];
+  defaultVariant?: ExerciseVariant;
 
-  constructor({
-    uid,
-    name,
-    loadType,
-    muscleGroups,
-    variants,
-  }: ExerciseProps = {}) {
+  constructor({ uid, name, variants }: ExerciseProps = {}) {
     this.uid = uid;
     this.name = name;
-    this.loadType = loadType;
-    this.muscleGroups = muscleGroups;
     variants?.forEach((variant) => {
       if (!variant.exercise) variant.exercise = this;
     });
     this.variants = variants;
+    this.defaultVariant = variants?.find((variant) => variant.isDefault);
   }
 
   /**
@@ -95,14 +78,11 @@ export class Exercise {
    * @param force if true, force addition of default variant even if already existent.
    */
   addDefaultVariant(force: boolean = false) {
-    if (
-      force ||
-      !this.variants?.find((variant) => variant.name == defaultExerciseVariant)
-    )
+    if (force || !this.variants?.find((variant) => variant.isDefault))
       (this.variants = this.variants || []).push(
         new ExerciseVariant({
           uid: this.uid,
-          name: defaultExerciseVariant,
+          name: undefined,
           exercise: this,
         }),
       );
@@ -190,16 +170,24 @@ export class ExerciseVariant {
 
   // Variant info
   description?: string;
+  loadType?: ExerciseLoadType;
+  muscleGroups?: string[];
   equipment?: string[];
 
   // Additional info
   videoUrl?: string;
+
+  public get isDefault() {
+    return !this.name;
+  }
 
   constructor({
     uid,
     name,
     exercise,
     description,
+    loadType,
+    muscleGroups,
     equipment,
     videoUrl,
   }: ExerciseVariantProps = {}) {
@@ -207,6 +195,8 @@ export class ExerciseVariant {
     this.name = name;
     this.exercise = exercise;
     this.description = description;
+    this.loadType = loadType;
+    this.muscleGroups = muscleGroups;
     this.equipment = equipment;
     this.videoUrl = videoUrl;
   }
@@ -382,13 +372,13 @@ export function packExerciseVariantInfo(
 ) {
   return new Exercise({
     name: fullVariantObj.exercise,
-    loadType: fullVariantObj.loadType,
-    muscleGroups: fullVariantObj.muscleGroups,
     variants: [
       new ExerciseVariant({
         uid: uid,
         name: fullVariantObj.variant,
         description: fullVariantObj.description,
+        loadType: fullVariantObj.loadType,
+        muscleGroups: fullVariantObj.muscleGroups,
         equipment: fullVariantObj.equipment,
         videoUrl: fullVariantObj.videoUrl,
       }),

@@ -93,7 +93,7 @@
                       class="col-12 col-md-6"
                     />
                     <os-select
-                      v-model="exerciseMuscleGroups"
+                      v-model="variantMuscleGroups"
                       :label="
                         $t('coach.excercise_management.exercise_musclegroups')
                       "
@@ -103,7 +103,7 @@
                       class="col-12"
                     />
                     <os-select
-                      v-model="exerciseLoadType"
+                      v-model="variantLoadType"
                       :label="
                         $t('coach.excercise_management.exercise_loadtype')
                       "
@@ -243,8 +243,8 @@ const deletingVariant = ref<ExerciseVariant>();
 const searchExercise = ref<string>(); // TODO
 const exerciseName = ref<string>();
 const exerciseVariants = ref<ExerciseVariant[]>();
-const exerciseLoadType = ref<string>();
-const exerciseMuscleGroups = ref<string[]>();
+const variantLoadType = ref<string>();
+const variantMuscleGroups = ref<string[]>();
 const variantName = ref<string>();
 const variantEquipment = ref<string[]>();
 const variantVideo = ref<string>();
@@ -265,7 +265,14 @@ const exerciseMuscleGroupsOptions = computed(() => {
   return [
     ...new Set(
       exercises.value.reduce(
-        (outList, exercise) => outList.concat(exercise.muscleGroups ?? []),
+        (outList, exercise) =>
+          outList.concat(
+            exercise.variants?.reduce(
+              (outVariantList, variant) =>
+                outVariantList.concat(variant.muscleGroups ?? []),
+              [] as string[],
+            ) ?? [],
+          ),
         [] as string[],
       ),
     ),
@@ -300,14 +307,14 @@ watch(selectedExercise, (_new) => {
   // FIXME with current behavior, one cannot have two exercises starting with same string
   exerciseName.value = _new?.name;
   exerciseVariants.value = _new?.variants;
-  exerciseLoadType.value = _new?.loadType;
-  exerciseMuscleGroups.value = _new?.muscleGroups;
 });
 watch(selectedVariant, (_new) => {
   variantName.value = _new?.name;
+  variantDescription.value = _new?.description;
+  variantLoadType.value = _new?.loadType;
+  variantMuscleGroups.value = _new?.muscleGroups;
   variantEquipment.value = _new?.equipment;
   variantVideo.value = _new?.videoUrl;
-  variantDescription.value = _new?.description;
 });
 
 // Show dialog deleting dialog when required
@@ -322,8 +329,6 @@ function onSubmit() {
   if (selectedExercise.value) {
     const exerciseToUpdate = selectedExercise.value;
     exerciseToUpdate.name = exerciseName.value;
-    exerciseToUpdate.loadType = exerciseLoadType.value as ExerciseLoadType;
-    exerciseToUpdate.muscleGroups = exerciseMuscleGroups.value;
     if (
       exerciseToUpdate.variants
         ?.map((variant) => variant.name)
@@ -335,6 +340,8 @@ function onSubmit() {
       if (variantToUpdate) {
         variantToUpdate.name = variantName.value;
         variantToUpdate.description = variantDescription.value;
+        variantToUpdate.loadType = variantLoadType.value as ExerciseLoadType;
+        variantToUpdate.muscleGroups = variantMuscleGroups.value;
         variantToUpdate.equipment = variantEquipment.value;
         variantToUpdate.videoUrl = variantVideo.value;
       }
@@ -343,6 +350,8 @@ function onSubmit() {
         new ExerciseVariant({
           name: variantName.value,
           description: variantDescription.value,
+          loadType: variantLoadType.value as ExerciseLoadType,
+          muscleGroups: variantMuscleGroups.value,
           equipment: variantEquipment.value,
           videoUrl: variantVideo.value,
         }),
@@ -370,13 +379,13 @@ function onSubmit() {
     // Save new exercise
     const newExercise = new Exercise({
       name: exerciseName.value,
-      loadType: exerciseLoadType.value as ExerciseLoadType,
-      muscleGroups: exerciseMuscleGroups.value,
       variants: variantName.value
         ? [
             new ExerciseVariant({
               name: variantName.value,
               description: variantDescription.value,
+              loadType: variantLoadType.value as ExerciseLoadType,
+              muscleGroups: variantMuscleGroups.value,
               equipment: variantEquipment.value,
               videoUrl: variantVideo.value,
             }),
