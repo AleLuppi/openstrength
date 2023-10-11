@@ -46,7 +46,7 @@ export async function doAddDoc(
     const user = useUserStore();
     data = {
       ...data,
-      userId: user.uid,
+      userId: user.uid ?? null,
     };
   }
 
@@ -103,7 +103,7 @@ export async function doUpdateDoc(
     const user = useUserStore();
     data = {
       ...data,
-      userId: user.uid,
+      userId: user.uid ?? null,
     };
   }
 
