@@ -17,7 +17,7 @@
 
     <!-- Display athletes -->
     <q-card>
-      <tableManagedAthletes
+      <TableManagedAthletes
         :title="$t('coach.athlete_management.list.title')"
         :athletes="athletes"
         :on-update="onUpdateAthlete"
@@ -88,7 +88,7 @@ import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { AthleteUser } from "@/helpers/users/user";
-import tableManagedAthletes from "@/components/tables/tableManagedAthletes.vue";
+import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
 
 // Init plugin
 const $q = useQuasar();

@@ -1,118 +1,63 @@
 <template>
-  <div class="q-pa-md">
-    <q-stepper
-      v-model="step"
-      ref="stepperElement"
-      color="primary"
-      header-class="text-bold"
-      animated
-      class="text-center"
-    >
-      <!-- Step 1: anagraphic -->
-      <q-step
-        :name="1"
-        :title="$t('user.onboarding.header_step1')"
-        :caption="$t('user.onboarding.header_caption_step1')"
-        icon="settings"
-        :done="step > 1"
-      >
-        <img :src="logoFullImage" alt="Logo" />
-        <h3>{{ $t("user.onboarding.title_step1") }}</h3>
-        <p class="q-mt-xl">{{ $t("user.onboarding.action_step1_a") }}</p>
+  <q-stepper v-model="step" ref="stepperElement" color="primary" header-class="text-bold" animated class="text-center">
+    <!-- Step 1: anagraphic -->
+    <q-step :name="1" :title="$t('user.onboarding.header_step1')" :caption="$t('user.onboarding.header_caption_step1')"
+      icon="settings" :done="step > 1">
+      <img :src="logoFullImage" alt="Logo" />
+      <h3>{{ $t("user.onboarding.title_step1") }}</h3>
+      <p class="q-mt-xl">{{ $t("user.onboarding.action_step1_a") }}</p>
 
-        <div class="q-my-md row justify-center q-gutter-x-lg">
-          <os-input
-            ref="userNameInputElement"
-            v-model="userName"
-            type="text"
-            :label="$t('user.auth.name')"
-            required
-          />
+      <div class="q-my-md row justify-center q-gutter-x-lg">
+        <os-input ref="userNameInputElement" v-model="userName" type="text" :label="$t('user.auth.name')" required />
 
-          <os-input
-            ref="userSurnameInputElement"
-            v-model="userSurname"
-            type="text"
-            :label="$t('user.auth.surname')"
-            required
-          />
-        </div>
-      </q-step>
+        <os-input ref="userSurnameInputElement" v-model="userSurname" type="text" :label="$t('user.auth.surname')"
+          required />
+      </div>
+    </q-step>
 
-      <!-- Step 2: role -->
-      <q-step
-        :name="2"
-        :title="$t('user.onboarding.header_step2')"
-        :caption="$t('user.onboarding.header_caption_step2')"
-        icon="person"
-        :done="step > 2"
-      >
-        <h3>{{ $t("user.onboarding.title_step2") }}</h3>
-        <p class="q-mt-xl">{{ $t("user.onboarding.action_step2_a") }}</p>
+    <!-- Step 2: role -->
+    <q-step :name="2" :title="$t('user.onboarding.header_step2')" :caption="$t('user.onboarding.header_caption_step2')"
+      icon="person" :done="step > 2">
+      <h3>{{ $t("user.onboarding.title_step2") }}</h3>
+      <p class="q-mt-xl">{{ $t("user.onboarding.action_step2_a") }}</p>
 
-        <div class="q-my-md row justify-center q-gutter-x-lg">
-          <osToggleButtons
-            ref="rolesToggleElement"
-            v-model="selectedRole"
-            :texts="buttonsRoles"
-            :exclusive="true"
-            :useLocale="true"
-            :min-choices="1"
-          />
-        </div>
-      </q-step>
+      <div class="q-my-md row justify-center q-gutter-x-lg">
+        <osToggleButtons ref="rolesToggleElement" v-model="selectedRole" :texts="buttonsRoles" :exclusive="true"
+          :useLocale="true" :min-choices="1" />
+      </div>
+    </q-step>
 
-      <!-- Step 3: custom info -->
-      <q-step
-        :name="3"
-        :title="$t('user.onboarding.header_step3')"
-        :caption="$t('user.onboarding.header_caption_step3')"
-        icon="info"
-        :done="step > 3"
-      >
-        <h3>{{ $t("user.onboarding.title_step3") }}</h3>
-        <p class="q-mt-xl">{{ $t("user.onboarding.action_step3_a") }}</p>
+    <!-- Step 3: custom info -->
+    <q-step :name="3" :title="$t('user.onboarding.header_step3')" :caption="$t('user.onboarding.header_caption_step3')"
+      icon="info" :done="step > 3">
+      <h3>{{ $t("user.onboarding.title_step3") }}</h3>
+      <p class="q-mt-xl">{{ $t("user.onboarding.action_step3_a") }}</p>
 
-        <div class="row justify-center">
-          <osToggleButtons
-            ref="sportsToggleElement"
-            v-model="selectedSports"
-            :texts="buttonsSports"
-            :useLocale="true"
-          />
-        </div>
+      <div class="row justify-center">
+        <osToggleButtons ref="sportsToggleElement" v-model="selectedSports" :texts="buttonsSports" :useLocale="true" />
+      </div>
 
-        <p class="q-mt-xl">{{ $t("user.onboarding.action_step3_b") }}</p>
+      <p class="q-mt-xl">{{ $t("user.onboarding.action_step3_b") }}</p>
 
-        <div class="row justify-center">
-          <osToggleButtons
-            ref="athletesRangeToggleElement"
-            v-model="selectedAthletesRange"
-            :texts="buttonsAthletesRanges"
-            :exclusive="true"
-          />
-        </div>
-      </q-step>
+      <div class="row justify-center">
+        <osToggleButtons ref="athletesRangeToggleElement" v-model="selectedAthletesRange" :texts="buttonsAthletesRanges"
+          :exclusive="true" />
+      </div>
+    </q-step>
 
-      <!-- Stepper navigation controls -->
-      <template v-slot:navigation>
-        <q-stepper-navigation class="text-right">
-          <q-btn
-            v-if="step > 1"
-            flat
-            @click="stepperElement?.previous()"
-            class="q-mx-sm"
-          >
-            {{ $t("common.back") }}
-          </q-btn>
+    <!-- Stepper navigation controls -->
+    <template v-slot:navigation>
+      <q-stepper-navigation class="text-right">
+        <q-btn v-if="step > 1" flat @click="stepperElement?.previous()" class="q-mx-sm">
+          {{ $t("common.back") }}
+        </q-btn>
 
-          <q-btn @click="onProceed">
-            {{ isLastStep ? $t("common.submit") : $t("common.continue") }}
-          </q-btn>
-        </q-stepper-navigation>
-      </template>
-    </q-stepper>
-  </div>
+        <q-btn @click="onProceed">
+          {{ isLastStep ? $t("common.submit") : $t("common.continue") }}
+        </q-btn>
+      </q-stepper-navigation>
+    </template>
+  </q-stepper>
 </template>
 
 <script setup lang="ts">
@@ -127,7 +72,7 @@ import router from "@/router";
 const props = defineProps({
   onSubmit: {
     type: Function,
-    default: () => {},
+    default: () => { },
   },
 });
 
