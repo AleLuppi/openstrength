@@ -414,10 +414,16 @@ function extractExerciseVariantInfo(
   const { uid: _0, name: _1, exercise: _2, ...variantObj } = exerciseVariant;
   const variantExercise =
     exercise ?? exerciseVariant.exercise ?? new Exercise();
-  const { uid: _3, name: _4, variants: _5, ...exerciseObj } = variantExercise;
+  const {
+    uid: _3,
+    name: _4,
+    variants: _5,
+    defaultVariant: _6,
+    ...exerciseObj
+  } = variantExercise;
   const fullVariantObj = {
-    ...variantObj,
     ...exerciseObj,
+    ...variantObj,
     variant: exerciseVariant.name,
     exercise: variantExercise.name,
   };
