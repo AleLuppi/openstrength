@@ -1,39 +1,48 @@
 <template>
-  <!-- Create a div container with: padding medium in all direction, large padding bottom, margin left and right auto-->
-  <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
-    <h2 class="text-center">
-      {{ $t("layout.drawer.welcome_logged_in_noname") }}
-    </h2>
-  </div>
+  <router-link v-if="user.role === 'athlete'" :to="{ name: 'comingsoon' }" />
 
-  <!-- Show common actions -->
-  <div class="row q-gutter-lg justify-center items-center">
-    <router-link
-      v-for="buttonInfo in buttonsInfo"
-      :key="buttonInfo.to"
-      :to="{ name: buttonInfo.to }"
-      class="link-child"
-    >
-      <q-card
-        class="q-pa-lg column items-center justify-center square-card q-hoverable text-center"
+  <div v-else>
+    <!-- Create a div container with: padding medium in all direction, large padding bottom, margin left and right auto-->
+    <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
+      <h2 class="text-center">
+        {{ $t("homepage.call_to_action", { name: user.name }) }}
+      </h2>
+    </div>
+
+    <!-- Show common actions -->
+    <div class="row q-gutter-lg justify-center items-center">
+      <router-link
+        v-for="buttonInfo in buttonsInfo"
+        :key="buttonInfo.to"
+        :to="{ name: buttonInfo.to }"
+        class="link-child"
       >
-        <!-- Animate when on -->
-        <span class="q-focus-helper"></span>
+        <q-card
+          class="q-pa-lg column items-center justify-center square-card q-hoverable text-center"
+        >
+          <!-- Animate when on -->
+          <span class="q-focus-helper"></span>
 
-        <!-- Show icon, title, and subtitle -->
-        <q-icon :name="buttonInfo.icon" size="6em" color="icon-color" />
-        <h4>
-          {{ $t(buttonInfo.title) }}
-        </h4>
-        <p class="q-px-md text-weight-light">
-          {{ $t(buttonInfo.subtitle) }}
-        </p>
-      </q-card>
-    </router-link>
+          <!-- Show icon, title, and subtitle -->
+          <q-icon :name="buttonInfo.icon" size="6em" color="icon-color" />
+          <h4>
+            {{ $t(buttonInfo.title) }}
+          </h4>
+          <p class="q-px-md text-weight-light">
+            {{ $t(buttonInfo.subtitle) }}
+          </p>
+        </q-card>
+      </router-link>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from "@/stores/user";
+
+// Get user state
+const user = useUserStore();
+
 // Set action buttons
 const buttonsInfo = [
   {
