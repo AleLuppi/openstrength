@@ -1,5 +1,17 @@
 <template>
-  <router-link v-if="user.role === 'athlete'" :to="{ name: 'comingsoon' }" />
+  <!-- Show coming soon in case of athlete-->
+  <div
+    v-if="user.role === 'athlete'"
+    class="q-mx-auto q-px-md q-py-lg limit-max-width text-center"
+  >
+    <img :src="logoFullImage" alt="Logo" />
+    <h2>
+      {{ $t("comingsoon.title") }}
+    </h2>
+    <p>
+      {{ $t("comingsoon.subtitle") }}
+    </p>
+  </div>
 
   <div v-else>
     <!-- Create a div container with: padding medium in all direction, large padding bottom, margin left and right auto-->
@@ -39,6 +51,7 @@
 
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
+import { logoFullImage } from "@/assets/sources";
 
 // Get user state
 const user = useUserStore();
