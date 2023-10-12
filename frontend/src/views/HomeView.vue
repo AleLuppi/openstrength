@@ -22,9 +22,9 @@
 
         <!-- Show icon, title, and subtitle -->
         <q-icon :name="buttonInfo.icon" size="6em" color="icon-color" />
-        <h6>
+        <h4>
           {{ $t(buttonInfo.title) }}
-        </h6>
+        </h4>
         <p class="q-px-md text-weight-light">
           {{ $t(buttonInfo.subtitle) }}
         </p>

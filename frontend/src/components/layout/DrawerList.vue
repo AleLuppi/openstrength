@@ -71,7 +71,7 @@
               : 'fa-solid fa-right-to-bracket'
           "
         />
-        <p>
+        <p class="p-drawer">
           {{ $t("layout.views." + (user.isSignedIn ? "profile" : "signin")) }}
         </p>
       </q-card>
