@@ -419,7 +419,7 @@ function onVariantUpdate(
     selectedVariant.value = variantOrAny;
   else
     selectedVariant.value = selectedExercise.value?.variants?.find(
-      (variant) => variant.name && variant.name == row?.name,
+      (variant) => variant.name == row?.name,
     );
 }
 

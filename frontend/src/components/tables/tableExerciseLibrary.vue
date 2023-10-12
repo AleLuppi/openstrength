@@ -53,7 +53,7 @@ const columns = computed(() =>
           name: "variant",
           align: "left",
           label: "Variant", // TODO i18n
-          field: "name",
+          field: "displayName",
         },
         { name: "delete", align: "center", label: "", field: "delete" },
       ]
@@ -63,7 +63,7 @@ const columns = computed(() =>
           name: "exercise",
           required: true,
           label: "Exercise", // TODO i18n
-          field: "name",
+          field: "displayName",
           align: "left",
           sortable: true,
         },
@@ -91,9 +91,11 @@ const rows = computed(() => {
     listToMap = exercises;
   }
 
+  // Move from list to row object
   return listToMap.map((item) => ({
     uid: item.uid ?? "",
-    name: isVariant.value
+    name: item.name,
+    displayName: isVariant.value
       ? [(item as ExerciseVariant).exercise?.name, item.name].join("  ")
       : item.name ?? {
           element: "input",
