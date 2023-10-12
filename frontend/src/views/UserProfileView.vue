@@ -44,7 +44,7 @@
           <p class="text-h6 text-left">
             {{ $t("user.profile.role") }}
           </p>
-          <p class="text-left text-primary">to be done</p>
+          <p class="text-left text-primary">{{ user.role }}</p>
         </q-section>
         <!-- Status: active or inactive-->
         <q-section class="column align-center q-mx-md">
