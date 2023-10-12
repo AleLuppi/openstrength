@@ -3,8 +3,9 @@
     <!-- Title -->
     <h6
       v-if="props.label"
-      class="q-my-xs text-input-top-label text-uppercase text-weight-medium text-left"
+      class="q-my-none text-input-top-label text-uppercase text-weight-medium text-left"
       :class="{ 'input-required': props.required }"
+      style="line-height: 1.6em"
     >
       {{ props.label }}
     </h6>
