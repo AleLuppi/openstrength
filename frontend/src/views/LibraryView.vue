@@ -456,7 +456,7 @@ function deleteExercise(exercise: Exercise) {
   exercise.remove({
     onSuccess: () => {
       coachInfo.exercises = coachInfo.exercises?.filter(
-        (coachExercise) => coachExercise.name != exercise.name,
+        (coachExercise) => coachExercise != exercise,
       );
       clearExercise();
     },
@@ -471,11 +471,10 @@ function deleteExercise(exercise: Exercise) {
 function deleteVariant(variant: ExerciseVariant) {
   variant.remove({
     onSuccess: () => {
-      coachInfo.exercises?.forEach((coachExercise) => {
-        coachExercise.variants = coachExercise.variants?.filter(
-          (coachVariant) => coachVariant.name != variant.name,
+      if (variant.exercise)
+        variant.exercise.variants = variant.exercise.variants?.filter(
+          (coachVariant) => coachVariant != variant,
         );
-      });
       coachInfo.exercises = coachInfo.exercises?.filter(
         (coachExercise) =>
           coachExercise.variants && coachExercise.variants.length > 0,
