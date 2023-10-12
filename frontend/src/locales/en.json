@@ -146,6 +146,7 @@
       "add_proceed": "Save",
       "add_error": "Could not save exercise, please retry",
       "add_success": "Exercise \"{ exercise }\" correctly added to library",
+      "add_variant_already_exists": "A variant already exists with this name",
       "update": "Update exercise",
       "update_button": "Update",
       "update_proceed": "Save",

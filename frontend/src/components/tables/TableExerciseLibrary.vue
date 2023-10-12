@@ -113,7 +113,9 @@ const rows = computed(() => {
     displayName: isVariant.value
       ? [
           (item as ExerciseVariant).exercise?.name,
-          item.name ?? `(${i18n.t("common.default").toLocaleLowerCase()})`,
+          (item as ExerciseVariant).isDefault
+            ? `(${i18n.t("common.default").toLocaleLowerCase()})`
+            : item.name,
         ].join("  ")
       : item.name ?? {
           element: "input",

@@ -466,14 +466,22 @@ export function packExerciseVariantInfo(
  * @returns unique exercises with concatenated list of variants.
  */
 export function reduceExercises(exercises: Exercise[]) {
-  return exercises.reduce((prev: Exercise[], curr: Exercise) => {
-    const exercise = prev.find((exercise) => exercise.name == curr.name);
-    if (exercise) {
-      exercise.variants = (exercise.variants ?? []).concat(curr.variants ?? []);
-      return prev;
-    } else {
-      prev.push(curr);
-      return prev;
-    }
-  }, []);
+  return exercises.reduce(
+    (exerciseList: Exercise[], currentExercise: Exercise) => {
+      const exercise = exerciseList.find(
+        (exercise) => exercise.name == currentExercise.name,
+      );
+      if (exercise) {
+        exercise.variants = (exercise.variants ?? []).concat(
+          currentExercise.variants ?? [],
+        );
+        exercise.variants.forEach((variant) => (variant.exercise = exercise));
+        return exerciseList;
+      } else {
+        exerciseList.push(currentExercise);
+        return exerciseList;
+      }
+    },
+    [],
+  );
 }

@@ -5,6 +5,17 @@
       <os-input
         v-model="variantName"
         :label="$t('coach.exercise_management.exercise_variant')"
+        :rules="[
+          (name: string) =>
+            props.variant.exercise?.variants?.reduce(
+              (response, variant) =>
+                response &&
+                (variant == props.variant ||
+                  (Boolean(name) && variant.name != name) ||
+                  (!Boolean(name) && !variant.isDefault)),
+              true,
+            ) || $t('coach.exercise_management.add_variant_already_exists'),
+        ]"
         class="col-12"
       >
         <template v-slot:before>
