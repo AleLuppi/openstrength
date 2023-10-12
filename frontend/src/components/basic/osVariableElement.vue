@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed } from "vue";
 
 // Set props
 const props = defineProps({
@@ -60,10 +60,4 @@ const type = computed(() =>
 const elementProps = computed(() =>
   props.props && typeof props.props == "object" ? props.props : {},
 );
-
-// Perform operations on mounted element
-onMounted(() => {
-  if (type.value == "input" && elementProps.value.focus)
-    element.value.focus?.();
-});
 </script>

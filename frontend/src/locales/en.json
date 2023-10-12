@@ -188,6 +188,7 @@
   "common": {
     "back": "Back",
     "cancel": "Cancel",
+    "default": "Default",
     "continue": "Continue",
     "finish": "Finish",
     "or": "or",

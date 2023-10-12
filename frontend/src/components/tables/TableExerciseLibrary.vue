@@ -12,7 +12,11 @@
 
 <script setup lang="ts">
 import { computed, PropType } from "vue";
+import { useI18n } from "vue-i18n";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+
+// Init plugin
+const i18n = useI18n();
 
 // Define props
 const props = defineProps({
@@ -83,7 +87,6 @@ const rows = computed(() => {
   let listToMap: Exercise[] | ExerciseVariant[] = [];
   if (isVariant.value) {
     const variants = [...props.variants!];
-    if (props.addNew) variants.unshift(new ExerciseVariant());
     listToMap = variants;
   } else {
     const exercises = [...props.exercises];
@@ -96,11 +99,14 @@ const rows = computed(() => {
     uid: item.uid ?? "",
     name: item.name,
     displayName: isVariant.value
-      ? [(item as ExerciseVariant).exercise?.name, item.name].join("  ")
+      ? [
+          (item as ExerciseVariant).exercise?.name,
+          item.name ?? `(${i18n.t("common.default").toLocaleLowerCase()})`,
+        ].join("  ")
       : item.name ?? {
           element: "input",
           hideBottomSpace: true,
-          focus: true,
+          autofocus: true,
           clearOnBlur: true,
           on: {
             blur: (value: string) => props.onAdd?.(value),

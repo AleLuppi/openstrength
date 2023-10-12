@@ -313,6 +313,7 @@ function onExerciseAdd(exerciseName: string) {
         }),
         position: "bottom",
       });
+      selectedExercise.value = newExercise;
     },
     onError: () => {
       // TODO put in a separate method
@@ -343,7 +344,7 @@ function onExerciseUpdate(
     );
 }
 
-/** TODO
+/**
  * Delete one exercise from list, upon confirmation.
  *
  * @param exercise element that needs to be deleted.
