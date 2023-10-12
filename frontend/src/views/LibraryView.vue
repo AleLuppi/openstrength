@@ -57,6 +57,7 @@
               <q-separator />
 
               <TableExerciseLibrary
+                ref="exerciseTableElement"
                 :exercises="exercises"
                 :on-add="onExerciseAdd"
                 :on-update="onExerciseUpdate"
@@ -198,7 +199,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
@@ -221,6 +222,7 @@ const coachInfo = useCoachInfoStore();
 
 // Set ref
 const selectedTab = ref("exercise"); // TODO main tab to show
+const exerciseTableElement = ref<typeof TableExerciseLibrary>();
 const searchExercise = ref<string>(); // TODO search
 const searchVariant = ref<string>(); // TODO search
 const addingNewExercise = ref(false);
@@ -288,12 +290,18 @@ function onNewExercise() {
 function onExerciseAdd(exerciseName: string) {
   addingNewExercise.value = false;
 
-  // Ensure a correct name for a new exercise is provided
-  if (
-    !exerciseName ||
-    exercises.value.find((exercise) => exercise.name == exerciseName)
-  )
+  // Ensure a name for a new exercise is provided
+  if (!exerciseName) return;
+
+  // Check if exercise already exists
+  const existentExercise = exercises.value.find(
+    (exercise) => exercise.name == exerciseName,
+  );
+  if (existentExercise) {
+    selectedExercise.value = existentExercise;
+    exerciseTableElement.value?.selectRowByName(existentExercise.name);
     return;
+  }
 
   // Save new exercise
   const newExercise = new Exercise({
@@ -314,6 +322,9 @@ function onExerciseAdd(exerciseName: string) {
         position: "bottom",
       });
       selectedExercise.value = newExercise;
+      nextTick(
+        () => exerciseTableElement.value?.selectRowByName(newExercise.name),
+      );
     },
     onError: () => {
       // TODO put in a separate method

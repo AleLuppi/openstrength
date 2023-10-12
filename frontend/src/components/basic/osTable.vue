@@ -71,10 +71,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 // Set ref
 const selected = ref<{ [key: string]: any }[]>([]);
+
+// Allow selected model from parent
+const emit = defineEmits(["update:selected"]);
+watch(selected, (val) => {
+  emit("update:selected", val);
+});
 
 /**
  * Perform operations on clicked row.

@@ -7,16 +7,28 @@
     hide-pagination
     @row-click="$props.onUpdate"
     :selection="isVariant ? 'none' : 'single'"
+    v-model:selected="selected"
   ></os-table>
 </template>
 
 <script setup lang="ts">
-import { computed, PropType } from "vue";
+import { ref, computed, PropType } from "vue";
 import { useI18n } from "vue-i18n";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 
 // Init plugin
 const i18n = useI18n();
+
+// Allow row selection from parent
+const selected = ref<{ [key: string]: any }[]>();
+function selectRowByName(name: string, clearOnFail: boolean = false) {
+  const row = rows.value.find((row) => row.name == name);
+  if (row) selected.value = [row];
+  else if (clearOnFail) selected.value = [];
+}
+defineExpose({
+  selectRowByName: selectRowByName,
+});
 
 // Define props
 const props = defineProps({
