@@ -8,14 +8,28 @@ import {
   deleteDoc,
   getDoc,
   where,
+  setDoc,
   serverTimestamp,
-  DocumentData,
-  Query,
-  QuerySnapshot,
 } from "firebase/firestore";
 import { db } from "@/firebase";
 import { useUserStore } from "@/stores/user";
 import { ErrorHandling } from "../ErrorHandling";
+import { User } from "../users/user";
+
+export async function doAddDocWithId(
+  collectionName: string,
+  customDocId: string,
+  data: any,
+  errorHand: ErrorHandling = new ErrorHandling(),
+) {
+  const docRef = doc(db, collectionName, customDocId);
+  Object.keys(data).forEach((key) => {
+    data[key] = data[key] ?? null;
+  });
+  await setDoc(docRef, data)
+    .then((res) => errorHand.onSuccess("doAddDocWithId: successfull"))
+    .catch((error) => errorHand.onError(error));
+}
 
 /**
  * Add a document to firestore db.
@@ -177,7 +191,14 @@ export async function doGetDocsWithObj(
   const q = query(collection(db, collectionName), ...wheres);
 
   return await getDocs(q)
-    .then((querySnapshot) => errorHand.onSuccess(querySnapshot.docs[0].data()))
+    .then((querySnapshot) => {
+      const docsData = querySnapshot.docs.reduce(
+        (obj, val) => ({ uid: val.id, ...val.data() }),
+        {},
+      );
+      const toUser = new User({ ...docsData });
+      return errorHand.onSuccess(toUser);
+    })
     .catch((error) => errorHand.onError(error));
 }
 
@@ -237,9 +258,11 @@ export async function doDeleteDoc(
   } = {},
 ) {
   // Remove document
-  await deleteDoc(doc(db, collectionName, uid))
+  deleteDoc(doc(db, collectionName, uid))
     .then(() => {
       onSuccess?.();
     })
-    .catch((error) => onError?.(error));
+    .catch((error) => {
+      onError?.(error);
+    });
 }

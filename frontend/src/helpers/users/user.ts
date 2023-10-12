@@ -1,10 +1,12 @@
 import { DocumentReference } from "firebase/firestore";
 import {
   doAddDoc,
+  doAddDocWithId,
   doUpdateDoc,
   doGetOneDoc,
   doDocExists,
   doGetDocsWithObj,
+  doDeleteDoc,
 } from "@/helpers/database/readwrite";
 import { usersCollection } from "../database/collections";
 
@@ -129,6 +131,14 @@ export class User {
     addDocUser(user || this, { onSuccess: onSuccess, onError: onError });
   }
 
+  saveNewWithId(user?: User | CoachUser | AthleteUser) {
+    return addDocUserWithId(user || this);
+  }
+
+  delete(uid?: string) {
+    return deleteDocUser(uid || this.uid!);
+  }
+
   saveUpdate({
     user,
     onSuccess,
@@ -217,7 +227,16 @@ export async function userExists(uid: string) {
 }
 
 export async function getUserByEmail(email: string) {
-  return await doGetDocsWithObj(usersCollection, { email: email });
+  return doGetDocsWithObj(usersCollection, { email: email });
+}
+
+export async function addDocUserWithId(user: User | CoachUser | AthleteUser) {
+  const { uid, ...userObj } = user;
+  return doAddDocWithId(usersCollection, uid!, userObj);
+}
+
+export async function deleteDocUser(uid: string) {
+  return doDeleteDoc(usersCollection, uid);
 }
 
 /**
