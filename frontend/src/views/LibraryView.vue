@@ -241,6 +241,13 @@ const showDialogVariantForm = ref(false);
 // Update dialog show status
 watch(showVariantForm, (val) => (showDialogVariantForm.value = val));
 
+// Update table selection
+watch(selectedExercise, (exercise) =>
+  nextTick(
+    () => exerciseTableElement.value?.selectRowByName(exercise?.name, true),
+  ),
+);
+
 // Get exercises to display
 const exercises = computed<Exercise[]>(() => {
   coachInfo.loadExercises(user.uid, true);
@@ -299,7 +306,6 @@ function onExerciseAdd(exerciseName: string) {
   );
   if (existentExercise) {
     selectedExercise.value = existentExercise;
-    exerciseTableElement.value?.selectRowByName(existentExercise.name);
     return;
   }
 
@@ -322,9 +328,6 @@ function onExerciseAdd(exerciseName: string) {
         position: "bottom",
       });
       selectedExercise.value = newExercise;
-      nextTick(
-        () => exerciseTableElement.value?.selectRowByName(newExercise.name),
-      );
     },
     onError: () => {
       // TODO put in a separate method

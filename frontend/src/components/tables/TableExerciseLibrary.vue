@@ -22,7 +22,7 @@ const i18n = useI18n();
 // Allow row selection from parent
 const selected = ref<{ [key: string]: any }[]>();
 function selectRowByName(name: string, clearOnFail: boolean = false) {
-  const row = rows.value.find((row) => row.name == name);
+  const row = rows.value.find((row) => Boolean(name) && row.name == name);
   if (row) selected.value = [row];
   else if (clearOnFail) selected.value = [];
 }
