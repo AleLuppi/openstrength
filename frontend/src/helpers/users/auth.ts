@@ -174,7 +174,7 @@ export function addCallbackOnAuthStateChanged({
           const newSavedUser = await saveNewUserFromAuth(user);
           onUserIn?.(newSavedUser);
         } else {
-          console.log("cloning user...");
+          console.log("cloning user... " + user.uid);
           const newClonedUser = await cloneNewUserFromDb(userByEmail, user.uid);
           onUserIn?.(newClonedUser);
         }
@@ -195,8 +195,8 @@ async function saveNewUserFromAuth(user: FirebaseUser) {
     displayName: user.displayName!,
     photoUrl: user.photoURL!,
     phoneNumber: user.phoneNumber!,
-    name: user.displayName!,
-    surname: user.displayName!,
+    name: user.displayName!.split(" ")[0],
+    surname: user.displayName!.split(" ")[1],
     birthday: undefined,
     address: undefined,
     createdOn: new Date(),
