@@ -88,7 +88,7 @@ import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { AthleteUser } from "@/helpers/users/user";
-import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
+import TableManagedAthletes from "@/components/tables/tableManagedAthletes.vue";
 
 // Init plugin
 const $q = useQuasar();

@@ -34,6 +34,14 @@ service cloud.firestore {
       allow delete: if (userSignedIn() && (request.auth.uid == resource.data.userId)) || userIsAdmin(); // only proprietary
     }
 
+     // Manage "programs" collection
+    match /programs/{programId} {
+      allow read: if (userSignedIn() && (request.auth.uid == resource.data.userId)) || userIsAdmin(); // only proprietary
+      allow create: if (userSignedIn()) || userIsAdmin(); // TODO user must be coach (&& request.resource.data.role != "coach")
+      allow update: if (userSignedIn() && (request.auth.uid == resource.data.userId)) || userIsAdmin(); // only proprietary
+      allow delete: if (userSignedIn() && (request.auth.uid == resource.data.userId)) || userIsAdmin(); // only proprietary
+    }
+
     // Avoid any other data manipulation
     match /{document=**} {
       allow read, write: if false;
