@@ -10,12 +10,14 @@ import { doGetDocs } from "@/helpers/database/readwrite";
 import {
   exercisesCollection,
   usersCollection,
+  programsCollection,
 } from "@/helpers/database/collections";
 import {
   Exercise,
   packExerciseVariantInfo,
   reduceExercises,
 } from "@/helpers/exercises/exercise";
+import { Program } from "@/helpers/programs/program";
 
 export const useCoachInfoStore = defineStore("coachInfo", () => {
   // Managed athletes
@@ -23,6 +25,9 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
 
   // Library of exercises
   const exercises = ref<Exercise[]>();
+
+  // Library of programs
+  const programs = ref<Program[]>();
 
   /**
    * Load list of athletes for a coach.
@@ -100,12 +105,62 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
   }
 
   /**
+   * Load list of programs for a coach.
+   *
+   * @param coachId ID of the coach for which programs should be loaded.
+   * @param quiet if true, skip loading if athletes are already present, otherwise force reload.
+   */
+  async function loadPrograms(
+    coachId?: string,
+    quiet: boolean = false,
+    {
+      onSuccess,
+      onError,
+    }: {
+      onSuccess?: Function;
+      onError?: Function;
+    } = {},
+  ) {
+    // Abort if there is no need to check
+    if (!coachId || (quiet && athletes.value)) return;
+
+    // Get documents
+    doGetDocs(
+      programsCollection,
+      [
+        ["coachId", "==", coachId],
+        ["role", "==", UserRole.athlete],
+      ],
+      {
+        onSuccess: (docs: { [key: string]: Program }) => {
+          const _programs: Program[] = [];
+          Object.entries(docs).forEach(([uid, doc]) =>
+            _programs.push(new Program({ ...doc, uid: uid })),
+          );
+          programs.value = _programs;
+          onSuccess?.(programs);
+        },
+        onError: onError,
+      },
+    );
+  }
+
+  /**
    * Reset values in user storage.
    */
   function $reset() {
     athletes.value = undefined;
     exercises.value = undefined;
+    programs.value = undefined;
   }
 
-  return { athletes, exercises, loadAthletes, loadExercises, $reset };
+  return {
+    athletes,
+    exercises,
+    programs,
+    loadAthletes,
+    loadExercises,
+    loadPrograms,
+    $reset,
+  };
 });
