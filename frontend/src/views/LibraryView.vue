@@ -188,6 +188,82 @@
           </q-card>
         </q-dialog>
       </q-tab-panel>
+    </q-tab-panels>
+
+    <!-- Second Tab: Programs/schedule -->
+    <q-tab-panels v-model="selectedTab">
+      <q-tab-panel name="schedule">
+        <div class="q-pa-md">
+          <!-- Add new programm -->
+          <q-btn
+            icon="add"
+            :label="$t('coach.schedule_management.list.add')"
+            @click="
+              updatingProgram = undefined;
+              showProgramDialog = true;
+            "
+          />
+
+          <!-- Display athletes -->
+          <q-card>
+            <TableProgramLibrary
+              :title="$t('coach.schedule_management.list.title')"
+              :programs="programs"
+              :on-update="onUpdateProgram"
+            />
+          </q-card>
+
+          <!-- Dialog to add a new athlete -->
+          <q-dialog
+            v-model="showProgramDialog"
+            @hide="updatingProgram ? clearProgram() : {}"
+          >
+            <q-card class="q-pa-sm dialog-min-width">
+              <q-card-section class="row items-center q-pb-none">
+                <h5>
+                  {{
+                    updatingProgram
+                      ? $t("coach.schedule_management.list.update")
+                      : $t("coach.schedule_management.list.add")
+                  }}
+                </h5>
+                <q-space />
+                <q-btn icon="close" flat round dense v-close-popup />
+              </q-card-section>
+
+              <q-form
+                @submit="updatingProgram ? updateProgram() : createProgram()"
+                @reset="clearProgram"
+                class="q-my-md q-gutter-sm column"
+              >
+                <q-card-section class="q-gutter-x-xs">
+                  <os-input
+                    v-model="programName"
+                    required
+                    :label="$t('coach.schedule_management.list.prompt_name')"
+                  ></os-input>
+                  <os-input
+                    v-model="programLabel"
+                    :label="$t('coach.schedule_management.list.prompt_label')"
+                  ></os-input>
+                </q-card-section>
+
+                <q-card-actions align="right">
+                  <q-btn flat :label="$t('common.cancel')" type="reset" />
+                  <q-btn
+                    :label="
+                      updatingProgram
+                        ? $t('coach.schedule_management.list.update_proceed')
+                        : $t('coach.schedule_management.list.add_proceed')
+                    "
+                    type="submit"
+                  />
+                </q-card-actions>
+              </q-form>
+            </q-card>
+          </q-dialog>
+        </div>
+      </q-tab-panel>
 
       <!-- TODO Second tab: Programs -->
       <q-tab-panel name="schedule">
@@ -211,6 +287,8 @@ import {
   ExerciseVariant,
   reduceExercises,
 } from "@/helpers/exercises/exercise";
+import { Program } from "@/helpers/programs/program";
+import TableProgramLibrary from "@/components/tables/tableProgramLibrary.vue";
 
 // Use plugins
 const $q = useQuasar();
@@ -232,6 +310,12 @@ const deletingVariant = ref<ExerciseVariant>();
 const showDialogDelete = ref(false);
 const selectedExercise = ref<Exercise>();
 const selectedVariant = ref<ExerciseVariant>();
+
+const updatingProgram = ref<Program>(); // Program that is currently being updated
+const showProgramDialog = ref(false); // whether to show dialog to add Program
+const programName = ref(""); // new program name
+const programLabel = ref(""); // new program note
+
 // TODO const showVariantList = computed(() => Boolean(selectedExercise.value));
 const showVariantForm = computed(() =>
   Boolean(addingNewVariant.value || selectedVariant.value),
@@ -252,6 +336,12 @@ watch(selectedExercise, (exercise) =>
 const exercises = computed<Exercise[]>(() => {
   coachInfo.loadExercises(user.uid, true);
   return coachInfo.exercises || [];
+});
+
+// Get programs to display
+const programs = computed(() => {
+  coachInfo.loadPrograms(user.uid, true);
+  return coachInfo.programs || [];
 });
 
 // Get options to display on variant creation or update
@@ -501,5 +591,71 @@ function clearVariant() {
   addingNewVariant.value = false;
   selectedVariant.value = undefined;
   deletingVariant.value = undefined;
+}
+
+/**
+ * Create a new program and assign to a coach
+ */
+function createProgram() {
+  const newProgram = new Program({
+    name: programName.value,
+    label: programLabel.value,
+  });
+  newProgram.saveNew({
+    onSuccess: () => {
+      (coachInfo.programs = coachInfo.programs || []).push(newProgram);
+      clearProgram();
+    },
+    onError: () =>
+      $q.notify({
+        type: "negative",
+        message: i18n.t("coach.schedule_management.list.add_error"),
+        position: "bottom",
+      }),
+  });
+  showProgramDialog.value = false;
+}
+
+/**
+ * Update program according to inserted values.
+ */
+function updateProgram() {
+  if (updatingProgram.value) {
+    updatingProgram.value.name = programName.value;
+    updatingProgram.value.label = programLabel.value;
+    updatingProgram.value.saveUpdate({
+      onSuccess: () => {
+        clearProgram();
+      },
+      onError: () =>
+        $q.notify({
+          type: "negative",
+          message: i18n.t("coach.schedule_management.list.update_error"),
+          position: "bottom",
+        }),
+    });
+    showProgramDialog.value = false;
+  }
+}
+
+/**
+ * Compile form with program info to allow coach to update them.
+ *
+ * @param program
+ */
+function onUpdateProgram(program: Program) {
+  updatingProgram.value = program;
+  showProgramDialog.value = true;
+  programName.value = program.name ?? "";
+  programLabel.value = program.label ?? "";
+}
+
+/**
+ * Clear values in program insertion form.
+ */
+function clearProgram() {
+  programName.value = "";
+  programLabel.value = "";
+  showProgramDialog.value = false;
 }
 </script>

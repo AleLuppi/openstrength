@@ -172,7 +172,13 @@
     },
     "schedule_management": {
       "list": {
-        "title": "Programs library"
+        "title": "Programs library",
+        "add": "Add a new program",
+        "add_proceed": "Confirm",
+        "prompt_name":"Program name",
+        "prompt_label": "Label",
+        "update_proceed": "Update program",
+        "update":"Insert your program info"
       }
     }
   },

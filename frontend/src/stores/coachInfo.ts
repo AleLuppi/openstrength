@@ -122,27 +122,20 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     } = {},
   ) {
     // Abort if there is no need to check
-    if (!coachId || (quiet && athletes.value)) return;
+    if (!coachId || (quiet && programs.value)) return;
 
     // Get documents
-    doGetDocs(
-      programsCollection,
-      [
-        ["coachId", "==", coachId],
-        ["role", "==", UserRole.athlete],
-      ],
-      {
-        onSuccess: (docs: { [key: string]: Program }) => {
-          const _programs: Program[] = [];
-          Object.entries(docs).forEach(([uid, doc]) =>
-            _programs.push(new Program({ ...doc, uid: uid })),
-          );
-          programs.value = _programs;
-          onSuccess?.(programs);
-        },
-        onError: onError,
+    doGetDocs(programsCollection, [["coachId", "==", coachId]], {
+      onSuccess: (docs: { [key: string]: Program }) => {
+        const _programs: Program[] = [];
+        Object.entries(docs).forEach(([uid, doc]) =>
+          _programs.push(new Program({ ...doc, uid: uid })),
+        );
+        programs.value = _programs;
+        onSuccess?.(programs);
       },
-    );
+      onError: onError,
+    });
   }
 
   /**
