@@ -1,124 +1,8 @@
 <template>
   <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
-    <div class="column align-center justify-center">
-      <!-- Logo -->
-      <div class="image-container">
-        <img :src="logoFullImage" alt="Logo" class="centered-image" />
-      </div>
-      <!-- Title -->
-      <h2 class="text-center justify-center">
-        {{ $t("user.auth.signup_title") }}
-      </h2>
-      <p class="text-center">
-        {{ $t("user.auth.signup_subtitle") }}
-      </p>
-
-      <!-- Registration form -->
-      <q-form @submit="onSubmit" class="q-my-xs q-gutter-xs column">
-        <!-- 
-        <os-input
-          v-model="userName"
-          type="text"
-          :label="$t('user.auth.name')"
-        />
-
-        <os-input
-          v-model="userSurname"
-          type="text"
-          :label="$t('user.auth.surname')"
-        /> 
-      -->
-
-        <!-- Google Sign up -->
-        <q-btn
-          :label="$t('user.auth.register_with_google')"
-          @click="googleSignIn"
-          type="button"
-          icon="fa-brands fa-google"
-          class="q-my-md"
-        />
-
-        <!-- Text separator-->
-        <div class="row">
-          <hr />
-          <p>{{ $t("user.auth.signup_with_email") }}</p>
-          <hr />
-        </div>
-
-        <os-input
-          ref="emailInput"
-          v-model="email"
-          required
-          type="email"
-          :label="$t('user.auth.email')"
-          :rules="[
-            (val: string) =>
-              (val && val.length > 2) || $t('user.auth.email_required'),
-            (val: string) =>
-              validateEmail(val) || $t('user.auth.email_invalid'),
-          ]"
-          :error="emailError"
-          :error-message="emailErrorMessage"
-        />
-
-        <os-input
-          ref="passwordInput"
-          v-model="password"
-          required
-          :type="passwordVisible ? 'text' : 'password'"
-          :label="$t('user.auth.password')"
-          :rules="[
-            (val: string) =>
-              (val && validatePassword(val)) ||
-              $t('user.auth.password_invalid'),
-          ]"
-          :error="passwordError"
-          :error-message="passwordErrorMessage"
-        >
-          <template v-slot:append>
-            <q-icon
-              :name="passwordVisible ? 'visibility' : 'visibility_off'"
-              class="cursor-pointer"
-              @click="passwordVisible = !passwordVisible"
-            />
-          </template>
-        </os-input>
-
-        <!-- Acceptance flag -->
-        <div class="row items-center">
-          <q-toggle
-            v-model="accept"
-            checked-icon="check"
-            color="green"
-            unchecked-icon="clear"
-          />
-
-          <span class="col" style="min-width: 8em">
-            {{ $t("user.auth.acceptance_before")
-            }}<router-link :to="{ name: 'privacy_policy' }" @click.stop="">{{
-              $t("layout.views.privacy_policy")
-            }}</router-link
-            >{{ $t("user.auth.acceptance_between")
-            }}<router-link :to="{ name: 'terms_conditions' }" @click.stop="">{{
-              $t("layout.views.terms_conditions")
-            }}</router-link
-            >{{ $t("user.auth.acceptance_after") }}
-          </span>
-        </div>
-
-        <q-btn
-          :label="$t('user.auth.register_button')"
-          outline
-          type="submit"
-          class="q-my-lg"
-          color="primary-button"
-        />
-      </q-form>
-
-      <!-- Redirect to login -->
-      <router-link :to="{ name: 'login' }">{{
-        $t("user.auth.signup_to_signin")
-      }}</router-link>
+    <!-- Logo -->
+    <div class="full-width text-center">
+      <img :src="logoFullImage" alt="Logo" />
     </div>
 
     <!-- Title -->
@@ -222,7 +106,6 @@
 </template>
 
 <script setup lang="ts">
-/* eslint-disable */
 import { ref, watch } from "vue";
 import { useQuasar, QInput } from "quasar";
 import { useI18n } from "vue-i18n";
@@ -234,7 +117,6 @@ import {
 } from "@/helpers/users/auth";
 import { validateEmail, validatePassword } from "@/helpers/validate";
 import { logoFullImage } from "@/assets/sources";
-import UserOnboarding from "@/components/forms/UserOnboarding.vue";
 
 // Init plugin
 const $q = useQuasar();

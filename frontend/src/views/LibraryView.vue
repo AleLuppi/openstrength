@@ -49,8 +49,6 @@
                         ? $t('coach.exercise_management.add_button')
                         : undefined
                     "
-                    outline
-                    color="primary-button"
                     @click="onNewExercise"
                   />
                 </div>
@@ -300,7 +298,8 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
-import TableExerciseLibrary from "@/components/tables/tableExerciseLibrary.vue";
+import TableExerciseLibrary from "@/components/tables/TableExerciseLibrary.vue";
+import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLibrary.vue";
 import {
   Exercise,
   ExerciseVariant,
