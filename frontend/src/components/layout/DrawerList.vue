@@ -80,7 +80,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+import router from "@/router";
 import { useUserStore } from "@/stores/user";
+import { routeAccessibleByUser } from "@/router/routeAccessManagement";
 
 // Set props
 const props = defineProps({
@@ -94,12 +97,23 @@ const props = defineProps({
 const user = useUserStore();
 
 // Set navigation in drawer
-const drawerPages = {
+const allDrawerPages = {
   home: "fa-solid fa-house-chimney",
   athletes: "fa-solid fa-users",
   library: "fa-solid fa-book",
   schedule: "fa-solid fa-dumbbell",
 };
+
+const drawerPages = computed(() =>
+  Object.fromEntries(
+    Object.entries(allDrawerPages).filter(([name]) => {
+      const route = router
+        .getRoutes()
+        .find((route) => String(route.name) == name);
+      return route && routeAccessibleByUser(user, route);
+    }),
+  ),
+);
 </script>
 
 <style scoped lang="scss">

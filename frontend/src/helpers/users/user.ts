@@ -40,6 +40,9 @@ export type UserProps = {
   role?: UserRole;
   lastAccess?: Date;
   lastNotificationRead?: Date;
+
+  // Computed info
+  isSignedIn?: boolean;
 };
 
 /**
@@ -72,6 +75,11 @@ export class User {
   role: UserRole;
   lastAccess?: Date;
   lastNotificationRead?: Date;
+
+  // Check if user is signed in
+  public get isSignedIn() {
+    return Boolean(this.uid && this.uid.trim());
+  }
 
   constructor({
     uid,

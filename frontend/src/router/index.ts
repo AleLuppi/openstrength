@@ -1,5 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordName } from "vue-router";
 import { useUserStore } from "@/stores/user";
+import { UserRole } from "@/helpers/users/user";
+import {
+  routeAccessibleByRole,
+  routeAccessibleByAuthenticated,
+  routeAccessibleByNotAuthenticated,
+} from "@/router/routeAccessManagement";
 
 /* (dinamically) import the views */
 import HomeView from "../views/HomeView.vue";
@@ -18,7 +24,6 @@ const routes = [
     component: HomeView,
     meta: {
       title: "Home",
-      redirectNotAuthenticated: "login",
     },
   },
   {
@@ -27,7 +32,8 @@ const routes = [
     component: AthletesView,
     meta: {
       title: "Athletes",
-      redirectNotAuthenticated: "login",
+      restrictAccessByRole: [UserRole.coach],
+      redirectNotAuthorized: "home",
     },
   },
   {
@@ -36,7 +42,8 @@ const routes = [
     component: LibraryView,
     meta: {
       title: "Library",
-      redirectNotAuthenticated: "login",
+      restrictAccessByRole: [UserRole.coach],
+      redirectNotAuthorized: "home",
     },
   },
   {
@@ -45,7 +52,8 @@ const routes = [
     component: ScheduleView,
     meta: {
       title: "Schedule",
-      redirectNotAuthenticated: "login",
+      restrictAccessByRole: [UserRole.coach],
+      redirectNotAuthorized: "home",
     },
   },
   {
@@ -120,22 +128,23 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const user = useUserStore();
 
+  // Check if user has the authorization to access the page
+  if (!routeAccessibleByRole(user, to)) {
+    // Redirect user
+    return {
+      name: (to.meta.redirectNotAuthorized ?? "not_found") as RouteRecordName,
+    };
+    // FIXME redirect to a "restriced access" page if redirectNotAuthorized is unknown
+  }
+
   // Check if authenticated user needs to be redirected
-  if (
-    user.isSignedIn &&
-    to.meta.redirectAuthenticated &&
-    to.name !== to.meta.redirectAuthenticated
-  ) {
+  if (!routeAccessibleByAuthenticated(user, to)) {
     // Redirect user
     return { name: to.meta.redirectAuthenticated as RouteRecordName };
   }
 
   // Check if not authenticated user needs to be redirected
-  if (
-    !user.isSignedIn &&
-    to.meta.redirectNotAuthenticated &&
-    to.name !== to.meta.redirectNotAuthenticated
-  ) {
+  if (!routeAccessibleByNotAuthenticated(user, to)) {
     // Redirect user
     return { name: to.meta.redirectNotAuthenticated as RouteRecordName };
   }

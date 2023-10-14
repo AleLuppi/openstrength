@@ -25,6 +25,10 @@ export type ExerciseProps = {
 
   // Variants
   variants?: ExerciseVariant[];
+
+  // Computed info
+  muscleGroups?: string[];
+  equipment?: string[];
 };
 
 /**
@@ -46,6 +50,9 @@ export type ExerciseVariantProps = {
 
   // Additional info
   videoUrl?: string;
+
+  // Computed info
+  isDefault?: boolean;
 };
 
 /**
@@ -200,6 +207,7 @@ export class ExerciseVariant {
   // Additional info
   videoUrl?: string;
 
+  // Check if this variant is default one for exercise
   public get isDefault() {
     return !this.name;
   }
