@@ -8,14 +8,8 @@
       <div class="row justify-between">
         <!-- Profile Image-->
         <q-section class="column align-left q-mx-md">
-          <q-icon
-            v-if="!photoUrl"
-            name="account_circle"
-            size="6em"
-            class="justify-center card-icon q-ma-sm"
-          />
           <q-img
-            v-else
+            v-if="photoUrl"
             :src="photoUrl"
             size="6em"
             width="96px"
@@ -24,7 +18,14 @@
             style="border-radius: 50%"
             @error="photoUrl = undefined"
           />
+          <q-icon
+            v-else
+            name="account_circle"
+            size="6em"
+            class="justify-center card-icon q-ma-sm"
+          />
         </q-section>
+
         <!-- Name and Surname -->
         <q-section class="column align-center q-mx-md">
           <p class="text-h6 text-left">
@@ -32,6 +33,7 @@
           </p>
           <p class="text-left">{{ user.displayName }}</p>
         </q-section>
+
         <!-- Email -->
         <q-section class="column align-center q-mx-md">
           <p class="text-h6 text-left">
@@ -39,6 +41,7 @@
           </p>
           <p class="text-left">{{ user.email }}</p>
         </q-section>
+
         <!-- Role: athlete or coach -->
         <q-section class="column align-center q-mx-md">
           <p class="text-h6 text-left">
@@ -46,24 +49,10 @@
           </p>
           <p class="text-left text-primary">{{ user.role }}</p>
         </q-section>
-        <!-- Status: active or inactive-->
-        <!--        <q-section class="column align-center q-mx-md">
-          <p class="text-h6 text-left">
-            {{ $t("user.profile.status") }}
-          </p>
-          <p class="text-left text-green">to be done</p>
-        </q-section>
-        -->
-
-        <q-section class="column align-center q-mx-md q-mr-xl">
-          <p class="text-h6 text-left">
-            {{ $t("user.profile.uid") }}
-          </p>
-          <p class="text-left">{{ user.uid }}</p>
-        </q-section>
       </div>
 
       <q-card-actions class="row justify-end q-mx-xl q-pb-md">
+        <!-- TODO connect to an edit box (e.g. onboarding page) -->
         <q-btn outline color="primary-button">
           {{ $t("user.profile.info_edit") }}</q-btn
         >
@@ -79,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-// TODO: pass actual user info
+import { computed } from "vue";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { doSignOut } from "@/helpers/users/auth";
@@ -92,22 +81,21 @@ const i18n = useI18n();
 // Get user state
 const user = useUserStore();
 
-// Profile picture
-const photoUrl = user.photoUrl;
+// Get profile picture url
+const photoUrl = computed(() => user.photoUrl);
 
 /**
- * Sign out user
+ * Sign out user.
  */
 function signOut() {
-  doSignOut(
-    () => {},
-    () => {
+  doSignOut({
+    onError: () => {
       $q.notify({
         type: "negative",
         message: i18n.t("user.auth.signout_error"),
         position: "bottom",
       });
     },
-  );
+  });
 }
 </script>
