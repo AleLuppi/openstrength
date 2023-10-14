@@ -3,26 +3,41 @@
     <!-- Title and actions -->
     <div class="row items-center">
       <h2 class="col">{{ $t("layout.views.home_title") }}</h2>
-
-      <!-- Add new athlete -->
-      <q-btn
-        icon="add"
-        :label="$t('coach.athlete_management.list.add')"
-        color="primary-button"
-        @click="
-          updatingAthlete = undefined;
-          showAthleteDialog = true;
-        "
-      />
     </div>
 
     <!-- Display athletes -->
     <q-card>
-      <TableManagedAthletes
-        :title="$t('coach.athlete_management.list.title')"
-        :athletes="athletes"
-        :on-update="onUpdateAthlete"
-      />
+      <q-card-section>
+        <h6>
+          {{ $t("coach.athlete_management.list.title") }}
+        </h6>
+
+        <div class="row q-gutter-x-md items-center">
+          <os-input
+            v-model="searchAthlete"
+            :placeholder="$t('coach.athlete_management.list.search')"
+            hide-bottom-space
+            debounce="500"
+            class="col"
+          >
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </os-input>
+
+          <!-- Add new athlete -->
+          <q-btn
+            icon="add"
+            :label="$t('coach.athlete_management.list.add')"
+            color="primary-button"
+            @click="
+              updatingAthlete = undefined;
+              showAthleteDialog = true;
+            "
+          />
+        </div>
+      </q-card-section>
+      <TableManagedAthletes :athletes="athletes" :on-update="onUpdateAthlete" />
     </q-card>
 
     <!-- Dialog to add a new athlete -->
@@ -100,6 +115,7 @@ const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
 // Set ref
+const searchAthlete = ref<string>(); // TODO search
 const updatingAthlete = ref<AthleteUser>(); // athlete that is currently being updated
 const showAthleteDialog = ref(false); // whether to show dialog to add athlete
 const athleteName = ref(""); // new athlete name
