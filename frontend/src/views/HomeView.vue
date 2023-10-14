@@ -1,8 +1,7 @@
 <template>
-  <!-- Show coming soon in case of athlete-->
-  <!-- tested with v-if="true" and /* eslint-disable */-->
+  <!-- Show coming soon in case of athlete -->
   <div
-    v-if="user.role === 'athlete'"
+    v-if="user.role == UserRole.athlete"
     class="q-mx-auto q-px-md q-py-lg limit-max-width text-center"
   >
     <img :src="logoFullImage" alt="Logo" />
@@ -14,15 +13,16 @@
     </p>
   </div>
 
-  <!-- Show homepage in case of other roles-->
-  <div v-else>
+  <!-- Show homepage in case of coach -->
+  <div v-else-if="user.role == UserRole.coach">
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
       <h2 class="text-center">
-        <!--TODO: substitute with user.name when saved to db-->
         {{
-          $t("homepage.call_to_action", {
-            name: user.displayName?.split(" ").slice(0, -1).join(" "),
-          })
+          user.displayName
+            ? $t("homepage.welcome_with_name", {
+                name: user.displayName?.trim(),
+              })
+            : $t("homepage.welcome_without_name")
         }}
       </h2>
     </div>
@@ -53,11 +53,17 @@
       </router-link>
     </div>
   </div>
+
+  <!-- TODO Show call to action to unsigner user -->
+  <div v-else class="q-mx-auto q-px-md q-py-lg limit-max-width text-center">
+    <img :src="logoFullImage" alt="Logo" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
+import { UserRole } from "@/helpers/users/user";
 
 // Get user state
 const user = useUserStore();

@@ -26,7 +26,8 @@
     }
   },
   "homepage": {
-    "call_to_action":"Hi { name }, let's work together!",
+    "welcome_with_name": "Hi { name }, let's work together!",
+    "welcome_without_name": "Welcome back, ready to work together?",
     "actions": {
       "to_athletes": "Manage your athletes",
       "to_athletes_caption": "Add new athletes, view or modify the existing ones",
@@ -178,11 +179,11 @@
         "title_table": "Programs",
         "add": "Add a new program",
         "add_proceed": "Confirm",
-        "prompt_name":"Program name",
+        "prompt_name": "Program name",
         "prompt_label": "Label",
         "update_proceed": "Update program",
-        "update":"Insert your program info",
-        "search_program":"Search program..."
+        "update": "Insert your program info",
+        "search_program": "Search program..."
       }
     }
   },
