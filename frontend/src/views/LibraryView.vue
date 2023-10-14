@@ -133,10 +133,7 @@
 
             <q-card-section>
               <FormExerciseVariantLibrary
-                :variant="
-                  selectedVariant ??
-                  new ExerciseVariant({ exercise: selectedExercise })
-                "
+                :variant="selectedVariantToForm"
                 :on-submit="onVariantSubmit"
                 :options-muscle-groups="exerciseMuscleGroupsOptions"
                 :options-equipment="exerciseEquipmentOptions"
@@ -232,6 +229,11 @@ const deletingVariant = ref<ExerciseVariant>();
 const showDialogDelete = ref(false);
 const selectedExercise = ref<Exercise>();
 const selectedVariant = ref<ExerciseVariant>();
+const selectedVariantToForm = computed(
+  () =>
+    selectedVariant.value ??
+    new ExerciseVariant({ exercise: selectedExercise.value }),
+);
 // TODO const showVariantList = computed(() => Boolean(selectedExercise.value));
 const showVariantForm = computed(() =>
   Boolean(addingNewVariant.value || selectedVariant.value),
