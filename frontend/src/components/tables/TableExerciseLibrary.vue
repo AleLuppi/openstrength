@@ -5,30 +5,15 @@
     virtual-scroll
     table-style="max-height: 60vh"
     hide-pagination
-    @row-click="$props.onUpdate"
-    :selection="isVariant ? 'none' : 'single'"
-    v-model:selected="selected"
+    @row-click="$props.onExerciseUpdate"
+    @sub-row-click="$props.onVariantUpdate"
+    selection="single"
   ></os-table>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType } from "vue";
-import { useI18n } from "vue-i18n";
-import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
-
-// Init plugin
-const i18n = useI18n();
-
-// Allow row selection from parent
-const selected = ref<{ [key: string]: any }[]>();
-function selectRowByName(name: string, clearOnFail: boolean = false) {
-  const row = rows.value.find((row) => Boolean(name) && row.name == name);
-  if (row) selected.value = [row];
-  else if (clearOnFail) selected.value = [];
-}
-defineExpose({
-  selectRowByName: selectRowByName,
-});
+import { PropType, computed } from "vue";
+import { Exercise } from "@/helpers/exercises/exercise";
 
 // Define props
 const props = defineProps({
@@ -36,114 +21,87 @@ const props = defineProps({
     type: Array as PropType<Exercise[]>,
     required: true,
   },
-  variants: {
-    type: Array as PropType<ExerciseVariant[]>,
-  },
-  onAdd: {
+  onExerciseUpdate: {
     type: Function,
     required: false,
+    default: () => {},
   },
-  onUpdate: {
+  onVariantUpdate: {
     type: Function,
     required: false,
+    default: () => {},
   },
-  onDelete: {
+  onExerciseDelete: {
     type: Function,
     required: false,
+    default: () => {},
   },
-  addNew: {
-    type: Boolean,
-    default: false,
+  onVariantDelete: {
+    type: Function,
+    required: false,
+    default: () => {},
   },
 });
 
-// Check if exercise or variant
-const isVariant = computed(() => Boolean(props.variants));
-
 // Set table columns
-const columns = computed(() =>
-  isVariant.value
-    ? [
-        // Variant case
-        {
-          name: "variant",
-          align: "left",
-          label: "Variant", // TODO i18n
-          field: "displayName",
-        },
-        { name: "delete", align: "center", label: "", field: "delete" },
-      ]
-    : [
-        // Exercise case
-        {
-          name: "exercise",
-          required: true,
-          label: "Exercise", // TODO i18n
-          field: "displayName",
-          align: "left",
-          sortable: true,
-        },
-        {
-          name: "variants",
-          align: "left",
-          label: "Variants", // TODO i18n
-          field: "variants",
-        },
-        { name: "delete", align: "center", label: "", field: "delete" },
-      ],
-);
+const columns = [
+  {
+    name: "exercise",
+    required: true,
+    label: "Exercise", // TODO i18n
+    field: "exercise",
+    align: "left",
+    sortable: true,
+  },
+  {
+    name: "variants",
+    align: "left",
+    label: "Variants", // TODO i18n
+    field: "variants",
+  },
+  { name: "delete", align: "center", label: "", field: "delete" },
+];
 
 // Set table rows
 const rows = computed(() => {
-  // Prepare exercise list
-  let listToMap: Exercise[] | ExerciseVariant[] = [];
-  if (isVariant.value) {
-    const variants = [...props.variants!];
-    listToMap = variants;
-  } else {
-    const exercises = [...props.exercises];
-    if (props.addNew) exercises.unshift(new Exercise());
-    listToMap = exercises;
-  }
-
-  // Move from list to row object
-  return listToMap.map((item) => ({
-    uid: item.uid ?? "",
-    name: item.name,
-    displayName: isVariant.value
-      ? [
-          (item as ExerciseVariant).exercise?.name,
-          (item as ExerciseVariant).isDefault
-            ? `(${i18n.t("common.default").toLocaleLowerCase()})`
-            : item.name,
-        ].join("  ")
-      : item.name ?? {
-          element: "input",
-          hideBottomSpace: true,
-          autofocus: true,
-          clearOnBlur: true,
-          on: {
-            blur: (value: string) => props.onAdd?.(value),
-          },
-        },
-    variants:
-      item.name && item instanceof Exercise
-        ? (item.variants?.length ?? 0).toString() + " variants"
-        : "", // TODO i18n
+  return props.exercises.map((exercise) => ({
+    uid: exercise.uid,
+    exercise: exercise.name,
+    name: exercise.name,
+    variants: (exercise.variants?.length ?? 0).toString() + " variants", // TODO i18n
     update: {
       element: "button",
-      on: { click: () => props.onUpdate?.(item) },
+      on: { click: () => props.onExerciseUpdate(exercise) },
       icon: "edit",
       flat: true,
       round: true,
     },
     delete: {
       element: "button",
-      on: { click: () => props.onDelete?.(item) },
+      on: { click: () => props.onExerciseDelete(exercise) },
       icon: "delete",
       flat: true,
       round: true,
+      color: "dark-light",
     },
+    expanded: exercise.variants?.map((variant) => ({
+      icon: {
+        element: "icon",
+        name: "subdirectory_arrow_right",
+        flat: true,
+        round: true,
+        color: "dark",
+      },
+      variant: variant.name,
+      delete: {
+        element: "button",
+        on: { click: () => props.onVariantDelete(variant) },
+        icon: "delete",
+        flat: true,
+        round: true,
+        color: "light",
+      },
+    })),
   }));
 });
 </script>
