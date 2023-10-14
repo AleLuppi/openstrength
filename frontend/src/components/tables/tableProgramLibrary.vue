@@ -1,5 +1,11 @@
 <template>
-  <os-table :columns="columns" :rows="rows"></os-table>
+  <os-table
+    :columns="columns"
+    :rows="rows"
+    virtual-scroll
+    table-style="max-height: 50vh"
+    hide-pagination
+  ></os-table>
 </template>
 
 <script setup lang="ts">
