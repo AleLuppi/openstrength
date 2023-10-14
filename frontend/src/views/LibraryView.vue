@@ -305,7 +305,7 @@ import {
   reduceExercises,
 } from "@/helpers/exercises/exercise";
 import { Program } from "@/helpers/programs/program";
-import TableProgramLibrary from "@/components/tables/tableProgramLibrary.vue";
+import TableProgramLibrary from "@/components/tables/TableProgramLibrary.vue";
 
 // Use plugins
 const $q = useQuasar();
