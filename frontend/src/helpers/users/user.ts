@@ -23,6 +23,9 @@ export type UserProps = {
   photoUrl?: string;
   phoneNumber?: string;
 
+  // Advanced auth info
+  emailVerified?: boolean;
+
   // Anagraphic
   name?: string;
   surname?: string;
@@ -46,6 +49,23 @@ export type UserProps = {
 };
 
 /**
+ * Coach user properties.
+ */
+export type CoachUserProps = UserProps & {};
+
+/**
+ * Athlete user properties.
+ */
+export type AthleteUserProps = UserProps & {
+  // Athlete specific
+  coachId?: string;
+  coachNote?: string;
+  coaches?: string[];
+  coachesFrom?: (Date | null)[];
+  coachesTo?: (Date | null)[];
+};
+
+/**
  * User entity.
  *
  * @public
@@ -57,6 +77,9 @@ export class User {
   displayName?: string;
   photoUrl?: string;
   phoneNumber?: string;
+
+  // Advanced auth info
+  emailVerified?: boolean;
 
   // Anagraphic
   name?: string;
@@ -87,6 +110,7 @@ export class User {
     displayName,
     photoUrl,
     phoneNumber,
+    emailVerified,
     name,
     surname,
     middlename,
@@ -145,11 +169,6 @@ export class User {
 }
 
 /**
- * Coach user properties.
- */
-export type CoachUserProps = UserProps & {};
-
-/**
  * Coach user.
  *
  * @public
@@ -163,18 +182,6 @@ export class CoachUser extends User {
     // Set specific properties
   }
 }
-
-/**
- * Athlete user properties.
- */
-export type AthleteUserProps = UserProps & {
-  // Athlete specific
-  coachId?: string;
-  coachNote?: string;
-  coaches?: string[];
-  coachesFrom?: (Date | null)[];
-  coachesTo?: (Date | null)[];
-};
 
 /**
  * Athlete user.

@@ -14,6 +14,7 @@ import {
 } from "@/helpers/database/collections";
 import {
   Exercise,
+  ExerciseVariantProps,
   packExerciseVariantInfo,
   reduceExercises,
 } from "@/helpers/exercises/exercise";
@@ -108,7 +109,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
    * Load list of programs for a coach.
    *
    * @param coachId ID of the coach for which programs should be loaded.
-   * @param quiet if true, skip loading if athletes are already present, otherwise force reload.
+   * @param quiet if true, skip loading if programs are already present, otherwise force reload.
    */
   async function loadPrograms(
     coachId?: string,
@@ -124,6 +125,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     // Abort if there is no need to check
     if (!coachId || (quiet && programs.value)) return;
 
+    // TODO check documents format
     // Get documents
     doGetDocs(programsCollection, [["coachId", "==", coachId]], {
       onSuccess: (docs: { [key: string]: Program }) => {
