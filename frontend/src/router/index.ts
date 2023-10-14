@@ -18,6 +18,7 @@ const routes = [
     component: HomeView,
     meta: {
       title: "Home",
+      redirectNotAuthenticated: "login",
     },
   },
   {
@@ -26,6 +27,7 @@ const routes = [
     component: AthletesView,
     meta: {
       title: "Athletes",
+      redirectNotAuthenticated: "login",
     },
   },
   {
@@ -34,6 +36,7 @@ const routes = [
     component: LibraryView,
     meta: {
       title: "Library",
+      redirectNotAuthenticated: "login",
     },
   },
   {
@@ -42,6 +45,7 @@ const routes = [
     component: ScheduleView,
     meta: {
       title: "Schedule",
+      redirectNotAuthenticated: "login",
     },
   },
   {
@@ -51,7 +55,7 @@ const routes = [
     props: true,
     meta: {
       title: "Login",
-      redirectAuthenticated: "profile",
+      redirectAuthenticated: "home",
     },
   },
   {
@@ -60,7 +64,7 @@ const routes = [
     component: UserRegisterView,
     meta: {
       title: "Register",
-      redirectAuthenticated: "profile",
+      redirectAuthenticated: "home",
     },
   },
   {
