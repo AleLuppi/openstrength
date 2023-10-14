@@ -62,13 +62,14 @@
         </template>
       </os-input>
 
-      <q-btn
-        :label="$t('user.auth.login_button')"
-        type="submit"
-        outline
-        class="q-my-lg"
-      />
-    </q-form>
+        <q-btn
+          :label="$t('user.auth.login_button')"
+          type="submit"
+          outline
+          color="primary-button"
+          class="q-my-lg"
+        />
+      </q-form>
 
     <div class="row justify-between">
       <!-- Forgot password -->

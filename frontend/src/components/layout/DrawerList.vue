@@ -19,7 +19,7 @@
       tag="a"
       :to="{ name: page }"
       active-class="os-child-bg-primary"
-      class="link-child"
+      class="link-child text-unselected-drawer"
     >
       <!-- Icon near text on expanded drawer -->
       <q-item-section v-if="!props.mini" avatar>
@@ -44,7 +44,7 @@
       tag="a"
       :to="{ name: user.isSignedIn ? 'profile' : 'login' }"
       active-class="os-child-bg-primary"
-      class="link-child"
+      class="link-child text-unselected-drawer"
     >
       <!-- Icon near text on expanded drawer -->
       <q-item-section v-if="!props.mini" avatar>
@@ -71,7 +71,7 @@
               : 'fa-solid fa-right-to-bracket'
           "
         />
-        <p>
+        <p class="p-drawer">
           {{ $t("layout.views." + (user.isSignedIn ? "profile" : "signin")) }}
         </p>
       </q-card>
