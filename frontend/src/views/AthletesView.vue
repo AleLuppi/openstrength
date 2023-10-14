@@ -28,7 +28,11 @@
           <!-- Add new athlete -->
           <q-btn
             icon="add"
-            :label="$t('coach.athlete_management.list.add')"
+            :label="
+              $q.screen.gt.sm
+                ? $t('coach.athlete_management.list.add')
+                : undefined
+            "
             color="primary-button"
             @click="
               updatingAthlete = undefined;
@@ -37,6 +41,9 @@
           />
         </div>
       </q-card-section>
+
+      <q-separator />
+
       <TableManagedAthletes :athletes="athletes" :on-update="onUpdateAthlete" />
     </q-card>
 
