@@ -16,7 +16,7 @@
   >
     <!-- Set header style -->
     <template v-slot:header="props">
-      <q-tr :props="props" class="bg-lighter">
+      <q-tr :props="props" class="bg-table-header">
         <q-th
           v-for="col in props.cols"
           :key="col.name"
@@ -47,7 +47,7 @@
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          class="os-td-selected"
+          class="os-td-selected bg-table-element"
         >
           <osVariableElement :props="col.value" />
         </q-td>
@@ -58,7 +58,7 @@
         :props="props"
         v-for="row in props.row.expanded"
         :key="row"
-        class="q-px-lg bg-lighter"
+        class="q-px-lg bg-lighter table-element-selected-child"
         @click="($attrs.onSubRowClick as Function)?.(props.row, row)"
         :class="{ 'cursor-pointer': $attrs.onSubRowClick }"
       >

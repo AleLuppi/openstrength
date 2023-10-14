@@ -51,11 +51,17 @@
       </div>
 
       <q-card-actions class="row justify-end q-mx-xl q-pb-md">
-        <q-btn> {{ $t("user.profile.info_edit") }}</q-btn>
+        <q-btn outline color="primary-button">
+          {{ $t("user.profile.info_edit") }}</q-btn
+        >
       </q-card-actions>
     </q-card>
 
-    <q-btn :label="$t('user.auth.signout_title')" @click="signOut" />
+    <q-btn
+      color="secondary-button"
+      :label="$t('user.auth.signout_title')"
+      @click="signOut"
+    />
   </div>
 </template>
 

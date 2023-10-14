@@ -54,6 +54,8 @@ const rows = computed(() => {
       on: { click: () => props.onUpdate(program) },
       label: "Update",
       rounded: true,
+      outline: true,
+      color: "primary-button",
     },
   }));
 });

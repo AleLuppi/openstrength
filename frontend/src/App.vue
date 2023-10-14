@@ -31,7 +31,7 @@
       bordered
       mini
       :mini-width="100"
-      class="bg-lighter"
+      class="bg-lightest"
     >
       <DrawerList />
 

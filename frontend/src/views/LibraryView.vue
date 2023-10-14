@@ -49,6 +49,7 @@
                         ? $t('coach.exercise_management.add_button')
                         : undefined
                     "
+                    color="primary-button"
                     @click="onNewExercise"
                   />
                 </div>
@@ -100,6 +101,7 @@
                         ? $t('coach.exercise_management.add_button')
                         : undefined
                     "
+                    color="primary-button"
                     @click="onNewVariant"
                   />
                 </div>
