@@ -26,6 +26,7 @@
     }
   },
   "homepage": {
+    "call_to_action":"Hi { name }, let's work together!",
     "actions": {
       "to_athletes": "Manage your athletes",
       "to_athletes_caption": "Add new athletes, view or modify the existing ones",

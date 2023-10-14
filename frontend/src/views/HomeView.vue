@@ -14,11 +14,16 @@
     </p>
   </div>
 
+  <!-- Show homepage in case of other roles-->
   <div v-else>
-    <!-- Create a div container with: padding medium in all direction, large padding bottom, margin left and right auto-->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
       <h2 class="text-center">
-        {{ $t("layout.drawer.welcome_logged_in_noname") }}
+        <!--TODO: substitute with user.name when saved to db-->
+        {{
+          $t("homepage.call_to_action", {
+            name: user.displayName?.split(" ").slice(0, -1).join(" "),
+          })
+        }}
       </h2>
     </div>
 
