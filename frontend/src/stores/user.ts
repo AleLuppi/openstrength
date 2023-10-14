@@ -1,6 +1,7 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { User as FirebaseUser } from "firebase/auth";
+import { UserRole } from "@/helpers/users/user";
 
 export const useUserStore = defineStore("user", () => {
   // Basic user info
@@ -18,6 +19,9 @@ export const useUserStore = defineStore("user", () => {
   // User is signed in
   const isSignedIn = computed(() => Boolean(uid.value && uid.value.trim()));
 
+  // Additional user info for personalization
+  const name = ref<string>();
+  const role = ref<UserRole>();
   /**
    * Update user storage from Firebase auth instance.
    *
@@ -38,7 +42,9 @@ export const useUserStore = defineStore("user", () => {
   function $reset() {
     uid.value = undefined;
     email.value = undefined;
+    name.value = undefined;
     displayName.value = undefined;
+    role.value = undefined;
     photoUrl.value = undefined;
     phoneNumber.value = undefined;
     emailVerified.value = false;
@@ -47,7 +53,9 @@ export const useUserStore = defineStore("user", () => {
   return {
     uid,
     email,
+    name,
     displayName,
+    role,
     photoUrl,
     phoneNumber,
     emailVerified,

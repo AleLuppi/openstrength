@@ -47,12 +47,14 @@
           <p class="text-left text-primary">{{ user.role }}</p>
         </q-section>
         <!-- Status: active or inactive-->
-        <q-section class="column align-center q-mx-md">
+        <!--        <q-section class="column align-center q-mx-md">
           <p class="text-h6 text-left">
             {{ $t("user.profile.status") }}
           </p>
           <p class="text-left text-green">to be done</p>
         </q-section>
+        -->
+
         <q-section class="column align-center q-mx-md q-mr-xl">
           <p class="text-h6 text-left">
             {{ $t("user.profile.uid") }}
