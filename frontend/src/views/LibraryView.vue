@@ -13,9 +13,8 @@
       />
     </q-tabs>
 
-    <!-- TODO check panels -->
-    <!-- First Tab: Exercises -->
     <q-tab-panels v-model="selectedTab">
+      <!-- First tab: Exercises -->
       <q-tab-panel name="exercise">
         <!-- Excercise cards -->
         <div class="row q-col-gutter-x-md">
@@ -122,15 +121,18 @@
         <!-- Dialog to create or update variant -->
         <q-dialog v-model="showDialogVariantForm" @hide="clearVariant">
           <q-card>
-            <q-card-section>
-              <h6>
+            <q-card-section class="row items-center q-pb-none">
+              <h5>
                 {{
                   $t(
                     "coach.exercise_management." +
                       (selectedVariant ? "update" : "add"),
                   )
                 }}
-              </h6>
+              </h5>
+
+              <q-space />
+              <q-btn icon="close" flat round dense v-close-popup />
             </q-card-section>
 
             <q-card-section>
@@ -187,105 +189,105 @@
           </q-card>
         </q-dialog>
       </q-tab-panel>
-    </q-tab-panels>
 
-    <!-- Second Tab: Programs/schedule -->
-    <q-tab-panels v-model="selectedTab">
+      <!-- Second tab: Programs -->
       <q-tab-panel name="schedule">
-        <div class="q-col-gutter-x-md">
-          <div class="col-12 col-sm-6">
-            <!-- Display programs -->
-            <q-card>
-              <q-card-section>
-                <h6>
-                  {{ $t("coach.schedule_management.list.title_table") }}
-                </h6>
+        <!-- Display programs -->
+        <q-card>
+          <q-card-section>
+            <h6>
+              {{ $t("coach.schedule_management.list.title_table") }}
+            </h6>
 
-                <div class="row q-gutter-x-md items-center">
-                  <os-input
-                    v-model="searchProgram"
-                    :placeholder="
-                      $t('coach.schedule_management.list.search_program')
-                    "
-                    hide-bottom-space
-                    debounce="500"
-                    class="col"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="search" />
-                    </template>
-                  </os-input>
+            <div class="row q-gutter-x-md items-center">
+              <os-input
+                v-model="searchProgram"
+                :placeholder="
+                  $t('coach.schedule_management.list.search_program')
+                "
+                hide-bottom-space
+                debounce="500"
+                class="col"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="search" />
+                </template>
+              </os-input>
 
-                  <!-- Add new programm -->
-                  <q-btn
-                    icon="add"
-                    :label="$t('coach.schedule_management.list.add')"
-                    @click="
-                      updatingProgram = undefined;
-                      showProgramDialog = true;
-                    "
-                  />
-                </div>
+              <!-- Add new programm -->
+              <q-btn
+                icon="add"
+                :label="
+                  $q.screen.gt.sm
+                    ? $t('coach.schedule_management.list.add')
+                    : undefined
+                "
+                @click="
+                  updatingProgram = undefined;
+                  showProgramDialog = true;
+                "
+              />
+            </div>
+          </q-card-section>
+
+          <q-separator />
+
+          <TableProgramLibrary
+            :programs="programs"
+            :on-update="onUpdateProgram"
+          />
+        </q-card>
+
+        <!-- Dialog to add a new athlete -->
+        <q-dialog
+          v-model="showProgramDialog"
+          @hide="updatingProgram ? clearProgram() : {}"
+        >
+          <q-card class="q-pa-sm dialog-min-width">
+            <q-card-section class="row items-center q-pb-none">
+              <h5>
+                {{
+                  updatingProgram
+                    ? $t("coach.schedule_management.list.update")
+                    : $t("coach.schedule_management.list.add")
+                }}
+              </h5>
+
+              <q-space />
+              <q-btn icon="close" flat round dense v-close-popup />
+            </q-card-section>
+
+            <q-form
+              @submit="updatingProgram ? updateProgram() : createProgram()"
+              @reset="clearProgram"
+              class="q-my-md q-gutter-sm column"
+            >
+              <q-card-section class="q-gutter-x-xs">
+                <os-input
+                  v-model="programName"
+                  required
+                  :label="$t('coach.schedule_management.list.prompt_name')"
+                ></os-input>
+                <os-input
+                  v-model="programLabel"
+                  :label="$t('coach.schedule_management.list.prompt_label')"
+                ></os-input>
               </q-card-section>
 
-              <q-separator />
-              <TableProgramLibrary
-                :programs="programs"
-                :on-update="onUpdateProgram"
-              />
-            </q-card>
-
-            <!-- Dialog to add a new athlete -->
-            <q-dialog
-              v-model="showProgramDialog"
-              @hide="updatingProgram ? clearProgram() : {}"
-            >
-              <q-card class="q-pa-sm dialog-min-width">
-                <q-card-section class="row items-center q-pb-none">
-                  <h5>
-                    {{
-                      updatingProgram
-                        ? $t("coach.schedule_management.list.update")
-                        : $t("coach.schedule_management.list.add")
-                    }}
-                  </h5>
-                  <q-space />
-                  <q-btn icon="close" flat round dense v-close-popup />
-                </q-card-section>
-
-                <q-form
-                  @submit="updatingProgram ? updateProgram() : createProgram()"
-                  @reset="clearProgram"
-                  class="q-my-md q-gutter-sm column"
-                >
-                  <q-card-section class="q-gutter-x-xs">
-                    <os-input
-                      v-model="programName"
-                      required
-                      :label="$t('coach.schedule_management.list.prompt_name')"
-                    ></os-input>
-                    <os-input
-                      v-model="programLabel"
-                      :label="$t('coach.schedule_management.list.prompt_label')"
-                    ></os-input>
-                  </q-card-section>
-
-                  <q-card-actions align="right">
-                    <q-btn flat :label="$t('common.cancel')" type="reset" />
-                    <q-btn
-                      :label="
-                        updatingProgram
-                          ? $t('coach.schedule_management.list.update_proceed')
-                          : $t('coach.schedule_management.list.add_proceed')
-                      "
-                      type="submit"
-                    />
-                  </q-card-actions>
-                </q-form>
-              </q-card>
-            </q-dialog>
-          </div>
-        </div>
+              <q-card-actions align="right">
+                <q-btn flat :label="$t('common.cancel')" type="reset" />
+                <q-btn
+                  :label="
+                    updatingProgram
+                      ? $t('coach.schedule_management.list.update_proceed')
+                      : $t('coach.schedule_management.list.add_proceed')
+                  "
+                  type="submit"
+                />
+              </q-card-actions>
+            </q-form>
+          </q-card>
+        </q-dialog>
       </q-tab-panel>
     </q-tab-panels>
   </div>
@@ -298,6 +300,7 @@ import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import TableExerciseLibrary from "@/components/tables/TableExerciseLibrary.vue";
+import TableProgramLibrary from "@/components/tables/TableProgramLibrary.vue";
 import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLibrary.vue";
 import {
   Exercise,
@@ -305,7 +308,6 @@ import {
   reduceExercises,
 } from "@/helpers/exercises/exercise";
 import { Program } from "@/helpers/programs/program";
-import TableProgramLibrary from "@/components/tables/TableProgramLibrary.vue";
 
 // Use plugins
 const $q = useQuasar();
@@ -332,11 +334,11 @@ const selectedVariantToForm = computed(
     selectedVariant.value ??
     new ExerciseVariant({ exercise: selectedExercise.value }),
 );
-const updatingProgram = ref<Program>(); // Program that is currently being updated
-const showProgramDialog = ref(false); // whether to show dialog to add Program
-const programName = ref(""); // new program name
-const programLabel = ref(""); // new program note
-const searchProgram = ref<string>(); // TODO search
+const updatingProgram = ref<Program>(); // TODO check Program that is currently being updated
+const showProgramDialog = ref(false); // TODO check whether to show dialog to add Program
+const programName = ref(""); // TODO check new program name
+const programLabel = ref(""); // TODO check new program note
+const searchProgram = ref<string>(); // TODO check TODO search
 // TODO const showVariantList = computed(() => Boolean(selectedExercise.value));
 const showVariantForm = computed(() =>
   Boolean(addingNewVariant.value || selectedVariant.value),
@@ -614,7 +616,7 @@ function clearVariant() {
   deletingVariant.value = undefined;
 }
 
-/**
+/** TODO check
  * Create a new program and assign to a coach
  */
 function createProgram() {
@@ -637,7 +639,7 @@ function createProgram() {
   showProgramDialog.value = false;
 }
 
-/**
+/** TODO check
  * Update program according to inserted values.
  */
 function updateProgram() {
@@ -659,7 +661,7 @@ function updateProgram() {
   }
 }
 
-/**
+/** TODO check
  * Compile form with program info to allow coach to update them.
  *
  * @param program
@@ -671,7 +673,7 @@ function onUpdateProgram(program: Program) {
   programLabel.value = program.label ?? "";
 }
 
-/**
+/** TODO check
  * Clear values in program insertion form.
  */
 function clearProgram() {

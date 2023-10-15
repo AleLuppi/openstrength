@@ -38,6 +38,7 @@ const props = defineProps({
   },
   variants: {
     type: Array as PropType<ExerciseVariant[]>,
+    required: false,
   },
   onAdd: {
     type: Function,
