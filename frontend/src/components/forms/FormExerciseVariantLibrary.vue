@@ -1,5 +1,5 @@
 <template>
-  <q-form @submit="onSubmit">
+  <q-form ref="formElement" @submit="onSubmit" @reset="onReset">
     <div class="row q-col-gutter-x-md">
       <!-- Variant name with exercise name -->
       <os-input
@@ -83,6 +83,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, PropType } from "vue";
+import type { QForm } from "quasar";
 import {
   ExerciseVariant,
   ExerciseLoadType,
@@ -107,7 +108,18 @@ const props = defineProps({
   },
 });
 
+// Set expose
+defineExpose({
+  focus: () => formElement.value?.focus(),
+  validate: (shouldFocus?: boolean) => formElement.value?.validate(shouldFocus),
+  resetValidation: () => formElement.value?.resetValidation(),
+  submit: (evt?: Event) => formElement.value?.submit(evt),
+  reset: (evt?: Event) => formElement.value?.reset(evt),
+  getValidationComponents: () => formElement.value?.getValidationComponents(),
+});
+
 // Set ref
+const formElement = ref<QForm>();
 const variantName = ref<string>();
 const variantMuscleGroups = ref<string[]>();
 const variantLoadType = ref<string>();
@@ -146,6 +158,21 @@ function onSubmit() {
   props.onSubmit?.(variant);
 }
 
+/**
+ * Perform operations on form submit.
+ */
+function onReset() {
+  variantName.value = undefined;
+  variantMuscleGroups.value = undefined;
+  variantLoadType.value = undefined;
+  variantEquipment.value = undefined;
+  variantVideo.value = undefined;
+  variantDescription.value = undefined;
+}
+
+/**
+ * Set inputs according to input variant.
+ */
 onMounted(() => {
   loadVariant(props.variant);
 });

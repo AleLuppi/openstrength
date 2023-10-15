@@ -125,7 +125,7 @@
                 {{
                   $t(
                     "coach.exercise_management." +
-                      (selectedVariant ? "update" : "add"),
+                      (addingNewVariant ? "add" : "update"),
                   )
                 }}
               </h6>
@@ -133,7 +133,9 @@
 
             <q-card-section>
               <FormExerciseVariantLibrary
-                :variant="selectedVariantToForm"
+                ref="variantFormElement"
+                v-if="selectedVariant"
+                :variant="selectedVariant"
                 :on-submit="onVariantSubmit"
                 :options-muscle-groups="exerciseMuscleGroupsOptions"
                 :options-equipment="exerciseEquipmentOptions"
@@ -220,6 +222,7 @@ const coachInfo = useCoachInfoStore();
 // Set ref
 const selectedTab = ref("exercise"); // TODO main tab to show
 const exerciseTableElement = ref<typeof TableExerciseLibrary>();
+const variantFormElement = ref<typeof FormExerciseVariantLibrary>();
 const searchExercise = ref<string>(); // TODO search
 const searchVariant = ref<string>(); // TODO search
 const addingNewExercise = ref(false);
@@ -229,11 +232,6 @@ const deletingVariant = ref<ExerciseVariant>();
 const showDialogDelete = ref(false);
 const selectedExercise = ref<Exercise>();
 const selectedVariant = ref<ExerciseVariant>();
-const selectedVariantToForm = computed(
-  () =>
-    selectedVariant.value ??
-    new ExerciseVariant({ exercise: selectedExercise.value }),
-);
 // TODO const showVariantList = computed(() => Boolean(selectedExercise.value));
 const showVariantForm = computed(() =>
   Boolean(addingNewVariant.value || selectedVariant.value),
@@ -375,6 +373,9 @@ function onExerciseDelete(exercise: Exercise) {
 function onNewVariant() {
   clearVariant();
   addingNewVariant.value = true;
+  selectedVariant.value = new ExerciseVariant({
+    exercise: selectedExercise.value,
+  });
 }
 
 /**
@@ -386,6 +387,8 @@ function onVariantSubmit(variant: ExerciseVariant) {
     variant.saveNew({
       onSuccess: () => {
         exercise?.variants?.unshift(variant);
+        clearVariant();
+        nextTick(() => onNewVariant());
         $q.notify({
           type: "positive",
           message: i18n.t("coach.exercise_management.add_success", {
@@ -404,7 +407,8 @@ function onVariantSubmit(variant: ExerciseVariant) {
   else
     variant.saveUpdate({
       // No need to update variant on success as it's done directly in form
-      onSuccess: () =>
+      onSuccess: () => {
+        clearVariant();
         $q.notify({
           type: "positive",
           message: i18n.t("coach.exercise_management.update_success", {
@@ -412,7 +416,8 @@ function onVariantSubmit(variant: ExerciseVariant) {
             variant: variant.name,
           }),
           position: "bottom",
-        }),
+        });
+      },
       onError: () =>
         $q.notify({
           type: "negative",
