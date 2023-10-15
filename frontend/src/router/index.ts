@@ -15,7 +15,6 @@ const ScheduleView = () => import("@/views/ScheduleView.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
-const ComingSoonView = () => import("@/views/ComingSoonView.vue");
 
 const routes = [
   {
@@ -73,14 +72,6 @@ const routes = [
     meta: {
       title: "Register",
       redirectAuthenticated: "home",
-    },
-  },
-  {
-    path: "/coming-soon",
-    name: "comingsoon",
-    component: ComingSoonView,
-    meta: {
-      title: "Coming Soon",
     },
   },
   {
