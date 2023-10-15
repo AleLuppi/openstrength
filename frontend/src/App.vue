@@ -60,6 +60,7 @@ import setdefaults from "@/boot/setQuasarDefaultProps";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { addCallbackOnAuthStateChanged } from "@/helpers/users/auth";
+import { setLocale } from "@/helpers/locales";
 import DrawerList from "@/components/layout/DrawerList.vue";
 
 // Init plugin
@@ -82,8 +83,10 @@ onBeforeMount(() => {
 
   // Ensure user storage is up to date with auth
   addCallbackOnAuthStateChanged({
-    onUserIn: (firebaseUser: FirebaseUser) =>
-      user.loadFirebaseUser(firebaseUser),
+    onUserIn: (firebaseUser: FirebaseUser) => {
+      user.loadFirebaseUser(firebaseUser);
+      if (user.locale) setLocale(user.locale);
+    },
     onUserOut: () => {
       user.$reset();
       coachInfo.$reset();
