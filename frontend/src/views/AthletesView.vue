@@ -74,16 +74,16 @@
             <os-input
               v-model="athleteName"
               required
-              :label="$t('coach.athlete_management.list.prompt_name')"
+              :label="$t('coach.athlete_management.fields.name')"
             ></os-input>
             <os-input
               v-model="athleteSurname"
               required
-              :label="$t('coach.athlete_management.list.prompt_surname')"
+              :label="$t('coach.athlete_management.fields.surname')"
             ></os-input>
             <os-input
               v-model="athleteNote"
-              :label="$t('coach.athlete_management.list.prompt_note')"
+              :label="$t('coach.athlete_management.fields.note')"
             ></os-input>
           </q-card-section>
 

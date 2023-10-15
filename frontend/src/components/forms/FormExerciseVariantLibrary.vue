@@ -4,7 +4,7 @@
       <!-- Variant name with exercise name -->
       <os-input
         v-model="variantName"
-        :label="$t('coach.exercise_management.exercise_variant')"
+        :label="$t('coach.exercise_management.fields.variant')"
         :rules="[
           (name: string) =>
             props.variant.exercise?.variants?.reduce(
@@ -27,7 +27,7 @@
 
       <os-select
         v-model="variantMuscleGroups"
-        :label="$t('coach.exercise_management.exercise_musclegroups')"
+        :label="$t('coach.exercise_management.fields.musclegroups')"
         use-input
         :options="variantMuscleGroupsOptions"
         multiple
@@ -36,12 +36,12 @@
 
       <os-select
         v-model="variantLoadType"
-        :label="$t('coach.exercise_management.exercise_loadtype')"
+        :label="$t('coach.exercise_management.fields.loadtype')"
         :options="
           (
             Object.keys(ExerciseLoadType) as (keyof typeof ExerciseLoadType)[]
           ).map((val) => ({
-            label: $t('coach.exercise_management.exercise_loadtypes.' + val),
+            label: $t('coach.exercise_management.fields.loadtypes.' + val),
             value: val,
           }))
         "
@@ -52,7 +52,7 @@
 
       <os-select
         v-model="variantEquipment"
-        :label="$t('coach.exercise_management.exercise_equipment')"
+        :label="$t('coach.exercise_management.fields.equipment')"
         use-input
         :options="variantEquipmentOptions"
         multiple
@@ -61,13 +61,13 @@
 
       <os-input
         v-model="variantVideo"
-        :label="$t('coach.exercise_management.exercise_video')"
+        :label="$t('coach.exercise_management.fields.video')"
         class="col-12"
       />
 
       <os-input
         v-model="variantDescription"
-        :label="$t('coach.exercise_management.exercise_description')"
+        :label="$t('coach.exercise_management.fields.description')"
         type="textarea"
         class="col-12"
       />

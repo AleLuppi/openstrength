@@ -122,9 +122,6 @@
         "update_error": "It was not possible to update the athlete, please retry",
         "remove": "Remove athlete",
         "remove_confirm": "Are you sure you want to remove { name }?",
-        "prompt_name": "Athlete's name",
-        "prompt_surname": "Athlete's surname",
-        "prompt_note": "Add a note"
       },
       "filter": {
         "all": "All",
@@ -134,6 +131,11 @@
         "inactive": "Inactive",
         "new": "New",
         "old": "Old"
+      },
+      "fields": {
+        "name": "Athlete's name",
+        "surname": "Athlete's surname",
+        "note": "Add a note"
       }
     },
     "exercise_management": {
@@ -160,30 +162,34 @@
       "delete_variant": "Delete variant",
       "delete_variant_confirm": "Are you sure you want to delete \"{ variant }\" variant from \"{ exercise }\"?",
       "delete_proceed": "Delete it",
-      "exercise_name": "Name",
-      "exercise_variant": "Variant",
-      "exercise_loadtype": "Load type",
-      "exercise_loadtypes": {
-        "reps": "Reps",
-        "weight": "Weight",
-        "time": "Time"
-      },
-      "exercise_musclegroups": "Muscle Groups",
-      "exercise_equipment": "Tools",
-      "exercise_video": "Video link",
-      "exercise_description": "Description"
+      "fields": {
+        "name": "Name",
+        "variant": "Variant",
+        "loadtype": "Load type",
+        "loadtypes": {
+          "reps": "Reps",
+          "weight": "Weight",
+          "time": "Time"
+        },
+        "musclegroups": "Muscle Groups",
+        "equipment": "Tools",
+        "video": "Video link",
+        "description": "Description"
+      }
     },
     "schedule_management": {
       "list": {
         "title": "Programs library",
-        "title_table": "Programs",
+        "title_program": "Programs",
         "add": "Add a new program",
         "add_proceed": "Confirm",
-        "prompt_name": "Program name",
-        "prompt_label": "Label",
-        "update_proceed": "Update program",
         "update": "Insert your program info",
+        "update_proceed": "Update program",
         "search_program": "Search program..."
+      },
+      "fields": {
+        "name": "Program name",
+        "label": "Label"
       }
     }
   },

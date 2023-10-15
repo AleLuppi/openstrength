@@ -196,7 +196,7 @@
         <q-card>
           <q-card-section>
             <h6>
-              {{ $t("coach.schedule_management.list.title_table") }}
+              {{ $t("coach.schedule_management.list.title_program") }}
             </h6>
 
             <div class="row q-gutter-x-md items-center">
@@ -266,11 +266,11 @@
                 <os-input
                   v-model="programName"
                   required
-                  :label="$t('coach.schedule_management.list.prompt_name')"
+                  :label="$t('coach.schedule_management.fields.name')"
                 ></os-input>
                 <os-input
                   v-model="programLabel"
-                  :label="$t('coach.schedule_management.list.prompt_label')"
+                  :label="$t('coach.schedule_management.fields.label')"
                 ></os-input>
               </q-card-section>
 
