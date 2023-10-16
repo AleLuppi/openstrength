@@ -154,12 +154,15 @@ $secondary : $os-secondary-8;
 $accent : $os-primary-9;
 $dark : $os-grey-10;
 
-// TODO Background colors
+// Background colors
 $lightest : $os-grey-cold-0;
 $lighter : $os-grey-cold-1;
 $light : $os-grey-cold-4;
-$light-dark: $os-grey-cold-6;
+$light-dark : $os-grey-cold-6;
 $dark-light : $os-grey-cold-8;
+$dark : $dark;
+$darker : $os-grey-10;
+$darkest : $os-grey-10;
 
 // Useful colors
 $positive : $os-green-5;
