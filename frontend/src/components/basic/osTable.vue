@@ -38,8 +38,10 @@
             onRowClick(undefined, props.row, $attrs.selection as string);
           props.expand = !props.expand;
         "
+        class="bg-table-row"
         :class="{
           'cursor-pointer': $attrs.onRowClick || props.row.expanded,
+          'bg-table-row-selected': props.selected,
           'os-tr-selected': props.selected,
         }"
       >
@@ -47,7 +49,7 @@
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          class="os-td-selected bg-table-element"
+          class="os-td-selected"
         >
           <osVariableElement :props="col.value" />
         </q-td>
