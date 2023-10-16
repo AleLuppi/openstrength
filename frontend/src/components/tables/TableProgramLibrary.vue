@@ -73,7 +73,7 @@ const rows = computed(() => {
       label: "Update",
       rounded: true,
       outline: true,
-      color: "primary-button",
+      color: "button-primary",
     },
   }));
 });

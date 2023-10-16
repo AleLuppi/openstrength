@@ -15,7 +15,7 @@ const props = defineProps({
   onUpdate: {
     type: Function,
     required: false,
-    default: () => {},
+    default: () => { },
   },
 });
 
@@ -69,7 +69,7 @@ const rows = computed(() => {
       on: { click: () => props.onUpdate(athlete) },
       label: "Update",
       rounded: true,
-      color: "primary-button",
+      color: "button-primary",
       outline: true,
     },
   }));

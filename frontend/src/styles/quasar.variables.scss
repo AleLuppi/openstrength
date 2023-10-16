@@ -1,3 +1,4 @@
+/***** COLORS *****/
 // PRIMARY COLORS
 $os-primary-0: #ffed65;
 $os-primary-1: #ffd951;
@@ -50,7 +51,6 @@ $os-grey-cold-8: #54575d;
 $os-grey-cold-9: #36393f;
 $os-grey-cold-10: #181b21;
 
-
 // WARM GREYS
 $os-grey-warm-0: #fffdfa;
 $os-grey-warm-1: #fdf9f4;
@@ -69,7 +69,7 @@ $os-grey-warm-10: #2b2722;
 $os-blue-1: #eff9ff;
 $os-blue-2: #d1eeff;
 $os-blue-3: #6bcaff;
-$os-blue-4: #05a5ff; 
+$os-blue-4: #05a5ff;
 $os-blue-5: #0086d1; // base
 
 // Red - Errors 
@@ -93,6 +93,8 @@ $os-yellow-3: #ffe927;
 $os-yellow-4: #ffe605;
 $os-yellow-5: #ddc911; // base
 
+
+/***** SPACING *****/
 // Base unit 
 $spacing-unit: 8px;
 
@@ -103,6 +105,7 @@ $os-md: $spacing-unit * 1.5;
 $os-lg: $spacing-unit * 2;
 $os-xl: $spacing-unit * 3;
 
+/***** FONTS *****/
 // FONT FAMILIES
 $font-family-1: 'Inter', sans-serif;
 $font-family-2: 'Roboto', sans-serif;
@@ -116,16 +119,6 @@ $os-fontsize-xl: 28px;
 $os-fontsize-xxl: 32px;
 $os-fontsize-xxxl: 40px;
 
-// LINE HEIGHTS (as % of fontsize)
-$os-lineheight-sm: 1.5;
-$os-lineheight-regular: 1.2;
-$os-lineheight-md: 1.2;
-$os-lineheight-lg: 1.2;
-$os-lineheight-xl: 1.2;
-$os-lineheight-xxl: 1.2;
-$os-lineheight-xxxl: 1.2;
-
-
 // FONT WEIGHTS
 $os-fontweight-thin: 100;
 $os-fontweight-extralight: 200;
@@ -137,13 +130,31 @@ $os-fontweight-bold: 700;
 $os-fontweight-extrabold: 800;
 $os-fontweight-black: 900;
 
-// TODO set brand colors
+// LINE HEIGHTS (as % of fontsize)
+$os-lineheight-sm: 1.5;
+$os-lineheight-regular: 1.2;
+$os-lineheight-md: 1.2;
+$os-lineheight-lg: 1.2;
+$os-lineheight-xl: 1.2;
+$os-lineheight-xxl: 1.2;
+$os-lineheight-xxxl: 1.2;
+
+
+/***** SPECIFIC ELEMENTS COLORS *****/
+// TODO Chart colors
+$chart-color1: #165BAA;
+$chart-color2: #A155B9;
+$chart-color3: #F765A3;
+
+
+/***** BASE COLORS *****/
+// Brand colors
 $primary : $os-primary-6;
 $secondary : $os-secondary-8;
-$accent : #9C27B0;
-$dark : #1D1D1D;
+$accent : $os-primary-9;
+$dark : $os-grey-10;
 
-// Background colors
+// TODO Background colors
 $lightest : $os-grey-cold-0;
 $lighter : $os-grey-cold-1;
 $light : $os-grey-cold-4;
@@ -151,16 +162,10 @@ $light-dark: $os-grey-cold-6;
 $dark-light : $os-grey-cold-8;
 
 // Useful colors
-$positive : #21BA45;
-$negative : #C10015;
-$info : #31CCEC;
-$warning : #F2C037;
-
-// Chart colors
-$chart-color1: #165BAA;
-$chart-color2: #A155B9;
-$chart-color3: #F765A3;
-
+$positive : $os-green-5;
+$negative : $os-red-5;
+$info : $os-blue-5;
+$warning : $os-yellow-5;
 
 
 @import '~quasar-variables-styl'

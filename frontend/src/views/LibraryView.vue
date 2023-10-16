@@ -48,7 +48,7 @@
                         ? $t('coach.exercise_management.add_button')
                         : undefined
                     "
-                    color="primary-button"
+                    color="button-primary"
                     @click="onNewExercise"
                   />
                 </div>
@@ -100,7 +100,7 @@
                         ? $t('coach.exercise_management.add_button')
                         : undefined
                     "
-                    color="primary-button"
+                    color="button-primary"
                     @click="onNewVariant"
                   />
                 </div>
@@ -132,7 +132,14 @@
               </h5>
 
               <q-space />
-              <q-btn icon="close" flat round dense v-close-popup />
+              <q-btn
+                icon="close"
+                flat
+                round
+                dense
+                color="button-negative"
+                v-close-popup
+              />
             </q-card-section>
 
             <q-card-section>
@@ -175,6 +182,7 @@
                 flat
                 :label="$t('common.cancel')"
                 type="reset"
+                color="button-negative"
                 v-close-popup
               />
               <q-btn
@@ -183,6 +191,7 @@
                   if (deletingExercise) deleteExercise(deletingExercise);
                   if (deletingVariant) deleteVariant(deletingVariant);
                 "
+                color="button-negative"
                 v-close-popup
               />
             </q-card-actions>
@@ -254,7 +263,14 @@
               </h5>
 
               <q-space />
-              <q-btn icon="close" flat round dense v-close-popup />
+              <q-btn
+                icon="close"
+                flat
+                round
+                dense
+                color="button-negative"
+                v-close-popup
+              />
             </q-card-section>
 
             <q-form

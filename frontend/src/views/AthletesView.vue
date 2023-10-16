@@ -33,7 +33,7 @@
                 ? $t('coach.athlete_management.list.add')
                 : undefined
             "
-            color="primary-button"
+            color="button-primary"
             @click="
               updatingAthlete = undefined;
               showAthleteDialog = true;
@@ -62,7 +62,14 @@
             }}
           </h5>
           <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
+          <q-btn
+            icon="close"
+            flat
+            round
+            dense
+            color="button-negative"
+            v-close-popup
+          />
         </q-card-section>
 
         <q-form

@@ -144,6 +144,7 @@ const rows = computed(() => {
       icon: "delete",
       flat: true,
       round: true,
+      color: "button-negative",
     },
   }));
 });

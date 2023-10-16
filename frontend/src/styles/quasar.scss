@@ -179,38 +179,43 @@ a {
 
 
 /***** DOM element related classes *****/
-.text-brand {
-  color: $os-secondary-4 !important;
-}
-
-.bg-brand {
-  background: $os-primary-6 !important;
-}
-
-
+// Icon
 .text-icon-color {
   color: $os-primary-4 !important;
 }
 
-
-
-.text-primary-button {
-  color: $os-primary-6 !important;
-}
-
-.bg-primary-button {
-  background: $os-primary-6 !important;
-}
-
-.text-secondary-button {
-  color: $os-secondary-8 !important;
-}
-
-.bg-secondary-button {
-  background: $os-secondary-8 !important;
+.bg-icon-color {
+  color: $os-primary-4 !important;
 }
 
 
+// Button
+.text-button-primary {
+  color: $primary !important;
+}
+
+.bg-button-primary {
+  background: $primary !important;
+}
+
+.text-button-secondary {
+  color: $secondary !important;
+}
+
+.bg-button-secondary {
+  background: $secondary !important;
+}
+
+.text-button-negative {
+  color: $os-secondary-4 !important;
+}
+
+.bg-button-negative {
+  background: $os-secondary-4 !important;
+}
+
+
+// Table
 .bg-table-header {
   background: $os-grey-cold-2 !important;
 }
@@ -223,8 +228,14 @@ a {
   background: $os-grey-cold-1 !important;
 }
 
-.text-input-top-label,
 .text-table-header {
+  font-size: 0.9rem;
+  color: $os-grey-cold-7;
+}
+
+
+// Input
+.text-input-top-label {
   font-size: 0.9rem;
   color: $os-grey-cold-7;
 }

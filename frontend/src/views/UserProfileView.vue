@@ -53,14 +53,14 @@
 
       <q-card-actions class="row justify-end q-mx-xl q-pb-md">
         <!-- TODO connect to an edit box (e.g. onboarding page) -->
-        <q-btn outline color="primary-button">
+        <q-btn outline color="button-primary">
           {{ $t("user.profile.info_edit") }}</q-btn
         >
       </q-card-actions>
     </q-card>
 
     <q-btn
-      color="secondary-button"
+      color="button-secondary"
       :label="$t('user.auth.signout_title')"
       @click="signOut"
     />
