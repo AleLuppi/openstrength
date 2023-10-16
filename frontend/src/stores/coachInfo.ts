@@ -14,8 +14,11 @@ import {
 import {
   Exercise,
   packExerciseVariantInfo,
-  reduceExercises,
 } from "@/helpers/exercises/exercise";
+import {
+  reduceExercises,
+  sortExercises,
+} from "@/helpers/exercises/listManagement";
 
 export const useCoachInfoStore = defineStore("coachInfo", () => {
   // Managed athletes
@@ -93,6 +96,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
           _exercises.push(packExerciseVariantInfo(doc, uid)),
         );
         exercises.value = reduceExercises(_exercises);
+        sortExercises(exercises.value, true);
         onSuccess?.(athletes);
       },
       onError: onError,

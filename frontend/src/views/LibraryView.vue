@@ -205,11 +205,8 @@ import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import TableExerciseLibrary from "@/components/tables/TableExerciseLibrary.vue";
 import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLibrary.vue";
-import {
-  Exercise,
-  ExerciseVariant,
-  reduceExercises,
-} from "@/helpers/exercises/exercise";
+import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+import { reduceExercises } from "@/helpers/exercises/listManagement";
 
 // Use plugins
 const $q = useQuasar();

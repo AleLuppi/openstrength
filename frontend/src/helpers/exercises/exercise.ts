@@ -458,30 +458,3 @@ export function packExerciseVariantInfo(
     ],
   });
 }
-
-/**
- * Reduce a list of exercises to merge variants according to exercise name.
- *
- * @param exercises list of exercises to reduce.
- * @returns unique exercises with concatenated list of variants.
- */
-export function reduceExercises(exercises: Exercise[]) {
-  return exercises.reduce(
-    (exerciseList: Exercise[], currentExercise: Exercise) => {
-      const exercise = exerciseList.find(
-        (exercise) => exercise.name == currentExercise.name,
-      );
-      if (exercise) {
-        exercise.variants = (exercise.variants ?? []).concat(
-          currentExercise.variants ?? [],
-        );
-        exercise.variants.forEach((variant) => (variant.exercise = exercise));
-        return exerciseList;
-      } else {
-        exerciseList.push(currentExercise);
-        return exerciseList;
-      }
-    },
-    [],
-  );
-}

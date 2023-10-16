@@ -7,6 +7,8 @@ import {
   getDocs,
   deleteDoc,
   where,
+  orderBy,
+  limit,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/firebase";
@@ -129,6 +131,8 @@ export async function doUpdateDoc(
  *
  * @param collectionName name of the collection where document shall be searched.
  * @param conditions series of "where" conditions to filter documents.
+ * @param ordering fields by which order results, prefixed by '-' if decrescent order.
+ * @param numDocs maximum number of documents returned.
  * @param onSuccess function to execute when write operation is successful.
  * @param onError function to execute when write operation fails.
  */
@@ -136,9 +140,13 @@ export async function doGetDocs(
   collectionName: string,
   conditions?: any[][],
   {
+    ordering,
+    numDocs,
     onSuccess,
     onError,
   }: {
+    ordering?: string[];
+    numDocs?: number;
     onSuccess?: Function;
     onError?: Function;
   } = {},
@@ -146,7 +154,17 @@ export async function doGetDocs(
   // Prepare query
   const filteredConditions = conditions?.filter((val) => val.length >= 3) ?? [];
   const wheres = filteredConditions.map((val) => where(val[0], val[1], val[2]));
-  const q = query(collection(db, collectionName), ...wheres);
+  const orderBys = (ordering ?? []).map((val) =>
+    val.startsWith("-") ? orderBy(val, "desc") : orderBy(val),
+  );
+  const limits = numDocs ? [limit(numDocs)] : [];
+  const q = query(
+    collection(db, collectionName),
+    ...wheres,
+    ...orderBys,
+    ...limits,
+  );
+  console.log(q);
 
   // Obtain documents
   await getDocs(q)

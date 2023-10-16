@@ -70,6 +70,7 @@ const columns = computed(() =>
           align: "left",
           label: "Variant", // TODO i18n
           field: "displayName",
+          sortable: true,
         },
         { name: "delete", align: "center", label: "", field: "delete" },
       ]
