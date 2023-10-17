@@ -31,7 +31,7 @@ const routes = [
     component: AthletesView,
     meta: {
       title: "Athletes",
-      //restrictAccessByRole: [UserRole.coach],
+      restrictAccessByRole: [UserRole.coach],
       redirectNotAuthorized: "home",
     },
   },
@@ -41,7 +41,7 @@ const routes = [
     component: LibraryView,
     meta: {
       title: "Library",
-      //restrictAccessByRole: [UserRole.coach],
+      restrictAccessByRole: [UserRole.coach],
       redirectNotAuthorized: "home",
     },
   },
@@ -51,7 +51,7 @@ const routes = [
     component: ScheduleView,
     meta: {
       title: "Schedule",
-      //restrictAccessByRole: [UserRole.coach],
+      restrictAccessByRole: [UserRole.coach],
       redirectNotAuthorized: "home",
     },
   },
@@ -143,7 +143,8 @@ router.beforeEach(async (to) => {
 
 /* Set the page title */
 router.afterEach((to) => {
-  document.title = (to.meta.title ? to.meta.title + " - " : "") + ""; // TODO + app name
+  document.title =
+    (to.meta.title ? to.meta.title + " - " : "") + "OpenStrength"; // TODO + app name
 });
 
 export default router;
