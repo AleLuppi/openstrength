@@ -15,7 +15,7 @@ const props = defineProps({
   onUpdate: {
     type: Function,
     required: false,
-    default: () => { },
+    default: () => {},
   },
 });
 

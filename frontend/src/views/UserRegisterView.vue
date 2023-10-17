@@ -18,47 +18,85 @@
     <!-- Registration form -->
     <q-form @submit="onSubmit" class="q-my-xs q-gutter-xs column">
       <!-- Google Sign up -->
-      <q-btn :label="$t('user.auth.register_with_google')" @click="googleSignIn" type="button" icon="fa-brands fa-google"
-        class="q-my-md" />
+      <q-btn
+        :label="$t('user.auth.register_with_google')"
+        @click="googleSignIn"
+        type="button"
+        icon="fa-brands fa-google"
+        class="q-my-md"
+      />
 
       <!-- Text separator-->
       <osWrapWithLines class="q-my-sm">
         {{ $t("user.auth.signup_with_email") }}
       </osWrapWithLines>
 
-      <os-input ref="emailInput" v-model="email" required type="email" :label="$t('user.auth.email')" :rules="[
-        (val: string) =>
-          (val && val.length > 2) || $t('user.auth.email_required'),
-        (val: string) => validateEmail(val) || $t('user.auth.email_invalid'),
-      ]" :error="emailError" :error-message="emailErrorMessage" />
+      <os-input
+        ref="emailInput"
+        v-model="email"
+        required
+        type="email"
+        :label="$t('user.auth.email')"
+        :rules="[
+          (val: string) =>
+            (val && val.length > 2) || $t('user.auth.email_required'),
+          (val: string) => validateEmail(val) || $t('user.auth.email_invalid'),
+        ]"
+        :error="emailError"
+        :error-message="emailErrorMessage"
+      />
 
-      <os-input ref="passwordInput" v-model="password" required :type="passwordVisible ? 'text' : 'password'"
-        :label="$t('user.auth.password')" :rules="[
+      <os-input
+        ref="passwordInput"
+        v-model="password"
+        required
+        :type="passwordVisible ? 'text' : 'password'"
+        :label="$t('user.auth.password')"
+        :rules="[
           (val: string) =>
             (val && validatePassword(val)) || $t('user.auth.password_invalid'),
-        ]" :error="passwordError" :error-message="passwordErrorMessage">
+        ]"
+        :error="passwordError"
+        :error-message="passwordErrorMessage"
+      >
         <template v-slot:append>
-          <q-icon :name="passwordVisible ? 'visibility' : 'visibility_off'" class="cursor-pointer"
-            @click="passwordVisible = !passwordVisible" />
+          <q-icon
+            :name="passwordVisible ? 'visibility' : 'visibility_off'"
+            class="cursor-pointer"
+            @click="passwordVisible = !passwordVisible"
+          />
         </template>
       </os-input>
 
       <!-- Acceptance flag -->
       <div class="row items-center text-left">
-        <q-toggle v-model="accept" checked-icon="check" color="green" unchecked-icon="clear" />
+        <q-toggle
+          v-model="accept"
+          checked-icon="check"
+          color="green"
+          unchecked-icon="clear"
+        />
 
         <span class="col" style="min-width: 8em">
           {{ $t("user.auth.acceptance_before")
           }}<router-link :to="{ name: 'privacy_policy' }" @click.stop="">{{
-  $t("layout.views.privacy_policy")
-}}</router-link>{{ $t("user.auth.acceptance_between")
-}}<router-link :to="{ name: 'terms_conditions' }" @click.stop="">{{
-  $t("layout.views.terms_conditions")
-}}</router-link>{{ $t("user.auth.acceptance_after") }}
+            $t("layout.views.privacy_policy")
+          }}</router-link
+          >{{ $t("user.auth.acceptance_between")
+          }}<router-link :to="{ name: 'terms_conditions' }" @click.stop="">{{
+            $t("layout.views.terms_conditions")
+          }}</router-link
+          >{{ $t("user.auth.acceptance_after") }}
         </span>
       </div>
 
-      <q-btn :label="$t('user.auth.register_button')" outline color="button-primary" type="submit" class="q-my-lg" />
+      <q-btn
+        :label="$t('user.auth.register_button')"
+        outline
+        color="button-primary"
+        type="submit"
+        class="q-my-lg"
+      />
     </q-form>
 
     <!-- Redirect to login -->

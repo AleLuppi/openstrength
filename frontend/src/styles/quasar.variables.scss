@@ -150,25 +150,52 @@ $chart-color3: #F765A3;
 /***** BASE COLORS *****/
 // Brand colors
 $primary : $os-primary-6;
+$onPrimary : $os-grey-cold-0;
+
 $secondary : $os-secondary-8;
+$onSecondary : $os-grey-warm-1;
+
 $accent : $os-primary-9;
-$dark : $os-grey-10;
+$onAccent : $os-grey-warm-2;
+
+$dark : $os-grey-9;
+$onDark : $os-grey-3;
+
 
 // Background colors
 $lightest : $os-grey-cold-0;
+$onLightest : $os-grey-cold-7;
+
 $lighter : $os-grey-cold-1;
+$onLighter : $os-grey-cold-8;
+
 $light : $os-grey-cold-4;
+$onLight : $os-grey-cold-9;
+
 $light-dark : $os-grey-cold-6;
+$onLight-dark : $os-grey-cold-10;
+
 $dark-light : $os-grey-cold-8;
-$dark : $dark;
+$onDark-light : $os-grey-cold-2;
+
 $darker : $os-grey-10;
+$onDarker : $os-grey-2;
+
 $darkest : $os-grey-10;
+$onDarkest : $os-grey-1;
 
 // Useful colors
 $positive : $os-green-5;
+$onPositive : $os-green-1;
+
 $negative : $os-red-5;
+$onNegative : $os-red-1;
+
 $info : $os-blue-5;
+$onInfo : $os-blue-1;
+
 $warning : $os-yellow-5;
+$onWarning : $os-grey-warm-10;
 
 
 @import '~quasar-variables-styl'
