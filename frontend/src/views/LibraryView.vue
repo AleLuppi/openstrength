@@ -447,6 +447,7 @@ function onExerciseAdd(exerciseName: string) {
       coachInfo.exercises = reduceExercises(
         [newExercise].concat(coachInfo.exercises || []),
       );
+      showDialogVariantForm.value = true;
       // TODO put in a separate method
       // Inform user about exercise successfully saved
       $q.notify({
