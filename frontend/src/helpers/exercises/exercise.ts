@@ -10,9 +10,44 @@ import { exercisesCollection } from "../database/collections";
  * Define available load types.
  */
 export enum ExerciseLoadType {
-  reps = "reps",
   weight = "weight",
   time = "time",
+}
+
+/**
+ * Define available muscle groups.
+ */
+export enum ExerciseMuscleGroups {
+  shoulders = "shoulders",
+  chest = "chest",
+  core = "core",
+  upperback = "upperback",
+  lowerback = "lowerback",
+  biceps = "biceps",
+  triceps = "triceps",
+  forearms = "forearms",
+  glutes = "glutes",
+  quads = "quads",
+  harmstrings = "harmstrings",
+  calves = "calves",
+}
+
+/**
+ * Define available equipment.
+ */
+export enum ExerciseEquipment {
+  barbell = "barbell",
+  plates = "plates",
+  dumbell = "dumbell",
+  rack = "rack",
+  deadliftplatform = "deadliftplatform",
+  bench = "bench",
+  bands = "bands",
+  steps = "steps",
+  dipbelt = "dipbelt",
+  machine = "machine",
+  bar = "bar",
+  parallettes = "parallettes",
 }
 
 /**
