@@ -29,7 +29,18 @@
         v-model="variantMuscleGroups"
         :label="$t('coach.exercise_management.fields.musclegroups')"
         use-input
-        :options="variantMuscleGroupsOptions"
+        :options="
+          (
+            Object.keys(
+              ExerciseMuscleGroups,
+            ) as (keyof typeof ExerciseMuscleGroups)[]
+          ).map((val) => ({
+            label: $t(
+              'coach.exercise_management.fields.musclegroupsList.' + val,
+            ),
+            value: val,
+          }))
+        "
         multiple
         class="col-12"
       />
@@ -54,7 +65,14 @@
         v-model="variantEquipment"
         :label="$t('coach.exercise_management.fields.equipment')"
         use-input
-        :options="variantEquipmentOptions"
+        :options="
+          (
+            Object.keys(ExerciseEquipment) as (keyof typeof ExerciseEquipment)[]
+          ).map((val) => ({
+            label: $t('coach.exercise_management.fields.equipmentList.' + val),
+            value: val,
+          }))
+        "
         multiple
         class="col-12 col-md-6"
       />
@@ -82,10 +100,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, PropType } from "vue";
+import { ref, onMounted, PropType } from "vue";
 import {
   ExerciseVariant,
   ExerciseLoadType,
+  ExerciseMuscleGroups,
+  ExerciseEquipment,
 } from "@/helpers/exercises/exercise";
 
 // Set props
@@ -114,12 +134,6 @@ const variantLoadType = ref<string>();
 const variantEquipment = ref<string[]>();
 const variantVideo = ref<string>();
 const variantDescription = ref<string>();
-const variantMuscleGroupsOptions = computed(
-  () => props.optionsMuscleGroups ?? props.variant.muscleGroups ?? undefined,
-);
-const variantEquipmentOptions = computed(
-  () => props.optionsEquipment ?? props.variant.equipment ?? undefined,
-);
 
 // Update shown info according to selected variant
 function loadVariant(variant: ExerciseVariant) {

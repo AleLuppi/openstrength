@@ -172,7 +172,35 @@
           "time": "Time"
         },
         "musclegroups": "Muscle Groups",
+        "musclegroupsList": {
+          "shoulders": "Shoulders",
+          "chest": "Chest",
+          "core": "Core",
+          "upperback": "Upper Back",
+          "lowerback": "Lower Back",
+          "biceps": "Biceps",
+          "triceps": "Triceps",
+          "forearms": "Forearms",
+          "glutes": "Glutes",
+          "quads": "Quads",
+          "harmstrings": "Harmstrings",
+          "calves": "Calves"
+        },
         "equipment": "Tools",
+        "equipmentList":{
+          "barbell": "Barbell",
+          "plates": "Plates",
+          "dumbell": "Dumbell",
+          "rack":"Rack",
+          "deadliftplatform": "Deadlift Platform",
+          "bench": "Bench",
+          "bands": "Bands",
+          "steps": "Steps",
+          "dipbelt": "Dip Belt",
+          "machine": "Machine",
+          "bar": "Bar",
+          "parallettes": "Parallettes"
+        },
         "video": "Video link",
         "description": "Description"
       }
