@@ -2,17 +2,22 @@
   <q-form ref="formElement" @submit="onSubmit" @reset="onReset">
     <div class="row q-col-gutter-x-md">
       <!-- Variant name with exercise name -->
-      <os-input v-model="variantName" :label="$t('coach.exercise_management.fields.variant')" :rules="[
-        (name: string) =>
-          props.variant.exercise?.variants?.reduce(
-            (response, variant) =>
-              response &&
-              (variant == props.variant ||
-                (Boolean(name) && variant.name != name) ||
-                (!Boolean(name) && !variant.isDefault)),
-            true,
-          ) || $t('coach.exercise_management.add_variant_already_exists'),
-      ]" class="col-12">
+      <os-input
+        v-model="variantName"
+        :label="$t('coach.exercise_management.fields.variant')"
+        :rules="[
+          (name: string) =>
+            props.variant.exercise?.variants?.reduce(
+              (response, variant) =>
+                response &&
+                (variant == props.variant ||
+                  (Boolean(name) && variant.name != name) ||
+                  (!Boolean(name) && !variant.isDefault)),
+              true,
+            ) || $t('coach.exercise_management.add_variant_already_exists'),
+        ]"
+        class="col-12"
+      >
         <template v-slot:before>
           <span class="text-bold text-h6" style="font-size: medium">
             {{ props.variant.exercise?.name + " - " }}
@@ -20,22 +25,56 @@
         </template>
       </os-input>
 
-      <os-select v-model="variantMuscleGroups" :label="$t('coach.exercise_management.fields.musclegroups')" use-input
-        :options="variantMuscleGroupsOptions" emit-value map-options multiple class="col-12" />
+      <os-select
+        v-model="variantMuscleGroups"
+        :label="$t('coach.exercise_management.fields.musclegroups')"
+        use-input
+        :options="variantMuscleGroupsOptions"
+        emit-value
+        map-options
+        multiple
+        class="col-12"
+      />
 
-      <os-select v-model="variantLoadType" :label="$t('coach.exercise_management.fields.loadtype')"
-        :options="variantLoadTypeOptions" emit-value map-options class="col-12 col-md-6" />
+      <os-select
+        v-model="variantLoadType"
+        :label="$t('coach.exercise_management.fields.loadtype')"
+        :options="variantLoadTypeOptions"
+        emit-value
+        map-options
+        class="col-12 col-md-6"
+      />
 
-      <os-select v-model="variantEquipment" :label="$t('coach.exercise_management.fields.equipment')" use-input
-        :options="variantEquipmentOptions" emit-value map-options multiple class="col-12 col-md-6" />
+      <os-select
+        v-model="variantEquipment"
+        :label="$t('coach.exercise_management.fields.equipment')"
+        use-input
+        :options="variantEquipmentOptions"
+        emit-value
+        map-options
+        multiple
+        class="col-12 col-md-6"
+      />
 
-      <os-input v-model="variantVideo" :label="$t('coach.exercise_management.fields.video')" class="col-12" />
+      <os-input
+        v-model="variantVideo"
+        :label="$t('coach.exercise_management.fields.video')"
+        class="col-12"
+      />
 
-      <os-input v-model="variantDescription" :label="$t('coach.exercise_management.fields.description')" type="textarea"
-        class="col-12" />
+      <os-input
+        v-model="variantDescription"
+        :label="$t('coach.exercise_management.fields.description')"
+        type="textarea"
+        class="col-12"
+      />
     </div>
 
-    <q-btn type="submit" :label="$t('coach.exercise_management.add_proceed')" class="full-width"></q-btn>
+    <q-btn
+      type="submit"
+      :label="$t('coach.exercise_management.add_proceed')"
+      class="full-width"
+    ></q-btn>
   </q-form>
 </template>
 
@@ -113,8 +152,8 @@ const variantMuscleGroupsOptions = computed(() =>
     .map((val) => ({
       label: Object.values(ExerciseMuscleGroups).includes(val)
         ? i18n.t(
-          "coach.exercise_management.fields.musclegroups_available." + val,
-        )
+            "coach.exercise_management.fields.musclegroups_available." + val,
+          )
         : val,
       value: val,
     })),
