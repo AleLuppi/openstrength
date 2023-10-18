@@ -166,13 +166,13 @@
         "name": "Name",
         "variant": "Variant",
         "loadtype": "Load type",
-        "loadtypes": {
+        "loadtype_available": {
           "reps": "Reps",
           "weight": "Weight",
           "time": "Time"
         },
         "musclegroups": "Muscle Groups",
-        "musclegroupsList": {
+        "musclegroups_available": {
           "shoulders": "Shoulders",
           "chest": "Chest",
           "core": "Core",
@@ -187,11 +187,11 @@
           "calves": "Calves"
         },
         "equipment": "Tools",
-        "equipmentList":{
+        "equipment_available": {
           "barbell": "Barbell",
           "plates": "Plates",
           "dumbell": "Dumbell",
-          "rack":"Rack",
+          "rack": "Rack",
           "deadliftplatform": "Deadlift Platform",
           "bench": "Bench",
           "bands": "Bands",

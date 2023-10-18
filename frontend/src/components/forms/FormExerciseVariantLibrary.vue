@@ -29,18 +29,9 @@
         v-model="variantMuscleGroups"
         :label="$t('coach.exercise_management.fields.musclegroups')"
         use-input
-        :options="
-          (
-            Object.keys(
-              ExerciseMuscleGroups,
-            ) as (keyof typeof ExerciseMuscleGroups)[]
-          ).map((val) => ({
-            label: $t(
-              'coach.exercise_management.fields.musclegroupsList.' + val,
-            ),
-            value: val,
-          }))
-        "
+        :options="variantMuscleGroupsOptions"
+        emit-value
+        map-options
         multiple
         class="col-12"
       />
@@ -48,14 +39,7 @@
       <os-select
         v-model="variantLoadType"
         :label="$t('coach.exercise_management.fields.loadtype')"
-        :options="
-          (
-            Object.keys(ExerciseLoadType) as (keyof typeof ExerciseLoadType)[]
-          ).map((val) => ({
-            label: $t('coach.exercise_management.fields.loadtypes.' + val),
-            value: val,
-          }))
-        "
+        :options="variantLoadTypeOptions"
         emit-value
         map-options
         class="col-12 col-md-6"
@@ -65,14 +49,9 @@
         v-model="variantEquipment"
         :label="$t('coach.exercise_management.fields.equipment')"
         use-input
-        :options="
-          (
-            Object.keys(ExerciseEquipment) as (keyof typeof ExerciseEquipment)[]
-          ).map((val) => ({
-            label: $t('coach.exercise_management.fields.equipmentList.' + val),
-            value: val,
-          }))
-        "
+        :options="variantEquipmentOptions"
+        emit-value
+        map-options
         multiple
         class="col-12 col-md-6"
       />
@@ -100,13 +79,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, PropType } from "vue";
+import { ref, computed, onMounted, PropType } from "vue";
+import { useI18n } from "vue-i18n";
 import {
   ExerciseVariant,
   ExerciseLoadType,
   ExerciseMuscleGroups,
   ExerciseEquipment,
 } from "@/helpers/exercises/exercise";
+import { uniqueValues } from "@/helpers/array";
+
+// Init plugin
+const i18n = useI18n();
 
 // Set props
 const props = defineProps({
@@ -118,11 +102,11 @@ const props = defineProps({
     type: Function,
   },
   optionsMuscleGroups: {
-    type: Array as PropType<string[]>,
+    type: Array as PropType<ExerciseMuscleGroups[]>,
     default: undefined,
   },
   optionsEquipment: {
-    type: Array as PropType<string[]>,
+    type: Array as PropType<ExerciseEquipment[]>,
     default: undefined,
   },
 });
@@ -144,6 +128,48 @@ function loadVariant(variant: ExerciseVariant) {
   variantVideo.value = variant.videoUrl;
   variantDescription.value = variant.description;
 }
+
+// Get options for select fields
+const variantMuscleGroupsOptions = computed(() =>
+  uniqueValues(
+    Object.keys(ExerciseMuscleGroups).concat(
+      props.optionsMuscleGroups ?? props.variant.muscleGroups ?? [],
+    ),
+  )
+    .sort()
+    .map((val) => ({
+      label: Object.values(ExerciseMuscleGroups).includes(val)
+        ? i18n.t(
+            "coach.exercise_management.fields.musclegroups_available." + val,
+          )
+        : val,
+      value: val,
+    })),
+);
+const variantLoadTypeOptions = computed(() =>
+  Object.keys(ExerciseLoadType)
+    .sort()
+    .map((val) => ({
+      label: i18n.t(
+        "coach.exercise_management.fields.loadtype_available." + val,
+      ),
+      value: val,
+    })),
+);
+const variantEquipmentOptions = computed(() =>
+  uniqueValues(
+    Object.keys(ExerciseEquipment).concat(
+      props.optionsEquipment ?? props.variant.equipment ?? [],
+    ),
+  )
+    .sort()
+    .map((val) => ({
+      label: Object.values(ExerciseEquipment).includes(val)
+        ? i18n.t("coach.exercise_management.fields.equipment_available." + val)
+        : val,
+      value: val,
+    })),
+);
 
 /**
  * Perform operations on form submit.
