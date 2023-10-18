@@ -1,39 +1,73 @@
 <template>
-  <!-- Create a div container with: padding medium in all direction, large padding bottom, margin left and right auto-->
-  <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
-    <h2 class="text-center">
-      {{ $t("layout.drawer.welcome_logged_in_noname") }}
+  <!-- Show coming soon in case of athlete -->
+  <div
+    v-if="user.role == UserRole.athlete"
+    class="q-mx-auto q-px-md q-py-lg limit-max-width text-center"
+  >
+    <img :src="logoFullImage" alt="Logo" />
+    <h2>
+      {{ $t("comingsoon.title") }}
     </h2>
+    <p>
+      {{ $t("comingsoon.subtitle") }}
+    </p>
   </div>
 
-  <!-- Show common actions -->
-  <div class="row q-gutter-lg justify-center items-center">
-    <router-link
-      v-for="buttonInfo in buttonsInfo"
-      :key="buttonInfo.to"
-      :to="{ name: buttonInfo.to }"
-      class="link-child"
-    >
-      <q-card
-        class="q-pa-lg column items-center justify-center square-card q-hoverable text-center"
-      >
-        <!-- Animate when on -->
-        <span class="q-focus-helper"></span>
+  <!-- Show homepage in case of coach -->
+  <div v-else-if="user.role == UserRole.coach">
+    <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
+      <h2 class="text-center">
+        {{
+          user.displayName
+            ? $t("homepage.welcome_with_name", {
+                name: user.displayName?.trim(),
+              })
+            : $t("homepage.welcome_without_name")
+        }}
+      </h2>
+    </div>
 
-        <!-- Show icon, title, and subtitle -->
-        <q-icon :name="buttonInfo.icon" size="6em" color="primary" />
-        <h6>
-          {{ $t(buttonInfo.title) }}
-        </h6>
-        <p class="q-px-md text-weight-light">
-          {{ $t(buttonInfo.subtitle) }}
-        </p>
-      </q-card>
-    </router-link>
+    <!-- Show common actions -->
+    <div class="row q-gutter-lg justify-center items-center">
+      <router-link
+        v-for="buttonInfo in buttonsInfo"
+        :key="buttonInfo.to"
+        :to="{ name: buttonInfo.to }"
+        class="link-child"
+      >
+        <q-card
+          class="q-pa-lg column items-center justify-center square-card q-hoverable text-center"
+        >
+          <!-- Animate when on -->
+          <span class="q-focus-helper"></span>
+
+          <!-- Show icon, title, and subtitle -->
+          <q-icon :name="buttonInfo.icon" size="6em" color="icon-color" />
+          <h4>
+            {{ $t(buttonInfo.title) }}
+          </h4>
+          <p class="q-px-md text-weight-light">
+            {{ $t(buttonInfo.subtitle) }}
+          </p>
+        </q-card>
+      </router-link>
+    </div>
+  </div>
+
+  <!-- TODO Show call to action to unsigner user -->
+  <div v-else class="q-mx-auto q-px-md q-py-lg limit-max-width text-center">
+    <img :src="logoFullImage" alt="Logo" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from "@/stores/user";
+import { logoFullImage } from "@/assets/sources";
+import { UserRole } from "@/helpers/users/user";
+
+// Get user state
+const user = useUserStore();
+
 // Set action buttons
 const buttonsInfo = [
   {

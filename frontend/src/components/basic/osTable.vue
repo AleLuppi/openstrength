@@ -16,7 +16,7 @@
   >
     <!-- Set header style -->
     <template v-slot:header="props">
-      <q-tr :props="props" class="bg-lighter">
+      <q-tr :props="props" class="bg-table-header">
         <q-th
           v-for="col in props.cols"
           :key="col.name"
@@ -38,8 +38,10 @@
             onRowClick(undefined, props.row, $attrs.selection as string);
           props.expand = !props.expand;
         "
+        class="bg-table-row"
         :class="{
           'cursor-pointer': $attrs.onRowClick || props.row.expanded,
+          'bg-table-row-selected': props.selected,
           'os-tr-selected': props.selected,
         }"
       >
@@ -58,7 +60,7 @@
         :props="props"
         v-for="row in props.row.expanded"
         :key="row"
-        class="q-px-lg bg-lighter"
+        class="q-px-lg bg-lighter table-element-selected-child"
         @click="($attrs.onSubRowClick as Function)?.(props.row, row)"
         :class="{ 'cursor-pointer': $attrs.onSubRowClick }"
       >

@@ -38,6 +38,7 @@ const props = defineProps({
   },
   variants: {
     type: Array as PropType<ExerciseVariant[]>,
+    required: false,
   },
   onAdd: {
     type: Function,
@@ -144,6 +145,7 @@ const rows = computed(() => {
       icon: "delete",
       flat: true,
       round: true,
+      color: "button-negative",
     },
   }));
 });

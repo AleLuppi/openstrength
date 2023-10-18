@@ -26,6 +26,8 @@
     }
   },
   "homepage": {
+    "welcome_with_name": "Hi { name }, let's work together!",
+    "welcome_without_name": "Welcome back, ready to work together?",
     "actions": {
       "to_athletes": "Manage your athletes",
       "to_athletes_caption": "Add new athletes, view or modify the existing ones",
@@ -112,6 +114,7 @@
       "list": {
         "title": "Athletes",
         "add": "Add athlete",
+        "search": "Search athlete...",
         "add_proceed": "Proceed",
         "add_error": "It was not possible to add the athlete, please retry",
         "update": "Update athlete",
@@ -119,9 +122,6 @@
         "update_error": "It was not possible to update the athlete, please retry",
         "remove": "Remove athlete",
         "remove_confirm": "Are you sure you want to remove { name }?",
-        "prompt_name": "Athlete's name",
-        "prompt_surname": "Athlete's surname",
-        "prompt_note": "Add a note"
       },
       "filter": {
         "all": "All",
@@ -131,6 +131,11 @@
         "inactive": "Inactive",
         "new": "New",
         "old": "Old"
+      },
+      "fields": {
+        "name": "Athlete's name",
+        "surname": "Athlete's surname",
+        "note": "Add a note"
       }
     },
     "exercise_management": {
@@ -157,22 +162,62 @@
       "delete_variant": "Delete variant",
       "delete_variant_confirm": "Are you sure you want to delete \"{ variant }\" variant from \"{ exercise }\"?",
       "delete_proceed": "Delete it",
-      "exercise_name": "Name",
-      "exercise_variant": "Variant",
-      "exercise_loadtype": "Load type",
-      "exercise_loadtypes": {
-        "reps": "Reps",
-        "weight": "Weight",
-        "time": "Time"
-      },
-      "exercise_musclegroups": "Muscle Groups",
-      "exercise_equipment": "Tools",
-      "exercise_video": "Video link",
-      "exercise_description": "Description"
+      "fields": {
+        "name": "Name",
+        "variant": "Variant",
+        "loadtype": "Load type",
+        "loadtype_available": {
+          "reps": "Reps",
+          "weight": "Weight",
+          "time": "Time"
+        },
+        "musclegroups": "Muscle Groups",
+        "musclegroups_available": {
+          "shoulders": "Shoulders",
+          "chest": "Chest",
+          "core": "Core",
+          "upperback": "Upper Back",
+          "lowerback": "Lower Back",
+          "biceps": "Biceps",
+          "triceps": "Triceps",
+          "forearms": "Forearms",
+          "glutes": "Glutes",
+          "quads": "Quads",
+          "harmstrings": "Harmstrings",
+          "calves": "Calves"
+        },
+        "equipment": "Tools",
+        "equipment_available": {
+          "barbell": "Barbell",
+          "plates": "Plates",
+          "dumbell": "Dumbell",
+          "rack": "Rack",
+          "deadliftplatform": "Deadlift Platform",
+          "bench": "Bench",
+          "bands": "Bands",
+          "steps": "Steps",
+          "dipbelt": "Dip Belt",
+          "machine": "Machine",
+          "bar": "Bar",
+          "parallettes": "Parallettes"
+        },
+        "video": "Video link",
+        "description": "Description"
+      }
     },
     "schedule_management": {
       "list": {
-        "title": "Programs library"
+        "title": "Programs library",
+        "title_program": "Programs",
+        "add": "Add a new program",
+        "add_proceed": "Confirm",
+        "update": "Insert your program info",
+        "update_proceed": "Update program",
+        "search_program": "Search program..."
+      },
+      "fields": {
+        "name": "Program name",
+        "label": "Label"
       }
     }
   },

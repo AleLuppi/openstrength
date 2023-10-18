@@ -23,6 +23,9 @@ export type UserProps = {
   photoUrl?: string;
   phoneNumber?: string;
 
+  // Advanced auth info
+  emailVerified?: boolean;
+
   // Anagraphic
   name?: string;
   surname?: string;
@@ -40,6 +43,26 @@ export type UserProps = {
   role?: UserRole;
   lastAccess?: Date;
   lastNotificationRead?: Date;
+
+  // Computed info
+  isSignedIn?: boolean;
+};
+
+/**
+ * Coach user properties.
+ */
+export type CoachUserProps = UserProps & {};
+
+/**
+ * Athlete user properties.
+ */
+export type AthleteUserProps = UserProps & {
+  // Athlete specific
+  coachId?: string;
+  coachNote?: string;
+  coaches?: string[];
+  coachesFrom?: (Date | null)[];
+  coachesTo?: (Date | null)[];
 };
 
 /**
@@ -54,6 +77,9 @@ export class User {
   displayName?: string;
   photoUrl?: string;
   phoneNumber?: string;
+
+  // Advanced auth info
+  emailVerified?: boolean;
 
   // Anagraphic
   name?: string;
@@ -73,12 +99,18 @@ export class User {
   lastAccess?: Date;
   lastNotificationRead?: Date;
 
+  // Check if user is signed in
+  public get isSignedIn() {
+    return Boolean(this.uid && this.uid.trim());
+  }
+
   constructor({
     uid,
     email,
     displayName,
     photoUrl,
     phoneNumber,
+    emailVerified,
     name,
     surname,
     middlename,
@@ -137,11 +169,6 @@ export class User {
 }
 
 /**
- * Coach user properties.
- */
-export type CoachUserProps = UserProps & {};
-
-/**
  * Coach user.
  *
  * @public
@@ -155,18 +182,6 @@ export class CoachUser extends User {
     // Set specific properties
   }
 }
-
-/**
- * Athlete user properties.
- */
-export type AthleteUserProps = UserProps & {
-  // Athlete specific
-  coachId?: string;
-  coachNote?: string;
-  coaches?: string[];
-  coachesFrom?: (Date | null)[];
-  coachesTo?: (Date | null)[];
-};
 
 /**
  * Athlete user.

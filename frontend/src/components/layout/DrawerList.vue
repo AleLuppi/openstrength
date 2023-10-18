@@ -19,7 +19,7 @@
       tag="a"
       :to="{ name: page }"
       active-class="os-child-bg-primary"
-      class="link-child"
+      class="link-child os-text-unselected"
     >
       <!-- Icon near text on expanded drawer -->
       <q-item-section v-if="!props.mini" avatar>
@@ -44,7 +44,7 @@
       tag="a"
       :to="{ name: user.isSignedIn ? 'profile' : 'login' }"
       active-class="os-child-bg-primary"
-      class="link-child"
+      class="link-child os-text-unselected"
     >
       <!-- Icon near text on expanded drawer -->
       <q-item-section v-if="!props.mini" avatar>
@@ -80,7 +80,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+import router from "@/router";
 import { useUserStore } from "@/stores/user";
+import { routeAccessibleByUser } from "@/router/routeAccessManagement";
 
 // Set props
 const props = defineProps({
@@ -94,17 +97,32 @@ const props = defineProps({
 const user = useUserStore();
 
 // Set navigation in drawer
-const drawerPages = {
+const allDrawerPages = {
   home: "fa-solid fa-house-chimney",
   athletes: "fa-solid fa-users",
   library: "fa-solid fa-book",
   schedule: "fa-solid fa-dumbbell",
 };
+
+const drawerPages = computed(() =>
+  Object.fromEntries(
+    Object.entries(allDrawerPages).filter(([name]) => {
+      const route = router
+        .getRoutes()
+        .find((route) => String(route.name) == name);
+      return route && routeAccessibleByUser(user, route);
+    }),
+  ),
+);
 </script>
 
 <style scoped lang="scss">
 .os-child-bg-primary > .q-card {
   background: $primary;
   color: $lightest;
+}
+
+.os-text-unselected {
+  color: $os-secondary-6 !important;
 }
 </style>

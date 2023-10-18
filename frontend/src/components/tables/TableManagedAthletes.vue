@@ -69,6 +69,8 @@ const rows = computed(() => {
       on: { click: () => props.onUpdate(athlete) },
       label: "Update",
       rounded: true,
+      color: "button-primary",
+      outline: true,
     },
   }));
 });

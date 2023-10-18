@@ -1,5 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordName } from "vue-router";
 import { useUserStore } from "@/stores/user";
+import { UserRole } from "@/helpers/users/user";
+import {
+  routeAccessibleByRole,
+  routeAccessibleByAuthenticated,
+  routeAccessibleByNotAuthenticated,
+} from "@/router/routeAccessManagement";
 
 /* (dinamically) import the views */
 import HomeView from "../views/HomeView.vue";
@@ -9,7 +15,6 @@ const ScheduleView = () => import("@/views/ScheduleView.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
-const ComingSoonView = () => import("@/views/ComingSoonView.vue");
 
 const routes = [
   {
@@ -26,6 +31,8 @@ const routes = [
     component: AthletesView,
     meta: {
       title: "Athletes",
+      restrictAccessByRole: [UserRole.coach],
+      redirectNotAuthorized: "home",
     },
   },
   {
@@ -34,6 +41,8 @@ const routes = [
     component: LibraryView,
     meta: {
       title: "Library",
+      restrictAccessByRole: [UserRole.coach],
+      redirectNotAuthorized: "home",
     },
   },
   {
@@ -42,6 +51,8 @@ const routes = [
     component: ScheduleView,
     meta: {
       title: "Schedule",
+      restrictAccessByRole: [UserRole.coach],
+      redirectNotAuthorized: "home",
     },
   },
   {
@@ -51,7 +62,7 @@ const routes = [
     props: true,
     meta: {
       title: "Login",
-      redirectAuthenticated: "profile",
+      redirectAuthenticated: "home",
     },
   },
   {
@@ -60,15 +71,7 @@ const routes = [
     component: UserRegisterView,
     meta: {
       title: "Register",
-      redirectAuthenticated: "profile",
-    },
-  },
-  {
-    path: "/coming-soon",
-    name: "comingsoon",
-    component: ComingSoonView,
-    meta: {
-      title: "Coming Soon",
+      redirectAuthenticated: "home",
     },
   },
   {
@@ -116,22 +119,23 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const user = useUserStore();
 
+  // Check if user has the authorization to access the page
+  if (!routeAccessibleByRole(user, to)) {
+    // Redirect user
+    return {
+      name: (to.meta.redirectNotAuthorized ?? "not_found") as RouteRecordName,
+    };
+    // FIXME redirect to a "restriced access" page if redirectNotAuthorized is unknown
+  }
+
   // Check if authenticated user needs to be redirected
-  if (
-    user.isSignedIn &&
-    to.meta.redirectAuthenticated &&
-    to.name !== to.meta.redirectAuthenticated
-  ) {
+  if (!routeAccessibleByAuthenticated(user, to)) {
     // Redirect user
     return { name: to.meta.redirectAuthenticated as RouteRecordName };
   }
 
   // Check if not authenticated user needs to be redirected
-  if (
-    !user.isSignedIn &&
-    to.meta.redirectNotAuthenticated &&
-    to.name !== to.meta.redirectNotAuthenticated
-  ) {
+  if (!routeAccessibleByNotAuthenticated(user, to)) {
     // Redirect user
     return { name: to.meta.redirectNotAuthenticated as RouteRecordName };
   }
@@ -139,7 +143,8 @@ router.beforeEach(async (to) => {
 
 /* Set the page title */
 router.afterEach((to) => {
-  document.title = (to.meta.title ? to.meta.title + " - " : "") + ""; // TODO + app name
+  document.title =
+    (to.meta.title ? to.meta.title + " - " : "") + "OpenStrength"; // TODO + app name
 });
 
 export default router;

@@ -93,6 +93,7 @@
       <q-btn
         :label="$t('user.auth.register_button')"
         outline
+        color="button-primary"
         type="submit"
         class="q-my-lg"
       />

@@ -66,7 +66,6 @@ import { QStepper } from "quasar";
 import OsInput from "@/components/basic/osInput.vue";
 import { logoFullImage } from "@/assets/sources";
 import OsToggleButtons from "@/components/basic/osToggleButtons.vue";
-import router from "@/router";
 
 // Set props
 const props = defineProps({
@@ -127,7 +126,7 @@ function onProceed() {
     case 2:
       if (!rolesToggleElement.value?.validate()) return;
       if (selectedRole.value[0] == "athlete")
-        router.push({ name: "comingsoon" }); // FIXME delete
+        onSubmit();
       break;
 
     case 3:

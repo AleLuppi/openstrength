@@ -3,25 +3,48 @@
     <!-- Title and actions -->
     <div class="row items-center">
       <h2 class="col">{{ $t("layout.views.home_title") }}</h2>
-
-      <!-- Add new athlete -->
-      <q-btn
-        icon="add"
-        :label="$t('coach.athlete_management.list.add')"
-        @click="
-          updatingAthlete = undefined;
-          showAthleteDialog = true;
-        "
-      />
     </div>
 
     <!-- Display athletes -->
     <q-card>
-      <TableManagedAthletes
-        :title="$t('coach.athlete_management.list.title')"
-        :athletes="athletes"
-        :on-update="onUpdateAthlete"
-      />
+      <q-card-section>
+        <h6>
+          {{ $t("coach.athlete_management.list.title") }}
+        </h6>
+
+        <div class="row q-gutter-x-md items-center">
+          <os-input
+            v-model="searchAthlete"
+            :placeholder="$t('coach.athlete_management.list.search')"
+            hide-bottom-space
+            debounce="500"
+            class="col"
+          >
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </os-input>
+
+          <!-- Add new athlete -->
+          <q-btn
+            icon="add"
+            :label="
+              $q.screen.gt.sm
+                ? $t('coach.athlete_management.list.add')
+                : undefined
+            "
+            color="button-primary"
+            @click="
+              updatingAthlete = undefined;
+              showAthleteDialog = true;
+            "
+          />
+        </div>
+      </q-card-section>
+
+      <q-separator />
+
+      <TableManagedAthletes :athletes="athletes" :on-update="onUpdateAthlete" />
     </q-card>
 
     <!-- Dialog to add a new athlete -->
@@ -39,7 +62,14 @@
             }}
           </h5>
           <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
+          <q-btn
+            icon="close"
+            flat
+            round
+            dense
+            color="button-negative"
+            v-close-popup
+          />
         </q-card-section>
 
         <q-form
@@ -51,16 +81,16 @@
             <os-input
               v-model="athleteName"
               required
-              :label="$t('coach.athlete_management.list.prompt_name')"
+              :label="$t('coach.athlete_management.fields.name')"
             ></os-input>
             <os-input
               v-model="athleteSurname"
               required
-              :label="$t('coach.athlete_management.list.prompt_surname')"
+              :label="$t('coach.athlete_management.fields.surname')"
             ></os-input>
             <os-input
               v-model="athleteNote"
-              :label="$t('coach.athlete_management.list.prompt_note')"
+              :label="$t('coach.athlete_management.fields.note')"
             ></os-input>
           </q-card-section>
 
@@ -88,7 +118,7 @@ import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { AthleteUser } from "@/helpers/users/user";
-import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
+import TableManagedAthletes from "@/components/tables/tableManagedAthletes.vue";
 
 // Init plugin
 const $q = useQuasar();
@@ -99,6 +129,7 @@ const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
 // Set ref
+const searchAthlete = ref<string>(); // TODO search
 const updatingAthlete = ref<AthleteUser>(); // athlete that is currently being updated
 const showAthleteDialog = ref(false); // whether to show dialog to add athlete
 const athleteName = ref(""); // new athlete name
