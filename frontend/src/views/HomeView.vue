@@ -54,8 +54,11 @@
     </div>
   </div>
 
-  <!-- TODO Show call to action to unsigner user -->
-  <div v-else class="q-mx-auto q-px-md q-py-lg limit-max-width text-center">
+  <!-- Show call to action to unsigner user -->
+  <div
+    v-else-if="!user.isSignedIn"
+    class="q-mx-auto q-px-md q-py-lg limit-max-width text-center"
+  >
     <!-- Title and subtitle-->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
       <h2 class="text-center">
@@ -93,15 +96,66 @@
       </router-link>
     </div>
   </div>
+
+  <!-- Show call to action to signed user with no role -->
+  <div
+    v-else-if="
+      user.isSignedIn &&
+      (user.role == undefined || user.role == UserRole.unknown)
+    "
+    class="q-mx-auto q-px-md q-py-lg limit-max-width text-center"
+  >
+    <!-- Title and subtitle-->
+    <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
+      <h2 class="text-center">
+        {{ $t("homepage.welcome_unknown_user") }}
+      </h2>
+    </div>
+
+    <!-- Show common actions -->
+    <div class="row q-gutter-lg justify-center items-center">
+      <q-card
+        @click="onCardClick"
+        class="q-pa-lg column items-center justify-center square-card q-hoverable text-center"
+      >
+        <q-card-section>
+          <!-- Animate when on -->
+          <span class="q-focus-helper"></span>
+
+          <!-- Show icon, title, and subtitle -->
+          <q-icon name="question_answer" size="6em" color="icon-color" />
+          <h4>
+            {{ $t("homepage.actions.to_onboarding") }}
+          </h4>
+          <p class="q-px-md text-weight-light">
+            {{ $t("homepage.actions.to_onboarding_caption") }}
+          </p>
+        </q-card-section>
+      </q-card>
+
+      <q-dialog v-model="showDialogOnboarding" persistent>
+        <UserOnboarding></UserOnboarding>
+      </q-dialog>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
 import { UserRole } from "@/helpers/users/user";
+import UserOnboarding from "@/components/forms/UserOnboarding.vue";
 
 // Get user state
 const user = useUserStore();
+
+// Get onboarding visibility
+const showDialogOnboarding = ref(false);
+
+function onCardClick() {
+  showDialogOnboarding.value = true;
+}
 
 // Set action buttons
 const buttonsInfo = [
