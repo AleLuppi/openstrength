@@ -16,6 +16,9 @@ const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
 const PageNotFoundView = () => import("@/views/PageNotFoundView.vue");
+const PrivacyPolicyView = () => import("@/views/PrivacyPolicyView.vue");
+const TermsAndConditionView = () =>
+  import("@/views/TermsAndConditionsView.vue");
 
 const routes = [
   {
@@ -87,7 +90,7 @@ const routes = [
   {
     path: "/privacy-policy",
     name: "privacy_policy",
-    component: HomeView, // TODO
+    component: PrivacyPolicyView, // TODO
     meta: {
       title: "Privacy Policy",
     },
@@ -95,7 +98,7 @@ const routes = [
   {
     path: "/terms-and-conditions",
     name: "terms_conditions",
-    component: HomeView, // TODO
+    component: TermsAndConditionView, // TODO
     meta: {
       title: "Terms and Conditions",
     },
