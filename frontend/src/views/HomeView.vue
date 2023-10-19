@@ -116,12 +116,12 @@
     <div class="row q-gutter-lg justify-center items-center">
       <q-card
         @click="onCardClick"
-        class="q-pa-lg column items-center justify-center square-card q-hoverable text-center"
+        class="q-pa-lg column items-center justify-center square-card cursor-pointer q-hoverable text-center"
       >
-        <q-card-section>
-          <!-- Animate when on -->
-          <span class="q-focus-helper"></span>
+        <!-- Animate when on -->
+        <span class="q-focus-helper"></span>
 
+        <q-card-section>
           <!-- Show icon, title, and subtitle -->
           <q-icon name="question_answer" size="6em" color="icon-color" />
           <h4>
