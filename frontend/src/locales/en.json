@@ -28,13 +28,16 @@
   "homepage": {
     "welcome_with_name": "Hi { name }, let's work together!",
     "welcome_without_name": "Welcome back, ready to work together?",
+    "welcome_unsigned_user": "Log in or create an account to start!",
     "actions": {
       "to_athletes": "Manage your athletes",
       "to_athletes_caption": "Add new athletes, view or modify the existing ones",
       "to_library": "Manage library",
       "to_library_caption": "Add new exercises to your library, view or modify the existing ones",
       "to_schedule": "Manage programs",
-      "to_schedule_caption": "Create new programs, view or modify existing ones"
+      "to_schedule_caption": "Create new programs, view or modify existing ones",
+      "to_login_unsigned": "Let's start now!",
+      "to_login_unsigned_caption": "Log in or register to start working with us. We look forward in helping you!"
     }
   },
   "comingsoon": {

@@ -56,7 +56,42 @@
 
   <!-- TODO Show call to action to unsigner user -->
   <div v-else class="q-mx-auto q-px-md q-py-lg limit-max-width text-center">
-    <img :src="logoFullImage" alt="Logo" />
+    <!-- Title and subtitle-->
+    <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
+      <h2 class="text-center">
+        {{ $t("homepage.welcome_unsigned_user") }}
+      </h2>
+    </div>
+
+    <!-- Show common actions -->
+    <div class="row q-gutter-lg justify-center items-center">
+      <router-link
+        v-for="buttonUnsignedUser in buttonsUnsignedUser"
+        :key="buttonUnsignedUser.to"
+        :to="{ name: buttonUnsignedUser.to }"
+        class="link-child"
+      >
+        <q-card
+          class="q-pa-lg column items-center justify-center square-card q-hoverable text-center"
+        >
+          <!-- Animate when on -->
+          <span class="q-focus-helper"></span>
+
+          <!-- Show icon, title, and subtitle -->
+          <q-icon
+            :name="buttonUnsignedUser.icon"
+            size="6em"
+            color="icon-color"
+          />
+          <h4>
+            {{ $t(buttonUnsignedUser.title) }}
+          </h4>
+          <p class="q-px-md text-weight-light">
+            {{ $t(buttonUnsignedUser.subtitle) }}
+          </p>
+        </q-card>
+      </router-link>
+    </div>
   </div>
 </template>
 
@@ -87,6 +122,15 @@ const buttonsInfo = [
     icon: "rocket_launch",
     title: "homepage.actions.to_schedule",
     subtitle: "homepage.actions.to_schedule_caption",
+  },
+];
+
+const buttonsUnsignedUser = [
+  {
+    to: "login",
+    icon: "fa-solid fa-right-to-bracket",
+    title: "homepage.actions.to_login_unsigned",
+    subtitle: "homepage.actions.to_login_unsigned_caption",
   },
 ];
 </script>
