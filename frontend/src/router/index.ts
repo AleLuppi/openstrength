@@ -15,6 +15,7 @@ const ScheduleView = () => import("@/views/ScheduleView.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
+const PageNotFoundView = () => import("@/views/PageNotFoundView.vue");
 
 const routes = [
   {
@@ -103,7 +104,7 @@ const routes = [
     // page not found
     path: "/:pathMatch(.*)*",
     name: "not_found",
-    component: HomeView, // TODO
+    component: PageNotFoundView, // TODO
     meta: {
       title: "Page not found",
     },

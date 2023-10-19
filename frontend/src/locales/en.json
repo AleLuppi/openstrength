@@ -47,6 +47,11 @@
     "title": "Coming soon!",
     "subtitle": "You have to wait a bit more for the athlete's version. We’ll inform you via email when it will be ready. It’ll be worth it, we promise. Keep training!"
   },
+  "pagenotfound":{
+    "title": "Page not found",
+    "subtitle": "You didn't break anything but we could not find what you are looking for. No worries we will take you to the homepage. Click the link below!",
+    "redirect": "Save me please!"
+  },
   "user": {
     "auth": {
       "name": "Name",
