@@ -51,7 +51,10 @@ export type UserProps = {
 /**
  * Coach user properties.
  */
-export type CoachUserProps = UserProps & {};
+export type CoachUserProps = UserProps & {
+  sports?: string[];
+  athletesRange?: string[];
+};
 
 /**
  * Athlete user properties.
@@ -174,12 +177,18 @@ export class User {
  * @public
  */
 export class CoachUser extends User {
-  constructor({ ...props }: CoachUserProps = {}) {
+  // Coach specific
+  sports?: string[];
+  athletesRange?: string[];
+
+  constructor({ sports, athletesRange, ...props }: CoachUserProps = {}) {
     // Set super properties
     const superProps = { ...props, role: UserRole.coach };
     super(superProps);
 
     // Set specific properties
+    this.sports = sports;
+    this.athletesRange = athletesRange;
   }
 }
 

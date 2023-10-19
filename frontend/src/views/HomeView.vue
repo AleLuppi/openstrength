@@ -133,7 +133,7 @@
         </q-card-section>
       </q-card>
 
-      <q-dialog v-model="showDialogOnboarding" persistent>
+      <q-dialog v-model="showDialogOnboarding">
         <UserOnboarding></UserOnboarding>
       </q-dialog>
     </div>
