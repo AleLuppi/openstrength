@@ -744,7 +744,7 @@
             >Questa Applicazione fa utilizzo di Strumenti di Tracciamento. Per
             saperne di pi&ugrave;, gli Utenti possono consultare la&nbsp;</span
           ><span class="c8 c6">
-            <router-link :to="{ name: 'cookie-policy' }"
+            <router-link :to="{ name: 'cookie_policy' }"
               >Cookie Policy
             </router-link> </span
           ><span class="c0">.</span>

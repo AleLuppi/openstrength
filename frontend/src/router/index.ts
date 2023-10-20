@@ -17,6 +17,7 @@ const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
 const PageNotFoundView = () => import("@/views/PageNotFoundView.vue");
 const PrivacyPolicyView = () => import("@/views/PrivacyPolicyView.vue");
+const CookiePolicyView = () => import("@/views/CookiePolicyView.vue");
 const TermsAndConditionView = () =>
   import("@/views/TermsAndConditionsView.vue");
 
@@ -93,6 +94,14 @@ const routes = [
     component: PrivacyPolicyView, // TODO
     meta: {
       title: "Privacy Policy",
+    },
+  },
+  {
+    path: "/cookie-policy",
+    name: "cookie_policy",
+    component: CookiePolicyView, // TODO
+    meta: {
+      title: "Cookie Policy",
     },
   },
   {
