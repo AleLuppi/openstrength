@@ -78,9 +78,13 @@
         />
 
         <span class="col" style="min-width: 8em">
-          {{ $t("user.auth.acceptance_before")
-          }}<router-link :to="{ name: 'privacy_policy' }" @click.stop="">{{
-            $t("layout.views.privacy_policy")
+          {{ $t("user.auth.acceptance_before") }}
+
+          <router-link :to="{ name: 'privacy_policy' }" @click.stop=""
+            >{{ $t("layout.views.privacy_policy") }},
+          </router-link>
+          <router-link :to="{ name: 'cookie_policy' }" @click.stop="">{{
+            $t("layout.views.cookie_policy")
           }}</router-link
           >{{ $t("user.auth.acceptance_between")
           }}<router-link :to="{ name: 'terms_conditions' }" @click.stop="">{{
