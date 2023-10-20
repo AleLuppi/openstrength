@@ -10,9 +10,13 @@
       <h3 class="q-my-xs">
         {{ $t("user.auth.signin_title") }}
       </h3>
-      <h6 class="q-my-xs">
-        {{ $t("user.auth.signin_subtitle") }}
-      </h6>
+      <!-- Redirect to registration -->
+      <p class="text-h6 q-my-xs">
+        {{ $t("user.auth.without_account") }}
+        <router-link :to="{ name: 'register' }">{{
+          $t("user.auth.signin_to_signup")
+        }}</router-link>
+      </p>
     </div>
 
     <!-- Access form -->
@@ -75,14 +79,6 @@
       <router-link :to="{ name: 'register' }">{{
         $t("user.auth.forgot_password")
       }}</router-link>
-
-      <!-- Redirect to registration -->
-      <p>
-        {{ $t("user.auth.without_account") }}
-        <router-link :to="{ name: 'register' }">{{
-          $t("user.auth.signin_to_signup")
-        }}</router-link>
-      </p>
     </div>
   </div>
 </template>
