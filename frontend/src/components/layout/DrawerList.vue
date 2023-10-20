@@ -101,7 +101,7 @@ const allDrawerPages = {
   home: "fa-solid fa-house-chimney",
   athletes: "fa-solid fa-users",
   library: "fa-solid fa-book",
-  schedule: "fa-solid fa-dumbbell",
+  program: "fa-solid fa-dumbbell",
 };
 
 const drawerPages = computed(() =>

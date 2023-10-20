@@ -11,7 +11,7 @@ import {
 import HomeView from "../views/HomeView.vue";
 const AthletesView = () => import("@/views/AthletesView.vue");
 const LibraryView = () => import("@/views/LibraryView.vue");
-const ScheduleView = () => import("@/views/ScheduleView.vue");
+const ProgramView = () => import("@/views/ProgramView.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
@@ -46,11 +46,11 @@ const routes = [
     },
   },
   {
-    path: "/schedule",
-    name: "schedule",
-    component: ScheduleView,
+    path: "/program",
+    name: "program",
+    component: ProgramView,
     meta: {
-      title: "Schedule",
+      title: "Program",
       restrictAccessByRole: [UserRole.coach],
       redirectNotAuthorized: "home",
     },

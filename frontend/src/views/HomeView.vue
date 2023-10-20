@@ -83,10 +83,10 @@ const buttonsInfo = [
     subtitle: "homepage.actions.to_library_caption",
   },
   {
-    to: "schedule",
+    to: "program",
     icon: "rocket_launch",
-    title: "homepage.actions.to_schedule",
-    subtitle: "homepage.actions.to_schedule_caption",
+    title: "homepage.actions.to_program",
+    subtitle: "homepage.actions.to_program_caption",
   },
 ];
 </script>
