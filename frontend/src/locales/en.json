@@ -103,7 +103,11 @@
       "role": "Role",
       "status": "Status",
       "uid": "Your ID",
-      "info_edit": "Edit your info"
+      "info_edit": "Your info",
+      "link_title": "Useful links",
+      "privacy_link": "Privacy Policy",
+      "cookie_link": "Cookie Policy",
+      "terms_link": "Terms and Conditions"
     },
     "onboarding": {
       "header_step1": "Start here",
