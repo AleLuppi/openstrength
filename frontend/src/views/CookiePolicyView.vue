@@ -4,12 +4,12 @@
       <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
       </head>
-      <body class="c33 doc-content">
-        <h2 class="c43" id="h.k1mou5atg8au">
-          <span class="c2 c37">Cookie Policy di OpenStrength</span>
+      <body>
+        <h2>
+          <span>Cookie Policy di OpenStrength</span>
         </h2>
-        <p class="c17">
-          <span class="c2 c9"
+        <p>
+          <span
             >Questo documento contiene informazioni in merito alle tecnologie
             che consentono a questa Applicazione di raggiungere gli scopi
             descritti di seguito. Tali tecnologie permettono al Titolare di
@@ -19,8 +19,8 @@
             quest&rsquo;ultimo interagisce con questa Applicazione.</span
           >
         </p>
-        <p class="c1">
-          <span class="c2 c9"
+        <p>
+          <span
             >Per semplicit&agrave;, in questo documento tali tecnologie sono
             sinteticamente definite &ldquo;Strumenti di Tracciamento&rdquo;,
             salvo vi sia ragione di differenziare.<br />Per esempio, sebbene i
@@ -33,8 +33,8 @@
             particolare tipo di Strumento di Tracciamento.</span
           >
         </p>
-        <p class="c1">
-          <span class="c2 c9"
+        <p>
+          <span
             >Alcune delle finalit&agrave; per le quali vengono impiegati
             Strumenti di Tracciamento potrebbero, inoltre richiedere il consenso
             dell&rsquo;Utente. Se viene prestato il consenso, esso pu&ograve;
@@ -42,8 +42,8 @@
             istruzioni contenute in questo documento.</span
           >
         </p>
-        <p class="c1">
-          <span class="c2 c9"
+        <p>
+          <span
             >Questa Applicazione utilizza Strumenti di Tracciamento gestiti
             direttamente dal Titolare (comunemente detti Strumenti di
             Tracciamento &ldquo;di prima parte&rdquo;) e Strumenti di
@@ -64,33 +64,33 @@
             Titolare.</span
           >
         </p>
-        <p class="c10 c11"><span class="c2 c31"></span></p>
-        <p class="c10 c11"><span class="c2 c31"></span></p>
-        <p class="c10 c11"><span class="c2 c31"></span></p>
-        <p class="c10 c11"><span class="c2 c31"></span></p>
-        <p class="c10 c11"><span class="c2 c31"></span></p>
-        <h3 class="c21" id="h.pboztkggyxr7">
-          <span class="c2 c42"
+        <p><span></span></p>
+        <p><span></span></p>
+        <p><span></span></p>
+        <p><span></span></p>
+        <p><span></span></p>
+        <h3>
+          <span
             >Attivit&agrave; strettamente necessarie a garantire il
             funzionamento di questa Applicazione e la fornitura del
             Servizio</span
           >
         </h3>
-        <p class="c10">
-          <span class="c2 c4"
+        <p>
+          <span
             >Questa Applicazione utilizza Cookie comunemente detti
             &ldquo;tecnici&rdquo; o altri Strumenti di Tracciamento analoghi per
             svolgere attivit&agrave; strettamente necessarie a garantire il
             funzionamento o la fornitura del Servizio.</span
           >
         </p>
-        <p class="c10 c11"><span class="c2 c4"></span></p>
-        <p class="c10">
-          <span class="c2 c14">Tipi di cookie che utilizziamo</span>
+        <p><span></span></p>
+        <p>
+          <span>Tipi di cookie che utilizziamo</span>
         </p>
-        <p class="c10"><span class="c2 c4">Cookie tecnici</span></p>
-        <p class="c10">
-          <span class="c2 c4"
+        <p><span>Cookie tecnici</span></p>
+        <p>
+          <span
             >Utilizziamo cookie tecnici per migliorare l&#39;esperienza
             dell&#39;utente. Questi cookie sono essenziali per consentire
             l&#39;esplorazione e l&#39;utilizzo corretto delle
@@ -99,10 +99,10 @@
             servizio.</span
           >
         </p>
-        <p class="c10 c11"><span class="c2 c4"></span></p>
-        <p class="c10"><span class="c2 c4">Cookie di analisi</span></p>
-        <p class="c10">
-          <span class="c2 c4"
+        <p><span></span></p>
+        <p><span>Cookie di analisi</span></p>
+        <p>
+          <span
             >Utilizziamo anche cookie di analisi per raccogliere informazioni su
             come i visitatori utilizzano il nostro sito web o la nostra
             applicazione. Questi cookie ci forniscono dati anonimi che ci
@@ -111,48 +111,45 @@
             l&#39;esperienza complessiva.</span
           >
         </p>
-        <p class="c10 c11"><span class="c2 c4"></span></p>
-        <p class="c10">
-          <span class="c18"
-            >Dati Personali trattati: Strumento di Tracciamento.</span
-          >
+        <p><span></span></p>
+        <p>
+          <span>Dati Personali trattati: Strumento di Tracciamento.</span>
         </p>
-        <p class="c10 c11"><span class="c2 c4"></span></p>
-        <p class="c10">
-          <span class="c18">Luogo del trattamento: Italia &ndash; </span
-          ><span class="c20">
+        <p><span></span></p>
+        <p>
+          <span>Luogo del trattamento: Italia &ndash; </span
+          ><span>
             <router-link :to="{ name: 'privacy_policy' }"
               >Privacy Policy
             </router-link> </span
-          ><span class="c12 c2">.</span>
+          ><span>.</span>
         </p>
-        <p class="c10 c11"><span class="c12 c2"></span></p>
-        <p class="c10 c11"><span class="c2 c4"></span></p>
+        <p><span></span></p>
+        <p><span></span></p>
         <hr style="page-break-before: always; display: none" />
-        <p class="c10 c11"><span class="c2 c4"></span></p>
-        <h3 class="c21" id="h.mmb1nsxyqoyo">
-          <span class="c2 c22"
+        <p><span></span></p>
+        <h3>
+          <span
             >Altre attivit&agrave; che prevedono l&rsquo;utilizzo di Strumenti
             di Tracciamento</span
           >
         </h3>
-        <h4 class="c19" id="h.ooj14tftxcey">
-          <span class="c2 c0">Interazioni e funzionalit&agrave; semplici</span>
+        <h4>
+          <span>Interazioni e funzionalit&agrave; semplici</span>
         </h4>
-        <p class="c1">
-          <span class="c2 c4"
+        <p>
+          <span
             >Questa Applicazione utilizza Strumenti di Tracciamento per
             consentire semplici interazioni e attivare funzionalit&agrave; che
             permettono agli Utenti di accedere a determinate risorse del
             Servizio e semplificano la comunicazione con il Titolare.</span
           >
         </p>
-        <ul class="c27 lst-kix_8otrihmttfv6-0 start">
+        <ul>
           <li>
             <span>Contattare l'Utente<br /></span
-            ><span class="c0"
-              >Mailing list o newsletter (questa Applicazione)<br /></span
-            ><span class="c18"
+            ><span>Mailing list o newsletter (questa Applicazione)<br /></span
+            ><span
               >Con la registrazione alla mailing list o alla newsletter,
               l&rsquo;indirizzo email dell&rsquo;Utente viene automaticamente
               inserito in una lista di contatti a cui potranno essere trasmessi
@@ -165,10 +162,9 @@
             >
           </li>
 
-          <li class="c3 li-bullet-0">
-            <span class="c7"
-              >Gestione delle richieste di supporto e contatto<br /></span
-            ><span class="c12 c2"
+          <li>
+            <span>Gestione delle richieste di supporto e contatto<br /></span
+            ><span
               >Questo tipo di servizi permette a questa Applicazione di gestire
               le richieste di supporto e contatto pervenute tramite email o
               tramite altri strumenti, come il form di contatto.<br />I Dati
@@ -178,10 +174,9 @@
               email).</span
             >
           </li>
-          <li class="c3 li-bullet-0">
-            <span class="c18"></span
-            ><span class="c7">Registrazione ed autenticazione<br /></span
-            ><span class="c18"
+          <li>
+            <span></span><span>Registrazione ed autenticazione<br /></span
+            ><span
               >Con la registrazione o l&rsquo;autenticazione l&rsquo;Utente
               consente a questa Applicazione di identificarlo e di dargli
               accesso a servizi dedicati.<br />A seconda di quanto indicato di
@@ -193,12 +188,10 @@
               indicati potrebbero raccogliere Dati Personali anche per fini di
               targeting e profilazione; per saperne di pi&ugrave;, si prega di
               fare riferimento alla descrizione di ciascun servizio.<br /></span
-            ><span class="c36"
-              >Firebase Authentication (Google Ireland Limited)</span
-            >
+            ><span>Firebase Authentication (Google Ireland Limited)</span>
           </li>
-          <li class="c13 li-bullet-0">
-            <span class="c15"
+          <li>
+            <span
               >Firebase Authentication &egrave; un servizio di registrazione ed
               autenticazione fornito da Google Ireland Limited. Per semplificare
               il processo di registrazione ed autenticazione, Firebase
@@ -207,46 +200,45 @@
               piattaforma.</span
             >
           </li>
-          <li class="c13 li-bullet-0">
-            <span class="c15"
+          <li>
+            <span
               >Dati Personali trattati: email; nome; cognome; password.</span
             >
           </li>
-          <li class="c13 li-bullet-0">
-            <span class="c25">Luogo del trattamento: Irlanda &ndash;&nbsp;</span
-            ><span class="c25 c40"
+          <li>
+            <span>Luogo del trattamento: Irlanda &ndash;&nbsp;</span
+            ><span
               ><a
-                class="c5"
                 href="https://www.google.com/url?q=https://policies.google.com/privacy&amp;sa=D&amp;source=editors&amp;ust=1697822804030836&amp;usg=AOvVaw3mQJWIkbSkEdvVCu4peSSa"
                 >Privacy Policy</a
               ></span
-            ><span class="c15">.</span>
+            ><span>.</span>
           </li>
         </ul>
-        <h4 class="c19" id="h.7vadkoyqovus">
-          <span class="c2 c0">Miglioramento dell&rsquo;esperienza</span>
+        <h4 id="h.7vadkoyqovus">
+          <span>Miglioramento dell&rsquo;esperienza</span>
         </h4>
-        <p class="c1">
-          <span class="c2 c4"
+        <p>
+          <span
             >Questa Applicazione utilizza Strumenti di Tracciamento per fornire
             una user experience personalizzata, consentendo una migliore
             gestione delle impostazioni personali e l&#39;interazione con
             network e piattaforme esterne.</span
           >
         </p>
-        <ul class="c27 lst-kix_r4fpvmsss1lv-0 start">
-          <li class="c3 li-bullet-0">
-            <span class="c7"
+        <ul>
+          <li>
+            <span
               >Visualizzazione di contenuti da piattaforme esterne<br /></span
-            ><span class="c18"
+            ><span
               >Questo tipo di servizi permette di visualizzare contenuti
               ospitati su piattaforme esterne direttamente dalle pagine di
               questa Applicazione e di interagire con essi.<br />Questo tipo di
               servizio potrebbe comunque raccogliere dati sul traffico web
               relativo alle pagine dove il servizio &egrave; installato, anche
               quando gli utenti non lo utilizzano.<br /></span
-            ><span class="c0">Google Fonts<br /></span
-            ><span class="c18"
+            ><span>Google Fonts<br /></span
+            ><span
               >Google Fonts &egrave; un servizio di visualizzazione di stili di
               carattere gestito da Google LLC oppure da Google Ireland Limited,
               a seconda di come il Titolare gestisce il trattamento dei Dati,
@@ -254,73 +246,68 @@
               all&rsquo;interno delle proprie pagine.<br />Dati Personali
               trattati: Dati di utilizzo e Strumento di Tracciamento.<br />Luogo
               del trattamento: Stati Uniti &ndash; </span
-            ><span class="c20"
+            ><span
               ><a
-                class="c5"
                 href="https://www.google.com/url?q=https://policies.google.com/privacy&amp;sa=D&amp;source=editors&amp;ust=1697822804031549&amp;usg=AOvVaw2Ml4_4xf11AbpaTbl1oT90"
                 >Privacy Policy</a
               ></span
-            ><span class="c18">; Irlanda &ndash; </span
-            ><span class="c20"
+            ><span>; Irlanda &ndash; </span
+            ><span
               ><a
-                class="c5"
                 href="https://www.google.com/url?q=https://policies.google.com/privacy&amp;sa=D&amp;source=editors&amp;ust=1697822804031718&amp;usg=AOvVaw1N8KJPm62FcqapMHy9s6ed"
                 >Privacy Policy</a
               ></span
-            ><span class="c2 c12">.</span>
+            ><span>.</span>
           </li>
         </ul>
-        <h4 class="c19" id="h.lexpuv6hw2n0">
-          <span class="c2 c0">Misurazione</span>
+        <h4>
+          <span>Misurazione</span>
         </h4>
-        <p class="c1">
-          <span class="c2 c4"
+        <p>
+          <span
             >Questa Applicazione utilizza Strumenti di Tracciamento per misurare
             il traffico e analizzare il comportamento degli Utenti con
             l&#39;obiettivo di migliorare il Servizio.</span
           >
         </p>
-        <ul class="c27 lst-kix_9e27kk2n3cwj-0 start">
-          <li class="c3 li-bullet-0">
-            <span class="c7">Servizi di statistica anonimizzata<br /></span
-            ><span class="c18"
+        <ul>
+          <li>
+            <span>Servizi di statistica anonimizzata<br /></span
+            ><span
               >I servizi in questa sezione permettono al Titolare di elaborare e
               gestire statistiche in forma anonima grazie all&rsquo;uso di
               Strumenti di Tracciamento di prima parte.<br
             /></span>
           </li>
-          <li class="c13 li-bullet-0">
-            <span class="c36"
-              >Google Analytics for Firebase (Google Ireland Limited)</span
-            >
+          <li>
+            <span>Google Analytics for Firebase (Google Ireland Limited)</span>
             <br />
 
-            <span class="c25"
+            <span
               >Google Analytics per Firebase, o Firebase Analytics, &egrave; un
               servizio di analisi fornito da Google Ireland Limited.<br /></span
-            ><span class="c38"
+            ><span
               >Per una comprensione dell&#39;utilizzo dei dati da parte di
               Google, si prega di consultare le&nbsp;</span
-            ><span class="c25 c40"
+            ><span
               ><a
-                class="c5"
                 href="https://www.google.com/url?q=https://www.google.com/intl/it/policies/privacy/partners/&amp;sa=D&amp;source=editors&amp;ust=1697822804032486&amp;usg=AOvVaw0QcvnhfFjBi_SldL9f17Zv"
                 >norme per i partner di Google</a
               ></span
-            ><span class="c15">.</span>
+            ><span>.</span>
           </li>
 
-          <li class="c3 li-bullet-0">
-            <span class="c7"
+          <li>
+            <span
               >Servizi di statistica gestiti direttamente da questa
               Applicazione<br /></span
-            ><span class="c18"
+            ><span
               >I servizi in questa sezione permettono al Titolare di elaborare e
               gestire statistiche grazie all&rsquo;uso di Strumenti di
               Tracciamento di prima parte.<br /></span
-            ><span class="c0"
+            ><span
               >Statistiche raccolte in modo diretto (questa Applicazione)<br /></span
-            ><span class="c12 c2"
+            ><span
               >Questa Applicazione utilizza un sistema di statistiche interno,
               che non coinvolge terze parti.<br />Dati Personali trattati: Dati
               di utilizzo e Strumento di Tracciamento.<br />Durata di
@@ -328,31 +315,29 @@
             >
           </li>
 
-          <li class="c3 li-bullet-0">
-            <span class="c7">Statistica<br /></span
-            ><span class="c18"
+          <li>
+            <span>Statistica<br /></span
+            ><span
               >I servizi contenuti nella presente sezione permettono al Titolare
               del Trattamento di monitorare e analizzare i dati di traffico e
               servono a tener traccia del comportamento dell&rsquo;Utente.<br
             /></span>
           </li>
-          <span class="c2 c22"
+          <span
             ><h6>
               Attivit&agrave; che non rientrano nelle categorie precedenti
             </h6></span
           >
         </ul>
-        <ul class="c27 lst-kix_bs080vv3l4bv-0 start">
-          <li class="c3 li-bullet-0">
-            <span class="c7"
-              >Applicabilit&agrave; e Lingua delle Policy<br /></span
-            ><span class="c18"
+        <ul>
+          <li>
+            <span>Applicabilit&agrave; e Lingua delle Policy<br /></span
+            ><span
               >Le policy qui definite si applicano agli utenti Consumer
               (Consumatori) per tutti i siti e le App di propriet&agrave; di
               Lorenzo Boffa, tra cui </span
-            ><span class="c18 c30">OpenStrength</span
-            ><span class="c18">.<br /><br /></span
-            ><span class="c2 c0"
+            ><span>OpenStrength</span><span>.<br /><br /></span
+            ><span
               >Importante!<br /><br />Se non comprendi nessuna delle lingue in
               cui questo documento &egrave; attualmente disponibile, ti
               chiediamo vivamente di non accettarne le condizioni e, di
@@ -365,28 +350,28 @@
             >
           </li>
         </ul>
-        <h3 class="c21" id="h.f4lu9i12f7lx">
-          <span class="c2 c22"
+        <h3>
+          <span
             >Come gestire le preferenze e prestare o revocare il consenso</span
           >
         </h3>
-        <p class="c35">
-          <span class="c2 c4"
+        <p>
+          <span
             >Esistono vari modi per gestire le preferenze relative agli
             Strumenti di Tracciamento e per prestare o revocare il consenso, ove
             necessario:</span
           >
         </p>
-        <p class="c1">
-          <span class="c2 c4"
+        <p>
+          <span
             >Gli Utenti possono gestire le preferenze relative agli Strumenti di
             Tracciamento direttamente tramite le impostazioni dei propri
             dispositivi - per esempio, possono impedire l&rsquo;uso o
             l&rsquo;archiviazione di Strumenti di Tracciamento.</span
           >
         </p>
-        <p class="c1">
-          <span class="c2 c4"
+        <p>
+          <span
             >In aggiunta, ogni qualvolta l&rsquo;utilizzo di Strumenti di
             Tracciamento dipenda da consenso, l&rsquo;Utente pu&ograve; prestare
             o revocare tale consenso impostando le proprie preferenze
@@ -395,8 +380,8 @@
             al consenso, se presente.</span
           >
         </p>
-        <p class="c1">
-          <span class="c2 c4"
+        <p>
+          <span
             >Grazie ad apposite funzioni del browser o del dispositivo &egrave;
             anche possibile rimuovere Strumenti di Tracciamento precedentemente
             salvati, inclusi quelli utilizzati per il salvataggio delle
@@ -404,15 +389,15 @@
             dall&#39;Utente.</span
           >
         </p>
-        <p class="c1">
-          <span class="c2 c4"
+        <p>
+          <span
             >Altri Strumenti di Tracciamento presenti nella memoria locale del
             browser possono essere rimossi cancellando la cronologia di
             navigazione.</span
           >
         </p>
-        <p class="c1">
-          <span class="c2 c4"
+        <p>
+          <span
             >Per quanto riguarda Strumenti di Tracciamento di terza parte, gli
             Utenti possono gestire le proprie preferenze visitando il relativo
             link di opt out (qualora disponibile), utilizzando gli strumenti
@@ -420,86 +405,79 @@
             quest&#39;ultima direttamente.</span
           >
         </p>
-        <h4 class="c19" id="h.d6i4z2kqymqj">
-          <span class="c2 c0"
+        <h4 id="h.d6i4z2kqymqj">
+          <span
             >Individuare le impostazioni relative agli Strumenti di
             Tracciamento</span
           >
         </h4>
-        <p class="c1">
-          <span class="c2 c4"
+        <p>
+          <span
             >Gli Utenti possono, per esempio, trovare informazioni su come
             gestire i Cookie in alcuni dei browser pi&ugrave; diffusi ai
             seguenti indirizzi:</span
           >
         </p>
-        <ul class="c27 lst-kix_b79jen8k0zr4-0 start">
-          <li class="c16 li-bullet-0">
-            <span class="c23"
+        <ul>
+          <li>
+            <span
               ><a
-                class="c5"
                 href="https://www.google.com/url?q=https://support.google.com/chrome/answer/95647?hl%3Dit%26p%3Dcpn_cookies&amp;sa=D&amp;source=editors&amp;ust=1697822804034843&amp;usg=AOvVaw1rLNxgwaAgRVmOiXjZkT4y"
                 >Google Chrome</a
               ></span
             >
           </li>
-          <li class="c16 li-bullet-0">
-            <span class="c23"
+          <li>
+            <span
               ><a
-                class="c5"
                 href="https://www.google.com/url?q=https://support.mozilla.org/it/kb/Attivare%2520e%2520disattivare%2520i%2520cookie&amp;sa=D&amp;source=editors&amp;ust=1697822804035108&amp;usg=AOvVaw1NYs7KALinBF2nc3Vxb6KN"
                 >Mozilla Firefox</a
               ></span
             >
           </li>
-          <li class="c16 li-bullet-0">
-            <span class="c23"
+          <li>
+            <span
               ><a
-                class="c5"
                 href="https://www.google.com/url?q=https://support.apple.com/it-it/guide/safari/manage-cookies-and-website-data-sfri11471/&amp;sa=D&amp;source=editors&amp;ust=1697822804035382&amp;usg=AOvVaw03EcWdM4I8Yas0Bxn-t9gO"
                 >Apple Safari</a
               ></span
             >
           </li>
-          <li class="c16 li-bullet-0">
-            <span class="c23"
+          <li>
+            <span
               ><a
-                class="c5"
                 href="https://www.google.com/url?q=http://windows.microsoft.com/it-it/windows-vista/block-or-allow-cookies&amp;sa=D&amp;source=editors&amp;ust=1697822804035615&amp;usg=AOvVaw3oLOZLz2VgUujYNzxG4ykW"
                 >Microsoft Internet Explorer</a
               ></span
             >
           </li>
-          <li class="c16 li-bullet-0">
-            <span class="c23"
+          <li>
+            <span
               ><a
-                class="c5"
                 href="https://www.google.com/url?q=https://support.microsoft.com/it-it/help/4027947&amp;sa=D&amp;source=editors&amp;ust=1697822804035843&amp;usg=AOvVaw1OJy4foSPn504fW-mqNCme"
                 >Microsoft Edge</a
               ></span
             >
           </li>
-          <li class="c16 li-bullet-0">
-            <span class="c23"
+          <li>
+            <span
               ><a
-                class="c5"
                 href="https://www.google.com/url?q=https://support.brave.com/hc/articles/360022806212-How-do-I-use-Shields-while-browsing&amp;sa=D&amp;source=editors&amp;ust=1697822804036150&amp;usg=AOvVaw1aYsWUxU1TfeC63lRV-HW7"
                 >Brave</a
               ></span
             >
           </li>
-          <li class="c16 li-bullet-0">
-            <span class="c23"
+          <li>
+            <span
               ><a
-                class="c5"
                 href="https://www.google.com/url?q=https://help.opera.com/latest/web-preferences/%23cookies&amp;sa=D&amp;source=editors&amp;ust=1697822804036495&amp;usg=AOvVaw2yvsC2a3Xu0Wd0_n2zt5CM"
                 >Opera</a
               ></span
             >
           </li>
         </ul>
-        <p class="c1">
-          <span class="c2 c4"
+        <p>
+          <span
             >Gli Utenti possono inoltre gestire alcuni Strumenti di Tracciamento
             per applicazioni mobili disattivandoli tramite le apposite
             impostazioni del dispositivo, quali le impostazioni di
@@ -509,14 +487,14 @@
             pertinente).</span
           >
         </p>
-        <h4 class="c19" id="h.llnkcrgehoq9">
-          <span class="c2 c0"
+        <h4 id="h.llnkcrgehoq9">
+          <span
             >Conseguenze legate al rifiuto dell&#39;utilizzo di Strumenti di
             Tracciamento</span
           >
         </h4>
-        <p class="c1">
-          <span class="c2 c4"
+        <p>
+          <span
             >Gli Utenti sono liberi di decidere se permettere o meno
             l&#39;utilizzo di Strumenti di Tracciamento. Tuttavia, si noti che
             gli Strumenti di Tracciamento consentono a questa Applicazione di
@@ -528,27 +506,26 @@
             funzionalit&agrave;.</span
           >
         </p>
-        <h3 class="c21" id="h.ubbd0sglxpc6">
-          <span class="c2 c22">Titolare del Trattamento dei Dati</span>
+        <h3>
+          <span>Titolare del Trattamento dei Dati</span>
         </h3>
-        <p class="c39">
-          <span class="c25"
+        <p>
+          <span
             >Lorenzo Boffa<br />Largo Mozart, 4<br />20064 Gorgonzola (MI) -
             Italy</span
           >
         </p>
-        <p class="c1">
-          <span class="c14">Indirizzo email del Titolare:</span
-          ><span class="c26">&nbsp;</span
-          ><span class="c28"
-            ><a class="c5" href="mailto:lorenzo.boffa06@gmail.com"
+        <p>
+          <span>Indirizzo email del Titolare:</span><span>&nbsp;</span
+          ><span
+            ><a href="mailto:lorenzo.boffa06@gmail.com"
               >lorenzo.boffa06@gmail.com</a
             ></span
           >
         </p>
-        <p class="c1 c11"><span class="c2 c4"></span></p>
-        <p class="c1">
-          <span class="c2 c4"
+        <p><span></span></p>
+        <p>
+          <span
             >Dal momento che l&rsquo;uso di Strumenti di Tracciamento di terza
             parte su questa Applicazione non pu&ograve; essere completamente
             controllato dal Titolare, ogni riferimento specifico a Strumenti di
@@ -558,33 +535,33 @@
             in questo documento.</span
           >
         </p>
-        <p class="c1">
-          <span class="c2 c4"
+        <p>
+          <span
             >Data l&#39;oggettiva complessit&agrave; di identificazione delle
             tecnologie di tracciamento, gli Utenti sono invitati a contattare il
             Titolare qualora volessero ricevere ulteriori informazioni in merito
             all&#39;utilizzo di tali tecnologie su questa Applicazione.</span
           >
         </p>
-        <h3 class="c32" id="h.xr6sat7kpgbx">
-          <span class="c2 c7">Definizioni e riferimenti legali</span>
+        <h3>
+          <span>Definizioni e riferimenti legali</span>
         </h3>
-        <h4 class="c34" id="h.sig6tvsmhiei">
-          <span class="c2 c0">Dati Personali (o Dati)</span>
+        <h4>
+          <span>Dati Personali (o Dati)</span>
         </h4>
-        <p class="c1">
-          <span class="c12 c2"
+        <p>
+          <span
             >Costituisce dato personale qualunque informazione che, direttamente
             o indirettamente, anche in collegamento con qualsiasi altra
             informazione, ivi compreso un numero di identificazione personale,
             renda identificata o identificabile una persona fisica.</span
           >
         </p>
-        <h4 class="c19" id="h.t2vgp5v1xqcf">
-          <span class="c2 c0">Dati di Utilizzo</span>
+        <h4 id="h.t2vgp5v1xqcf">
+          <span>Dati di Utilizzo</span>
         </h4>
-        <p class="c1">
-          <span class="c12 c2"
+        <p>
+          <span
             >Sono le informazioni raccolte automaticamente attraverso questa
             Applicazione (anche da applicazioni di parti terze integrate in
             questa Applicazione), tra cui: gli indirizzi IP o i nomi a dominio
@@ -603,41 +580,37 @@
             e all&rsquo;ambiente informatico dell&rsquo;Utente.</span
           >
         </p>
-        <h4 class="c19" id="h.tlxnb4l57gtu">
-          <span class="c2 c0">Utente</span>
+        <h4>
+          <span>Utente</span>
         </h4>
-        <p class="c1">
-          <span class="c12 c2"
+        <p>
+          <span
             >L&#39;individuo che utilizza questa Applicazione che, salvo ove
             diversamente specificato, coincide con l&#39;Interessato.</span
           >
         </p>
-        <h4 class="c19" id="h.n9ou41rdtcij">
-          <span class="c2 c0">Interessato</span>
+        <h4>
+          <span>Interessato</span>
         </h4>
-        <p class="c1">
-          <span class="c12 c2"
-            >La persona fisica cui si riferiscono i Dati Personali.</span
-          >
+        <p>
+          <span>La persona fisica cui si riferiscono i Dati Personali.</span>
         </p>
-        <h4 class="c19" id="h.3qtxpftjcvhm">
-          <span class="c2 c0"
-            >Responsabile del Trattamento (o Responsabile)</span
-          >
+        <h4>
+          <span>Responsabile del Trattamento (o Responsabile)</span>
         </h4>
-        <p class="c1">
-          <span class="c12 c2"
+        <p>
+          <span
             >La persona fisica, giuridica, la pubblica amministrazione e
             qualsiasi altro ente che tratta dati personali per conto del
             Titolare, secondo quanto esposto nella presente privacy
             policy.</span
           >
         </p>
-        <h4 class="c19" id="h.xh8144kg2jmc">
-          <span class="c0 c2">Titolare del Trattamento (o Titolare)</span>
+        <h4>
+          <span>Titolare del Trattamento (o Titolare)</span>
         </h4>
-        <p class="c1">
-          <span class="c12 c2"
+        <p>
+          <span
             >La persona fisica o giuridica, l&#39;autorit&agrave; pubblica, il
             servizio o altro organismo che, singolarmente o insieme ad altri,
             determina le finalit&agrave; e i mezzi del trattamento di dati
@@ -647,51 +620,51 @@
             specificato, &egrave; il titolare di questa Applicazione.</span
           >
         </p>
-        <h4 class="c19" id="h.2e9mnc6u4ij5">
-          <span class="c2 c0">Questa Applicazione</span>
+        <h4>
+          <span>Questa Applicazione</span>
         </h4>
-        <p class="c1">
-          <span class="c12 c2"
+        <p>
+          <span
             >Lo strumento hardware o software mediante il quale sono raccolti e
             trattati i Dati Personali degli Utenti.</span
           >
         </p>
-        <h4 class="c19" id="h.1sdo6vpdzf8p">
-          <span class="c2 c0">Servizio</span>
+        <h4>
+          <span>Servizio</span>
         </h4>
-        <p class="c1">
-          <span class="c12 c2"
+        <p>
+          <span
             >Il Servizio fornito da questa Applicazione cos&igrave; come
             definito nei relativi termini (se presenti) su questo
             sito/applicazione.</span
           >
         </p>
-        <h4 class="c19" id="h.4yipz7clv3jh">
-          <span class="c2 c0">Unione Europea (o UE)</span>
+        <h4>
+          <span>Unione Europea (o UE)</span>
         </h4>
-        <p class="c1">
-          <span class="c12 c2"
+        <p>
+          <span
             >Salvo ove diversamente specificato, ogni riferimento
             all&rsquo;Unione Europea contenuto in questo documento si intende
             esteso a tutti gli attuali stati membri dell&rsquo;Unione Europea e
             dello Spazio Economico Europeo.</span
           >
         </p>
-        <h4 class="c19" id="h.pm100qheoh6k">
-          <span class="c2 c0">Cookie</span>
+        <h4>
+          <span>Cookie</span>
         </h4>
-        <p class="c1">
-          <span class="c12 c2"
+        <p>
+          <span
             >I Cookie sono Strumenti di Tracciamento che consistono in piccole
             porzioni di dati conservate all&#39;interno del browser
             dell&#39;Utente.</span
           >
         </p>
-        <h4 class="c19" id="h.ivxs5ync12k9">
-          <span class="c2 c0">Strumento di Tracciamento</span>
+        <h4>
+          <span>Strumento di Tracciamento</span>
         </h4>
-        <p class="c1">
-          <span class="c12 c2"
+        <p>
+          <span
             >Per Strumento di Tracciamento s&rsquo;intende qualsiasi tecnologia
             - es. Cookie, identificativi univoci, web beacons, script integrati,
             e-tag e fingerprinting - che consenta di tracciare gli Utenti, per
@@ -700,20 +673,20 @@
           >
         </p>
         <hr />
-        <p class="c11 c24"><span class="c2 c41"></span></p>
-        <h4 class="c19" id="h.nasx7gjczfmp">
-          <span class="c2 c0">Riferimenti legali</span>
+        <p><span></span></p>
+        <h4>
+          <span>Riferimenti legali</span>
         </h4>
-        <p class="c1">
-          <span class="c12 c2"
+        <p>
+          <span
             >Ove non diversamente specificato, questa informativa privacy
             riguarda esclusivamente questa Applicazione.</span
           >
         </p>
-        <p class="c35">
-          <span class="c12 c2">Ultima modifica: 20 Ottobre 2023</span>
+        <p>
+          <span>Ultima modifica: 20 Ottobre 2023</span>
         </p>
-        <p class="c10 c11"><span class="c2 c4"></span></p>
+        <p><span></span></p>
       </body>
     </html>
   </div>

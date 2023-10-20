@@ -4,58 +4,53 @@
       <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
       </head>
-      <body class="c16 doc-content">
-        <h1 class="c1">
-          <span class="c31 c37">Privacy Policy di&nbsp;</span
-          ><span class="c31 c32">OpenStrength</span>
-        </h1>
-        <p class="c7">
-          <span class="c0"
+      <body>
+        <h1><span>Privacy Policy di&nbsp;</span><span>OpenStrength</span></h1>
+        <p>
+          <span
             >Questa Applicazione raccoglie alcuni Dati Personali dei propri
             Utenti.</span
           >
         </p>
-        <p class="c2 c26">
-          <span class="c34"><br /></span>
-        </p>
-        <p class="c7">
-          <span class="c0"
+
+        <p>
+          <span
             >Questo documento pu&ograve; essere stampato utilizzando il comando
             di stampa presente nelle impostazioni di qualsiasi browser.</span
           >
         </p>
-        <h2 class="c1">
-          <span class="c20 c21">Titolare del Trattamento dei Dati</span>
+        <h2>
+          <span>Titolare del Trattamento dei Dati</span>
         </h2>
-        <p class="c7">
-          <span class="c0">Lorenzo Boffa<br />Largo Mozart, 4<br />20064 </span
-          ><span class="c6">Gorgonzola</span><span class="c0">&nbsp;(</span
-          ><span class="c6">MI</span><span class="c0">) - Italy</span>
+        <p>
+          <span>Lorenzo Boffa<br />Largo Mozart, 4<br />20064 </span
+          ><span>Gorgonzola</span><span>&nbsp;(</span><span>MI</span
+          ><span>) - Italy</span>
         </p>
-        <p class="c7">
-          <span class="c10">Indirizzo email del Titolare:</span
-          ><span class="c0">&nbsp;lorenzo.boffa06@gmail.com</span>
+        <p>
+          <span>Indirizzo email del Titolare:</span
+          ><span>&nbsp;lorenzo.boffa06@gmail.com</span>
         </p>
-        <h2 class="c1">
-          <span class="c20 c21">Tipologie di Dati raccolti</span>
+        <h2>
+          <span>Tipologie di Dati raccolti</span>
         </h2>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >Fra i Dati Personali raccolti da questa Applicazione, in modo
             autonomo o tramite terze parti, ci sono: email; Dati di utilizzo;
             informazioni sul dispositivo; foto profilo; regione geografica;
             numero di Utenti; numero di sessioni; durata della sessione;
             apertura dell&#39;Applicazione; aggiornamenti dell&#39;Applicazione;
             primi avvii; sistemi operativi; nome; cognome; usern</span
-          ><span class="c6">ame; </span
-          ><span class="c0"
+          ><span>ame; </span
+          ><span
             >Strumento di Tracciamento; Dati comunicati durante l&#39;utilizzo
             del servizio; Identificativo univoco universale (UUID); Informazioni
             sui malfunzionamenti; varie tipologie di Dati; ID Utente.</span
           >
         </p>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >Dettagli completi su ciascuna tipologia di Dati Personali raccolti
             sono forniti nelle sezioni dedicate di questa privacy policy o
             mediante specifici testi informativi visualizzati prima della
@@ -79,23 +74,21 @@
             documento e nella Cookie Policy.</span
           >
         </p>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >L&#39;Utente si assume la responsabilit&agrave; dei Dati Personali
             di terzi ottenuti, pubblicati o condivisi mediante questa
             Applicazione.</span
           >
         </p>
-        <h2 class="c1">
-          <span class="c20 c21"
-            >Modalit&agrave; e luogo del trattamento dei Dati raccolti</span
-          >
+        <h2>
+          <span>Modalit&agrave; e luogo del trattamento dei Dati raccolti</span>
         </h2>
-        <h3 class="c1">
-          <span class="c20 c6">Modalit&agrave; di trattamento</span>
-        </h3>
-        <p class="c7">
-          <span class="c0"
+        <h4>
+          <span>Modalit&agrave; di trattamento</span>
+        </h4>
+        <p>
+          <span
             >Il Titolare adotta le opportune misure di sicurezza volte ad
             impedire l&rsquo;accesso, la divulgazione, la modifica o la
             distruzione non autorizzate dei Dati Personali.<br />Il trattamento
@@ -113,9 +106,9 @@
             essere richiesto al Titolare del Trattamento.</span
           >
         </p>
-        <h3 class="c1"><span class="c20 c6">Luogo</span></h3>
-        <p class="c7">
-          <span class="c0"
+        <h4><span>Luogo</span></h4>
+        <p>
+          <span
             >I Dati sono trattati presso le sedi operative del Titolare ed in
             ogni altro luogo in cui le parti coinvolte nel trattamento siano
             localizzate. Per ulteriori informazioni, contatta il Titolare.<br />I
@@ -126,9 +119,9 @@
             trattamento dei Dati Personali.</span
           >
         </p>
-        <h3 class="c1"><span class="c20 c6">Periodo di conservazione</span></h3>
-        <p class="c7">
-          <span class="c0"
+        <h4><span>Periodo di conservazione</span></h4>
+        <p>
+          <span
             >Se non diversamente indicato in questo documento, i Dati Personali
             sono trattati e conservati per il tempo richiesto dalla
             finalit&agrave; per la quale sono stati raccolti e potrebbero essere
@@ -136,13 +129,11 @@
             obbligazioni legali o sulla base del consenso degli Utenti.</span
           >
         </p>
-        <h2 class="c1">
-          <span class="c20 c21"
-            >Finalit&agrave; del Trattamento dei Dati raccolti</span
-          >
+        <h2>
+          <span>Finalit&agrave; del Trattamento dei Dati raccolti</span>
         </h2>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >I Dati dell&rsquo;Utente sono raccolti per consentire al Titolare
             di fornire il Servizio, adempiere agli obblighi di legge, rispondere
             a richieste o azioni esecutive, tutelare i propri diritti ed
@@ -163,8 +154,8 @@
             beni e servizi online.</span
           >
         </p>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >Per ottenere informazioni dettagliate sulle finalit&agrave; del
             trattamento e sui Dati Personali trattati per ciascuna
             finalit&agrave;, l&rsquo;Utente pu&ograve; fare riferimento alla
@@ -172,29 +163,25 @@
             Personali&rdquo;.</span
           >
         </p>
-        <h3 class="c28 c24"><span class="c20 c6"></span></h3>
-        <h2 class="c1">
-          <span class="c20 c21"
-            >Dettagli sul trattamento dei Dati Personali</span
-          >
+        <h4><span></span></h4>
+        <h2>
+          <span>Dettagli sul trattamento dei Dati Personali</span>
         </h2>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >I Dati Personali sono raccolti per le seguenti finalit&agrave; ed
             utilizzando i seguenti servizi:</span
           >
         </p>
-        <h3 class="c28 c24"><span class="c20 c6"></span></h3>
-        <h3 class="c28">
-          <span class="c6 c27">Funzionalit&agrave; sociali</span>
-        </h3>
-        <h4 class="c12">
-          <span class="c10"
-            >Firebase Dynamic Links (Google Ireland Limited)</span
-          >
+        <h4><span></span></h4>
+        <h4>
+          <span>Funzionalit&agrave; sociali</span>
         </h4>
-        <p class="c12">
-          <span class="c0"
+        <h4>
+          <span>Firebase Dynamic Links (Google Ireland Limited)</span>
+        </h4>
+        <p>
+          <span
             >Firebase Dynamic Links &egrave; una funzione social fornita da
             Google Ireland Limited. I Dynamic Links sono tracciati mediante
             Firebase o Google Analytics per Firebase e forniscono al Titolare
@@ -202,29 +189,28 @@
             all&rsquo;interno di questa Applicazione.</span
           >
         </p>
-        <p class="c12">
-          <span class="c0"
+        <p>
+          <span
             >Dati Personali trattati: varie tipologie di Dati secondo quanto
             specificato dalla privacy policy del servizio.</span
           >
         </p>
-        <p class="c12">
-          <span class="c0">Luogo del trattamento: Irlanda &ndash;&nbsp;</span
-          ><span class="c8 c6"
+        <p>
+          <span>Luogo del trattamento: Irlanda &ndash;&nbsp;</span
+          ><span
             ><a
-              class="c3"
               href="https://www.google.com/url?q=https://policies.google.com/privacy&amp;sa=D&amp;source=editors&amp;ust=1697821774139827&amp;usg=AOvVaw07czWryZP0s5VaLCvq3-Kq"
               >Privacy Policy</a
             ></span
-          ><span class="c0">.</span>
+          ><span>.</span>
         </p>
-        <p class="c2"><span class="c19"></span></p>
-        <p class="c2"><span class="c19"></span></p>
-        <h3 class="c28">
-          <span class="c20 c6">Hosting ed infrastruttura backend</span>
-        </h3>
-        <p class="c12">
-          <span class="c0"
+        <p><span></span></p>
+        <p><span></span></p>
+        <h4>
+          <span>Hosting ed infrastruttura backend</span>
+        </h4>
+        <p>
+          <span
             >Questo tipo di servizi ha la funzione di ospitare Dati e file che
             permettono a questa Applicazione di funzionare, ne consentono la
             distribuzione e mettono a disposizione un&#39;infrastruttura pronta
@@ -232,132 +218,121 @@
             Applicazione.</span
           >
         </p>
-        <p class="c12">
-          <span class="c0"
+        <p>
+          <span
             >Alcuni servizi tra quelli elencati di seguito, se presenti, possono
             funzionare su server geograficamente distribuiti, rendendo difficile
             determinare l&#39;effettiva ubicazione in cui sono conservati i Dati
             Personali.</span
           >
         </p>
-        <p class="c7 c13"><span class="c10"></span></p>
-        <p class="c7 c13"><span class="c10"></span></p>
-        <p class="c7">
-          <span class="c10"
-            >Firebase Cloud Firestore (Google Ireland Limited)</span
-          >
+        <p><span></span></p>
+        <p><span></span></p>
+        <p>
+          <span>Firebase Cloud Firestore (Google Ireland Limited)</span>
         </p>
-        <p class="c17">
-          <span class="c0"
+        <p>
+          <span
             >Firebase Cloud Firestore &egrave; un servizio di hosting e backend
             fornito da Google Ireland Limited.</span
           >
         </p>
-        <p class="c17">
-          <span class="c0"
+        <p>
+          <span
             >Dati Personali trattati: Dati di utilizzo; varie tipologie di Dati
             secondo quanto specificato dalla privacy policy del servizio.</span
           >
         </p>
-        <p class="c17">
-          <span class="c6 c31"
-            >Luogo del trattamento: Irlanda &ndash;&nbsp;</span
-          ><span class="c6 c18"
+        <p>
+          <span>Luogo del trattamento: Irlanda &ndash;&nbsp;</span
+          ><span
             ><a
-              class="c3"
               href="https://www.google.com/url?q=https://policies.google.com/privacy&amp;sa=D&amp;source=editors&amp;ust=1697821774141010&amp;usg=AOvVaw2yhphib62Ut6nTd_I7i67o"
               >Privacy Policy</a
             ></span
-          ><span class="c0">.</span>
+          ><span>.</span>
         </p>
-        <p class="c2"><span class="c19"></span></p>
-        <h4 class="c7">
-          <span class="c10"
-            >Firebase Cloud Storage (Google Ireland Limited)</span
-          >
+        <p><span></span></p>
+        <h4>
+          <span>Firebase Cloud Storage (Google Ireland Limited)</span>
         </h4>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >Firebase Cloud Storage &egrave; un servizio di hosting fornito da
             Google Ireland Limited.</span
           >
         </p>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >Dati Personali trattati: Dati di utilizzo; varie tipologie di Dati
             secondo quanto specificato dalla privacy policy del servizio.</span
           >
         </p>
-        <p class="c7">
-          <span class="c0">Luogo del trattamento: Irlanda &ndash;&nbsp;</span
-          ><span class="c8 c6"
+        <p>
+          <span>Luogo del trattamento: Irlanda &ndash;&nbsp;</span
+          ><span
             ><a
-              class="c3"
               href="https://www.google.com/url?q=https://policies.google.com/privacy&amp;sa=D&amp;source=editors&amp;ust=1697821774141835&amp;usg=AOvVaw0k8NzIWCiOF_9sLDRZ9Eki"
               >Privacy Policy</a
             ></span
-          ><span class="c0">.</span>
+          ><span>.</span>
         </p>
-        <p class="c2"><span class="c19"></span></p>
-        <h4 class="c7">
-          <span class="c10">Firebase Hosting (Google Ireland Limited)</span>
+        <p><span></span></p>
+        <h4>
+          <span>Firebase Hosting (Google Ireland Limited)</span>
         </h4>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >Firebase Hosting &egrave; un servizio di hosting fornito da Google
             Ireland Limited.</span
           >
         </p>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >Dati Personali trattati: varie tipologie di Dati secondo quanto
             specificato dalla privacy policy del servizio.</span
           >
         </p>
-        <p class="c7">
-          <span class="c0">Luogo del trattamento: Irlanda &ndash;&nbsp;</span
-          ><span class="c6 c8"
+        <p>
+          <span>Luogo del trattamento: Irlanda &ndash;&nbsp;</span
+          ><span
             ><a
-              class="c3"
               href="https://www.google.com/url?q=https://policies.google.com/privacy&amp;sa=D&amp;source=editors&amp;ust=1697821774142623&amp;usg=AOvVaw2qrXn6ndBRKFH_zUwPBOUj"
               >Privacy Policy</a
             ></span
-          ><span class="c0">.</span>
+          ><span>.</span>
         </p>
-        <p class="c2"><span class="c19"></span></p>
-        <h4 class="c7">
-          <span class="c10"
-            >Firebase Realtime Database (Google Ireland Limited)</span
-          >
+        <p><span></span></p>
+        <h4>
+          <span>Firebase Realtime Database (Google Ireland Limited)</span>
         </h4>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >Firebase Realtime Database &egrave; un servizio di hosting e
             backend fornito da Google Ireland Limited.</span
           >
         </p>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >Dati Personali trattati: Dati di utilizzo; varie tipologie di Dati
             secondo quanto specificato dalla privacy policy del servizio.</span
           >
         </p>
-        <p class="c7">
-          <span class="c0">Luogo del trattamento: Irlanda &ndash;&nbsp;</span
-          ><span class="c8 c6"
+        <p>
+          <span>Luogo del trattamento: Irlanda &ndash;&nbsp;</span
+          ><span
             ><a
-              class="c3"
               href="https://www.google.com/url?q=https://policies.google.com/privacy&amp;sa=D&amp;source=editors&amp;ust=1697821774143252&amp;usg=AOvVaw3f6njlENINJUbgxNN7d6aO"
               >Privacy Policy</a
             ></span
-          ><span class="c0">.</span>
+          ><span>.</span>
         </p>
-        <p class="c2"><span class="c19"></span></p>
-        <h3 class="c28">
-          <span class="c20 c6">Monitoraggio dell&#39;infrastruttura</span>
-        </h3>
-        <p class="c12">
-          <span class="c0"
+        <p><span></span></p>
+        <h4>
+          <span>Monitoraggio dell&#39;infrastruttura</span>
+        </h4>
+        <p>
+          <span
             >Questo tipo di servizi permette a questa Applicazione di monitorare
             l&rsquo;utilizzo ed il comportamento di componenti della stessa, per
             consentirne il miglioramento delle prestazioni e delle
@@ -368,40 +343,37 @@
             di questa Applicazione.</span
           >
         </p>
-        <h4 class="c12 c24"><span class="c10"></span></h4>
-        <h4 class="c12">
-          <span class="c10"
-            >Firebase Performance Monitoring (Google Ireland Limited)</span
-          >
+        <h4><span></span></h4>
+        <h4>
+          <span>Firebase Performance Monitoring (Google Ireland Limited)</span>
         </h4>
-        <p class="c12">
-          <span class="c0"
+        <p>
+          <span
             >Firebase Performance Monitoring &egrave; un servizio di
             monitoraggio fornito da Google Ireland Limited.</span
           >
         </p>
-        <p class="c12">
-          <span class="c0"
+        <p>
+          <span
             >Dati Personali trattati: varie tipologie di Dati secondo quanto
             specificato dalla privacy policy del servizio.</span
           >
         </p>
-        <p class="c12">
-          <span class="c0">Luogo del trattamento: Irlanda &ndash;&nbsp;</span
-          ><span class="c8 c6"
+        <p>
+          <span>Luogo del trattamento: Irlanda &ndash;&nbsp;</span
+          ><span
             ><a
-              class="c3"
               href="https://www.google.com/url?q=https://policies.google.com/privacy&amp;sa=D&amp;source=editors&amp;ust=1697821774144108&amp;usg=AOvVaw3VGSeeSyNECy9gs8JCneEA"
               >Privacy Policy</a
             ></span
-          ><span class="c0">.</span>
+          ><span>.</span>
         </p>
-        <p class="c2"><span class="c19"></span></p>
-        <h3 class="c28">
-          <span class="c20 c6">Registrazione ed autenticazione</span>
-        </h3>
-        <p class="c12">
-          <span class="c0"
+        <p><span></span></p>
+        <h4>
+          <span>Registrazione ed autenticazione</span>
+        </h4>
+        <p>
+          <span
             >Con la registrazione o l&rsquo;autenticazione l&rsquo;Utente
             consente a questa Applicazione di identificarlo e di dargli accesso
             a servizi dedicati.<br />A seconda di quanto indicato di seguito, i
@@ -415,14 +387,12 @@
             riferimento alla descrizione di ciascun servizio.</span
           >
         </p>
-        <h4 class="c12 c24"><span class="c10"></span></h4>
-        <h4 class="c12">
-          <span class="c10"
-            >Firebase Authentication (Google Ireland Limited)</span
-          >
+        <h4><span></span></h4>
+        <h4>
+          <span>Firebase Authentication (Google Ireland Limited)</span>
         </h4>
-        <p class="c12">
-          <span class="c0"
+        <p>
+          <span
             >Firebase Authentication &egrave; un servizio di registrazione ed
             autenticazione fornito da Google Ireland Limited. Per semplificare
             il processo di registrazione ed autenticazione, Firebase
@@ -431,55 +401,49 @@
             piattaforma.</span
           >
         </p>
-        <p class="c12">
-          <span class="c0"
-            >Dati Personali trattati: email; nome; cognome; password.</span
-          >
+        <p>
+          <span>Dati Personali trattati: email; nome; cognome; password.</span>
         </p>
-        <p class="c12">
-          <span class="c0">Luogo del trattamento: Irlanda &ndash;&nbsp;</span
-          ><span class="c8 c6"
+        <p>
+          <span>Luogo del trattamento: Irlanda &ndash;&nbsp;</span
+          ><span
             ><a
-              class="c3"
               href="https://www.google.com/url?q=https://policies.google.com/privacy&amp;sa=D&amp;source=editors&amp;ust=1697821774145633&amp;usg=AOvVaw1eJDW7xj2-nB4YuDu-i0I0"
               >Privacy Policy</a
             ></span
-          ><span class="c0">.</span>
+          ><span>.</span>
         </p>
-        <p class="c2"><span class="c19"></span></p>
-        <p class="c2"><span class="c19"></span></p>
-        <h3 class="c28"><span class="c20 c6">Statistica</span></h3>
-        <p class="c12">
-          <span class="c0"
+        <p><span></span></p>
+        <p><span></span></p>
+        <h4><span>Statistica</span></h4>
+        <p>
+          <span
             >I servizi contenuti nella presente sezione permettono al Titolare
             del Trattamento di monitorare e analizzare i dati di traffico e
             servono a tener traccia del comportamento dell&rsquo;Utente.</span
           >
         </p>
-        <h4 class="c12 c24"><span class="c10"></span></h4>
-        <h4 class="c12">
-          <span class="c10"
-            >Google Analytics for Firebase (Google Ireland Limited)</span
-          >
+        <h4><span></span></h4>
+        <h4>
+          <span>Google Analytics for Firebase (Google Ireland Limited)</span>
         </h4>
-        <p class="c12">
-          <span class="c0"
+        <p>
+          <span
             >Google Analytics per Firebase, o Firebase Analytics, &egrave; un
             servizio di analisi fornito da Google Ireland Limited.<br /></span
-          ><span class="c10"
+          ><span
             >Per una comprensione dell&#39;utilizzo dei dati da parte di Google,
             si prega di consultare le&nbsp;</span
-          ><span class="c8 c6"
+          ><span
             ><a
-              class="c3"
               href="https://www.google.com/url?q=https://www.google.com/intl/it/policies/privacy/partners/&amp;sa=D&amp;source=editors&amp;ust=1697821774147160&amp;usg=AOvVaw2FprOo9veB_SpQF0XSnprx"
               >norme per i partner di Google</a
             ></span
-          ><span class="c0">.</span>
+          ><span>.</span>
         </p>
-        <p class="c15"><span class="c0">&nbsp;</span></p>
-        <p class="c12">
-          <span class="c0"
+        <p><span>&nbsp;</span></p>
+        <p>
+          <span
             >Firebase Analytics potrebbe condividere Dati con altri servizi
             forniti da Firebase tra cui, ad esempio, Crash Reporting,
             Authentication, Remote Config o Notifications. L&rsquo;utente
@@ -488,17 +452,17 @@
             Titolare.</span
           >
         </p>
-        <p class="c15"><span class="c0">&nbsp;</span></p>
-        <p class="c12">
-          <span class="c0"
+        <p><span>&nbsp;</span></p>
+        <p>
+          <span
             >Per permettere il funzionamento di Firebase Analytics, questa
             Applicazione usa alcuni identificatori per periferiche mobili ovvero
             tecnologie simili ai cookie.</span
           >
         </p>
-        <p class="c15"><span class="c0">&nbsp;</span></p>
-        <p class="c12">
-          <span class="c0"
+        <p><span>&nbsp;</span></p>
+        <p>
+          <span
             >L&rsquo;Utente pu&ograve; effettuare l&rsquo;opt-out da alcune
             funzioni di Firebase mediante le impostazioni del proprio
             dispositivo mobile. Ad esempio, pu&ograve; modificare le
@@ -508,50 +472,45 @@
             policy.</span
           >
         </p>
-        <p class="c12">
-          <span class="c0"
+        <p>
+          <span
             >Dati Personali trattati: aggiornamenti dell&#39;Applicazione;
             apertura dell&#39;Applicazione; Dati di utilizzo; durata della
             sessione; informazioni sul dispositivo; numero di sessioni; numero
             di Utenti; primi avvii; regione geografica; sistemi operativi.</span
           >
         </p>
-        <p class="c12">
-          <span class="c0">Luogo del trattamento: Irlanda &ndash;&nbsp;</span
-          ><span class="c8 c6"
+        <p>
+          <span>Luogo del trattamento: Irlanda &ndash;&nbsp;</span
+          ><span
             ><a
-              class="c3"
               href="https://www.google.com/url?q=https://policies.google.com/privacy&amp;sa=D&amp;source=editors&amp;ust=1697821774148574&amp;usg=AOvVaw1w-8lsb4RrnHO6c5olqt_Z"
               >Privacy Policy</a
             ></span
-          ><span class="c0">.</span>
+          ><span>.</span>
         </p>
-        <p class="c12 c13"><span class="c0"></span></p>
-        <p class="c12 c13"><span class="c0"></span></p>
-        <p class="c12 c13"><span class="c0"></span></p>
-        <p class="c12 c13"><span class="c0"></span></p>
-        <h2 class="c1">
-          <span class="c20 c21"
-            >Ulteriori informazioni sul trattamento dei Dati Personali</span
-          >
+        <p><span></span></p>
+        <p><span></span></p>
+        <p><span></span></p>
+        <p><span></span></p>
+        <h2>
+          <span>Ulteriori informazioni sul trattamento dei Dati Personali</span>
         </h2>
-        <ul class="c4 lst-kix_list_2-0 start">
-          <li class="c5 li-bullet-0">
-            <h3 style="display: inline">
-              <span class="c20 c6"
-                >Applicabilit&agrave; e Lingua delle Policy</span
-              >
-            </h3>
+        <ul>
+          <li>
+            <h4 style="display: inline">
+              <span>Applicabilit&agrave; e Lingua delle Policy</span>
+            </h4>
           </li>
         </ul>
-        <p class="c7 c11">
-          <span class="c0"
+        <p>
+          <span
             >Le policy qui definite si applicano agli utenti Consumer
             (Consumatori) per tutti i siti e le App di propriet&agrave; di
             Lorenzo Boffa, tra cui&nbsp;</span
-          ><span class="c6 c30">OpenStrength</span><span class="c0">.</span
-          ><span class="c10">Importante!</span><span class="c0"></span
-          ><span class="c10"
+          ><span>OpenStrength</span><span>.</span><span>Importante!</span
+          ><span></span
+          ><span
             >Se non comprendi nessuna delle lingue in cui questo documento
             &egrave; attualmente disponibile, ti chiediamo vivamente di non
             accettarne le condizioni e, di conseguenza, di non continuare a
@@ -562,16 +521,16 @@
             sono attualmente disponibili.</span
           >
         </p>
-        <p class="c7 c13 c11"><span class="c0"></span></p>
-        <ul class="c4 lst-kix_list_2-0">
-          <li class="c5 li-bullet-0">
-            <h3 style="display: inline">
-              <span class="c6 c20">Raccolta di informazioni</span>
-            </h3>
+        <p><span></span></p>
+        <ul>
+          <li>
+            <h4 style="display: inline">
+              <span>Raccolta di informazioni</span>
+            </h4>
           </li>
         </ul>
-        <p class="c7 c11">
-          <span class="c0"
+        <p>
+          <span
             >Le informazioni personali dell&rsquo;utente vengono raccolte quando
             egli interagisce con i nostri Siti o utilizza i nostri servizi,
             nonche&#769; quando utilizza i nostri Siti. Nello specifico
@@ -579,16 +538,16 @@
             nostri Siti o modifica le impostazioni dell&rsquo;account.</span
           >
         </p>
-        <p class="c7 c13 c11"><span class="c0"></span></p>
-        <ul class="c4 lst-kix_list_2-0">
-          <li class="c5 li-bullet-0">
-            <h3 style="display: inline">
-              <span class="c20 c6">Quali informazioni raccogliamo</span>
-            </h3>
+        <p><span></span></p>
+        <ul>
+          <li>
+            <h4 style="display: inline">
+              <span>Quali informazioni raccogliamo</span>
+            </h4>
           </li>
         </ul>
-        <p class="c7 c11">
-          <span class="c0"
+        <p>
+          <span
             >Dimostrando il nostro impegno a proteggere la Privacy dei nostri
             utenti e visitatori, vogliamo essere chiari sul tipo di informazioni
             che raccoglieremo dagli utenti. Raccogliamo inoltre informazioni
@@ -604,23 +563,23 @@
             l&rsquo;indirizzo IP dal quale effettua l&rsquo;accesso ai nostri
             Siti. Raccogliamo dati relativi alla posizione geografica
             dell&rsquo;utente</span
-          ><span class="c6">.</span
-          ><span class="c0"
+          ><span>.</span
+          ><span
             >&nbsp;Se l&rsquo;utente utilizza il nostro Servizio, le
             informazioni da noi raccolte possono essere utilizzate
             automaticamente.</span
           >
         </p>
-        <p class="c7 c13 c11"><span class="c0"></span></p>
-        <ul class="c4 lst-kix_list_2-0">
-          <li class="c5 li-bullet-0">
-            <h3 style="display: inline">
-              <span class="c20 c6">Come utilizziamo le informazioni</span>
-            </h3>
+        <p><span></span></p>
+        <ul>
+          <li>
+            <h4 style="display: inline">
+              <span>Come utilizziamo le informazioni</span>
+            </h4>
           </li>
         </ul>
-        <p class="c7 c11">
-          <span class="c0"
+        <p>
+          <span
             >Ci impegniamo ad utilizzare i dati raccolti dagli utenti ove vi sia
             un motivo, e solo se tale motivo sia consentito dalla legislazione
             in materia di protezione dei dati. Saremo legittimati al trattamento
@@ -666,15 +625,15 @@
             cui siamo soggetti.</span
           >
         </p>
-        <ul class="c4 lst-kix_list_2-0">
-          <li class="c5 li-bullet-0">
-            <h3 style="display: inline">
-              <span class="c20 c6">Sicurezza delle Informazioni</span>
-            </h3>
+        <ul>
+          <li>
+            <h4 style="display: inline">
+              <span>Sicurezza delle Informazioni</span>
+            </h4>
           </li>
         </ul>
-        <p class="c7 c11">
-          <span class="c0"
+        <p>
+          <span
             >Per proteggere le informazioni personali degli utenti OpenStrength
             adotta solide tecnologie e rigide politiche di tutela. Adottiamo
             misure per proteggere le informazioni degli utenti da accessi non
@@ -690,43 +649,43 @@
             trasmissione &egrave; a solo rischio dell&rsquo;utente.</span
           >
         </p>
-        <p class="c7 c13 c11"><span class="c0"></span></p>
-        <ul class="c4 lst-kix_list_2-0">
-          <li class="c5 li-bullet-0">
-            <h3 style="display: inline">
-              <span class="c20 c6"
+        <p><span></span></p>
+        <ul>
+          <li>
+            <h4 style="display: inline">
+              <span
                 >Modifiche all&rsquo;Informativa sulla Privacy e Cookie
                 Policy</span
               >
-            </h3>
+            </h4>
           </li>
         </ul>
-        <p class="c7 c11">
-          <span class="c0"
+        <p>
+          <span
             >Qualsiasi modifica alla nostra Informativa sulla Privacy o Cookie
             Policy sara&#768; pubblicata sui Siti e, se necessario, avviseremo
             gli utenti delle modifiche per e-mail o con notifiche
             &quot;push&quot; sull&rsquo;App.</span
           >
         </p>
-        <p class="c7 c13 c11"><span class="c0"></span></p>
-        <ul class="c4 lst-kix_list_2-0">
-          <li class="c5 li-bullet-0">
-            <h3 style="display: inline">
-              <span class="c20 c6">Notifiche push</span>
-            </h3>
+        <p><span></span></p>
+        <ul>
+          <li>
+            <h4 style="display: inline">
+              <span>Notifiche push</span>
+            </h4>
           </li>
         </ul>
-        <p class="c7 c11">
-          <span class="c0"
+        <p>
+          <span
             >Questa Applicazione pu&ograve; inviare notifiche push
             all&#39;Utente per raggiungere gli scopi descritti nella presente
             privacy policy.</span
           >
         </p>
-        <p class="c15 c11 c26"><span class="c0">&nbsp;</span></p>
-        <p class="c7 c11">
-          <span class="c0"
+        <p><span>&nbsp;</span></p>
+        <p>
+          <span
             >Nella maggior parte dei casi, gli Utenti possono scegliere di non
             ricevere notifiche push consultando le impostazioni del proprio
             dispositivo, come le impostazioni di notifica per i telefoni
@@ -737,33 +696,33 @@
             negativamente sull&#39;utilizzo di questa Applicazione.</span
           >
         </p>
-        <p class="c7 c13 c11"><span class="c0"></span></p>
-        <h2 class="c1"><span class="c20 c21">Cookie Policy</span></h2>
-        <p class="c7">
-          <span class="c0"
+        <p><span></span></p>
+        <h2><span>Cookie Policy</span></h2>
+        <p>
+          <span
             >Questa Applicazione fa utilizzo di Strumenti di Tracciamento. Per
             saperne di pi&ugrave;, gli Utenti possono consultare la&nbsp;</span
-          ><span class="c8 c6">
+          ><span>
             <router-link :to="{ name: 'cookie_policy' }"
               >Cookie Policy
             </router-link> </span
-          ><span class="c0">.</span>
+          ><span>.</span>
         </p>
-        <h2 class="c1">
-          <span class="c20 c21">Ulteriori informazioni per gli utenti</span>
+        <h2>
+          <span>Ulteriori informazioni per gli utenti</span>
         </h2>
-        <h3 class="c1">
-          <span class="c20 c6">Base giuridica del trattamento</span>
-        </h3>
-        <p class="c7">
-          <span class="c0"
+        <h4>
+          <span>Base giuridica del trattamento</span>
+        </h4>
+        <p>
+          <span
             >Il Titolare tratta Dati Personali relativi all&rsquo;Utente in caso
             sussista una delle seguenti condizioni:</span
           >
         </p>
-        <ul class="c4 lst-kix_list_3-0 start">
-          <li class="c9 li-bullet-0">
-            <span class="c0"
+        <ul>
+          <li>
+            <span
               >l&rsquo;Utente ha prestato il consenso per una o pi&ugrave;
               finalit&agrave; specifiche; Nota: in alcuni ordinamenti il
               Titolare pu&ograve; essere autorizzato a trattare Dati Personali
@@ -776,35 +735,35 @@
               Personali;</span
             >
           </li>
-          <li class="c9 li-bullet-0">
-            <span class="c0"
+          <li>
+            <span
               >il trattamento &egrave; necessario all&#39;esecuzione di un
               contratto con l&rsquo;Utente e/o all&#39;esecuzione di misure
               precontrattuali;</span
             >
           </li>
-          <li class="c9 li-bullet-0">
-            <span class="c0"
+          <li>
+            <span
               >il trattamento &egrave; necessario per adempiere un obbligo
               legale al quale &egrave; soggetto il Titolare;</span
             >
           </li>
-          <li class="c9 li-bullet-0">
-            <span class="c0"
+          <li>
+            <span
               >il trattamento &egrave; necessario per l&#39;esecuzione di un
               compito di interesse pubblico o per l&#39;esercizio di pubblici
               poteri di cui &egrave; investito il Titolare;</span
             >
           </li>
-          <li class="c9 li-bullet-0">
-            <span class="c0"
+          <li>
+            <span
               >il trattamento &egrave; necessario per il perseguimento del
               legittimo interesse del Titolare o di terzi.</span
             >
           </li>
         </ul>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >&Egrave; comunque sempre possibile richiedere al Titolare di
             chiarire la concreta base giuridica di ciascun trattamento ed in
             particolare di specificare se il trattamento sia basato sulla legge,
@@ -812,13 +771,11 @@
             contratto.</span
           >
         </p>
-        <h3 class="c1">
-          <span class="c20 c6"
-            >Ulteriori informazioni sul tempo di conservazione</span
-          >
-        </h3>
-        <p class="c7">
-          <span class="c0"
+        <h4>
+          <span>Ulteriori informazioni sul tempo di conservazione</span>
+        </h4>
+        <p>
+          <span
             >Se non diversamente indicato in questo documento, i Dati Personali
             sono trattati e conservati per il tempo richiesto dalla
             finalit&agrave; per la quale sono stati raccolti e potrebbero essere
@@ -826,18 +783,18 @@
             obbligazioni legali o sulla base del consenso degli Utenti.</span
           >
         </p>
-        <p class="c7"><span class="c0">Pertanto:</span></p>
-        <ul class="c4 lst-kix_list_4-0 start">
-          <li class="c9 li-bullet-0">
-            <span class="c0"
+        <p><span>Pertanto:</span></p>
+        <ul>
+          <li>
+            <span
               >I Dati Personali raccolti per scopi collegati
               all&rsquo;esecuzione di un contratto tra il Titolare e
               l&rsquo;Utente saranno trattenuti sino a quando sia completata
               l&rsquo;esecuzione di tale contratto.</span
             >
           </li>
-          <li class="c9 li-bullet-0">
-            <span class="c0"
+          <li>
+            <span
               >I Dati Personali raccolti per finalit&agrave; riconducibili
               all&rsquo;interesse legittimo del Titolare saranno trattenuti sino
               al soddisfacimento di tale interesse. L&rsquo;Utente pu&ograve;
@@ -847,8 +804,8 @@
             >
           </li>
         </ul>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >Quando il trattamento &egrave; basato sul consenso
             dell&rsquo;Utente, il Titolare pu&ograve; conservare i Dati
             Personali pi&ugrave; a lungo sino a quando detto consenso non venga
@@ -862,94 +819,94 @@
             potranno pi&ugrave; essere esercitati.</span
           >
         </p>
-        <h3 class="c1">
-          <span class="c20 c6">Diritti dell&rsquo;Utente</span>
-        </h3>
-        <p class="c7">
-          <span class="c0"
+        <h4>
+          <span>Diritti dell&rsquo;Utente</span>
+        </h4>
+        <p>
+          <span
             >Gli Utenti possono esercitare determinati diritti con riferimento
             ai Dati trattati dal Titolare.</span
           >
         </p>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >In particolare, nei limiti previsti dalla legge, l&rsquo;Utente ha
             il diritto di:</span
           >
         </p>
-        <ul class="c4 lst-kix_list_5-0 start">
-          <li class="c14 li-bullet-0">
-            <span class="c23">revocare il consenso in ogni momento.</span
-            ><span class="c0"
+        <ul>
+          <li>
+            <span>revocare il consenso in ogni momento.</span
+            ><span
               >&nbsp;L&rsquo;Utente pu&ograve; revocare il consenso al
               trattamento dei propri Dati Personali precedentemente
               espresso.</span
             >
           </li>
-          <li class="c14 li-bullet-0">
-            <span class="c23">opporsi al trattamento dei propri Dati.</span
-            ><span class="c0"
+          <li>
+            <span>opporsi al trattamento dei propri Dati.</span
+            ><span
               >&nbsp;L&rsquo;Utente pu&ograve; opporsi al trattamento dei propri
               Dati quando esso avviene in virt&ugrave; di una base giuridica
               diversa dal consenso.</span
             >
           </li>
-          <li class="c14 li-bullet-0">
-            <span class="c23">accedere ai propri Dati.</span
-            ><span class="c0"
+          <li>
+            <span>accedere ai propri Dati.</span
+            ><span
               >&nbsp;L&rsquo;Utente ha diritto ad ottenere informazioni sui Dati
               trattati dal Titolare, su determinati aspetti del trattamento ed a
               ricevere una copia dei Dati trattati.</span
             >
           </li>
-          <li class="c14 li-bullet-0">
-            <span class="c23">verificare e chiedere la rettificazione.</span
-            ><span class="c0"
+          <li>
+            <span>verificare e chiedere la rettificazione.</span
+            ><span
               >&nbsp;L&rsquo;Utente pu&ograve; verificare la correttezza dei
               propri Dati e richiederne l&rsquo;aggiornamento o la
               correzione.</span
             >
           </li>
-          <li class="c14 li-bullet-0">
-            <span class="c23">ottenere la limitazione del trattamento.</span
-            ><span class="c0"
+          <li>
+            <span>ottenere la limitazione del trattamento.</span
+            ><span
               >&nbsp;L&rsquo;Utente pu&ograve; richiedere la limitazione del
               trattamento dei propri Dati. In tal caso il Titolare non
               tratter&agrave; i Dati per alcun altro scopo se non la loro
               conservazione.</span
             >
           </li>
-          <li class="c14 li-bullet-0">
-            <span class="c23"
+          <li>
+            <span
               >ottenere la cancellazione o rimozione dei propri Dati
               Personali.</span
-            ><span class="c0"
+            ><span
               >&nbsp;L&rsquo;Utente pu&ograve; richiedere la cancellazione dei
               propri Dati da parte del Titolare.</span
             >
           </li>
-          <li class="c14 li-bullet-0">
-            <span class="c23"
+          <li>
+            <span
               >ricevere i propri Dati o farli trasferire ad altro
               titolare.</span
-            ><span class="c0"
+            ><span
               >&nbsp;L&rsquo;Utente ha diritto di ricevere i propri Dati in
               formato strutturato, di uso comune e leggibile da dispositivo
               automatico e, ove tecnicamente fattibile, di ottenerne il
               trasferimento senza ostacoli ad un altro titolare.</span
             >
           </li>
-          <li class="c14 li-bullet-0">
-            <span class="c23">proporre reclamo.</span
-            ><span class="c0"
+          <li>
+            <span>proporre reclamo.</span
+            ><span
               >&nbsp;L&rsquo;Utente pu&ograve; proporre un reclamo
               all&rsquo;autorit&agrave; di controllo della protezione dei dati
               personali competente o agire in sede giudiziale.</span
             >
           </li>
         </ul>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >Gli Utenti hanno diritto di ottenere informazioni in merito alla
             base giuridica per il trasferimento di Dati all&#39;estero incluso
             verso qualsiasi organizzazione internazionale regolata dal diritto
@@ -958,11 +915,11 @@
             sicurezza adottate dal Titolare per proteggere i loro Dati.</span
           >
         </p>
-        <h4 class="c7">
-          <span class="c10">Dettagli sul diritto di opposizione</span>
+        <h4>
+          <span>Dettagli sul diritto di opposizione</span>
         </h4>
-        <p class="c7">
-          <span class="c10"
+        <p>
+          <span
             >Quando i Dati Personali sono trattati nell&rsquo;interesse
             pubblico, nell&rsquo;esercizio di pubblici poteri di cui &egrave;
             investito il Titolare oppure per perseguire un interesse legittimo
@@ -970,8 +927,8 @@
             motivi connessi alla loro situazione particolare.</span
           >
         </p>
-        <p class="c7">
-          <span class="c10"
+        <p>
+          <span
             >Si fa presente agli Utenti che, ove i loro Dati fossero trattati
             con finalit&agrave; di marketing diretto, possono opporsi al
             trattamento in qualsiasi momento, gratuitamente e senza fornire
@@ -983,9 +940,9 @@
             di questo documento.</span
           >
         </p>
-        <h4 class="c7"><span class="c10">Come esercitare i diritti</span></h4>
-        <p class="c7">
-          <span class="c0"
+        <h4><span>Come esercitare i diritti</span></h4>
+        <p>
+          <span
             >Per esercitare i propri diritti, gli Utenti possono indirizzare una
             richiesta ai recapiti del Titolare indicati in questo documento. La
             richiesta pu&ograve; essere depositate gratuitamente e il Titolare
@@ -999,12 +956,12 @@
             all&#39;Utente tali destinatari qualora egli lo richieda.</span
           >
         </p>
-        <h2 class="c1">
-          <span class="c20 c21">Ulteriori informazioni sul trattamento</span>
+        <h2>
+          <span>Ulteriori informazioni sul trattamento</span>
         </h2>
-        <h3 class="c1"><span class="c20 c6">Difesa in giudizio</span></h3>
-        <p class="c7">
-          <span class="c0"
+        <h4><span>Difesa in giudizio</span></h4>
+        <p>
+          <span
             >I Dati Personali dell&rsquo;Utente possono essere utilizzati da
             parte del Titolare in giudizio o nelle fasi preparatorie alla sua
             eventuale instaurazione per la difesa da abusi nell&#39;utilizzo di
@@ -1014,9 +971,9 @@
             Dati per ordine delle autorit&agrave; pubbliche.</span
           >
         </p>
-        <h3 class="c1"><span class="c20 c6">Informative specifiche</span></h3>
-        <p class="c7">
-          <span class="c0"
+        <h4><span>Informative specifiche</span></h4>
+        <p>
+          <span
             >Su richiesta dell&rsquo;Utente, in aggiunta alle informazioni
             contenute in questa privacy policy, questa Applicazione potrebbe
             fornire all&#39;Utente delle informative aggiuntive e contestuali
@@ -1024,11 +981,11 @@
             Dati Personali.</span
           >
         </p>
-        <h3 class="c1">
-          <span class="c20 c6">Log di sistema e manutenzione</span>
-        </h3>
-        <p class="c7">
-          <span class="c0"
+        <h4>
+          <span>Log di sistema e manutenzione</span>
+        </h4>
+        <p>
+          <span
             >Per necessit&agrave; legate al funzionamento ed alla manutenzione,
             questa Applicazione e gli eventuali servizi terzi da essa utilizzati
             potrebbero raccogliere log di sistema, ossia file che registrano le
@@ -1036,23 +993,21 @@
             l&rsquo;indirizzo IP Utente.</span
           >
         </p>
-        <h3 class="c1">
-          <span class="c20 c6"
-            >Informazioni non contenute in questa policy</span
-          >
-        </h3>
-        <p class="c7">
-          <span class="c0"
+        <h4>
+          <span>Informazioni non contenute in questa policy</span>
+        </h4>
+        <p>
+          <span
             >Ulteriori informazioni in relazione al trattamento dei Dati
             Personali potranno essere richieste in qualsiasi momento al Titolare
             del Trattamento utilizzando gli estremi di contatto.</span
           >
         </p>
-        <h3 class="c1">
-          <span class="c20 c6">Modifiche a questa privacy policy</span>
-        </h3>
-        <p class="c7">
-          <span class="c0"
+        <h4>
+          <span>Modifiche a questa privacy policy</span>
+        </h4>
+        <p>
+          <span
             >Il Titolare del Trattamento si riserva il diritto di apportare
             modifiche alla presente privacy policy in qualunque momento
             notificandolo agli Utenti su questa pagina e, se possibile, su
@@ -1066,21 +1021,21 @@
             consenso dell&rsquo;Utente, se necessario.</span
           >
         </p>
-        <h3 class="c33">
-          <span class="c20 c6">Definizioni e riferimenti legali</span>
-        </h3>
-        <h4 class="c7"><span class="c10">Dati Personali (o Dati)</span></h4>
-        <p class="c7">
-          <span class="c0"
+        <h4>
+          <span>Definizioni e riferimenti legali</span>
+        </h4>
+        <h4><span>Dati Personali (o Dati)</span></h4>
+        <p>
+          <span
             >Costituisce dato personale qualunque informazione che, direttamente
             o indirettamente, anche in collegamento con qualsiasi altra
             informazione, ivi compreso un numero di identificazione personale,
             renda identificata o identificabile una persona fisica.</span
           >
         </p>
-        <h4 class="c7"><span class="c10">Dati di Utilizzo</span></h4>
-        <p class="c7">
-          <span class="c0"
+        <h4><span>Dati di Utilizzo</span></h4>
+        <p>
+          <span
             >Sono le informazioni raccolte automaticamente attraverso questa
             Applicazione (anche da applicazioni di parti terze integrate in
             questa Applicazione), tra cui: gli indirizzi IP o i nomi a dominio
@@ -1099,35 +1054,33 @@
             e all&rsquo;ambiente informatico dell&rsquo;Utente.</span
           >
         </p>
-        <h4 class="c7"><span class="c10">Utente</span></h4>
-        <p class="c7">
-          <span class="c0"
+        <h4><span>Utente</span></h4>
+        <p>
+          <span
             >L&#39;individuo che utilizza questa Applicazione che, salvo ove
             diversamente specificato, coincide con l&#39;Interessato.</span
           >
         </p>
-        <h4 class="c7"><span class="c10">Interessato</span></h4>
-        <p class="c7">
-          <span class="c0"
-            >La persona fisica cui si riferiscono i Dati Personali.</span
-          >
+        <h4><span>Interessato</span></h4>
+        <p>
+          <span>La persona fisica cui si riferiscono i Dati Personali.</span>
         </p>
-        <h4 class="c7">
-          <span class="c10">Responsabile del Trattamento (o Responsabile)</span>
+        <h4>
+          <span>Responsabile del Trattamento (o Responsabile)</span>
         </h4>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >La persona fisica, giuridica, la pubblica amministrazione e
             qualsiasi altro ente che tratta dati personali per conto del
             Titolare, secondo quanto esposto nella presente privacy
             policy.</span
           >
         </p>
-        <h4 class="c7">
-          <span class="c10">Titolare del Trattamento (o Titolare)</span>
+        <h4>
+          <span>Titolare del Trattamento (o Titolare)</span>
         </h4>
-        <p class="c7">
-          <span class="c0"
+        <p>
+          <span
             >La persona fisica o giuridica, l&#39;autorit&agrave; pubblica, il
             servizio o altro organismo che, singolarmente o insieme ad altri,
             determina le finalit&agrave; e i mezzi del trattamento di dati
@@ -1137,41 +1090,41 @@
             specificato, &egrave; il titolare di questa Applicazione.</span
           >
         </p>
-        <h4 class="c7"><span class="c10">Questa Applicazione</span></h4>
-        <p class="c7">
-          <span class="c0"
+        <h4><span>Questa Applicazione</span></h4>
+        <p>
+          <span
             >Lo strumento hardware o software mediante il quale sono raccolti e
             trattati i Dati Personali degli Utenti.</span
           >
         </p>
-        <h4 class="c7"><span class="c10">Servizio</span></h4>
-        <p class="c7">
-          <span class="c0"
+        <h4><span>Servizio</span></h4>
+        <p>
+          <span
             >Il Servizio fornito da questa Applicazione cos&igrave; come
             definito nei relativi termini (se presenti) su questo
             sito/applicazione.</span
           >
         </p>
-        <h4 class="c7"><span class="c10">Unione Europea (o UE)</span></h4>
-        <p class="c7">
-          <span class="c0"
+        <h4><span>Unione Europea (o UE)</span></h4>
+        <p>
+          <span
             >Salvo ove diversamente specificato, ogni riferimento
             all&rsquo;Unione Europea contenuto in questo documento si intende
             esteso a tutti gli attuali stati membri dell&rsquo;Unione Europea e
             dello Spazio Economico Europeo.</span
           >
         </p>
-        <h4 class="c7"><span class="c10">Cookie</span></h4>
-        <p class="c7">
-          <span class="c0"
+        <h4><span>Cookie</span></h4>
+        <p>
+          <span
             >I Cookie sono Strumenti di Tracciamento che consistono in piccole
             porzioni di dati conservate all&#39;interno del browser
             dell&#39;Utente.</span
           >
         </p>
-        <h4 class="c7"><span class="c10">Strumento di Tracciamento</span></h4>
-        <p class="c7">
-          <span class="c0"
+        <h4><span>Strumento di Tracciamento</span></h4>
+        <p>
+          <span
             >Per Strumento di Tracciamento s&rsquo;intende qualsiasi tecnologia
             - es. Cookie, identificativi univoci, web beacons, script integrati,
             e-tag e fingerprinting - che consenta di tracciare gli Utenti, per
@@ -1180,20 +1133,19 @@
           >
         </p>
         <hr />
-        <p class="c13 c26 c29"><span class="c34"></span></p>
-        <h4 class="c7"><span class="c10">Riferimenti legali</span></h4>
-        <p class="c7">
-          <span class="c0"
+        <p><span></span></p>
+        <h4><span>Riferimenti legali</span></h4>
+        <p>
+          <span
             >Ove non diversamente specificato, questa informativa privacy
             riguarda esclusivamente questa Applicazione.</span
           >
         </p>
-        <p class="c26 c36">
-          <span class="c25">Ultima modifica: 2</span><span class="c35">0</span
-          ><span class="c25">&nbsp;</span><span class="c35">ottobre </span
-          ><span class="c25">2023</span>
+        <p>
+          <span>Ultima modifica: 2</span><span>0</span><span>&nbsp;</span
+          ><span>ottobre </span><span>2023</span>
         </p>
-        <p class="c2"><span class="c19"></span></p>
+        <p><span></span></p>
       </body>
     </html>
   </div>
