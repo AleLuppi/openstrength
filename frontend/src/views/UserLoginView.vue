@@ -1,8 +1,8 @@
 <template>
-  <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
+  <div class="q-pa-sm q-pb-lg q-mx-auto limit-max-width">
     <!-- Logo -->
     <div class="full-width text-center">
-      <img :src="logoFullImage" alt="Logo" />
+      <img :src="logoFullImage" alt="Logo" style="width: 30%" />
     </div>
 
     <!-- Title -->
@@ -11,7 +11,7 @@
         {{ $t("user.auth.signin_title") }}
       </h3>
       <!-- Redirect to registration -->
-      <p class="text-h6 q-my-xs">
+      <p class="q-my-xs">
         {{ $t("user.auth.without_account") }}
         <router-link :to="{ name: 'register' }">{{
           $t("user.auth.signin_to_signup")
@@ -20,7 +20,7 @@
     </div>
 
     <!-- Access form -->
-    <q-form @submit="onSubmit" class="q-my-xs column">
+    <q-form @submit="onSubmit" class="q-my-none column">
       <!-- Google Sign up -->
       <q-btn
         :label="$t('user.auth.signin_with_google')"
@@ -30,11 +30,12 @@
       />
 
       <!-- Text separator-->
-      <osWrapWithLines class="q-my-sm">
+      <osWrapWithLines class="q-my-sm text-xs">
         {{ $t("user.auth.signin_with_email") }}
       </osWrapWithLines>
 
       <os-input
+        class="q-mt-sm"
         ref="emailInput"
         v-model="email"
         required

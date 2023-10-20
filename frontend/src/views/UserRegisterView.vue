@@ -1,112 +1,117 @@
 <template>
-  <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
-    <!-- Logo -->
-    <div class="full-width text-center">
-      <img :src="logoFullImage" alt="Logo" />
-    </div>
-
-    <!-- Title -->
-    <div class="text-center">
-      <h3 class="q-my-xs">
-        {{ $t("user.auth.signup_title") }}
-      </h3>
-      <h6 class="q-my-xs">
-        {{ $t("user.auth.signup_subtitle") }}
-      </h6>
-    </div>
-
-    <!-- Registration form -->
-    <q-form @submit="onSubmit" class="q-my-xs q-gutter-xs column">
-      <!-- Google Sign up -->
-      <q-btn
-        :label="$t('user.auth.register_with_google')"
-        @click="googleSignIn"
-        type="button"
-        icon="fa-brands fa-google"
-        class="q-my-md"
-      />
-
-      <!-- Text separator-->
-      <osWrapWithLines class="q-my-sm">
-        {{ $t("user.auth.signup_with_email") }}
-      </osWrapWithLines>
-
-      <os-input
-        ref="emailInput"
-        v-model="email"
-        required
-        type="email"
-        :label="$t('user.auth.email')"
-        :rules="[
-          (val: string) =>
-            (val && val.length > 2) || $t('user.auth.email_required'),
-          (val: string) => validateEmail(val) || $t('user.auth.email_invalid'),
-        ]"
-        :error="emailError"
-        :error-message="emailErrorMessage"
-      />
-
-      <os-input
-        ref="passwordInput"
-        v-model="password"
-        required
-        :type="passwordVisible ? 'text' : 'password'"
-        :label="$t('user.auth.password')"
-        :rules="[
-          (val: string) =>
-            (val && validatePassword(val)) || $t('user.auth.password_invalid'),
-        ]"
-        :error="passwordError"
-        :error-message="passwordErrorMessage"
-      >
-        <template v-slot:append>
-          <q-icon
-            :name="passwordVisible ? 'visibility' : 'visibility_off'"
-            class="cursor-pointer"
-            @click="passwordVisible = !passwordVisible"
-          />
-        </template>
-      </os-input>
-
-      <!-- Acceptance flag -->
-      <div class="row items-center text-left">
-        <q-toggle
-          v-model="accept"
-          checked-icon="check"
-          color="green"
-          unchecked-icon="clear"
-        />
-
-        <span class="col" style="min-width: 8em">
-          {{ $t("user.auth.acceptance_before") }}
-
-          <router-link :to="{ name: 'privacy_policy' }" @click.stop=""
-            >{{ $t("layout.views.privacy_policy") }},
-          </router-link>
-          <router-link :to="{ name: 'cookie_policy' }" @click.stop="">{{
-            $t("layout.views.cookie_policy")
-          }}</router-link
-          >{{ $t("user.auth.acceptance_between")
-          }}<router-link :to="{ name: 'terms_conditions' }" @click.stop="">{{
-            $t("layout.views.terms_conditions")
-          }}</router-link
-          >{{ $t("user.auth.acceptance_after") }}
-        </span>
+  <div style="height: 100%">
+    <div class="q-pa-xs q-pb-lg q-mx-auto limit-max-width">
+      <!-- Logo -->
+      <div class="text-center">
+        <img :src="logoFullImage" alt="Logo" style="width: 30%" />
       </div>
 
-      <q-btn
-        :label="$t('user.auth.register_button')"
-        outline
-        color="button-primary"
-        type="submit"
-        class="q-my-lg"
-      />
-    </q-form>
+      <!-- Title -->
+      <div class="text-center">
+        <h3 class="q-my-xs">
+          {{ $t("user.auth.signup_title") }}
+        </h3>
 
-    <!-- Redirect to login -->
-    <router-link :to="{ name: 'login' }">{{
-      $t("user.auth.signup_to_signin")
-    }}</router-link>
+        <p>
+          {{ $t("user.auth.already_registered") }}
+          <router-link :to="{ name: 'login' }">{{
+            $t("user.auth.signup_to_signin")
+          }}</router-link>
+        </p>
+        <!-- Redirect to login -->
+      </div>
+
+      <!-- Registration form -->
+      <q-form @submit="onSubmit" class="q-gutter-none column">
+        <!-- Google Sign up -->
+        <q-btn
+          :label="$t('user.auth.register_with_google')"
+          @click="googleSignIn"
+          type="button"
+          icon="fa-brands fa-google"
+          class="q-my-md"
+        />
+
+        <!-- Text separator-->
+        <osWrapWithLines class="q-my-sm text-xs">
+          {{ $t("user.auth.signup_with_email") }}
+        </osWrapWithLines>
+
+        <os-input
+          class="q-mt-sm"
+          ref="emailInput"
+          v-model="email"
+          required
+          type="email"
+          :label="$t('user.auth.email')"
+          :rules="[
+            (val: string) =>
+              (val && val.length > 2) || $t('user.auth.email_required'),
+            (val: string) =>
+              validateEmail(val) || $t('user.auth.email_invalid'),
+          ]"
+          :error="emailError"
+          :error-message="emailErrorMessage"
+        />
+
+        <os-input
+          ref="passwordInput"
+          v-model="password"
+          required
+          :type="passwordVisible ? 'text' : 'password'"
+          :label="$t('user.auth.password')"
+          :rules="[
+            (val: string) =>
+              (val && validatePassword(val)) ||
+              $t('user.auth.password_invalid'),
+          ]"
+          :error="passwordError"
+          :error-message="passwordErrorMessage"
+        >
+          <template v-slot:append>
+            <q-icon
+              :name="passwordVisible ? 'visibility' : 'visibility_off'"
+              class="cursor-pointer"
+              @click="passwordVisible = !passwordVisible"
+            />
+          </template>
+        </os-input>
+
+        <!-- Acceptance flag -->
+        <div class="row items-center text-left text-xs">
+          <q-toggle
+            v-model="accept"
+            checked-icon="check"
+            color="green"
+            unchecked-icon="clear"
+          />
+
+          <span class="col" style="min-width: 8em">
+            {{ $t("user.auth.acceptance_before") }}
+
+            <router-link :to="{ name: 'privacy_policy' }" @click.stop=""
+              >{{ $t("layout.views.privacy_policy") }},
+            </router-link>
+            <router-link :to="{ name: 'cookie_policy' }" @click.stop="">{{
+              $t("layout.views.cookie_policy")
+            }}</router-link
+            >{{ $t("user.auth.acceptance_between")
+            }}<router-link :to="{ name: 'terms_conditions' }" @click.stop="">{{
+              $t("layout.views.terms_conditions")
+            }}</router-link
+            >{{ $t("user.auth.acceptance_after") }}
+          </span>
+        </div>
+
+        <q-btn
+          :label="$t('user.auth.register_button')"
+          outline
+          color="button-primary"
+          type="submit"
+          class="q-my-lg"
+        />
+      </q-form>
+    </div>
   </div>
 </template>
 

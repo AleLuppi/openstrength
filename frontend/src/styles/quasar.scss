@@ -80,6 +80,15 @@ a {
   }
 }
 
+.text-xs {
+  margin-block-start: 0;
+  margin-block-end: 0.2em;
+  font-weight: $os-fontweight-regular;
+  font-size: $os-fontsize-xs;
+  color: $os-grey-8;
+}
+
+
 /***** Setup colors *****/
 // Brand colors
 .text-primary {
