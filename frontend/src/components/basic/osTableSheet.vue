@@ -33,7 +33,6 @@
     <!-- Set custom rows -->
     <template v-slot:body="props">
       <q-tr
-        v-if="dataRef"
         :props="props"
         @click="($attrs.onRowClick as Function)?.(undefined, props.row)"
         :class="{
@@ -55,12 +54,14 @@
           @mousedown="onSelectionStart(props.row.id, col.id)"
           @mouseover="onSelectionContinue(props.row.id, col.id)"
         >
-          {{ dataRef }}
           <q-input
             :ref="
               (el) => (childElements[getCellName(props.row.id, col.id)] = el)
             "
-            v-model="dataRef[getCellName(props.row.id, col.id)]"
+            :model-value="modelValue[props.rowIndex][col.name]"
+            @update:model-value="
+              (value) => onModelValueUpdate(props.rowIndex, col.name, value)
+            "
             borderless
             autogrow
           ></q-input>
@@ -71,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, PropType } from "vue";
+import { ref, computed, PropType } from "vue";
 
 // Define props
 const props = defineProps({
@@ -90,7 +91,6 @@ const emit = defineEmits(["update:modelValue"]);
 
 // Set ref
 const childElements = ref<{ [key: string]: any }>({});
-const dataRef = ref<{ [key: string]: any }>();
 const selected = ref<{
   rowFrom: number;
   rowTo: number;
@@ -115,68 +115,41 @@ const headers = computed(
 );
 
 // Set rows and columns
-const columns = computed(() => {
-  console.log(headers.value);
-  return Object.values(headers.value).map((val, index) => ({
+const columns = computed(() =>
+  Object.entries(headers.value).map(([key, val], index) => ({
     id: getCellName(undefined, index),
-    name: getCellName(undefined, index),
-    field: getCellName(undefined, index),
+    name: key,
+    field: key,
     label: val,
-  }));
-});
+  })),
+);
 const rows = computed(() =>
   props.modelValue.map((row, rowIndex) => ({
     id: getCellName(rowIndex),
-    ...Object.fromEntries(
-      Object.keys(headers.value).map((key, colIndex) => [
-        getCellName(undefined, colIndex),
-        key in row ? row[key] : "",
-      ]),
-    ),
+    ...row,
   })),
 );
 
-// Update data when rows change
-watch(rows, (newRows) => setDataRef(newRows));
-
-// TODO Emit updated values
-watch(dataRef, (val) => emit("update:modelValue", getDataRef(val)), {
-  deep: true,
-});
-
 /**
- * Set new values in data ref.
+ * Update the value of a selected cell and emit the update.
  *
- * @param rows new data that shall be stored.
+ * @param rowId row id from where update request is occurring.
+ * @param colId column id from where update request is occurring.
+ * @param newValue value that shall be inserted in selected cell.
  */
-function setDataRef(rows: { [key: string]: string }[]) {
-  dataRef.value = rows.reduce(
-    (result, row) =>
-      Object.assign(
-        result,
-        Object.entries(row).reduce(
-          (outRow: { [key: string]: string }, [key, value]) => (
-            key.startsWith("row")
-              ? null
-              : (outRow[getCellName(row.id, key)] = value),
-            outRow
-          ),
-          {},
-        ),
-      ),
-    {},
-  );
-}
+function onModelValueUpdate(
+  rowId: number,
+  colId: string,
+  newValue: string | number | null,
+) {
+  // Get a copy of current data
+  const outValue = props.modelValue;
 
-/**
- * Set table data from data ref.
- *
- * @param rows new data that shall be stored.
- * @returns a data list in original format.
- */
-function getDataRef(data?: { [key: string]: any }) {
-  // TODO
-  return [data];
+  // Update with new value
+  if (newValue && rowId < outValue.length) {
+    outValue[rowId][colId] = String(newValue);
+    emit("update:modelValue", outValue);
+  }
 }
 
 /**
@@ -184,12 +157,23 @@ function getDataRef(data?: { [key: string]: any }) {
  *
  * @param rowNum row number.
  * @param colNum column number.
+ * @returns cell name.
  */
 function getCellName(rowNum?: string | number, colNum?: string | number) {
   const nameList = [];
   if (rowNum !== undefined) nameList.push(rowNum);
   if (colNum !== undefined) nameList.push(colNum);
   return nameList.join(".");
+}
+
+/**
+ * Get the header name according to column number.
+ *
+ * @param colNum column number whose header should be retrieved.
+ * @returns header name.
+ */
+function getHeaderName(colNum: number) {
+  return columns.value[colNum].name;
 }
 
 /**
@@ -234,6 +218,7 @@ function onSelectionEnd() {
  *
  * @param rowNum row number of cell to check.
  * @param colNum column number of cell to check.
+ * @returns true if cell is selected, false otherwise.
  */
 function isSelected(rowNum: string | number, colNum: string | number) {
   if (!selected.value) return false;
@@ -268,8 +253,7 @@ function onCopy(clipboardEvent: ClipboardEvent) {
   for (let row = rowStart; row <= rowEnd; row++) {
     colData.length = 0;
     for (let col = colStart; col <= colEnd; col++) {
-      if (!dataRef.value) dataRef.value = {};
-      colData.push(dataRef.value[getCellName(row, col)]);
+      colData.push(props.modelValue[row][getHeaderName(col)]);
     }
     rowData.push(colData.join("\t"));
   }
@@ -297,22 +281,14 @@ function onPaste(clipboardEvent: ClipboardEvent) {
     .split(/\r?\n/)
     .forEach((rowData, rowIndex) =>
       rowData.split(/\t/).forEach((colData, colIndex) => {
-        const currentCell = getCellName(
+        onModelValueUpdate(
           rowStart + rowIndex,
-          colStart + colIndex,
+          getHeaderName(colStart + colIndex),
+          colData,
         );
-        if (dataRef.value && currentCell in dataRef.value)
-          dataRef.value[currentCell] = colData;
       }),
     );
 }
-
-/**
- * Get a reference to input data.
- */
-onMounted(() => {
-  setDataRef(rows.value);
-});
 </script>
 
 <style scoped lang="scss">
