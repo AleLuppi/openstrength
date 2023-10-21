@@ -4,7 +4,7 @@ import {
   doUpdateDoc,
   doDeleteDoc,
 } from "@/helpers/database/readwrite";
-import { exercisesCollection } from "../database/collections";
+import { exercisesCollection } from "@/helpers/database/collections";
 
 /**
  * Define available load types.
@@ -104,7 +104,7 @@ export class Exercise {
   variants?: ExerciseVariant[];
   defaultVariant?: ExerciseVariant;
 
-  // Get all muscle groups and equipments in variants
+  // Get all muscle groups in variants
   public get muscleGroups() {
     return [
       ...new Set(
@@ -115,6 +115,8 @@ export class Exercise {
       ),
     ];
   }
+
+  // Get all equipments in variants
   public get equipment() {
     return [
       ...new Set(
