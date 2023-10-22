@@ -128,7 +128,13 @@ export function doSignInWithGoogle({
     .catch((error) => onError?.(error));
 }
 
-export function doSignOut(onSuccess?: Function, onError?: Function) {
+export function doSignOut({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: Function;
+  onError?: Function;
+} = {}) {
   signOut(auth)
     .then(() => {
       // Sign-out successful.

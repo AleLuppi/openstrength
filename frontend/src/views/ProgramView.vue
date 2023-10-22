@@ -1,5 +1,8 @@
 <template>
-  <div id="q-app">
+  <!-- TODO delete outer div -->
+  <div>
+    <osTableSheet v-model="tableData" class="q-ma-sm"></osTableSheet>
+
     <div class="q-pa-md row q-gutter-sm">
       <div>
         <!-- LEFT CARD: EXERCISE LIBRARY + NAVIGATION (?) -->
@@ -192,8 +195,8 @@
               <div class="q-px-sm">
                 <q-btn class="my-button-style"> Add new </q-btn>
               </div>
-            </div></q-card-section
-          >
+            </div>
+          </q-card-section>
         </q-card>
 
         <!-- PROGRAM TABLES -->
@@ -242,7 +245,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
+
+// TODO delete
+const tableData = ref([
+  { ciao: "campo 11", riciao: "campo 22", straciao: "campo 33" },
+  { straciao: "voce 1", ciao: "voce 3" },
+]);
+watch(tableData, (val) => console.log("OLEEE:", val), { deep: true });
 
 // LEFT TAB NAVIGATION TREE
 const selectedTab = ref("Library"); // main tab to show
@@ -416,14 +426,17 @@ const filterExercises = (val, update) => {
   width: 350px;
   height: 250px;
 }
+
 .chart-card {
   width: 100%;
   height: 250px;
 }
+
 .program-day-card {
   width: 100%;
   height: 400px;
 }
+
 .my-filter-style {
   width: 180px;
   padding-bottom: 32px;

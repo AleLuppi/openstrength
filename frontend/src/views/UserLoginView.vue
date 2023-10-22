@@ -1,10 +1,35 @@
 <template>
   <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
+    <!-- Logo -->
+    <div class="full-width text-center">
+      <img :src="logoFullImage" alt="Logo" />
+    </div>
+
     <!-- Title -->
-    <h2>{{ $t("user.auth.signin_title") }}</h2>
+    <div class="text-center">
+      <h3 class="q-my-xs">
+        {{ $t("user.auth.signin_title") }}
+      </h3>
+      <h6 class="q-my-xs">
+        {{ $t("user.auth.signin_subtitle") }}
+      </h6>
+    </div>
 
     <!-- Access form -->
-    <q-form @submit="onSubmit" class="q-my-md q-gutter-sm column">
+    <q-form @submit="onSubmit" class="q-my-xs column">
+      <!-- Google Sign up -->
+      <q-btn
+        :label="$t('user.auth.signin_with_google')"
+        @click="googleSignIn"
+        icon="fa-brands fa-google"
+        class="q-my-md"
+      />
+
+      <!-- Text separator-->
+      <osWrapWithLines class="q-my-sm">
+        {{ $t("user.auth.signin_with_email") }}
+      </osWrapWithLines>
+
       <os-input
         ref="emailInput"
         v-model="email"
@@ -40,20 +65,25 @@
       <q-btn
         :label="$t('user.auth.login_button')"
         type="submit"
-        class="q-my-lg"
-      />
-
-      <q-btn
-        :label="$t('user.auth.signin_with_google')"
-        @click="googleSignIn"
+        outline
         class="q-my-lg"
       />
     </q-form>
 
-    <!-- Redirect to registration -->
-    <router-link :to="{ name: 'register' }">{{
-      $t("user.auth.signin_to_signup")
-    }}</router-link>
+    <div class="row justify-between">
+      <!-- Forgot password -->
+      <router-link :to="{ name: 'register' }">{{
+        $t("user.auth.forgot_password")
+      }}</router-link>
+
+      <!-- Redirect to registration -->
+      <p>
+        {{ $t("user.auth.without_account") }}
+        <router-link :to="{ name: 'register' }">{{
+          $t("user.auth.signin_to_signup")
+        }}</router-link>
+      </p>
+    </div>
   </div>
 </template>
 
@@ -67,6 +97,7 @@ import {
   doSignInWithEmailAndPassword,
   doSignInWithGoogle,
 } from "@/helpers/users/auth";
+import { logoFullImage } from "@/assets/sources";
 
 // Init plugin
 const $q = useQuasar();

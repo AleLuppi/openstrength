@@ -10,12 +10,18 @@ import { doGetDocs } from "@/helpers/database/readwrite";
 import {
   exercisesCollection,
   usersCollection,
+  programsCollection,
 } from "@/helpers/database/collections";
 import {
   Exercise,
+  ExerciseVariantProps,
   packExerciseVariantInfo,
-  reduceExercises,
 } from "@/helpers/exercises/exercise";
+import { Program } from "@/helpers/programs/program";
+import {
+  reduceExercises,
+  sortExercises,
+} from "@/helpers/exercises/listManagement";
 
 export const useCoachInfoStore = defineStore("coachInfo", () => {
   // Managed athletes
@@ -23,6 +29,9 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
 
   // Library of exercises
   const exercises = ref<Exercise[]>();
+
+  // Library of programs
+  const programs = ref<Program[]>();
 
   /**
    * Load list of athletes for a coach.
@@ -93,7 +102,43 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
           _exercises.push(packExerciseVariantInfo(doc, uid)),
         );
         exercises.value = reduceExercises(_exercises);
+        sortExercises(exercises.value, true);
         onSuccess?.(athletes);
+      },
+      onError: onError,
+    });
+  }
+
+  /**
+   * Load list of programs for a coach.
+   *
+   * @param coachId ID of the coach for which programs should be loaded.
+   * @param quiet if true, skip loading if programs are already present, otherwise force reload.
+   */
+  async function loadPrograms(
+    coachId?: string,
+    quiet: boolean = false,
+    {
+      onSuccess,
+      onError,
+    }: {
+      onSuccess?: Function;
+      onError?: Function;
+    } = {},
+  ) {
+    // Abort if there is no need to check
+    if (!coachId || (quiet && programs.value)) return;
+
+    // TODO check documents format
+    // Get documents
+    doGetDocs(programsCollection, [["coachId", "==", coachId]], {
+      onSuccess: (docs: { [key: string]: Program }) => {
+        const _programs: Program[] = [];
+        Object.entries(docs).forEach(([uid, doc]) =>
+          _programs.push(new Program({ ...doc, uid: uid })),
+        );
+        programs.value = _programs;
+        onSuccess?.(programs);
       },
       onError: onError,
     });
@@ -105,7 +150,16 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
   function $reset() {
     athletes.value = undefined;
     exercises.value = undefined;
+    programs.value = undefined;
   }
 
-  return { athletes, exercises, loadAthletes, loadExercises, $reset };
+  return {
+    athletes,
+    exercises,
+    programs,
+    loadAthletes,
+    loadExercises,
+    loadPrograms,
+    $reset,
+  };
 });

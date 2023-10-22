@@ -1,50 +1,201 @@
-// TODO set brand colors
-$primary : #5469D4;
-$secondary : #5B6871;
-$accent : #9C27B0;
-$dark : #1D1D1D;
+/***** COLORS *****/
+// PRIMARY COLORS
+$os-primary-0: #ffed65;
+$os-primary-1: #ffd951;
+$os-primary-2: #ffc53d;
+$os-primary-3: #ffb129;
+$os-primary-4: #ff9d15;
+$os-primary-5: #ff8901; // base
+$os-primary-6: #eb7500;
+$os-primary-7: #d76100;
+$os-primary-8: #c34d00;
+$os-primary-9: #af3900;
+$os-primary-10: #9b2500;
 
-// Background colors
-$lightest : #FFFFFF;
-$lighter : #F7FAFC;
-$light : #B0BABF;
-$light-dark: #84919A;
-$dark-light : #5B6871;
+// SECONDARY COLORS
+$os-secondary-0: #d0deff;
+$os-secondary-1: #bccaf3;
+$os-secondary-2: #a8b6df;
+$os-secondary-3: #94a2cb;
+$os-secondary-4: #808eb7;
+$os-secondary-5: #6c7aa3; // base
+$os-secondary-6: #58668f;
+$os-secondary-7: #44527b;
+$os-secondary-8: #303e67;
+$os-secondary-9: #1c2a53;
+$os-secondary-10: #08163f;
 
-// Useful colors
-$positive : #21BA45;
-$negative : #C10015;
-$info : #31CCEC;
-$warning : #F2C037;
+// NEUTRAL GREYS
+$os-grey-0: #fcfcfc;
+$os-grey-1: #f2f2f2;
+$os-grey-2: #ebebeb;
+$os-grey-3: #e1e1e1;
+$os-grey-4: #d7d7d7;
+$os-grey-5: #b8b8b8; // base
+$os-grey-6: #9a9a9a;
+$os-grey-7: #7c7c7c;
+$os-grey-8: #5e5e5e;
+$os-grey-9: #404040;
+$os-grey-10: #222222;
 
-// Chart colors
+// COLD GREYS
+$os-grey-cold-0: #fafbff;
+$os-grey-cold-1: #f4f7fd;
+$os-grey-cold-2: #eaedf3;
+$os-grey-cold-3: #e0e3e9;
+$os-grey-cold-4: #cccfd5;
+$os-grey-cold-5: #aeb1b7; // base
+$os-grey-cold-6: #909399;
+$os-grey-cold-7: #72757b;
+$os-grey-cold-8: #54575d;
+$os-grey-cold-9: #36393f;
+$os-grey-cold-10: #181b21;
+
+// WARM GREYS
+$os-grey-warm-0: #fffdfa;
+$os-grey-warm-1: #fdf9f4;
+$os-grey-warm-2: #f3efea;
+$os-grey-warm-3: #e9e5e0;
+$os-grey-warm-4: #dfdbd6;
+$os-grey-warm-5: #c1bdb8; // base
+$os-grey-warm-6: #a39f9a;
+$os-grey-warm-7: #85817c;
+$os-grey-warm-8: #67635e;
+$os-grey-warm-9: #494540;
+$os-grey-warm-10: #2b2722;
+
+// SEMANTIC COLORS
+// Blue - Notifications
+$os-blue-1: #eff9ff;
+$os-blue-2: #d1eeff;
+$os-blue-3: #6bcaff;
+$os-blue-4: #05a5ff;
+$os-blue-5: #0086d1; // base
+
+// Red - Errors 
+$os-red-1: #ffe4db;
+$os-red-2: #ffc9b8;
+$os-red-3: #ff7151;
+$os-red-4: #ff3e03;
+$os-red-5: #d13100; // base
+
+// Green - Success
+$os-green-1: #defce3;
+$os-green-2: #aff8bb;
+$os-green-3: #23ec43;
+$os-green-4: #12cc30;
+$os-green-5: #10a427; // base
+
+// Yellow - Warnings
+$os-yellow-1: #fffad1;
+$os-yellow-2: #fff06b;
+$os-yellow-3: #ffe927;
+$os-yellow-4: #ffe605;
+$os-yellow-5: #ddc911; // base
+
+
+/***** SPACING *****/
+// Base unit 
+$spacing-unit: 8px;
+
+// Custom spacing
+$os-xs: $spacing-unit / 2;
+$os-sm: $spacing-unit;
+$os-md: $spacing-unit * 1.5;
+$os-lg: $spacing-unit * 2;
+$os-xl: $spacing-unit * 3;
+
+/***** FONTS *****/
+// FONT FAMILIES
+$font-family-1: 'Inter', sans-serif;
+$font-family-2: 'Roboto', sans-serif;
+
+// FONT SIZES
+$os-fontsize-sm: 0.875rem;
+$os-fontsize-regular: 1rem; //base 16px
+$os-fontsize-md: 1.25rem;
+$os-fontsize-lg: 1.5rem;
+$os-fontsize-xl: 1.75rem;
+$os-fontsize-xxl: 2rem;
+$os-fontsize-xxxl: 2.5rem;
+
+// FONT WEIGHTS
+$os-fontweight-thin: 100;
+$os-fontweight-extralight: 200;
+$os-fontweight-light: 300;
+$os-fontweight-regular: 400;
+$os-fontweight-medium: 500;
+$os-fontweight-semibold: 600;
+$os-fontweight-bold: 700;
+$os-fontweight-extrabold: 800;
+$os-fontweight-black: 900;
+
+// LINE HEIGHTS (as % of fontsize)
+$os-lineheight-sm: 1.5;
+$os-lineheight-regular: 1.2;
+$os-lineheight-md: 1.2;
+$os-lineheight-lg: 1.2;
+$os-lineheight-xl: 1.2;
+$os-lineheight-xxl: 1.2;
+$os-lineheight-xxxl: 1.2;
+
+
+/***** SPECIFIC ELEMENTS COLORS *****/
+// TODO Chart colors
 $chart-color1: #165BAA;
 $chart-color2: #A155B9;
 $chart-color3: #F765A3;
 
-// New variables to be used in the future
-$menu-color: #ffb055;
-$brand-color-1: #ff8901;
-$brand-color-3: #ff392b;
-$typography-1: #1c2a53;
-$typography-2: #555f7e;
-$typography-3: #8e95a9;
-$typography-4: #ffffff;
-$bg-1: #ffffff;
-$bg-2: #f2f4f5;
-$bg-3: #f8f8f8;
-$line-1: #e9eaf3;
-$line-2: #cdd1de;
-$shape-1: #f8f8f8;
-$shape-2: #f5f7fb;
-$shape-3: #141d3a;
-$shape-4: #ffffff;
-$icon-color-1: #c8cad8;
-$essential-1: #ffa000;
-$essential-2: #279f51;
-$essential-3: #ff392b;
-$essential-4: #00c3f8;
-$essential-5: #2f80ed;
+
+/***** BASE COLORS *****/
+// Brand colors
+$primary : $os-primary-6;
+$onPrimary : $os-grey-cold-0;
+
+$secondary : $os-secondary-8;
+$onSecondary : $os-grey-warm-1;
+
+$accent : $os-primary-9;
+$onAccent : $os-grey-warm-2;
+
+$dark : $os-grey-9;
+$onDark : $os-grey-3;
+
+
+// Background colors
+$lightest : $os-grey-cold-0;
+$onLightest : $os-grey-cold-7;
+
+$lighter : $os-grey-cold-1;
+$onLighter : $os-grey-cold-8;
+
+$light : $os-grey-cold-4;
+$onLight : $os-grey-cold-9;
+
+$light-dark : $os-grey-cold-6;
+$onLight-dark : $os-grey-cold-10;
+
+$dark-light : $os-grey-cold-8;
+$onDark-light : $os-grey-cold-2;
+
+$darker : $os-grey-10;
+$onDarker : $os-grey-2;
+
+$darkest : $os-grey-10;
+$onDarkest : $os-grey-1;
+
+// Useful colors
+$positive : $os-green-5;
+$onPositive : $os-green-1;
+
+$negative : $os-red-5;
+$onNegative : $os-red-1;
+
+$info : $os-blue-5;
+$onInfo : $os-blue-1;
+
+$warning : $os-yellow-5;
+$onWarning : $os-grey-warm-10;
 
 
 @import '~quasar-variables-styl'

@@ -1,35 +1,63 @@
 <template>
   <!-- Optionally render button -->
   <q-btn
-    v-if="props && typeof props == 'object' && props.element == 'button'"
-    v-bind="props"
-    @click.stop="typeof props == 'object' ? props.on?.click?.() : {}"
+    ref="element"
+    v-if="type == 'button'"
+    v-bind="elementProps"
+    @click.stop="elementProps.on?.click?.()"
+  />
+
+  <!-- Optionally render input -->
+  <os-input
+    ref="element"
+    v-else-if="type == 'input'"
+    v-model="model"
+    v-bind="elementProps"
+    v-on:keyup.enter="element.blur?.()"
+    @focus="
+      () => {
+        elementProps.on.focus?.(model);
+        if (elementProps.clearOnFocus) model = null;
+      }
+    "
+    @blur="
+      () => {
+        elementProps.on.blur?.(model);
+        if (elementProps.clearOnBlur) model = null;
+      }
+    "
   />
 
   <!-- Optionally render icon -->
-  <q-icon
-    v-else-if="props && typeof props == 'object' && props.element == 'icon'"
-    v-bind="props"
-  />
+  <q-icon ref="element" v-else-if="type == 'icon'" v-bind="elementProps" />
 
   <!-- Optionally render chip -->
-  <q-chip
-    v-else-if="props && typeof props == 'object' && props.element == 'chip'"
-    v-bind="props"
-  />
+  <q-chip ref="element" v-else-if="type == 'chip'" v-bind="elementProps" />
 
   <!-- Optionally render avatar -->
-  <q-avatar
-    v-else-if="props && typeof props == 'object' && props.element == 'avatar'"
-    v-bind="props"
-  >
-    <img v-if="props.src" :src="props.src" />
+  <q-avatar ref="element" v-else-if="type == 'avatar'" v-bind="elementProps">
+    <img v-if="elementProps.src" :src="elementProps.src" />
   </q-avatar>
 
   <!-- Render string otherwise -->
-  <div v-else>{{ props }}</div>
+  <div ref="element" v-else>{{ props.props }}</div>
 </template>
 
 <script setup lang="ts">
-defineProps({ props: { type: [Object, String], default: () => ({}) } });
+import { ref, computed } from "vue";
+
+// Set props
+const props = defineProps({
+  props: { type: [Object, String], default: () => ({}) },
+});
+
+// Set ref
+const element = ref();
+const model = ref();
+const type = computed(() =>
+  props.props && typeof props.props == "object" ? props.props.element : "",
+);
+const elementProps = computed(() =>
+  props.props && typeof props.props == "object" ? props.props : {},
+);
 </script>

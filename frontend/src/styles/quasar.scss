@@ -5,20 +5,57 @@
 
 /***** Setup fonts *****/
 h1,
-.text-h1,
+.text-h1 {
+  margin-block-start: 0.6em;
+  margin-block-end: 0.4em;
+  font-weight: $os-fontweight-bold;
+  font-size: $os-fontsize-xxl;
+  color: $os-secondary-9;
+}
+
 h2,
-.text-h2,
+.text-h2 {
+  margin-block-start: 0.6em;
+  margin-block-end: 0.4em;
+  font-weight: $os-fontweight-bold;
+  font-size: $os-fontsize-xxl;
+  color: $os-secondary-8;
+}
+
 h3,
-.text-h3,
+.text-h3 {
+  margin-block-start: 0.6em;
+  margin-block-end: 0.4em;
+  font-weight: $os-fontweight-bold;
+  font-size: $os-fontsize-lg;
+  color: $os-secondary-5;
+}
+
 h4,
-.text-h4,
+.text-h4 {
+  margin-block-start: 0.6em;
+  margin-block-end: 0.4em;
+  font-weight: $os-fontweight-semibold;
+  font-size: $os-fontsize-md;
+  color: $os-secondary-6;
+}
+
 h5,
-.text-h5,
+.text-h5 {
+  margin-block-start: 0.6em;
+  margin-block-end: 0.4em;
+  font-weight: $os-fontweight-semibold;
+  font-size: $os-fontsize-regular;
+  color: $os-secondary-6;
+}
+
 h6,
 .text-h6 {
   margin-block-start: 0.6em;
   margin-block-end: 0.4em;
-  font-weight: bold;
+  font-weight: $os-fontweight-semibold;
+  font-size: $os-fontsize-regular;
+  color: $os-secondary-7;
 }
 
 p {
@@ -30,10 +67,10 @@ a {
   font-weight: bolder;
 
   &:not(.link-child) {
-    color: $dark-light;
+    color: $os-secondary-5;
 
     &:hover {
-      color: $light-dark;
+      color: $os-secondary-9;
     }
   }
 
@@ -43,19 +80,51 @@ a {
   }
 }
 
-.text-input-top-label,
-.text-table-header {
-  font-size: 0.9rem;
-  color: $light-dark;
+/***** Setup colors *****/
+// Brand colors
+.text-primary {
+  color: $primary !important;
 }
 
+.bg-primary {
+  color: $onPrimary !important;
+  background: $primary !important;
+}
 
-/***** Setup colors *****/
+.text-secondary {
+  color: $secondary !important;
+}
+
+.bg-secondary {
+  color: $onSecondary !important;
+  background: $secondary !important;
+}
+
+.text-accent {
+  color: $accent !important;
+}
+
+.bg-accent {
+  color: $onAccent !important;
+  background: $accent !important;
+}
+
+.text-dark {
+  color: $dark !important;
+}
+
+.bg-dark {
+  color: $onDark !important;
+  background: $dark !important;
+}
+
+//Background colors
 .text-lightest {
   color: $lightest !important;
 }
 
 .bg-lightest {
+  color: $onLightest !important;
   background: $lightest !important;
 }
 
@@ -64,6 +133,7 @@ a {
 }
 
 .bg-lighter {
+  color: $onLighter !important;
   background: $lighter !important;
 }
 
@@ -72,6 +142,7 @@ a {
 }
 
 .bg-light {
+  color: $onLight !important;
   background: $light !important;
 }
 
@@ -80,28 +151,75 @@ a {
 }
 
 .bg-light-dark {
+  color: $onLight-dark !important;
   background: $light-dark !important;
 }
 
 .text-dark-light {
-  color: $light-dark !important;
+  color: $dark-light !important;
 }
 
 .bg-dark-light {
-  background: $light-dark !important;
+  color: $onDark-light !important;
+  background: $dark-light !important;
 }
 
-.text-chart-color1 {
-  color: $chart-color1 !important;
+.text-darker {
+  color: $darker !important;
 }
 
-.text-chart-color2 {
-  color: $chart-color2 !important;
+.bg-darker {
+  color: $onDarker !important;
+  background: $darker !important;
 }
 
-.text-chart-color3 {
-  color: $chart-color3 !important;
+.text-darkest {
+  color: $darkest !important;
 }
+
+.bg-darkest {
+  color: $onDarkest !important;
+  background: $darkest !important;
+}
+
+// Semantic colors
+.text-positive {
+  color: $positive !important;
+}
+
+.bg-positive {
+  color: $onPositive !important;
+  background: $positive !important;
+}
+
+.text-negative {
+  color: $negative !important;
+}
+
+.bg-negative {
+  color: $onNegative !important;
+  background: $negative !important;
+}
+
+.text-info {
+  color: $info !important;
+}
+
+.bg-info {
+  color: $onInfo !important;
+  background: $info !important;
+}
+
+.text-warning {
+  color: $warning !important;
+}
+
+.bg-warning {
+  color: $onWarning !important;
+  background: $warning !important;
+}
+
+
 
 .bg-inherit {
   background: inherit;
@@ -122,6 +240,17 @@ a {
 }
 
 
+/***** Setup appearance *****/
+.bordered {
+  // TODO uniform name with other colors
+  border: 1px solid $dark-light;
+}
+
+.border-primary {
+  border: 2px solid $primary;
+}
+
+
 /***** Useful classes *****/
 
 // Prevent text selection
@@ -134,4 +263,82 @@ a {
 // Avoid underline
 .no-decoration {
   text-decoration: none
+}
+
+
+/***** DOM element related classes *****/
+// Icon
+.text-icon-color {
+  color: $os-primary-4 !important;
+}
+
+.bg-icon-color {
+  color: $os-primary-4 !important;
+}
+
+
+// Button
+.text-button-primary {
+  color: $primary !important;
+}
+
+.bg-button-primary {
+  color: $onPrimary !important;
+  background: $primary !important;
+}
+
+.text-button-secondary {
+  color: $secondary !important;
+}
+
+.bg-button-secondary {
+  color: $onSecondary !important;
+  background: $secondary !important;
+}
+
+.text-button-negative {
+  color: $os-secondary-4 !important;
+}
+
+.bg-button-negative {
+  background: $os-secondary-4 !important;
+}
+
+
+// Table
+.bg-table-header {
+  background: $os-grey-cold-2 !important;
+}
+
+.bg-table-row {
+  background: $os-grey-0 !important;
+}
+
+.bg-table-row-selected {
+  background: $os-grey-cold-1 !important;
+}
+
+.text-table-header {
+  font-size: 0.9rem;
+  color: $os-grey-cold-7;
+}
+
+
+// Input
+.text-input-top-label {
+  font-size: 0.9rem;
+  color: $os-grey-cold-7;
+}
+
+// Charts
+.text-chart-color1 {
+  color: $chart-color1 !important;
+}
+
+.text-chart-color2 {
+  color: $chart-color2 !important;
+}
+
+.text-chart-color3 {
+  color: $chart-color3 !important;
 }

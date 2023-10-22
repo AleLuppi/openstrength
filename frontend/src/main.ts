@@ -14,7 +14,10 @@ import i18n from "./i18n";
 import osInput from "./components/basic/osInput.vue";
 import osSelect from "./components/basic/osSelect.vue";
 import osTable from "./components/basic/osTable.vue";
+import osTableSheet from "./components/basic/osTableSheet.vue";
+import osToggleButtons from "./components/basic/osToggleButtons.vue";
 import osVariableElement from "./components/basic/osVariableElement.vue";
+import osWrapWithLines from "./components/basic/osWrapWithLines.vue";
 
 /***** Set constant global properties *****/
 export const globalProperties = {};
@@ -31,7 +34,10 @@ app.config.globalProperties.$globalProperties = globalProperties;
 app.component("osInput", osInput);
 app.component("osSelect", osSelect);
 app.component("osTable", osTable);
+app.component("osTableSheet", osTableSheet);
+app.component("osToggleButtons", osToggleButtons);
 app.component("osVariableElement", osVariableElement);
+app.component("osWrapWithLines", osWrapWithLines);
 
 // Add plugins
 app.use(router).use(createPinia()).use(i18n).use(Quasar, quasarUserOptions);

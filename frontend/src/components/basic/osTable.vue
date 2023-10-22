@@ -3,25 +3,25 @@
     v-bind="$attrs"
     flat
     wrap-cells
-    separator="none"
+    separator="horizontal"
     :pagination="{ rowsPerPage: 0 }"
     :hide-pagination="
       Boolean($attrs.hidePagination) ||
       (($attrs.rows as any[]) ?? []).length < 10
     "
     :rows-per-page-options="[10, 25, 50, 100, 0]"
+    :hide-selected-banner="true"
     row-key="name"
     v-model:selected="selected"
   >
     <!-- Set header style -->
     <template v-slot:header="props">
-      <q-tr :props="props">
+      <q-tr :props="props" class="bg-table-header">
         <q-th
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
           class="text-h6 text-table-header text-uppercase text-weight-medium"
-          style="border-bottom-width: 1px"
         >
           {{ col.label }}
         </q-th>
@@ -34,13 +34,23 @@
         :props="props"
         @click="
           ($attrs.onRowClick as Function)?.(undefined, props.row);
-          if ($attrs.selection)
+          if ($attrs.selection && $attrs.selection != 'none')
             onRowClick(undefined, props.row, $attrs.selection as string);
           props.expand = !props.expand;
         "
-        :class="{ 'cursor-pointer': $attrs.onRowClick || props.row.expanded }"
+        class="bg-table-row"
+        :class="{
+          'cursor-pointer': $attrs.onRowClick || props.row.expanded,
+          'bg-table-row-selected': props.selected,
+          'os-tr-selected': props.selected,
+        }"
       >
-        <q-td v-for="col in props.cols" :key="col.name" :props="props">
+        <q-td
+          v-for="col in props.cols"
+          :key="col.name"
+          :props="props"
+          class="os-td-selected"
+        >
           <osVariableElement :props="col.value" />
         </q-td>
       </q-tr>
@@ -50,7 +60,7 @@
         :props="props"
         v-for="row in props.row.expanded"
         :key="row"
-        class="q-px-lg bg-lighter"
+        class="q-px-lg bg-lighter table-element-selected-child"
         @click="($attrs.onSubRowClick as Function)?.(props.row, row)"
         :class="{ 'cursor-pointer': $attrs.onSubRowClick }"
       >
@@ -63,10 +73,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 // Set ref
 const selected = ref<{ [key: string]: any }[]>([]);
+
+// Allow selected model from parent
+const emit = defineEmits(["update:selected"]);
+watch(selected, (val) => {
+  emit("update:selected", val);
+});
 
 /**
  * Perform operations on clicked row.
@@ -84,3 +100,20 @@ function onRowClick(_: any, row: { [key: string]: any }, selection?: string) {
   else if (selection) selected.value = [row];
 }
 </script>
+
+<style scoped lang="scss">
+.os-tr-selected {
+  & > .os-td-selected {
+    border-color: $primary;
+    border-block-width: 2px;
+
+    &:first-child {
+      border-inline-start-width: 2px;
+    }
+
+    &:last-child {
+      border-inline-end-width: 2px;
+    }
+  }
+}
+</style>

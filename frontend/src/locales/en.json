@@ -16,9 +16,9 @@
       "home_title": "Homepage",
       "athletes": "Athletes",
       "library": "Library",
-      "library_title": "Excercise library",
-      "schedule": "Schedule",
-      "schedule_title": "Schedule",
+      "library_title": "Library",
+      "program": "Program",
+      "program_title": "Program",
       "profile": "Profile",
       "signin": "Sign in",
       "privacy_policy": "privacy policy",
@@ -26,13 +26,15 @@
     }
   },
   "homepage": {
+    "welcome_with_name": "Hi { name }, let's work together!",
+    "welcome_without_name": "Welcome back, ready to work together?",
     "actions": {
       "to_athletes": "Manage your athletes",
       "to_athletes_caption": "Add new athletes, view or modify the existing ones",
       "to_library": "Manage library",
       "to_library_caption": "Add new exercises to your library, view or modify the existing ones",
-      "to_schedule": "Manage programs",
-      "to_schedule_caption": "Create new programs, view or modify existing ones"
+      "to_program": "Manage programs",
+      "to_program_caption": "Create new programs, view or modify existing ones"
     }
   },
   "comingsoon": {
@@ -57,8 +59,9 @@
       "acceptance_before": "By clicking here, you declare to have read and accepted our ",
       "acceptance_between": " and our ",
       "acceptance_after": ".",
-      "login_button": "Continue",
-      "signin_with_google": "Sign in with Google",
+      "login_button": "Log in with email",
+      "signin_with_google": "Log in with Google",
+      "signin_with_email": "or log in with email",
       "register_button": "Register me with email",
       "register_with_google": "Continue with Google",
       "signup_error": "An unknown error has occurred, please retry in few minutes",
@@ -68,9 +71,17 @@
       "signup_subtitle": "Your day to day workout planning helper is waiting for you!",
       "signup_with_email": "or sign up with email",
       "signup_to_signin": "Already registered? Go to sign in",
-      "signin_title": "Sign in",
-      "signin_to_signup": "You don't have an account yet? Register now",
-      "signout_title": "Sign out"
+      "signin_title": "Log in to your account",
+      "signin_subtitle": "Your day to day helper is waiting for you",
+      "signin_to_signup": " Register now",
+      "signout_title": "Sign out",
+      "forgot_password": "Forgot password?",
+      "without_account": "Don't have an account?"
+    },
+    "role": {
+      "athlete": "Athlete",
+      "coach": "Coach",
+      "admin": "Admin"
     },
     "profile": {
       "profile_title": "Profile",
@@ -83,94 +94,151 @@
       "info_edit": "Edit your info"
     },
     "onboarding": {
-      "bartitle_step1": "Start here",
-      "barcaption_step1": "",
+      "header_step1": "Start here",
+      "header_caption_step1": "",
+      "header_step2": "About you",
+      "header_caption_step2": "",
+      "header_step3": "About your job",
+      "header_caption_step3": "",
       "title_step1": "Thanks for joining us!",
-      "subtitle_step1": "What's your name?",
-      "bartitle_step2": "Step 1",
-      "barcaption_step2": "",
+      "action_step1_a": "What's your name?",
       "title_step2": "Tell us more",
-      "subtitle_step2": "How will you be using the app? Select one. Note: if you want to both train and be trained select coach.",
-      "bartitle_step3": "Step 2",
-      "barcaption_step3": "Optional",
+      "action_step2_a": "How will you be using the app? Select one. Note: if you want to both train and be trained select coach.",
       "title_step3": "Let's meet better",
-      "subtitle_step3": "Select the most common disciplines among your athletes:",
-      "bartitle_step4": "Step 3",
-      "barcaption_step4": "Optional",
-      "title_step4": "We're almost there",
-      "subtitle_step4": "Select the average number of athletes you work with at the same time:",
-      "athlete": "Athlete",
-      "coach": "Coach",
-      "powerlifting": "Powerlifting",
-      "bodybuilding": "Bodybuilding",
-      "calisthenics": "Calisthenics",
-      "powerbuilding": "Powerbuilding",
-      "crossfit": "Crossfit",
-      "weightlifting": "Weightlifting",
-      "fitness": "Fitness",
-      "streetlifting": "Streetlifting"
+      "action_step3_a": "Select the most common disciplines among your athletes:",
+      "action_step3_b": "Select the average number of athletes you work with at the same time:"
     }
   },
   "coach": {
     "athlete_management": {
       "list": {
+        "title": "Athletes",
         "add": "Add athlete",
+        "search": "Search athlete...",
         "add_proceed": "Proceed",
         "add_error": "It was not possible to add the athlete, please retry",
         "update": "Update athlete",
         "update_proceed": "Proceed",
         "update_error": "It was not possible to update the athlete, please retry",
         "remove": "Remove athlete",
-        "remove_confirm": "Are you sure you want to remove { name }?",
-        "prompt_name": "Athlete's name",
-        "prompt_surname": "Athlete's surname",
-        "prompt_note": "Add a note"
+        "remove_confirm": "Are you sure you want to remove { name }?"
       },
       "filter": {
         "all": "All",
-        "scheduled": "With schedule",
-        "unscheduled": "Missing schedule",
+        "with_program": "With program",
+        "without_program": "Missing program",
         "active": "Active",
         "inactive": "Inactive",
         "new": "New",
         "old": "Old"
+      },
+      "fields": {
+        "name": "Athlete's name",
+        "surname": "Athlete's surname",
+        "note": "Add a note"
       }
     },
-    "excercise_management": {
-      "list_title": "Exercises",
-      "list_search": "Search exercise...",
+    "exercise_management": {
+      "list": {
+        "title": "Exercises library",
+        "title_exercise": "Exercises",
+        "title_variant": "Variants",
+        "search_exercise": "Search exercise...",
+        "search_variant": "Search variant..."
+      },
       "add": "Add a new exercise",
       "add_button": "Add new",
       "add_proceed": "Save",
       "add_error": "Could not save exercise, please retry",
+      "add_success": "Exercise \"{ exercise }\" correctly added to library",
+      "add_variant_already_exists": "A variant already exists with this name",
       "update": "Update exercise",
       "update_button": "Update",
       "update_proceed": "Save",
       "update_error": "Could not update exercise, please retry",
+      "update_success": "Variant \"{ variant }\" of exercise \"{ exercise }\" was correctly updated",
       "delete_exercise": "Delete exercise",
       "delete_exercise_confirm": "Are you sure you want to delete exercise \"{ exercise }\" and all related variants?",
       "delete_variant": "Delete variant",
       "delete_variant_confirm": "Are you sure you want to delete \"{ variant }\" variant from \"{ exercise }\"?",
-      "exercise_name": "Name",
-      "exercise_variant": "Variant",
-      "exercise_loadtype": "Load type",
-      "exercise_loadtypes": {
-        "reps": "Reps",
-        "weight": "Weight",
-        "time": "Time"
+      "delete_proceed": "Delete it",
+      "fields": {
+        "name": "Name",
+        "variant": "Variant",
+        "loadtype": "Load type",
+        "loadtype_available": {
+          "reps": "Reps",
+          "weight": "Weight",
+          "time": "Time"
+        },
+        "musclegroups": "Muscle Groups",
+        "musclegroups_available": {
+          "shoulders": "Shoulders",
+          "chest": "Chest",
+          "core": "Core",
+          "upperback": "Upper Back",
+          "lowerback": "Lower Back",
+          "biceps": "Biceps",
+          "triceps": "Triceps",
+          "forearms": "Forearms",
+          "glutes": "Glutes",
+          "quads": "Quads",
+          "harmstrings": "Harmstrings",
+          "calves": "Calves"
+        },
+        "equipment": "Tools",
+        "equipment_available": {
+          "barbell": "Barbell",
+          "plates": "Plates",
+          "dumbell": "Dumbell",
+          "rack": "Rack",
+          "deadliftplatform": "Deadlift Platform",
+          "bench": "Bench",
+          "bands": "Bands",
+          "steps": "Steps",
+          "dipbelt": "Dip Belt",
+          "machine": "Machine",
+          "bar": "Bar",
+          "parallettes": "Parallettes"
+        },
+        "video": "Video link",
+        "description": "Description"
+      }
+    },
+    "program_management": {
+      "list": {
+        "title": "Programs library",
+        "title_program": "Programs",
+        "add": "Add a new program",
+        "add_proceed": "Confirm",
+        "update": "Insert your program info",
+        "update_proceed": "Update program",
+        "search_program": "Search program..."
       },
-      "exercise_musclegroups": "Muscle Groups",
-      "exercise_equipment": "Tools",
-      "exercise_video": "Video link",
-      "exercise_description": "Description"
+      "fields": {
+        "name": "Program name",
+        "label": "Label"
+      }
     }
   },
+  "sport": {
+    "powerlifting": "Powerlifting",
+    "bodybuilding": "Bodybuilding",
+    "calisthenics": "Calisthenics",
+    "powerbuilding": "Powerbuilding",
+    "crossfit": "Crossfit",
+    "weightlifting": "Weightlifting",
+    "fitness": "Fitness",
+    "streetlifting": "Streetlifting"
+  },
   "common": {
-    "cancel": "Cancel",
-    "or": "or",
-    "continue": "Continue",
     "back": "Back",
+    "cancel": "Cancel",
+    "default": "Default",
+    "continue": "Continue",
     "finish": "Finish",
-    "other": "Other"
+    "or": "or",
+    "other": "Other",
+    "submit": "Submit"
   }
 }

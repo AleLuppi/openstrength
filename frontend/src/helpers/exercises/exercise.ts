@@ -4,21 +4,51 @@ import {
   doUpdateDoc,
   doDeleteDoc,
 } from "@/helpers/database/readwrite";
-import { exercisesCollection } from "../database/collections";
+import { exercisesCollection } from "@/helpers/database/collections";
 
 /**
  * Define available load types.
  */
 export enum ExerciseLoadType {
-  reps = "reps",
   weight = "weight",
   time = "time",
 }
 
 /**
- * Define the name of the default exercise variant.
+ * Define available muscle groups.
  */
-export const defaultExerciseVariant = "default";
+export enum ExerciseMuscleGroups {
+  shoulders = "shoulders",
+  chest = "chest",
+  core = "core",
+  upperback = "upperback",
+  lowerback = "lowerback",
+  biceps = "biceps",
+  triceps = "triceps",
+  forearms = "forearms",
+  glutes = "glutes",
+  quads = "quads",
+  harmstrings = "harmstrings",
+  calves = "calves",
+}
+
+/**
+ * Define available equipment.
+ */
+export enum ExerciseEquipment {
+  barbell = "barbell",
+  plates = "plates",
+  dumbell = "dumbell",
+  rack = "rack",
+  deadliftplatform = "deadliftplatform",
+  bench = "bench",
+  bands = "bands",
+  steps = "steps",
+  dipbelt = "dipbelt",
+  machine = "machine",
+  bar = "bar",
+  parallettes = "parallettes",
+}
 
 /**
  * Exercise properties.
@@ -28,12 +58,12 @@ export type ExerciseProps = {
   uid?: string;
   name?: string;
 
-  // Exercise info
-  loadType?: ExerciseLoadType;
-  muscleGroups?: string[];
-
   // Variants
   variants?: ExerciseVariant[];
+
+  // Computed info
+  muscleGroups?: string[];
+  equipment?: string[];
 };
 
 /**
@@ -49,10 +79,15 @@ export type ExerciseVariantProps = {
 
   // Variant info
   description?: string;
+  loadType?: ExerciseLoadType;
+  muscleGroups?: string[];
   equipment?: string[];
 
   // Additional info
   videoUrl?: string;
+
+  // Computed info
+  isDefault?: boolean;
 };
 
 /**
@@ -65,28 +100,43 @@ export class Exercise {
   uid?: string;
   name?: string;
 
-  // Exercise info
-  loadType?: ExerciseLoadType;
-  muscleGroups?: string[];
-
   // Variants
   variants?: ExerciseVariant[];
+  defaultVariant?: ExerciseVariant;
 
-  constructor({
-    uid,
-    name,
-    loadType,
-    muscleGroups,
-    variants,
-  }: ExerciseProps = {}) {
+  // Get all muscle groups in variants
+  public get muscleGroups() {
+    return [
+      ...new Set(
+        this.variants?.reduce(
+          (outList, variant) => outList.concat(variant.muscleGroups ?? []),
+          [] as string[],
+        ),
+      ),
+    ];
+  }
+
+  // Get all equipments in variants
+  public get equipment() {
+    return [
+      ...new Set(
+        this.variants?.reduce(
+          (outList, variant) => outList.concat(variant.equipment ?? []),
+          [] as string[],
+        ),
+      ),
+    ];
+  }
+
+  constructor({ uid, name, variants }: ExerciseProps = {}) {
     this.uid = uid;
     this.name = name;
-    this.loadType = loadType;
-    this.muscleGroups = muscleGroups;
     variants?.forEach((variant) => {
       if (!variant.exercise) variant.exercise = this;
     });
     this.variants = variants;
+    this.variants ?? this.addDefaultVariant();
+    this.defaultVariant = variants?.find((variant) => variant.isDefault);
   }
 
   /**
@@ -95,14 +145,11 @@ export class Exercise {
    * @param force if true, force addition of default variant even if already existent.
    */
   addDefaultVariant(force: boolean = false) {
-    if (
-      force ||
-      !this.variants?.find((variant) => variant.name == defaultExerciseVariant)
-    )
+    if (force || !this.variants?.find((variant) => variant.isDefault))
       (this.variants = this.variants || []).push(
         new ExerciseVariant({
           uid: this.uid,
-          name: defaultExerciseVariant,
+          name: undefined,
           exercise: this,
         }),
       );
@@ -190,16 +237,25 @@ export class ExerciseVariant {
 
   // Variant info
   description?: string;
+  loadType?: ExerciseLoadType;
+  muscleGroups?: string[];
   equipment?: string[];
 
   // Additional info
   videoUrl?: string;
+
+  // Check if this variant is default one for exercise
+  public get isDefault() {
+    return !this.name;
+  }
 
   constructor({
     uid,
     name,
     exercise,
     description,
+    loadType,
+    muscleGroups,
     equipment,
     videoUrl,
   }: ExerciseVariantProps = {}) {
@@ -207,8 +263,54 @@ export class ExerciseVariant {
     this.name = name;
     this.exercise = exercise;
     this.description = description;
+    this.loadType = loadType;
+    this.muscleGroups = muscleGroups;
     this.equipment = equipment;
     this.videoUrl = videoUrl;
+  }
+
+  /**
+   * Store a new variant on database.
+   *
+   * @param variant element that shall be stored.
+   * @param onSuccess function to execute when operation is successful.
+   * @param onError function to execute when operation fails.
+   */
+  saveNew({
+    variant,
+    onSuccess,
+    onError,
+  }: {
+    variant?: ExerciseVariant;
+    onSuccess?: Function;
+    onError?: Function;
+  } = {}) {
+    addDocExerciseVariant(variant || this, (variant || this).exercise, {
+      onSuccess: onSuccess,
+      onError: onError,
+    });
+  }
+
+  /**
+   * Update the variant on database.
+   *
+   * @param variant element that shall be updated.
+   * @param onSuccess function to execute when operation is successful.
+   * @param onError function to execute when operation fails.
+   */
+  saveUpdate({
+    variant,
+    onSuccess,
+    onError,
+  }: {
+    variant?: ExerciseVariant;
+    onSuccess?: Function;
+    onError?: Function;
+  } = {}) {
+    updateDocExerciseVariant(variant || this, (variant || this).exercise, {
+      onSuccess: onSuccess,
+      onError: onError,
+    });
   }
 
   /**
@@ -357,10 +459,16 @@ function extractExerciseVariantInfo(
   const { uid: _0, name: _1, exercise: _2, ...variantObj } = exerciseVariant;
   const variantExercise =
     exercise ?? exerciseVariant.exercise ?? new Exercise();
-  const { uid: _3, name: _4, variants: _5, ...exerciseObj } = variantExercise;
+  const {
+    uid: _3,
+    name: _4,
+    variants: _5,
+    defaultVariant: _6,
+    ...exerciseObj
+  } = variantExercise;
   const fullVariantObj = {
-    ...variantObj,
     ...exerciseObj,
+    ...variantObj,
     variant: exerciseVariant.name,
     exercise: variantExercise.name,
   };
@@ -382,35 +490,16 @@ export function packExerciseVariantInfo(
 ) {
   return new Exercise({
     name: fullVariantObj.exercise,
-    loadType: fullVariantObj.loadType,
-    muscleGroups: fullVariantObj.muscleGroups,
     variants: [
       new ExerciseVariant({
         uid: uid,
         name: fullVariantObj.variant,
         description: fullVariantObj.description,
+        loadType: fullVariantObj.loadType,
+        muscleGroups: fullVariantObj.muscleGroups,
         equipment: fullVariantObj.equipment,
         videoUrl: fullVariantObj.videoUrl,
       }),
     ],
   });
-}
-
-/**
- * Reduce a list of exercises to merge variants according to exercise name.
- *
- * @param exercises list of exercises to reduce.
- * @returns unique exercises with concatenated list of variants.
- */
-export function reduceExercises(exercises: Exercise[]) {
-  return exercises.reduce((prev: Exercise[], curr: Exercise) => {
-    const exercise = prev.find((exercise) => exercise.name == curr.name);
-    if (exercise) {
-      exercise.variants = (exercise.variants ?? []).concat(curr.variants ?? []);
-      return prev;
-    } else {
-      prev.push(curr);
-      return prev;
-    }
-  }, []);
 }
