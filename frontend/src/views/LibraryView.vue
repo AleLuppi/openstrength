@@ -58,7 +58,7 @@
 
               <TableExerciseLibrary
                 ref="exerciseTableElement"
-                :exercises="exercises"
+                :exercises="filteredExercises"
                 :on-add="onExerciseAdd"
                 :on-update="onExerciseUpdate"
                 :on-delete="onExerciseDelete"
@@ -244,7 +244,7 @@
           <q-separator />
 
           <TableProgramLibrary
-            :programs="programs"
+            :programs="filteredPrograms"
             :on-update="onUpdateProgram"
           />
         </q-card>
@@ -336,8 +336,8 @@ const coachInfo = useCoachInfoStore();
 const selectedTab = ref("exercise"); // TODO main tab to show
 const exerciseTableElement = ref<typeof TableExerciseLibrary>();
 const variantFormElement = ref<typeof FormExerciseVariantLibrary>();
-const searchExercise = ref<string>(); // TODO search
-const searchVariant = ref<string>(); // TODO search
+const searchExercise = ref<string>(); // TODO check
+const searchVariant = ref<string>(); // TODO check
 const addingNewExercise = ref(false);
 const addingNewVariant = ref(false);
 const deletingExercise = ref<Exercise>();
@@ -349,7 +349,7 @@ const updatingProgram = ref<Program>(); // TODO check Program that is currently 
 const showProgramDialog = ref(false); // TODO check whether to show dialog to add Program
 const programName = ref(""); // TODO check new program name
 const programLabel = ref(""); // TODO check new program note
-const searchProgram = ref<string>(); // TODO check TODO search
+const searchProgram = ref<string>(); // TODO check
 // TODO const showVariantList = computed(() => Boolean(selectedExercise.value));
 const showVariantForm = computed(() =>
   Boolean(addingNewVariant.value || selectedVariant.value),
@@ -700,4 +700,40 @@ function clearProgram() {
   programLabel.value = "";
   showProgramDialog.value = false;
 }
+
+/** TODO check
+ * Filter exercises by name in the corresponding table
+ */
+const filteredExercises = computed(() => {
+  if (!searchExercise.value) {
+    return exercises.value || [];
+  }
+
+  const search = searchExercise.value.toLowerCase();
+  return exercises.value.filter((exercise) =>
+    exercise.name.toLowerCase().includes(search),
+  );
+});
+
+// Watch for changes in search exercise input
+watch(searchExercise, () => {});
+
+// TODO filter for variants
+
+/** TODO check
+ * Filter programs by name in the corresponding table
+ */
+const filteredPrograms = computed(() => {
+  if (!searchProgram.value) {
+    return programs.value || [];
+  }
+
+  const search = searchProgram.value.toLowerCase();
+  return programs.value.filter((program) =>
+    program.name.toLowerCase().includes(search),
+  );
+});
+
+// Watch for changes in search exercise input
+watch(searchProgram, () => {});
 </script>

@@ -91,7 +91,7 @@ const routes = [
   {
     path: "/privacy-policy",
     name: "privacy_policy",
-    component: PrivacyPolicyView, // TODO
+    component: PrivacyPolicyView,
     meta: {
       title: "Privacy Policy",
     },
@@ -99,7 +99,7 @@ const routes = [
   {
     path: "/cookie-policy",
     name: "cookie_policy",
-    component: CookiePolicyView, // TODO
+    component: CookiePolicyView,
     meta: {
       title: "Cookie Policy",
     },
@@ -107,7 +107,7 @@ const routes = [
   {
     path: "/terms-and-conditions",
     name: "terms_conditions",
-    component: TermsAndConditionView, // TODO
+    component: TermsAndConditionView,
     meta: {
       title: "Terms and Conditions",
     },
@@ -116,7 +116,7 @@ const routes = [
     // page not found
     path: "/:pathMatch(.*)*",
     name: "not_found",
-    component: PageNotFoundView, // TODO
+    component: PageNotFoundView,
     meta: {
       title: "Page not found",
     },

@@ -16,6 +16,7 @@
       v-bind="props"
       outlined
       dense
+      clearable
       :label="undefined"
       :rules="
         (props.rules ?? []).concat([
