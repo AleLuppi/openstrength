@@ -110,7 +110,7 @@
 
               <TableExerciseLibrary
                 :exercises="[]"
-                :variants="selectedExercise?.variants"
+                :variants="filteredVariants"
                 :on-update="onVariantUpdate"
                 :on-delete="onVariantDelete"
               />
@@ -710,15 +710,34 @@ const filteredExercises = computed(() => {
   }
 
   const search = searchExercise.value.toLowerCase();
-  return exercises.value.filter((exercise) =>
-    exercise.name.toLowerCase().includes(search),
+  return exercises.value.filter(
+    (exercise) => exercise.name?.toLowerCase().includes(search),
   );
 });
 
 // Watch for changes in search exercise input
 watch(searchExercise, () => {});
 
-// TODO filter for variants
+/** TODO check
+ * Filter variants by name in the corresponding table
+ */
+const filteredVariants = computed(() => {
+  const variants = selectedExercise?.value?.variants;
+  if (!searchVariant.value) {
+    return variants ?? [];
+  }
+
+  const search = searchVariant.value.toLowerCase();
+  return variants
+    ? variants.filter(
+        (variant) =>
+          variant.name && variant.name.toLowerCase().includes(search),
+      )
+    : [];
+});
+
+// Watch for changes in searchVariant input
+watch(searchVariant, () => {});
 
 /** TODO check
  * Filter programs by name in the corresponding table
@@ -729,8 +748,8 @@ const filteredPrograms = computed(() => {
   }
 
   const search = searchProgram.value.toLowerCase();
-  return programs.value.filter((program) =>
-    program.name.toLowerCase().includes(search),
+  return programs.value.filter(
+    (program) => program.name?.toLowerCase().includes(search),
   );
 });
 
