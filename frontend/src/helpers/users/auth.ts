@@ -6,18 +6,8 @@ import {
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
-  // FirebaseUser,
 } from "firebase/auth";
-import { User as FirebaseUser } from "firebase/auth";
 import { auth } from "@/firebase";
-import {
-  userExists,
-  getUserByEmail,
-  User,
-  AthleteUser,
-  CoachUser,
-} from "@/helpers/users/user";
-// import { CoachUser } from "./user";
 
 export enum AuthError {
   emailError,
@@ -162,77 +152,19 @@ export function addCallbackOnAuthStateChanged({
   onUserOut?: Function;
   onUserChange?: Function;
 } = {}) {
-  onAuthStateChanged(auth, async (user) => {
+  onAuthStateChanged(auth, (user) => {
     if (user) {
       // User is signed in, see docs for a list of available properties
       // https://firebase.google.com/docs/reference/js/auth.user
 
-      // user with right uid exists in the db
-      const userExistsRes = await userExists(user.uid);
-      if (userExistsRes) {
-        // Callback registered function
-        onUserIn?.(user);
-      } else {
-        const userByEmail: User = await getUserByEmail(user.email!);
-        if (userByEmail!.uid == undefined) {
-          //TODO checking the role: does he ever be in this situation?
-          console.log("adding user... " + user.uid);
-          const newSavedUser = await saveNewUserFromAuth(user);
-          onUserIn?.(newSavedUser);
-        } else {
-          console.log("cloning user... " + user.uid);
-          const newClonedUser = await cloneNewUserFromDb(userByEmail, user.uid);
-          onUserIn?.(newClonedUser);
-        }
-      }
+      // Callback registered function
+      onUserIn?.(user);
     } else {
       // User is signed out
       onUserOut?.();
     }
+
     // Auth state changed
     onUserChange?.();
   });
-}
-
-async function saveNewUserFromAuth(user: FirebaseUser) {
-  const newUser = new User({
-    uid: user.uid,
-    email: user.email!,
-    displayName: user.displayName!,
-    photoUrl: user.photoURL!,
-    phoneNumber: user.phoneNumber!,
-    name: user.displayName?.split(" ")[0],
-    surname: user.displayName?.split(" ")[1],
-    birthday: undefined,
-    address: undefined,
-    createdOn: new Date(),
-    createdBy: undefined,
-    lastUpdated: undefined,
-    locale: undefined,
-    role: undefined,
-    lastAccess: undefined,
-    lastNotificationRead: undefined,
-  });
-  await newUser.saveNewWithId();
-  return newUser;
-}
-
-async function cloneNewUserFromDb(oldUser: User, userUid: string) {
-  let newClonedUser: User;
-  switch (oldUser.role) {
-    case "athlete":
-      newClonedUser = new AthleteUser({ ...oldUser });
-      break;
-    case "coach":
-      newClonedUser = new CoachUser({ ...oldUser });
-      break;
-    default:
-      newClonedUser = new User({ ...oldUser });
-      break;
-  }
-  newClonedUser.uid = userUid;
-  await newClonedUser.saveNewWithId().then(() => {
-    oldUser.delete(oldUser.uid);
-  });
-  return newClonedUser;
 }

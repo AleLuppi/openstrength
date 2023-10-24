@@ -3,41 +3,26 @@ import {
   collection,
   query,
   addDoc,
+  setDoc,
   updateDoc,
+  getDoc,
   getDocs,
   deleteDoc,
-  getDoc,
   where,
-  setDoc,
   orderBy,
   limit,
   serverTimestamp,
+  DocumentData,
 } from "firebase/firestore";
 import { db } from "@/firebase";
 import { useUserStore } from "@/stores/user";
-import { ErrorHandling } from "../ErrorHandling";
-import { User } from "../users/user";
-
-export async function doAddDocWithId(
-  collectionName: string,
-  customDocId: string,
-  data: any,
-  errorHand: ErrorHandling = new ErrorHandling(),
-) {
-  const docRef = doc(db, collectionName, customDocId);
-  Object.keys(data).forEach((key) => {
-    data[key] = data[key] ?? null;
-  });
-  await setDoc(docRef, data)
-    .then((res) => errorHand.onSuccess("doAddDocWithId: successfull"))
-    .catch((error) => errorHand.onError(error));
-}
 
 /**
  * Add a document to firestore db.
  *
  * @param collectionName name of the collection where document shall be saved.
  * @param data data that shall be saved.
+ * @param addUserId if true, store ID of user making write request in new document.
  * @param addCurrentTimestamp if true, store saving timestamp along with data.
  * @param onSuccess function to execute when write operation is successful.
  * @param onError function to execute when write operation fails.
@@ -89,11 +74,71 @@ export async function doAddDoc(
 }
 
 /**
+ * Add a document with a specific ID to firestore db.
+ *
+ * @param collectionName name of the collection where document shall be saved.
+ * @param docId specific ID to use to create the new document.
+ * @param data data that shall be saved.
+ * @param addUserId if true, store ID of user making write request in new document.
+ * @param addCurrentTimestamp if true, store saving timestamp along with data.
+ * @param onSuccess function to execute when write operation is successful.
+ * @param onError function to execute when write operation fails.
+ */
+export async function doAddDocWithId(
+  collectionName: string,
+  docId: string,
+  data: any,
+  {
+    addUserId = false,
+    addCurrentTimestamp = false,
+    onSuccess,
+    onError,
+  }: {
+    addUserId?: boolean;
+    addCurrentTimestamp?: boolean;
+    onSuccess?: Function;
+    onError?: Function;
+  } = {},
+) {
+  // Translate from undefined data to null
+  Object.keys(data).forEach((key) => {
+    data[key] = data[key] ?? null;
+  });
+
+  // Add user ID if required
+  if (addUserId) {
+    const user = useUserStore();
+    data = {
+      ...data,
+      userId: user.uid ?? null,
+    };
+  }
+
+  // Add timestamp if required
+  if (addCurrentTimestamp)
+    data = {
+      ...data,
+      datetime: serverTimestamp(),
+    };
+
+  // Create doc
+  const docRef = doc(db, collectionName, docId);
+  await setDoc(docRef, data)
+    .then((docRef) => onSuccess?.(docRef))
+    .catch((error) => {
+      // Failed document write
+      console.error(error);
+      onError?.(error);
+    });
+}
+
+/**
  * Update a document in firestore db.
  *
  * @param collectionName name of the collection where document shall be saved.
  * @param docId ID of the document that shall be updated.
  * @param data data that shall be saved.
+ * @param addUserId if true, store ID of user making write request in new document.
  * @param addCurrentTimestamp if true, store saving timestamp along with data.
  * @param onSuccess function to execute when write operation is successful.
  * @param onError function to execute when write operation fails.
@@ -146,62 +191,32 @@ export async function doUpdateDoc(
 }
 
 /**
- * @param collectionName name of the collection where document shall be searched.
- * @param docId  id of the document to retrieve from the db.
- * @param errorHand to use to handle onSuccess or onError behaviours.
+ * Retrieve a specific document from db.
+ *
+ * @param collectionName name of the collection where document is.
+ * @param docId ID of the document that shall be retrieved.
+ * @param onSuccess function to execute when write operation is successful.
+ * @param onError function to execute when write operation fails.
  */
-export async function doGetOneDoc(
+export async function doGetDocWithID(
   collectionName: string,
   docId: string,
-  errorHand: ErrorHandling = new ErrorHandling(),
+  {
+    onSuccess,
+    onError,
+  }: {
+    onSuccess?: Function;
+    onError?: Function;
+  } = {},
 ) {
+  // Obtain document
   const docRef = doc(db, collectionName, docId);
   await getDoc(docRef)
-    .then((querySnapshot) => errorHand.onSuccess(querySnapshot.data()))
-    .catch((error) => errorHand.onError(error));
-}
-
-/**
- * @param collectionName name of the collection where document shall be searched.
- * @param docId id of the document to retrieve from the db.
- * @param errorHand to use to handle onSuccess or onError behaviours.
- */
-export async function doDocExists(
-  collectionName: string,
-  docId: string,
-  errorHand: ErrorHandling = new ErrorHandling(),
-) {
-  const docRef = doc(db, collectionName, docId);
-  return await getDoc(docRef)
-    .then((querySnapshot) => errorHand.onSuccess(querySnapshot.exists()))
-    .catch((error) => errorHand.onError(error));
-}
-
-/**
- * @param collectionName name of the collection where document shall be searched.
- * @param conditions put an object with the parameters used to filter the documents.
- * @param errorHand to use to handle onSuccess or onError behaviours.
- */
-export async function doGetDocsWithObj(
-  collectionName: string,
-  conditions: any,
-  errorHand: ErrorHandling = new ErrorHandling(),
-) {
-  const wheres = Object.keys(conditions).map((k) => {
-    return where(k, "==", conditions[k]);
-  });
-  const q = query(collection(db, collectionName), ...wheres);
-
-  return await getDocs(q)
-    .then((querySnapshot) => {
-      const docsData = querySnapshot.docs.reduce(
-        (obj, val) => ({ uid: val.id, ...val.data() }),
-        {},
-      );
-      const toUser = new User({ ...docsData });
-      return errorHand.onSuccess(toUser);
-    })
-    .catch((error) => errorHand.onError(error));
+    .then((documentSnapshot) => onSuccess?.(documentSnapshot.data()))
+    .catch((error) => {
+      console.error(error);
+      onError?.(error);
+    });
 }
 
 /**
@@ -242,31 +257,34 @@ export async function doGetDocs(
     ...orderBys,
     ...limits,
   );
-  console.log(q);
 
   // Obtain documents
   await getDocs(q)
     .then((querySnapshot) => {
       const docsData = querySnapshot.docs.reduce(
-        (obj, val) => ({ ...obj, [val.id]: val.data() }),
+        (obj, val) =>
+          val.data() !== undefined ? { ...obj, [val.id]: val.data() } : obj,
         {},
       );
       onSuccess?.(docsData);
     })
-    .catch((error) => onError?.(error));
+    .catch((error) => {
+      console.error(error);
+      onError?.(error);
+    });
 }
 
 /**
  * Delete a document from firebase db.
  *
  * @param collectionName name of the collection where document shall be searched.
- * @param uid id of the document that shall be deleted.
+ * @param docId ID of the document that shall be deleted.
  * @param onSuccess function to execute when write operation is successful.
  * @param onError function to execute when write operation fails.
  */
 export async function doDeleteDoc(
   collectionName: string,
-  uid: string,
+  docId: string,
   {
     onSuccess,
     onError,
@@ -276,11 +294,90 @@ export async function doDeleteDoc(
   } = {},
 ) {
   // Remove document
-  deleteDoc(doc(db, collectionName, uid))
+  deleteDoc(doc(db, collectionName, docId))
     .then(() => {
       onSuccess?.();
     })
     .catch((error) => {
+      console.error(error);
       onError?.(error);
     });
+}
+
+/**
+ * Check if a specific document exists.
+ *
+ * @param collectionName name of the collection where document shall be searched.
+ * @param docId id of the document to retrieve from the db.
+ * @param onSuccess function to execute when write operation is successful.
+ * @param onError function to execute when write operation fails.
+ */
+export async function checkDocExists(
+  collectionName: string,
+  docId: string,
+  {
+    onSuccess,
+    onError,
+  }: {
+    onSuccess?: Function;
+    onError?: Function;
+  } = {},
+) {
+  // Check if document exists
+  const docRef = doc(db, collectionName, docId);
+  return await getDoc(docRef)
+    .then((documentSnapshot) => onSuccess?.(documentSnapshot.exists()))
+    .catch((error) => onError?.(error));
+}
+
+/**
+ * Move a document from one ID to a different one.
+ *
+ * Under the hood, the function does:
+ * - read the original document;
+ * - create a new document with the same content but a different ID.
+ * - delete the original document.
+ * User shall then be able to access DB to: read, create, delete a document.
+ *
+ * @param collectionName name of the collection where document is stored.
+ * @param oldId id of the document that must be updated.
+ * @param newId new id of the document.
+ * @param onSuccess function to execute when write operation is successful.
+ * @param onError function to execute when write operation fails.
+ */
+export async function changeDocId(
+  collectionName: string,
+  oldId: string,
+  newId: string,
+  {
+    onSuccess,
+    onError,
+  }: {
+    onSuccess?: Function;
+    onError?: Function;
+  } = {},
+) {
+  // Retrieve doc data
+  doGetDocWithID(collectionName, oldId, {
+    onError: onError,
+    onSuccess: (data: DocumentData | undefined) => {
+      // No data found, exit
+      if (!data) {
+        onSuccess?.(false);
+        return;
+      }
+
+      // Save data on new document
+      doAddDocWithId(collectionName, newId, data, {
+        onError: onError,
+        onSuccess: () => {
+          // Delete previous document
+          doDeleteDoc(collectionName, oldId, {
+            onError: onError,
+            onSuccess: () => onSuccess?.(true),
+          });
+        },
+      });
+    },
+  });
 }
