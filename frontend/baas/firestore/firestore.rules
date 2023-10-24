@@ -8,9 +8,19 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Check if user has a doc with account details
+    function existsUserDoc() {
+      return userSignedIn()? exists(/databases/$(database)/documents/users/$(request.auth.uid)) : false;
+    }
+
     // Get user role
     function getUserRole() {
       return userSignedIn()? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role : "unknown";
+    }
+
+    // Get user email
+    function getUserEmail() {
+      return userSignedIn()? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email : "";
     }
 
     // Check if user is admin
@@ -20,10 +30,10 @@ service cloud.firestore {
 
     // Manage "users" collection
     match /users/{userId} {
-      allow read: if true || userIsAdmin(); // TODO only proprietary or related person
-      allow create: if (userSignedIn() && request.resource.data.role != "admin") || userIsAdmin(); // TODO user must be proprietary or coach, and ensure role is not assigned to admin
+      allow read: if true || userIsAdmin(); // TODO only proprietary (by ID or email) or related person
+      allow create: if (userSignedIn() && (!('role' in request.resource.data) || request.resource.data.role != "admin")) || userIsAdmin(); // TODO user must be proprietary or coach, and ensure role is not assigned to admin
       allow update: if (request.resource.data.role != "admin") || userIsAdmin(); // TODO only proprietary if exist, otherwise related person, and ensure role is not assigned to admin
-      allow delete: if userIsAdmin(); // admin only
+      allow delete: if (existsUserDoc() && (userId != request.auth.uid) && ('email' in resource.data) && (resource.data.email == getUserEmail() && resource.data.email == request.auth.token.email)) || userIsAdmin(); // only duplicate documents (check by email field)
     }
 
     // Manage "exercises" collection

@@ -1,6 +1,13 @@
 import { DocumentReference } from "firebase/firestore";
-import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
-import { usersCollection } from "../database/collections";
+import {
+  doAddDoc,
+  doAddDocWithId,
+  doUpdateDoc,
+  doGetDocWithID,
+  doGetDocs,
+  changeDocId,
+} from "@/helpers/database/readwrite";
+import { usersCollection } from "@/helpers/database/collections";
 
 /**
  * Define available user roles.
@@ -228,14 +235,23 @@ export function addDocUser(
   user: User | CoachUser | AthleteUser,
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
-  const { uid: _, ...userObj } = user;
-  doAddDoc(usersCollection, userObj, {
-    onSuccess: (docRef: DocumentReference) => {
-      onSuccess?.();
-      user.uid = docRef.id;
-    },
-    onError: onError,
-  });
+  // Get user info
+  const { uid: uid, ...userObj } = user;
+
+  // Crate user document
+  if (uid)
+    doAddDocWithId(usersCollection, uid, userObj, {
+      onSuccess: (docRef: DocumentReference) => onSuccess?.(docRef),
+      onError: onError,
+    });
+  else
+    doAddDoc(usersCollection, userObj, {
+      onSuccess: (docRef: DocumentReference) => {
+        onSuccess?.(docRef);
+        user.uid = docRef.id;
+      },
+      onError: onError,
+    });
 }
 
 /**
@@ -259,4 +275,73 @@ export function updateDocUser(
       onError: onError,
     });
   else onError?.();
+}
+
+/**
+ * Get the document related to a user.
+ *
+ * @param uid ID of the user whose document shall be retrieved.
+ * @param onSuccess function to execute when operation is successful.
+ * @param onError function to execute when operation fails.
+ * @returns user instanced with data in document.
+ */
+export async function loadDocUser(
+  uid: string,
+  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+) {
+  // Get and update used info
+  await doGetDocWithID(usersCollection, uid, {
+    onSuccess: (userData: { [key: string]: any } | undefined) => {
+      const user = userData ? new User({ uid: uid, ...userData }) : undefined;
+      onSuccess?.(user);
+    },
+    onError: onError,
+  });
+}
+
+/**
+ * Get the document of a user based on email field.
+ *
+ * @param field key of the field to check.
+ * @param value value that the field must contain.
+ * @param onSuccess function to execute when operation is successful.
+ * @param onError function to execute when operation fails.
+ * @returns data from user document or undefined if either 0 or more than 1 document were found (ambiguity).
+ */
+export async function getDocUserByField(
+  field: string,
+  value: string,
+  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+) {
+  // Get documents and select first one only
+  let userDoc: { [key: string]: any } | undefined = undefined;
+  await doGetDocs(usersCollection, [[field, "==", value]], {
+    numDocs: 2,
+    onSuccess: (docsData: { [key: string]: any }) => {
+      userDoc = Object.keys(docsData).length == 1 ? docsData : undefined;
+    },
+    onError: onError,
+  })
+    .then(() => onSuccess?.(userDoc))
+    .catch((error) => onError?.(error));
+  return userDoc;
+}
+
+/**
+ * Move a user document from an ID to a new one.
+ *
+ * @param oldId id of the document that must be updated.
+ * @param newId new id of the document.
+ * @param onSuccess function to execute when operation is successful.
+ * @param onError function to execute when operation fails.
+ */
+export function changeDocUserId(
+  oldId: string,
+  newId: string,
+  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+) {
+  changeDocId(usersCollection, oldId, newId, {
+    onSuccess: onSuccess,
+    onError: onError,
+  });
 }
