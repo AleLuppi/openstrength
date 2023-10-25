@@ -1,110 +1,6 @@
 <template>
   <div id="q-app">
     <div class="q-pa-md row q-gutter-sm">
-      <div>
-        <!-- LEFT CARD: EXERCISE LIBRARY + NAVIGATION (?) -->
-        <q-card class="q-ma-sm my-tab-panel">
-          <q-card-section>
-            <q-tabs v-model="selectedTab" class="text-dark">
-              <q-tab
-                v-for="tab in ['Library', 'Tree']"
-                :key="tab"
-                :name="tab"
-                :label="tab"
-              />
-            </q-tabs>
-
-            <q-tab-panels v-model="selectedTab">
-              <q-tab-panel name="Library">
-                <!-- Filter textbox -->
-                <div class="column" style="max-width: 300px">
-                  <q-input
-                    ref="filterRef"
-                    filled
-                    v-model="filter"
-                    label="Filter"
-                  >
-                    <template v-slot:append>
-                      <q-icon
-                        v-if="filter !== ''"
-                        name="clear"
-                        class="cursor-pointer"
-                        @click="resetFilter"
-                      />
-                    </template>
-                  </q-input>
-
-                  <!-- Navigation Tree -->
-                  <!-- TODO: chose if to put uid-->
-                  <q-scroll-area class="rounded-borders" style="height: 70vh">
-                    <q-tree
-                      :nodes="propsExercises"
-                      :filter="filter"
-                      default-expand-all
-                      accordion
-                      tick-strategy="strict"
-                      selected-color="primary"
-                      v-model:selected="selected"
-                      v-model:ticked="ticked"
-                      node-key="uid"
-                    >
-                    </q-tree>
-                  </q-scroll-area>
-                </div>
-              </q-tab-panel>
-
-              <q-tab-panel name="Tree">
-                <!-- NAVIGATION TREE -->
-                <!-- Unselect -->
-                <div class="q-gutter-sm">
-                  <q-btn
-                    v-if="selected"
-                    size="sm"
-                    color="red"
-                    @click="unselectNode"
-                    label="Clear Selection"
-                  ></q-btn>
-                </div>
-
-                <!-- Filter textbox -->
-                <div class="column" style="max-width: 300px">
-                  <q-input
-                    ref="filterRef"
-                    filled
-                    v-model="filter"
-                    label="Filter"
-                  >
-                    <template v-slot:append>
-                      <q-icon
-                        v-if="filter !== ''"
-                        name="clear"
-                        class="cursor-pointer"
-                        @click="resetFilter"
-                      />
-                    </template>
-                  </q-input>
-
-                  <!-- Navigation Tree -->
-                  <!-- TODO: chose if to put uid-->
-                  <q-scroll-area class="rounded-borders" style="height: 70vh">
-                    <q-tree
-                      :nodes="props"
-                      :filter="filter"
-                      default-expand-all
-                      accordion
-                      selected-color="primary"
-                      v-model:selected="selected"
-                      node-key="label"
-                    >
-                    </q-tree>
-                  </q-scroll-area>
-                </div>
-              </q-tab-panel>
-            </q-tab-panels>
-          </q-card-section>
-        </q-card>
-      </div>
-
       <!-- CENTRAL TAB: FILTERING RIBBON + PROGRAM TABLES -->
       <div class="">
         <!-- FILTERS RIBBON -->
@@ -212,30 +108,54 @@
         </q-card>
       </div>
 
-      <!-- RIGHT TAB: 1RM TABLE + CHARTS -->
-      <div class="">
-        <div class="q-ma-sm">
-          <q-card class="small-ref-card">
+      <div>
+        <div v-if="isHidden">
+          <q-card class="hidden-card">
             <q-card-section>
-              <p>1RM Table</p>
+              <p>Ciao</p>
             </q-card-section>
+            <q-card-actions class="align-right">
+              <q-btn
+                @click="showSmall"
+                icon="fa-solid fa-angles-left"
+                outlined
+              ></q-btn>
+            </q-card-actions>
           </q-card>
         </div>
-
-        <!-- CHARTS -->
-        <q-card class="q-ma-sm">
-          <q-card-section>
-            <q-scroll-area dark class="rounded-borders" style="height: 56vh">
-              <div v-for="n in 6" :key="n" class="q-px-xs q-py-sm">
-                <q-card class="chart-card">
-                  <q-card-section>
-                    <p>Chart</p>
-                  </q-card-section>
-                </q-card>
-              </div>
-            </q-scroll-area>
-          </q-card-section>
-        </q-card>
+        <div v-if="isSmall">
+          <q-card class="small-card">
+            <q-card-section>
+              <p>Ciao</p>
+            </q-card-section>
+            <q-card-actions class="align-right">
+              <q-btn
+                @click="showBig"
+                icon="fa-solid fa-angles-left"
+                outlined
+              ></q-btn>
+              <q-btn
+                @click="showHidden"
+                icon="fa-solid fa-angles-right"
+                outlined
+              ></q-btn>
+            </q-card-actions>
+          </q-card>
+        </div>
+        <div v-if="isBig">
+          <q-card class="big-card">
+            <q-card-section>
+              <p>Ciao</p>
+            </q-card-section>
+            <q-card-actions class="align-right">
+              <q-btn
+                @click="showSmall"
+                icon="fa-solid fa-angles-right"
+                outlined
+              ></q-btn>
+            </q-card-actions>
+          </q-card>
+        </div>
       </div>
     </div>
   </div>
@@ -244,123 +164,41 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-// LEFT TAB NAVIGATION TREE
-const selectedTab = ref("Library"); // main tab to show
-const selected = ref(null);
-const filter = ref("");
-const filterRef = ref(null);
+const isHidden = ref(true); // Set your initial values here
+const isSmall = ref(false); // Set your initial values here
+const isBig = ref(false); // Set your initial values here
 
-const unselectNode = () => {
-  selected.value = null;
+const showHidden = () => {
+  isHidden.value = true;
+  isSmall.value = false;
+  isBig.value = false;
 };
 
-const props = [
-  {
-    label: "Week 1",
-    uid: "1",
-    icon: "calendar_view_week",
-    children: [
-      {
-        label: "Day A",
-        uid: "2",
-        icon: "calendar_view_day",
-        children: [
-          { label: "Panca", uid: "3" },
-          { label: "Exercise 2", uid: "4" },
-          { label: "Exercise 3", uid: "5" },
-        ],
-      },
-      {
-        label: "Day B",
-        uid: "6",
-        icon: "calendar_view_day",
-        children: [
-          { label: "Exercise B", uid: "7" },
-          { label: "Exercise F", uid: "8" },
-        ],
-      },
-      {
-        label: "Day C",
-        uid: "9",
-        icon: "calendar_view_day",
-        children: [
-          { label: "Panca", uid: "10" },
-          { label: "Exercise 77", uid: "11" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Week 2",
-    uid: "12",
-    icon: "calendar_view_week",
-    children: [
-      {
-        label: "Day A",
-        uid: "13",
-        icon: "calendar_view_day",
-        children: [
-          { label: "Panca", uid: "14" },
-          { label: "Exercise 2", uid: "15" },
-          { label: "Exercise 3", uid: "16" },
-        ],
-      },
-      {
-        label: "Day B",
-        uid: "17",
-        icon: "calendar_view_day",
-        children: [
-          { label: "Exercise B", uid: "18" },
-          { label: "Exercise F", uid: "19" },
-        ],
-      },
-      {
-        label: "Day C",
-        uid: "20",
-        icon: "calendar_view_day",
-        children: [
-          { label: "Panca", uid: "21" },
-          { label: "Exercise 77", uid: "22" },
-        ],
-      },
-    ],
-  },
-];
-
-const resetFilter = () => {
-  filter.value = "";
-  filterRef.value.focus();
+const showSmall = () => {
+  isHidden.value = false;
+  isSmall.value = true;
+  isBig.value = false;
 };
 
-// LEFT TAB EXERCISE LIBRARY
-const ticked = ref<string[]>([]);
-const propsExercises = [
-  {
-    label: "Panca",
-    uid: "2",
-    children: [
-      { label: "Panca larga", uid: "3" },
-      { label: "Panca stretta", uid: "4" },
-      { label: "Panca Mezzo ROM", uid: "5" },
-    ],
-  },
-  {
-    label: "Pull up",
-    uid: "6",
-    children: [
-      { label: "Pull up zavorrati", uid: "7" },
-      { label: "Pull up con fermo in alto", uid: "8" },
-    ],
-  },
-  {
-    label: "Squat",
-    uid: "9",
-    children: [
-      { label: "Squat esplosivo", uid: "10" },
-      { label: "Squat fermo in buca", uid: "11" },
-    ],
-  },
-];
+const showBig = () => {
+  isHidden.value = false;
+  isSmall.value = false;
+  isBig.value = true;
+};
+
+document.addEventListener("keydown", (event) => {
+  // Check if the pressed key is the SPACE key (key code 32)
+  if (event.keyCode === 32) {
+    // Trigger the button click
+    if (isHidden.value === true) {
+      showSmall();
+    } else if (isSmall.value === true) {
+      showBig();
+    } else if (isBig.value === true) {
+      showHidden();
+    }
+  }
+});
 
 // FILTERS
 // Filter on weeks
@@ -432,5 +270,34 @@ const filterExercises = (val, update) => {
 .my-tab-panel {
   width: 240px;
   height: 87vh;
+}
+
+/* Hidden Card */
+.hidden-card {
+  width: 50px;
+  height: 100%; /* Covers the whole available height */
+  position: fixed;
+  right: 0; /* Align to the right */
+  top: 0; /* Vertically centered */
+}
+
+/* Small Card */
+.small-card {
+  width: 300px;
+  height: 100%; /* Covers the whole available height */
+  position: fixed; /* In overlay with respect to the content */
+  z-index: 9999; /* Adjust the z-index as needed to appear over other content */
+  right: 0; /* Align to the right */
+  top: 0; /* Vertically centered */
+}
+
+/* Big Card */
+.big-card {
+  width: 500px;
+  height: 100%; /* Covers the whole available height */
+  position: fixed; /* In overlay with respect to the content */
+  z-index: 9999; /* Adjust the z-index as needed to appear over other content */
+  right: 0; /* Align to the right */
+  top: 0; /* Vertically centered */
 }
 </style>
