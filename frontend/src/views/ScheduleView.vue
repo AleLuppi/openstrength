@@ -120,11 +120,7 @@
     </div>
 
     <!-- 2a: CASE WITH SMALL DRAWER ON CHARTS -->
-    <div
-      v-else-if="isSmall && onCharts"
-      class="row full-page"
-      style="background-color: blue"
-    >
+    <div v-else-if="isSmall && onCharts" class="row full-page">
       <div class="col col-grow" style="height: 100%">
         <!-- FILTERS RIBBON -->
         <q-card class="q-ma-sm">
@@ -226,7 +222,7 @@
 
       <!-- RIGHT CARD SMALL WIDTH -->
       <div>
-        <q-card class="small-card no-shadow">
+        <q-card class="small-card">
           <div class="row justify-between">
             <q-card-section>
               <p class="text-h6-no-margin">Charts Section</p>
@@ -244,6 +240,9 @@
               ></q-btn>
             </q-card-actions>
           </div>
+          <q-card-section>
+            <ChartSelector></ChartSelector>
+          </q-card-section>
         </q-card>
       </div>
 
@@ -370,7 +369,7 @@
 
       <!-- RIGHT CARD SMALL WIDTH -->
       <div>
-        <q-card class="small-card no-shadow">
+        <q-card class="small-card">
           <div class="row justify-between">
             <q-card-section>
               <p class="text-h6-no-margin">Reference table Section</p>
@@ -409,11 +408,7 @@
     </div>
 
     <!-- 3a: CASE WITH BIG DRAWER AND CHART SECTION -->
-    <div
-      v-else-if="isBig && onCharts"
-      class="row full-page"
-      style="background-color: orange"
-    >
+    <div v-else-if="isBig && onCharts" class="row full-page">
       <div class="col col-grow" style="height: 100%">
         <!-- FILTERS RIBBON -->
         <q-card class="q-ma-sm">
@@ -528,6 +523,9 @@
               ></q-btn>
             </q-card-actions>
           </div>
+          <q-card-section>
+            <ChartSelector></ChartSelector>
+          </q-card-section>
         </q-card>
       </div>
 
@@ -694,6 +692,7 @@
 /* eslint-disable */
 import { ref } from "vue";
 import RightDrawerMenu from "@/components/layout/RightDrawerMenu.vue";
+import ChartSelector from "@/components/charts/ChartSelector.vue";
 
 const isHidden = ref(true); // Set your initial values here
 const isSmall = ref(false); // Set your initial values here
@@ -819,7 +818,7 @@ const filterExercises = (val, update) => {
 
 /* Small Card */
 .small-card {
-  width: 25vw;
+  width: 30vw;
   height: 100%; /* Covers the whole available height */
   right: 0; /* Align to the right */
   top: 0; /* Vertically centered */
