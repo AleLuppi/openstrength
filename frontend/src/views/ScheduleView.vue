@@ -227,21 +227,23 @@
       <!-- RIGHT CARD SMALL WIDTH -->
       <div>
         <q-card class="small-card no-shadow">
-          <q-card-section>
-            <p>Charts Section</p>
-          </q-card-section>
-          <q-card-actions class="align-right">
-            <q-btn
-              @click="showBig"
-              icon="fa-solid fa-angles-left"
-              outlined
-            ></q-btn>
-            <q-btn
-              @click="showHidden"
-              icon="fa-solid fa-angles-right"
-              outlined
-            ></q-btn>
-          </q-card-actions>
+          <div class="row justify-between">
+            <q-card-section>
+              <p class="text-h6-no-margin">Charts Section</p>
+            </q-card-section>
+            <q-card-actions class="align-right">
+              <q-btn
+                @click="showBig"
+                icon="fa-solid fa-angles-left"
+                flat
+              ></q-btn>
+              <q-btn
+                @click="showHidden"
+                icon="fa-solid fa-angles-right"
+                flat
+              ></q-btn>
+            </q-card-actions>
+          </div>
         </q-card>
       </div>
 
@@ -369,21 +371,24 @@
       <!-- RIGHT CARD SMALL WIDTH -->
       <div>
         <q-card class="small-card no-shadow">
-          <q-card-section>
-            <p>Reference table Section</p>
-          </q-card-section>
-          <q-card-actions class="align-right">
-            <q-btn
-              @click="showBig"
-              icon="fa-solid fa-angles-left"
-              outlined
-            ></q-btn>
-            <q-btn
-              @click="showHidden"
-              icon="fa-solid fa-angles-right"
-              outlined
-            ></q-btn>
-          </q-card-actions>
+          <div class="row justify-between">
+            <q-card-section>
+              <p class="text-h6-no-margin">Reference table Section</p>
+            </q-card-section>
+
+            <q-card-actions class="align-right">
+              <q-btn
+                @click="showBig"
+                icon="fa-solid fa-angles-left"
+                flat
+              ></q-btn>
+              <q-btn
+                @click="showHidden"
+                icon="fa-solid fa-angles-right"
+                flat
+              ></q-btn>
+            </q-card-actions>
+          </div>
         </q-card>
       </div>
 
@@ -511,16 +516,18 @@
       <!-- RIGHT CARD BIG WIDTH-->
       <div>
         <q-card class="big-card">
-          <q-card-section>
-            <p>Charts Section Big</p>
-          </q-card-section>
-          <q-card-actions class="align-right">
-            <q-btn
-              @click="showSmall"
-              icon="fa-solid fa-angles-right"
-              outlined
-            ></q-btn>
-          </q-card-actions>
+          <div class="row justify-between">
+            <q-card-section>
+              <p class="text-h6-no-margin">Charts Section Big</p>
+            </q-card-section>
+            <q-card-actions class="align-right">
+              <q-btn
+                @click="showSmall"
+                icon="fa-solid fa-angles-right"
+                flat
+              ></q-btn>
+            </q-card-actions>
+          </div>
         </q-card>
       </div>
 
@@ -648,16 +655,18 @@
       <!-- RIGHT CARD BIG WIDTH-->
       <div>
         <q-card class="big-card">
-          <q-card-section>
-            <p>Reference Table Section Big</p>
-          </q-card-section>
-          <q-card-actions class="align-right">
-            <q-btn
-              @click="showSmall"
-              icon="fa-solid fa-angles-right"
-              outlined
-            ></q-btn>
-          </q-card-actions>
+          <div class="row justify-between">
+            <q-card-section>
+              <p class="text-h6-no-margin">Reference Table Section Big</p>
+            </q-card-section>
+            <q-card-actions class="align-right">
+              <q-btn
+                @click="showSmall"
+                icon="fa-solid fa-angles-right"
+                flat
+              ></q-btn>
+            </q-card-actions>
+          </div>
         </q-card>
       </div>
 

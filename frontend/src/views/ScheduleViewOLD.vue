@@ -101,6 +101,9 @@
         </q-card>
       </div>
 
+      <!-- NO RIGHT CARD TO SHOW -->
+
+
       <!-- RIGHT DRAWER MENU-->
       <div>
         <q-list>
@@ -236,7 +239,7 @@
         </q-card>
       </div>
 
-      <!-- SMALL WIDTH -->
+      <!-- RIGHT CARD SMALL WIDTH -->
       <div>
         <q-card class="small-card no-shadow">
           <q-card-section>
@@ -392,7 +395,7 @@
         </q-card>
       </div>
 
-      <!-- SMALL WIDTH -->
+      <!-- RIGHT CARD SMALL WIDTH -->
       <div>
         <q-card class="small-card no-shadow">
           <q-card-section>
@@ -548,7 +551,7 @@
         </q-card>
       </div>
 
-      <!-- BIG WIDTH DRAWER CHILD CARD-->
+      <!-- RIGHT CARD BIG WIDTH-->
       <div>
         <q-card class="big-card">
           <q-card-section>
@@ -564,7 +567,7 @@
         </q-card>
       </div>
 
-      <!-- HIDDEN DRAWER -->
+      <!-- RIGHT DRAWER MENU -->
       <div style="background-color: beige; z-index: 10">
         <q-list>
           <!-- Display each page title as a separate item -->
@@ -699,7 +702,7 @@
         </q-card>
       </div>
 
-      <!-- BIG WIDTH-->
+      <!-- RIGHT CARD BIG WIDTH-->
       <div>
         <q-card class="big-card">
           <q-card-section>
@@ -715,7 +718,7 @@
         </q-card>
       </div>
 
-      <!-- HIDDEN DRAWER -->
+      <!-- RIGHT DRAWER MENU -->
       <div style="background-color: beige; z-index: 10">
         <q-list>
           <!-- Display each page title as a separate item -->
