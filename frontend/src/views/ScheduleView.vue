@@ -263,11 +263,7 @@
     </div>
 
     <!-- 2b: CASE WITH SMALL DRAWER ON REFERENCE TABLE -->
-    <div
-      v-else-if="isSmall && onReferenceTable"
-      class="row full-page"
-      style="background-color: blue"
-    >
+    <div v-else-if="isSmall && onReferenceTable" class="row full-page">
       <div class="col col-grow" style="height: 100%">
         <!-- FILTERS RIBBON -->
         <q-card class="q-ma-sm">
@@ -546,11 +542,7 @@
     </div>
 
     <!-- 3b: CASE WITH BIG DRAWER AND REFERENCE TABLE -->
-    <div
-      v-else-if="isBig && onReferenceTable"
-      class="row full-page"
-      style="background-color: orange"
-    >
+    <div v-else-if="isBig && onReferenceTable" class="row full-page">
       <div class="col col-grow" style="height: 100%">
         <!-- FILTERS RIBBON -->
         <q-card class="q-ma-sm">
