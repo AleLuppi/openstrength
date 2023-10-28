@@ -101,22 +101,34 @@
         </q-card>
       </div>
 
-      <!-- NO RIGHT CARD TO SHOW -->
-
       <!-- RIGHT DRAWER MENU-->
-      <RightDrawerMenu
-        :zIndex="0"
-        :isHidden="isHidden"
-        :isSmall="isSmall"
-        :isBig="isBig"
-        :onCharts="onCharts"
-        :onReferenceTable="onReferenceTable"
-        @update:isHidden="updateIsHidden"
-        @update:isSmall="updateIsSmall"
-        @update:isBig="updateIsBig"
-        @update:onCharts="updateOnCharts"
-        @update:onReferenceTable="updateOnReferenceTable"
-      />
+      <div>
+        <q-list>
+          <!-- Display each page title as a separate item -->
+          <q-item
+            clickable
+            active-class="q-pa-xs os-child-bg-primary"
+            class="q-pa-xs link-child os-text-unselected"
+            @click="showCharts"
+          >
+            <!-- Icon over text on mini drawer -->
+            <q-card flat class="hidden-card bg-inherit">
+              <q-avatar icon="fa-solid fa-chart-line" />
+            </q-card>
+          </q-item>
+          <q-item
+            clickable
+            active-class="q-pa-xs os-child-bg-primary"
+            class="q-pa-xs link-child os-text-unselected"
+            @click="showReferenceTable"
+          >
+            <!-- Icon over text on mini drawer -->
+            <q-card flat class="hidden-card bg-inherit">
+              <q-avatar icon="fa-solid fa-table-list" />
+            </q-card>
+          </q-item>
+        </q-list>
+      </div>
     </div>
 
     <!-- 2a: CASE WITH SMALL DRAWER ON CHARTS -->
@@ -224,7 +236,7 @@
         </q-card>
       </div>
 
-      <!-- RIGHT CARD SMALL WIDTH -->
+      <!-- SMALL WIDTH -->
       <div>
         <q-card class="small-card no-shadow">
           <q-card-section>
@@ -246,19 +258,33 @@
       </div>
 
       <!-- RIGHT DRAWER MENU-->
-      <RightDrawerMenu
-        :zIndex="0"
-        :isHidden="isHidden"
-        :isSmall="isSmall"
-        :isBig="isBig"
-        :onCharts="onCharts"
-        :onReferenceTable="onReferenceTable"
-        @update:isHidden="updateIsHidden"
-        @update:isSmall="updateIsSmall"
-        @update:isBig="updateIsBig"
-        @update:onCharts="updateOnCharts"
-        @update:onReferenceTable="updateOnReferenceTable"
-      />
+      <div style="background-color: beige">
+        <q-list>
+          <!-- Display each page title as a separate item -->
+          <q-item
+            clickable
+            active-class="q-pa-xs os-child-bg-primary"
+            class="q-pa-xs link-child os-text-unselected"
+            @click="showCharts"
+          >
+            <!-- Icon over text on mini drawer -->
+            <q-card flat class="hidden-card bg-inherit">
+              <q-avatar icon="fa-solid fa-chart-line" />
+            </q-card>
+          </q-item>
+          <q-item
+            clickable
+            active-class="q-pa-xs os-child-bg-primary"
+            class="q-pa-xs link-child os-text-unselected"
+            @click="showReferenceTable"
+          >
+            <!-- Icon over text on mini drawer -->
+            <q-card flat class="hidden-card bg-inherit">
+              <q-avatar icon="fa-solid fa-table-list" />
+            </q-card>
+          </q-item>
+        </q-list>
+      </div>
     </div>
 
     <!-- 2b: CASE WITH SMALL DRAWER ON REFERENCE TABLE -->
@@ -366,7 +392,7 @@
         </q-card>
       </div>
 
-      <!-- RIGHT CARD SMALL WIDTH -->
+      <!-- SMALL WIDTH -->
       <div>
         <q-card class="small-card no-shadow">
           <q-card-section>
@@ -388,19 +414,33 @@
       </div>
 
       <!-- RIGHT DRAWER MENU-->
-      <RightDrawerMenu
-        :zIndex="0"
-        :isHidden="isHidden"
-        :isSmall="isSmall"
-        :isBig="isBig"
-        :onCharts="onCharts"
-        :onReferenceTable="onReferenceTable"
-        @update:isHidden="updateIsHidden"
-        @update:isSmall="updateIsSmall"
-        @update:isBig="updateIsBig"
-        @update:onCharts="updateOnCharts"
-        @update:onReferenceTable="updateOnReferenceTable"
-      />
+      <div style="background-color: beige">
+        <q-list>
+          <!-- Display each page title as a separate item -->
+          <q-item
+            clickable
+            active-class="q-pa-xs os-child-bg-primary"
+            class="q-pa-xs link-child os-text-unselected"
+            @click="showCharts"
+          >
+            <!-- Icon over text on mini drawer -->
+            <q-card flat class="hidden-card bg-inherit">
+              <q-avatar icon="fa-solid fa-chart-line" />
+            </q-card>
+          </q-item>
+          <q-item
+            clickable
+            active-class="q-pa-xs os-child-bg-primary"
+            class="q-pa-xs link-child os-text-unselected"
+            @click="showReferenceTable"
+          >
+            <!-- Icon over text on mini drawer -->
+            <q-card flat class="hidden-card bg-inherit">
+              <q-avatar icon="fa-solid fa-table-list" />
+            </q-card>
+          </q-item>
+        </q-list>
+      </div>
     </div>
 
     <!-- 3a: CASE WITH BIG DRAWER AND CHART SECTION -->
@@ -508,7 +548,7 @@
         </q-card>
       </div>
 
-      <!-- RIGHT CARD BIG WIDTH-->
+      <!-- BIG WIDTH DRAWER CHILD CARD-->
       <div>
         <q-card class="big-card">
           <q-card-section>
@@ -524,20 +564,34 @@
         </q-card>
       </div>
 
-      <!-- RIGHT DRAWER MENU -->
-      <RightDrawerMenu
-        :zIndex="10"
-        :isHidden="isHidden"
-        :isSmall="isSmall"
-        :isBig="isBig"
-        :onCharts="onCharts"
-        :onReferenceTable="onReferenceTable"
-        @update:isHidden="updateIsHidden"
-        @update:isSmall="updateIsSmall"
-        @update:isBig="updateIsBig"
-        @update:onCharts="updateOnCharts"
-        @update:onReferenceTable="updateOnReferenceTable"
-      />
+      <!-- HIDDEN DRAWER -->
+      <div style="background-color: beige; z-index: 10">
+        <q-list>
+          <!-- Display each page title as a separate item -->
+          <q-item
+            clickable
+            active-class="q-pa-xs os-child-bg-primary"
+            class="q-pa-xs link-child os-text-unselected"
+            @click="showSmall"
+          >
+            <!-- Icon over text on mini drawer -->
+            <q-card flat class="hidden-card bg-inherit">
+              <q-avatar icon="fa-solid fa-chart-line" />
+            </q-card>
+          </q-item>
+          <q-item
+            clickable
+            active-class="q-pa-xs os-child-bg-primary"
+            class="q-pa-xs link-child os-text-unselected"
+            @click="showSmall"
+          >
+            <!-- Icon over text on mini drawer -->
+            <q-card flat class="hidden-card bg-inherit">
+              <q-avatar icon="fa-solid fa-table-list" />
+            </q-card>
+          </q-item>
+        </q-list>
+      </div>
     </div>
 
     <!-- 3b: CASE WITH BIG DRAWER AND REFERENCE TABLE -->
@@ -645,7 +699,7 @@
         </q-card>
       </div>
 
-      <!-- RIGHT CARD BIG WIDTH-->
+      <!-- BIG WIDTH-->
       <div>
         <q-card class="big-card">
           <q-card-section>
@@ -661,20 +715,34 @@
         </q-card>
       </div>
 
-      <!-- RIGHT DRAWER MENU -->
-      <RightDrawerMenu
-        :zIndex="10"
-        :isHidden="isHidden"
-        :isSmall="isSmall"
-        :isBig="isBig"
-        :onCharts="onCharts"
-        :onReferenceTable="onReferenceTable"
-        @update:isHidden="updateIsHidden"
-        @update:isSmall="updateIsSmall"
-        @update:isBig="updateIsBig"
-        @update:onCharts="updateOnCharts"
-        @update:onReferenceTable="updateOnReferenceTable"
-      />
+      <!-- HIDDEN DRAWER -->
+      <div style="background-color: beige; z-index: 10">
+        <q-list>
+          <!-- Display each page title as a separate item -->
+          <q-item
+            clickable
+            active-class="q-pa-xs os-child-bg-primary"
+            class="q-pa-xs link-child os-text-unselected"
+            @click="showSmall"
+          >
+            <!-- Icon over text on mini drawer -->
+            <q-card flat class="hidden-card bg-inherit">
+              <q-avatar icon="fa-solid fa-chart-line" />
+            </q-card>
+          </q-item>
+          <q-item
+            clickable
+            active-class="q-pa-xs os-child-bg-primary"
+            class="q-pa-xs link-child os-text-unselected"
+            @click="showSmall"
+          >
+            <!-- Icon over text on mini drawer -->
+            <q-card flat class="hidden-card bg-inherit">
+              <q-avatar icon="fa-solid fa-table-list" />
+            </q-card>
+          </q-item>
+        </q-list>
+      </div>
     </div>
 
     <div></div>
@@ -682,9 +750,7 @@
 </template>
 
 <script setup lang="ts">
-/* eslint-disable */
 import { ref } from "vue";
-import RightDrawerMenu from "@/components/layout/RightDrawerMenu.vue";
 
 const isHidden = ref(true); // Set your initial values here
 const isSmall = ref(false); // Set your initial values here
@@ -713,26 +779,17 @@ const showBig = () => {
 const onCharts = ref(true); // Set your initial values here
 const onReferenceTable = ref(false); // Set your initial values here
 
+const showCharts = () => {
+  onCharts.value = true;
+  onReferenceTable.value = false;
 
-
-const updateIsHidden = (value: boolean) => {
-  isHidden.value = value;
+  showSmall();
 };
+const showReferenceTable = () => {
+  onCharts.value = false;
+  onReferenceTable.value = true;
 
-const updateIsSmall = (value: boolean) => {
-  isSmall.value = value;
-};
-
-const updateIsBig = (value: boolean) => {
-  isBig.value = value;
-};
-
-const updateOnCharts = (value: boolean) => {
-  onCharts.value = value;
-};
-
-const updateOnReferenceTable = (value: boolean) => {
-  onReferenceTable.value = value;
+  showSmall();
 };
 
 document.addEventListener("keydown", (event) => {

@@ -1,6 +1,11 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header v-if="showHeader" bordered class="bg-lightest text-light">
+    <q-header
+      v-if="showHeader"
+      bordered
+      class="bg-lightest text-light"
+      style="z-index: 9999"
+    >
       <q-toolbar v-if="$q.screen.lt.md">
         <q-btn
           v-if="!leftDrawerOpen || $q.screen.lt.md"
@@ -32,6 +37,7 @@
       mini
       :mini-width="100"
       class="bg-lightest"
+      style="z-index: 9999"
     >
       <DrawerList />
 
