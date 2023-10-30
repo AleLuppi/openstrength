@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, PropType } from "vue";
+import { ref, computed, watch, PropType } from "vue";
 import { useI18n } from "vue-i18n";
 import type { QForm } from "quasar";
 import {
@@ -132,14 +132,18 @@ const variantVideo = ref<string>();
 const variantDescription = ref<string>();
 
 // Update shown info according to selected variant
-function loadVariant(variant: ExerciseVariant) {
-  variantName.value = variant.name;
-  variantMuscleGroups.value = variant.muscleGroups;
-  variantLoadType.value = variant.loadType;
-  variantEquipment.value = variant.equipment;
-  variantVideo.value = variant.videoUrl;
-  variantDescription.value = variant.description;
-}
+watch(
+  props.variant,
+  (variant: ExerciseVariant) => {
+    variantName.value = variant.name;
+    variantMuscleGroups.value = variant.muscleGroups;
+    variantLoadType.value = variant.loadType;
+    variantEquipment.value = variant.equipment;
+    variantVideo.value = variant.videoUrl;
+    variantDescription.value = variant.description;
+  },
+  { immediate: true },
+);
 
 // Get options for select fields
 const variantMuscleGroupsOptions = computed(() =>
@@ -209,11 +213,4 @@ function onReset() {
   variantVideo.value = undefined;
   variantDescription.value = undefined;
 }
-
-/**
- * Set inputs according to input variant.
- */
-onMounted(() => {
-  loadVariant(props.variant);
-});
 </script>
