@@ -156,6 +156,18 @@ export class Exercise {
   }
 
   /**
+   * Duplicate exercise.
+   *
+   * @returns a new exercise with duplicate fields.
+   */
+  duplicate() {
+    return new Exercise({
+      ...this,
+      variants: this.variants?.map((variant) => variant.duplicate()),
+    });
+  }
+
+  /**
    * Store a new exercise on database.
    *
    * @param exercise element that shall be stored.
@@ -267,6 +279,19 @@ export class ExerciseVariant {
     this.muscleGroups = muscleGroups;
     this.equipment = equipment;
     this.videoUrl = videoUrl;
+  }
+
+  /**
+   * Duplicate exercise variant.
+   *
+   * @param shallow avoid copying identifying fields such as uid, name, exercise.
+   * @returns a new variant with duplicate fields.
+   */
+  duplicate(shallow: boolean = false) {
+    return new ExerciseVariant({
+      ...this,
+      ...(shallow && { uid: undefined, name: undefined, exercise: undefined }),
+    });
   }
 
   /**

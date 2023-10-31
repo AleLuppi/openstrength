@@ -1,7 +1,7 @@
 import { DocumentReference } from "firebase/firestore";
 import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
 import { programsCollection } from "@/helpers/database/collections";
-import { ExerciseVariant } from "../exercises/exercise";
+import { Exercise, ExerciseVariant } from "../exercises/exercise";
 
 /**
  * Training program properties.
@@ -41,11 +41,58 @@ export type ProgramLineProps = {
   program?: Program;
 
   // Schedule info
-  week?: string | number;
-  day?: string | number;
+  scheduleWeek?: string | number;
+  scheduleDay?: string | number;
+  scheduleOrder?: string | number;
 
   // Exercise-related info
-  exercise?: ExerciseVariant;
+  exercise?: Exercise;
+  exerciseVariant?: ExerciseVariant;
+
+  // Line-specific info
+  setsBaseValue?: string;
+  setsReference?: ProgramLine;
+  repsBaseValue?: string;
+  repsReference?: ProgramLine;
+  loadBaseValue?: string;
+  loadReference?: ProgramLine;
+  rpeBaseValue?: string;
+  rpeReference?: ProgramLine;
+
+  // Additional line info
+  note?: string;
+  requestFeedbackText?: boolean;
+  requestFeedbackVideo?: boolean;
+
+  // Computed line-specific info
+  setsRequire?: boolean;
+  setsOperation?: string;
+  setsRangeMin?: number;
+  setsRangeMax?: number;
+  setsValue?: number;
+  setsSupposedValue?: number;
+  setsComputedValue?: number;
+  repsRequire?: boolean;
+  repsOperation?: string;
+  repsRangeMin?: number;
+  repsRangeMax?: number;
+  repsValue?: number;
+  repsSupposedValue?: number;
+  repsComputedValue?: number;
+  loadRequire?: boolean;
+  loadOperation?: string;
+  loadRangeMin?: number;
+  loadRangeMax?: number;
+  loadValue?: number;
+  loadSupposedValue?: number;
+  loadComputedValue?: number;
+  rpeRequire?: boolean;
+  rpeOperation?: string;
+  rpeRangeMin?: number;
+  rpeRangeMax?: number;
+  rpeValue?: number;
+  rpeSupposedValue?: number;
+  rpeComputedValue?: number;
 };
 
 /**
@@ -144,11 +191,73 @@ export class ProgramLine {
   // Basic program line info
   uid?: string;
 
-  // TODO
+  // Father program instance
+  program?: Program;
 
-  constructor({ uid }: ProgramLineProps = {}) {
-    // TODO
+  // Schedule info
+  scheduleWeek?: string | number;
+  scheduleDay?: string | number;
+  scheduleOrder?: string | number;
+
+  // Exercise-related info
+  exercise?: Exercise;
+  exerciseVariant?: ExerciseVariant;
+
+  // Line-specific info
+  setsBaseValue?: string;
+  setsReference?: ProgramLine;
+  repsBaseValue?: string;
+  repsReference?: ProgramLine;
+  loadBaseValue?: string;
+  loadReference?: ProgramLine;
+  rpeBaseValue?: string;
+  rpeReference?: ProgramLine;
+
+  // Additional line info
+  note?: string;
+  requestFeedbackText?: boolean;
+  requestFeedbackVideo?: boolean;
+
+  // TODO computed properties
+
+  constructor({
+    uid,
+    program,
+    scheduleWeek,
+    scheduleDay,
+    scheduleOrder,
+    exercise,
+    exerciseVariant,
+    setsBaseValue,
+    setsReference,
+    repsBaseValue,
+    repsReference,
+    loadBaseValue,
+    loadReference,
+    rpeBaseValue,
+    rpeReference,
+    note,
+    requestFeedbackText,
+    requestFeedbackVideo,
+  }: ProgramLineProps = {}) {
     this.uid = uid;
+    this.program = program;
+    this.scheduleWeek = scheduleWeek;
+    this.scheduleDay = scheduleDay;
+    this.scheduleOrder = scheduleOrder;
+    this.exercise = exercise;
+    this.exerciseVariant = exerciseVariant;
+    this.setsBaseValue = setsBaseValue;
+    this.setsReference = setsReference;
+    this.repsBaseValue = repsBaseValue;
+    this.repsReference = repsReference;
+    this.loadBaseValue = loadBaseValue;
+    this.loadReference = loadReference;
+    this.rpeBaseValue = rpeBaseValue;
+    this.rpeReference = rpeReference;
+    this.note = note;
+    this.requestFeedbackText = requestFeedbackText;
+    this.requestFeedbackVideo = requestFeedbackVideo;
   }
 }
 
