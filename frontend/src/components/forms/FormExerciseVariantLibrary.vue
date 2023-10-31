@@ -151,16 +151,12 @@ const variantMuscleGroupsOptions = computed(() =>
     Object.keys(ExerciseMuscleGroups).concat(
       props.optionsMuscleGroups ?? props.variant.muscleGroups ?? [],
     ),
-  )
-    .sort()
-    .map((val) => ({
-      label: Object.values(ExerciseMuscleGroups).includes(val)
-        ? i18n.t(
-            "coach.exercise_management.fields.musclegroups_available." + val,
-          )
-        : val,
-      value: val,
-    })),
+  ).map((val) => ({
+    label: Object.values(ExerciseMuscleGroups).includes(val)
+      ? i18n.t("coach.exercise_management.fields.musclegroups_available." + val)
+      : val,
+    value: val,
+  })),
 );
 const variantLoadTypeOptions = computed(() =>
   Object.keys(ExerciseLoadType)
@@ -177,14 +173,12 @@ const variantEquipmentOptions = computed(() =>
     Object.keys(ExerciseEquipment).concat(
       props.optionsEquipment ?? props.variant.equipment ?? [],
     ),
-  )
-    .sort()
-    .map((val) => ({
-      label: Object.values(ExerciseEquipment).includes(val)
-        ? i18n.t("coach.exercise_management.fields.equipment_available." + val)
-        : val,
-      value: val,
-    })),
+  ).map((val) => ({
+    label: Object.values(ExerciseEquipment).includes(val)
+      ? i18n.t("coach.exercise_management.fields.equipment_available." + val)
+      : val,
+    value: val,
+  })),
 );
 
 /**
