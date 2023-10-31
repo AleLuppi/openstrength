@@ -1,7 +1,11 @@
 <template>
   <!-- TODO delete outer div -->
   <div>
-    <osTableSheet v-model="tableData" class="q-ma-sm"></osTableSheet>
+    <TableProgramBuilder
+      :program="program"
+      :exercises="coachInfo.exercises"
+      class="q-ma-sm"
+    ></TableProgramBuilder>
 
     <div class="q-pa-md row q-gutter-sm">
       <div>
@@ -245,14 +249,67 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { onMounted, ref } from "vue";
+import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
+import { Program, ProgramLine } from "@/helpers/programs/program";
+import { useCoachInfoStore } from "@/stores/coachInfo";
 
-// TODO delete
-const tableData = ref([
-  { ciao: "campo 11", riciao: "campo 22", straciao: "campo 33" },
-  { straciao: "voce 1", ciao: "voce 3" },
-]);
-watch(tableData, (val) => console.log("OLEEE:", val), { deep: true });
+// TODO fix user
+const coachInfo = useCoachInfoStore();
+onMounted(() => {
+  coachInfo.loadExercises(undefined, true);
+});
+
+// TODO load programs
+const program = new Program({
+  uid: "prova",
+  name: "Program name",
+  lines: [
+    new ProgramLine({
+      scheduleWeek: "A",
+      scheduleDay: 1,
+      scheduleOrder: 5,
+      setsBaseValue: "sets",
+      repsBaseValue: "reps",
+      loadBaseValue: "load",
+      rpeBaseValue: "rpe",
+      exercise: coachInfo.exercises?.[0],
+    }),
+    new ProgramLine({
+      scheduleWeek: "A",
+      scheduleDay: 1,
+      scheduleOrder: 3,
+      setsBaseValue: "sets",
+      repsBaseValue: "reps",
+      loadBaseValue: "load",
+      rpeBaseValue: "rpe",
+      requestFeedbackText: true,
+      exercise: coachInfo.exercises?.[0],
+    }),
+    new ProgramLine({
+      scheduleWeek: "B",
+      scheduleDay: 4,
+      scheduleOrder: 1,
+      setsBaseValue: "sets",
+      repsBaseValue: "reps",
+      loadBaseValue: "load",
+      rpeBaseValue: "rpe",
+      requestFeedbackText: true,
+      exercise: coachInfo.exercises?.[1],
+      exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
+    }),
+    new ProgramLine({
+      scheduleWeek: "B",
+      scheduleDay: "1",
+      scheduleOrder: 1,
+      setsBaseValue: "sets",
+      repsBaseValue: "reps",
+      loadBaseValue: "load",
+      rpeBaseValue: "rpe",
+      requestFeedbackText: true,
+    }),
+  ],
+});
 
 // LEFT TAB NAVIGATION TREE
 const selectedTab = ref("Library"); // main tab to show

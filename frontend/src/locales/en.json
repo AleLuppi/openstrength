@@ -218,6 +218,10 @@
       "fields": {
         "name": "Program name",
         "label": "Label"
+      },
+      "builder": {
+        "week_name": "Week { week }",
+        "day_name": "Day { day }"
       }
     }
   },
