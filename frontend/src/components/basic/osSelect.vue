@@ -20,7 +20,7 @@
       :options="options"
       @filter="filter"
       :label="undefined"
-      use-chips
+      :use-chips="props.multiple"
       new-value-mode="add-unique"
       :rules="
         (props.rules ?? []).concat([

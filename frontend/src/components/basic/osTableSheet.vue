@@ -8,7 +8,7 @@
     separator="cell"
     bordered
     :pagination="{ rowsPerPage: 0 }"
-    :hide-header="!Boolean(props.headers)"
+    :hide-header="!props.headers || props.headers instanceof Array"
     :hide-bottom="true"
     row-key="row"
     @mouseup="onSelectionEnd"
@@ -64,6 +64,7 @@
             "
             borderless
             autogrow
+            :dense="dense"
           ></q-input>
         </q-td>
       </q-tr>
@@ -81,13 +82,19 @@ const props = defineProps({
     required: true,
   },
   headers: {
-    type: Object as PropType<{ [key: string]: string }>,
+    type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
     required: false,
+  },
+  dense: {
+    type: Boolean,
+    default: false,
   },
 });
 
 // Update model values to parent
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits<{
+  "update:modelValue": [value: { [key: string]: string }[]];
+}>();
 
 // Set ref
 const childElements = ref<{ [key: string]: any }>({});
@@ -100,19 +107,26 @@ const selected = ref<{
 const isSelecting = ref(false);
 
 // Get headers map
-const headers = computed(
-  () =>
-    props.headers ??
-    props.modelValue.reduce(
-      (outHeaders: { [key: string]: string }, row) => (
-        Object.keys(row).forEach((col) => {
-          if (!(col in outHeaders)) outHeaders[col] = col;
-        }),
-        outHeaders
-      ),
-      {},
+const headers = computed(() => {
+  console.log(props.headers, props.headers && props.headers instanceof Object);
+  if (props.headers) {
+    if (props.headers instanceof Array)
+      return props.headers.reduce(
+        (obj: { [key: string]: string }, val) => ({ ...obj, [val]: val }),
+        {},
+      );
+    else return props.headers;
+  }
+  return props.modelValue.reduce(
+    (outHeaders: { [key: string]: string }, row) => (
+      Object.keys(row).forEach((col) => {
+        if (!(col in outHeaders)) outHeaders[col] = col;
+      }),
+      outHeaders
     ),
-);
+    {},
+  );
+});
 
 // Set rows and columns
 const columns = computed(() =>
