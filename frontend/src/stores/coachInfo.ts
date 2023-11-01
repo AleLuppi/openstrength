@@ -22,6 +22,7 @@ import {
   reduceExercises,
   sortExercises,
 } from "@/helpers/exercises/listManagement";
+import { useUserStore } from "./user";
 
 export const useCoachInfoStore = defineStore("coachInfo", () => {
   // Managed athletes
@@ -50,6 +51,12 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
       onError?: Function;
     } = {},
   ) {
+    // Get user ID if needed
+    if (!coachId) {
+      const user = useUserStore();
+      if (user.role == UserRole.coach) coachId = user.uid;
+    }
+
     // Abort if there is no need to check
     if (!coachId || (quiet && athletes.value)) return;
 
@@ -91,6 +98,12 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
       onError?: Function;
     } = {},
   ) {
+    // Get user ID if needed
+    if (!coachId) {
+      const user = useUserStore();
+      if (user.role == UserRole.coach) coachId = user.uid;
+    }
+
     // Abort if there is no need to check
     if (!coachId || (quiet && exercises.value)) return;
 
@@ -126,6 +139,12 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
       onError?: Function;
     } = {},
   ) {
+    // Get user ID if needed
+    if (!coachId) {
+      const user = useUserStore();
+      if (user.role == UserRole.coach) coachId = user.uid;
+    }
+
     // Abort if there is no need to check
     if (!coachId || (quiet && programs.value)) return;
 

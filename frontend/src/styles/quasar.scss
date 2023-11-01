@@ -282,6 +282,17 @@ a {
   text-decoration: none
 }
 
+// Underline
+.underlined {
+  text-decoration: underline;
+}
+
+// Dashed underline
+.underlined-dashed {
+  text-decoration: underline dashed;
+  text-underline-offset: 0.3em;
+}
+
 
 /***** DOM element related classes *****/
 // Icon

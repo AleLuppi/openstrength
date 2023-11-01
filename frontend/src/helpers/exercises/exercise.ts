@@ -4,7 +4,7 @@ import {
   doUpdateDoc,
   doDeleteDoc,
 } from "@/helpers/database/readwrite";
-import { exercisesCollection } from "../database/collections";
+import { exercisesCollection } from "@/helpers/database/collections";
 
 /**
  * Define available load types.
@@ -104,7 +104,7 @@ export class Exercise {
   variants?: ExerciseVariant[];
   defaultVariant?: ExerciseVariant;
 
-  // Get all muscle groups and equipments in variants
+  // Get all muscle groups in variants
   public get muscleGroups() {
     return [
       ...new Set(
@@ -115,6 +115,8 @@ export class Exercise {
       ),
     ];
   }
+
+  // Get all equipments in variants
   public get equipment() {
     return [
       ...new Set(
@@ -151,6 +153,18 @@ export class Exercise {
           exercise: this,
         }),
       );
+  }
+
+  /**
+   * Duplicate exercise.
+   *
+   * @returns a new exercise with duplicate fields.
+   */
+  duplicate() {
+    return new Exercise({
+      ...this,
+      variants: this.variants?.map((variant) => variant.duplicate()),
+    });
   }
 
   /**
@@ -265,6 +279,19 @@ export class ExerciseVariant {
     this.muscleGroups = muscleGroups;
     this.equipment = equipment;
     this.videoUrl = videoUrl;
+  }
+
+  /**
+   * Duplicate exercise variant.
+   *
+   * @param shallow avoid copying identifying fields such as uid, name, exercise.
+   * @returns a new variant with duplicate fields.
+   */
+  duplicate(shallow: boolean = false) {
+    return new ExerciseVariant({
+      ...this,
+      ...(shallow && { uid: undefined, name: undefined, exercise: undefined }),
+    });
   }
 
   /**

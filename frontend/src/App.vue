@@ -90,7 +90,8 @@ onBeforeMount(() => {
   // Ensure user storage is up to date with auth
   addCallbackOnAuthStateChanged({
     onUserIn: (firebaseUser: FirebaseUser) => {
-      user.loadFirebaseUser(firebaseUser);
+      user.loadFirebaseUser(firebaseUser, true);
+      user.loadUser();
       if (user.locale) setLocale(user.locale);
     },
     onUserOut: () => {

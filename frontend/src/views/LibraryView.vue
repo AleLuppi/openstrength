@@ -6,7 +6,7 @@
     <!-- Navigation -->
     <q-tabs v-model="selectedTab" class="text-dark q-pa-md">
       <q-tab
-        v-for="tab in ['exercise', 'schedule']"
+        v-for="tab in ['exercise', 'program']"
         :key="tab"
         :name="tab"
         :label="$t('coach.' + tab + '_management.list.title')"
@@ -202,19 +202,19 @@
       </q-tab-panel>
 
       <!-- Second tab: Programs -->
-      <q-tab-panel name="schedule">
+      <q-tab-panel name="program">
         <!-- Display programs -->
         <q-card>
           <q-card-section>
             <h6>
-              {{ $t("coach.schedule_management.list.title_program") }}
+              {{ $t("coach.program_management.list.title_program") }}
             </h6>
 
             <div class="row q-gutter-x-md items-center">
               <os-input
                 v-model="searchProgram"
                 :placeholder="
-                  $t('coach.schedule_management.list.search_program')
+                  $t('coach.program_management.list.search_program')
                 "
                 hide-bottom-space
                 debounce="500"
@@ -230,7 +230,7 @@
                 icon="add"
                 :label="
                   $q.screen.gt.sm
-                    ? $t('coach.schedule_management.list.add')
+                    ? $t('coach.program_management.list.add')
                     : undefined
                 "
                 @click="
@@ -259,8 +259,8 @@
               <h5>
                 {{
                   updatingProgram
-                    ? $t("coach.schedule_management.list.update")
-                    : $t("coach.schedule_management.list.add")
+                    ? $t("coach.program_management.list.update")
+                    : $t("coach.program_management.list.add")
                 }}
               </h5>
 
@@ -284,11 +284,11 @@
                 <os-input
                   v-model="programName"
                   required
-                  :label="$t('coach.schedule_management.fields.name')"
+                  :label="$t('coach.program_management.fields.name')"
                 ></os-input>
                 <os-input
                   v-model="programLabel"
-                  :label="$t('coach.schedule_management.fields.label')"
+                  :label="$t('coach.program_management.fields.label')"
                 ></os-input>
               </q-card-section>
 
@@ -297,8 +297,8 @@
                 <q-btn
                   :label="
                     updatingProgram
-                      ? $t('coach.schedule_management.list.update_proceed')
-                      : $t('coach.schedule_management.list.add_proceed')
+                      ? $t('coach.program_management.list.update_proceed')
+                      : $t('coach.program_management.list.add_proceed')
                   "
                   type="submit"
                 />
@@ -651,7 +651,7 @@ function createProgram() {
     onError: () =>
       $q.notify({
         type: "negative",
-        message: i18n.t("coach.schedule_management.list.add_error"),
+        message: i18n.t("coach.program_management.list.add_error"),
         position: "bottom",
       }),
   });
@@ -672,7 +672,7 @@ function updateProgram() {
       onError: () =>
         $q.notify({
           type: "negative",
-          message: i18n.t("coach.schedule_management.list.update_error"),
+          message: i18n.t("coach.program_management.list.update_error"),
           position: "bottom",
         }),
     });

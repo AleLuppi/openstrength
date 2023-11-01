@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, PropType } from "vue";
+import { ref, computed, watch, PropType } from "vue";
 import { useI18n } from "vue-i18n";
 import type { QForm } from "quasar";
 import {
@@ -132,14 +132,18 @@ const variantVideo = ref<string>();
 const variantDescription = ref<string>();
 
 // Update shown info according to selected variant
-function loadVariant(variant: ExerciseVariant) {
-  variantName.value = variant.name;
-  variantMuscleGroups.value = variant.muscleGroups;
-  variantLoadType.value = variant.loadType;
-  variantEquipment.value = variant.equipment;
-  variantVideo.value = variant.videoUrl;
-  variantDescription.value = variant.description;
-}
+watch(
+  props.variant,
+  (variant: ExerciseVariant) => {
+    variantName.value = variant.name;
+    variantMuscleGroups.value = variant.muscleGroups;
+    variantLoadType.value = variant.loadType;
+    variantEquipment.value = variant.equipment;
+    variantVideo.value = variant.videoUrl;
+    variantDescription.value = variant.description;
+  },
+  { immediate: true },
+);
 
 // Get options for select fields
 const variantMuscleGroupsOptions = computed(() =>
@@ -147,16 +151,12 @@ const variantMuscleGroupsOptions = computed(() =>
     Object.keys(ExerciseMuscleGroups).concat(
       props.optionsMuscleGroups ?? props.variant.muscleGroups ?? [],
     ),
-  )
-    .sort()
-    .map((val) => ({
-      label: Object.values(ExerciseMuscleGroups).includes(val)
-        ? i18n.t(
-            "coach.exercise_management.fields.musclegroups_available." + val,
-          )
-        : val,
-      value: val,
-    })),
+  ).map((val) => ({
+    label: Object.values(ExerciseMuscleGroups).includes(val)
+      ? i18n.t("coach.exercise_management.fields.musclegroups_available." + val)
+      : val,
+    value: val,
+  })),
 );
 const variantLoadTypeOptions = computed(() =>
   Object.keys(ExerciseLoadType)
@@ -173,14 +173,12 @@ const variantEquipmentOptions = computed(() =>
     Object.keys(ExerciseEquipment).concat(
       props.optionsEquipment ?? props.variant.equipment ?? [],
     ),
-  )
-    .sort()
-    .map((val) => ({
-      label: Object.values(ExerciseEquipment).includes(val)
-        ? i18n.t("coach.exercise_management.fields.equipment_available." + val)
-        : val,
-      value: val,
-    })),
+  ).map((val) => ({
+    label: Object.values(ExerciseEquipment).includes(val)
+      ? i18n.t("coach.exercise_management.fields.equipment_available." + val)
+      : val,
+    value: val,
+  })),
 );
 
 /**
@@ -209,11 +207,4 @@ function onReset() {
   variantVideo.value = undefined;
   variantDescription.value = undefined;
 }
-
-/**
- * Set inputs according to input variant.
- */
-onMounted(() => {
-  loadVariant(props.variant);
-});
 </script>
