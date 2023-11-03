@@ -1,48 +1,39 @@
 <template>
-  <div :style="{ 'z-index': props.zIndex }" class="bg-lighter">
-    <q-list>
-      <q-item
-        clickable
-        class="q-pa-xs link-child os-text-unselected"
-        @click="showCharts"
+  <q-list>
+    <q-item
+      clickable
+      class="q-pa-xs link-child os-text-unselected"
+      @click="showCharts"
+    >
+      <q-card
+        :class="{ 'bg-primary': props.onCharts }"
+        flat
+        class="os-right-drawer bg-inherit"
       >
-        <q-card
-          :class="{ 'bg-primary': props.onCharts }"
-          flat
-          class="os-right-drawer bg-inherit"
-        >
-          <q-tooltip
-            anchor="center left"
-            self="center right"
-            :offset="[10, 10]"
-          >
-            Charts
-          </q-tooltip>
-          <q-avatar icon="fa-solid fa-chart-line" />
-        </q-card>
-      </q-item>
-      <q-item
-        clickable
-        class="q-pa-xs link-child os-text-unselected"
-        @click="showReferenceTable"
+        <q-tooltip anchor="center left" self="center right" :offset="[10, 10]">
+          Charts
+        </q-tooltip>
+        <q-avatar icon="fa-solid fa-chart-line" />
+      </q-card>
+    </q-item>
+
+    <q-item
+      clickable
+      class="q-pa-xs link-child os-text-unselected"
+      @click="showReferenceTable"
+    >
+      <q-card
+        :class="{ 'bg-primary': props.onReferenceTable }"
+        flat
+        class="os-right-drawer bg-inherit"
       >
-        <q-card
-          :class="{ 'bg-primary': props.onReferenceTable }"
-          flat
-          class="os-right-drawer bg-inherit"
-        >
-          <q-tooltip
-            anchor="center left"
-            self="center right"
-            :offset="[10, 10]"
-          >
-            Reference Table
-          </q-tooltip>
-          <q-avatar icon="fa-solid fa-table-list" />
-        </q-card>
-      </q-item>
-    </q-list>
-  </div>
+        <q-tooltip anchor="center left" self="center right" :offset="[10, 10]">
+          Reference Table
+        </q-tooltip>
+        <q-avatar icon="fa-solid fa-table-list" />
+      </q-card>
+    </q-item>
+  </q-list>
 </template>
 
 <script setup lang="ts">
@@ -89,8 +80,11 @@ const showReferenceTable = () => {
 /* Hidden Card */
 .os-right-drawer {
   width: 48px;
-  height: 100%; /* Covers the whole available height */
-  right: 0; /* Align to the right */
-  top: 0; /* Vertically centered */
+  height: 100%;
+  /* Covers the whole available height */
+  right: 0;
+  /* Align to the right */
+  top: 0;
+  /* Vertically centered */
 }
 </style>

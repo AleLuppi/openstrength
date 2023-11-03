@@ -119,16 +119,15 @@ import { QStepper } from "quasar";
 import OsInput from "@/components/basic/osInput.vue";
 import { logoFullImage } from "@/assets/sources";
 import OsToggleButtons from "@/components/basic/osToggleButtons.vue";
-import router from "@/router";
-import { AthleteUser, CoachUser, UserRole } from "@/helpers/users/user";
+import { UserRole } from "@/helpers/users/user";
 
 // Set props
-//const props = defineProps({
-//  onSubmit: {
-//    type: Function,
-//    default: () => {},
-//  },
-//});
+const props = defineProps({
+  onSubmit: {
+    type: Function,
+    default: () => {},
+  },
+});
 
 // Set ref
 const stepperElement = ref<QStepper>();
@@ -138,8 +137,6 @@ const rolesToggleElement = ref<typeof OsToggleButtons>();
 const sportsToggleElement = ref<typeof OsToggleButtons>();
 const athletesRangeToggleElement = ref<typeof OsToggleButtons>();
 const step = ref(1);
-const updatingCoachUser = ref<CoachUser>();
-const updatingAthleteUser = ref<AthleteUser>();
 const userName = ref("");
 const userSurname = ref("");
 const selectedRole = ref<string[]>([]);
@@ -149,8 +146,8 @@ const isLastStep = computed(() => step.value === 3);
 
 // Set texts for buttons
 const buttonsRoles = {
-  athlete: "user.role.athlete",
-  coach: "user.role.coach",
+  [UserRole.athlete]: "user.role.athlete",
+  [UserRole.coach]: "user.role.coach",
 };
 const buttonsSports = {
   powerlifting: "sport.powerlifting",
@@ -182,7 +179,10 @@ function onProceed() {
 
     case 2:
       if (!rolesToggleElement.value?.validate()) return;
-      if (selectedRole.value[0] == "athlete") onSubmit();
+      if ((selectedRole.value[0] as UserRole) == UserRole.athlete) {
+        onSubmit();
+        return;
+      }
       break;
 
     case 3:
@@ -197,55 +197,27 @@ function onProceed() {
   }
   isLastStep.value ? onSubmit() : stepperElement.value?.next();
 }
-/**
- * Update athlete user according to inserted values.
- */
-async function updateAthleteUser() {
-  if (updatingAthleteUser.value) {
-    updatingAthleteUser.value.name = userName.value;
-    updatingAthleteUser.value.surname = userSurname.value;
-    updatingAthleteUser.value.role = selectedRole.value[0] as UserRole;
-
-    try {
-      await updatingAthleteUser.value.saveUpdate(); //TODO pass user object? How?
-      console.log("athlete updated");
-    } catch (error) {
-      console.error("Error updating athlete:", error);
-    }
-  }
-}
-
-/**
- * Update coach user according to inserted values.
- */
-async function updateCoachUser() {
-  if (updatingCoachUser.value) {
-    updatingCoachUser.value.name = userName.value;
-    updatingCoachUser.value.surname = userSurname.value;
-    updatingCoachUser.value.role = selectedRole.value[0] as UserRole;
-    updatingCoachUser.value.sports = selectedSports.value.slice();
-    updatingCoachUser.value.athletesRange = selectedAthletesRange.value.slice();
-
-    try {
-      await updatingCoachUser.value.saveUpdate(); //TODO check here
-      console.log("coach updated");
-    } catch (error) {
-      console.error("Error updating coach:", error);
-    }
-  }
-}
 
 /**
  * Operations to perform when onboarding is completed.
  */
 function onSubmit() {
-  if (selectedRole.value[0] === UserRole.athlete) {
-    updateAthleteUser();
-  } else if (selectedRole.value[0] === UserRole.coach) {
-    updateCoachUser();
+  // Prepare generic data
+  const data: { [key: string]: any } = {
+    name: userName.value,
+    surname: userSurname.value,
+    role: selectedRole.value?.[0] as UserRole,
+  };
+
+  // Prepare specific data
+  if (data.role == UserRole.coach) {
+    data.sports = selectedSports.value?.slice();
+    data.athletesNumberRange = selectedAthletesRange.value?.[0]
+      ?.split(/[-+]/)
+      .map((val) => (val ? Number(val) : undefined));
   }
 
-  // Finally redirect
-  router.push({ name: "home" });
+  // Call props method
+  props.onSubmit?.(data);
 }
 </script>

@@ -153,8 +153,73 @@
 import { ref } from "vue";
 import ChartComponent from "@/components/charts/ChartComponent.vue";
 
-import dataA4 from "@/data/dataA4.json";
-import optionA4 from "@/data/dataA4.json";
+// TODO load from program data
+const dataA4 = {
+  datasets: [
+    {
+      label: "Panca",
+      data: [40, 42, 33, 30, 35, 38],
+      borderColor: "rgba(0, 123, 255, 1)",
+      backgroundColor: "rgba(0, 123, 255, 0.2)",
+      fill: false,
+      cubicInterpolationMode: "monotone",
+      tension: 0.1,
+      yAxisID: "y",
+    },
+    {
+      label: "Stacco",
+      data: [70, 74, 78, 80, 83, 87],
+      borderColor: "red",
+      backgroundColor: "rgba(255, 0, 0, 0.2)",
+      fill: false,
+      cubicInterpolationMode: "monotone",
+      tension: 0.1,
+      yAxisID: "y",
+    },
+    {
+      label: "Squat",
+      data: [80, 82, 83, 86, 90, 92],
+      borderColor: "green",
+      backgroundColor: "rgba(0, 255, 0, 0.2)",
+      fill: false,
+      cubicInterpolationMode: "monotone",
+      tension: 0.1,
+      yAxisID: "y",
+    },
+  ],
+  labels: [
+    "Settimana 1",
+    "Settimana 2",
+    "Settimana 3",
+    "Settimana 4",
+    "Settimana 5",
+    "Settimana 6",
+  ],
+};
+
+// TODO load from program data
+const optionA4 = {
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    x: {
+      display: true,
+      title: {
+        display: true,
+        text: "Date",
+      },
+    },
+    y: {
+      type: "linear",
+      display: true,
+      position: "left",
+      title: {
+        display: true,
+        text: "Volume",
+      },
+    },
+  },
+};
 
 const selectionVolume = ref(["total"]);
 const selectionIntensity = ref(["cumulated"]);

@@ -2,19 +2,14 @@
   <q-card>
     <q-card-section class="q-pa-xs">
       <div class="row items-center no-wrap">
-        <div class="col text-h6-no-margin text-weight-medium text-grey">
+        <h6 class="col text-margin-xs text-weight-medium text-grey">
           {{ props.title }}
-        </div>
+        </h6>
 
         <div class="col-auto">
           <q-icon name="fas fa-circle-info" size="1.7rem" color="grey-5">
-            <q-tooltip
-              anchor="center left"
-              self="center right"
-              transition-show="fade"
-              transition-hide="fade"
-              class="bg-primary text-body2"
-            >
+            <q-tooltip anchor="center left" self="center right" transition-show="fade" transition-hide="fade"
+              class="bg-primary text-body2">
               {{ props.description }}
             </q-tooltip>
           </q-icon>

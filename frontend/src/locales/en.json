@@ -30,7 +30,7 @@
     "welcome_with_name": "Hi { name }, let's work together!",
     "welcome_without_name": "Welcome back, ready to work together?",
     "welcome_unsigned_user": "Log in or create an account to start!",
-    "welcome_unknown_user": "It seems your onboarding is missing",
+    "welcome_unknown_user": "Welcome to OpenStrength!",
     "actions": {
       "to_athletes": "Manage your athletes",
       "to_athletes_caption": "Add new athletes, view or modify the existing ones",
@@ -38,10 +38,11 @@
       "to_library_caption": "Add new exercises to your library, view or modify the existing ones",
       "to_program": "Manage programs",
       "to_program_caption": "Create new programs, view or modify existing ones",
-      "to_login_unsigned": "Let's start now!",
-      "to_login_unsigned_caption": "Log in or register to start working with us. We look forward in helping you!",
+      "to_login": "Let's start now!",
+      "to_login_caption": "Log in or register to start working with us. We look forward in helping you!",
       "to_onboarding": "Let's meet better",
-      "to_onboarding_caption": "Click here to let us configure the app for you"
+      "to_onboarding_caption": "Click here to let us configure the app for you",
+      "check_drawer": "Select your next action from the menu"
     }
   },
   "comingsoon": {

@@ -27,10 +27,10 @@
       </h2>
     </div>
 
-    <!-- Show common actions -->
+    <!-- Common actions -->
     <div class="row q-gutter-lg justify-center items-center">
       <router-link
-        v-for="buttonInfo in buttonsInfo"
+        v-for="buttonInfo in buttonsCoachAction"
         :key="buttonInfo.to"
         :to="{ name: buttonInfo.to }"
         class="link-child"
@@ -41,7 +41,7 @@
           <!-- Animate when on -->
           <span class="q-focus-helper"></span>
 
-          <!-- Show icon, title, and subtitle -->
+          <!-- Icon, title, and subtitle -->
           <q-icon :name="buttonInfo.icon" size="6em" color="icon-color" />
           <h4>
             {{ $t(buttonInfo.title) }}
@@ -59,17 +59,16 @@
     v-else-if="!user.isSignedIn"
     class="q-mx-auto q-px-md q-py-lg limit-max-width text-center"
   >
-    <!-- Title and subtitle-->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
       <h2 class="text-center">
         {{ $t("homepage.welcome_unsigned_user") }}
       </h2>
     </div>
 
-    <!-- Show common actions -->
+    <!-- Common actions -->
     <div class="row q-gutter-lg justify-center items-center">
       <router-link
-        v-for="buttonUnsignedUser in buttonsUnsignedUser"
+        v-for="buttonUnsignedUser in buttonsUnsigedAction"
         :key="buttonUnsignedUser.to"
         :to="{ name: buttonUnsignedUser.to }"
         class="link-child"
@@ -80,7 +79,7 @@
           <!-- Animate when on -->
           <span class="q-focus-helper"></span>
 
-          <!-- Show icon, title, and subtitle -->
+          <!-- Icon, title, and subtitle -->
           <q-icon
             :name="buttonUnsignedUser.icon"
             size="6em"
@@ -97,68 +96,32 @@
     </div>
   </div>
 
-  <!-- Show call to action to signed user with no role -->
-  <div
-    v-else-if="
-      user.isSignedIn &&
-      (user.role == undefined || user.role == UserRole.unknown)
-    "
-    class="q-mx-auto q-px-md q-py-lg limit-max-width text-center"
-  >
-    <!-- Title and subtitle-->
+  <!-- Show something else in all other cases -->
+  <div v-else class="q-mx-auto q-px-md q-py-lg limit-max-width text-center">
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
       <h2 class="text-center">
         {{ $t("homepage.welcome_unknown_user") }}
       </h2>
     </div>
 
-    <!-- Show common actions -->
+    <!-- Common actions -->
     <div class="row q-gutter-lg justify-center items-center">
-      <q-card
-        @click="onCardClick"
-        class="q-pa-lg column items-center justify-center square-card cursor-pointer q-hoverable text-center"
-      >
-        <!-- Animate when on -->
-        <span class="q-focus-helper"></span>
-
-        <q-card-section>
-          <!-- Show icon, title, and subtitle -->
-          <q-icon name="question_answer" size="6em" color="icon-color" />
-          <h4>
-            {{ $t("homepage.actions.to_onboarding") }}
-          </h4>
-          <p class="q-px-md text-weight-light">
-            {{ $t("homepage.actions.to_onboarding_caption") }}
-          </p>
-        </q-card-section>
-      </q-card>
-
-      <q-dialog v-model="showDialogOnboarding">
-        <UserOnboarding></UserOnboarding>
-      </q-dialog>
+      <q-icon name="menu_open" size="4em" />
+      <h6>{{ $t("homepage.actions.check_drawer") }}</h6>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
 import { UserRole } from "@/helpers/users/user";
-import UserOnboarding from "@/components/forms/UserOnboarding.vue";
 
 // Get user state
 const user = useUserStore();
 
-// Get onboarding visibility
-const showDialogOnboarding = ref(false);
-
-function onCardClick() {
-  showDialogOnboarding.value = true;
-}
-
-// Set action buttons
-const buttonsInfo = [
+// Set coach action buttons
+const buttonsCoachAction = [
   {
     to: "athletes",
     icon: "person_add",
@@ -179,12 +142,13 @@ const buttonsInfo = [
   },
 ];
 
-const buttonsUnsignedUser = [
+// Set unsigned user action buttons
+const buttonsUnsigedAction = [
   {
     to: "login",
     icon: "fa-solid fa-right-to-bracket",
-    title: "homepage.actions.to_login_unsigned",
-    subtitle: "homepage.actions.to_login_unsigned_caption",
+    title: "homepage.actions.to_login",
+    subtitle: "homepage.actions.to_login_caption",
   },
 ];
 </script>

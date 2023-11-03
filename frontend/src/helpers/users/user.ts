@@ -59,15 +59,16 @@ export type UserProps = {
  * Coach user properties.
  */
 export type CoachUserProps = UserProps & {
+  // Coach specific
   sports?: string[];
-  athletesRange?: string[];
+  athletesNumberRange?: [number | undefined, number | undefined];
 };
 
 /**
  * Athlete user properties.
  */
 export type AthleteUserProps = UserProps & {
-  // Athlete specific
+  // Coach-related specific
   coachId?: string;
   coachNote?: string;
   coaches?: string[];
@@ -186,16 +187,16 @@ export class User {
 export class CoachUser extends User {
   // Coach specific
   sports?: string[];
-  athletesRange?: string[];
+  athletesNumberRange?: [number | undefined, number | undefined];
 
-  constructor({ sports, athletesRange, ...props }: CoachUserProps = {}) {
+  constructor({ sports, athletesNumberRange, ...props }: CoachUserProps = {}) {
     // Set super properties
     const superProps = { ...props, role: UserRole.coach };
     super(superProps);
 
     // Set specific properties
     this.sports = sports;
-    this.athletesRange = athletesRange;
+    this.athletesNumberRange = athletesNumberRange;
   }
 }
 
@@ -205,7 +206,7 @@ export class CoachUser extends User {
  * @public
  */
 export class AthleteUser extends User {
-  // Athlete specific
+  // Coach-related specific
   coachId?: string;
   coachNote?: string;
   coaches?: string[];

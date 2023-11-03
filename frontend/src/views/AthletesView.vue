@@ -45,8 +45,9 @@
       <q-separator />
 
       <TableManagedAthletes
-        :athletes="filteredAthletes"
+        :athletes="athletes"
         :on-update="onUpdateAthlete"
+        :filter="searchAthlete"
       />
     </q-card>
 
@@ -115,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
@@ -220,21 +221,4 @@ function clearAthlete() {
   athleteNote.value = "";
   showAthleteDialog.value = false;
 }
-
-/** TODO check
- * Filter athlete by name in the corresponding table
- */
-const filteredAthletes = computed(() => {
-  if (!searchAthlete.value) {
-    return athletes.value || [];
-  }
-
-  const search = searchAthlete.value.toLowerCase();
-  return athletes.value.filter((athlete) =>
-    athlete.name.toLowerCase().includes(search),
-  );
-});
-
-// Watch for changes in search exercise input
-watch(searchAthlete, () => {});
 </script>

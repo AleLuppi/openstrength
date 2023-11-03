@@ -58,11 +58,12 @@
 
               <TableExerciseLibrary
                 ref="exerciseTableElement"
-                :exercises="filteredExercises"
+                :exercises="exercises"
                 :on-add="onExerciseAdd"
                 :on-update="onExerciseUpdate"
                 :on-delete="onExerciseDelete"
                 :add-new="addingNewExercise"
+                :filter="searchExercise"
               />
             </q-card>
           </div>
@@ -110,9 +111,10 @@
 
               <TableExerciseLibrary
                 :exercises="[]"
-                :variants="filteredVariants"
+                :variants="selectedExercise?.variants"
                 :on-update="onVariantUpdate"
                 :on-delete="onVariantDelete"
+                :filter="searchVariant"
               />
             </q-card>
           </div>
@@ -244,8 +246,9 @@
           <q-separator />
 
           <TableProgramLibrary
-            :programs="filteredPrograms"
+            :programs="programs"
             :on-update="onUpdateProgram"
+            :filter="searchProgram"
           />
         </q-card>
 
@@ -323,6 +326,7 @@ import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLi
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { Program } from "@/helpers/programs/program";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
+import { uniqueValues } from "@/helpers/array";
 
 // Use plugins
 const $q = useQuasar();
@@ -336,8 +340,8 @@ const coachInfo = useCoachInfoStore();
 const selectedTab = ref("exercise"); // TODO main tab to show
 const exerciseTableElement = ref<typeof TableExerciseLibrary>();
 const variantFormElement = ref<typeof FormExerciseVariantLibrary>();
-const searchExercise = ref<string>(); // TODO check
-const searchVariant = ref<string>(); // TODO check
+const searchExercise = ref<string>();
+const searchVariant = ref<string>();
 const addingNewExercise = ref(false);
 const addingNewVariant = ref(false);
 const deletingExercise = ref<Exercise>();
@@ -349,8 +353,7 @@ const updatingProgram = ref<Program>(); // TODO check Program that is currently 
 const showProgramDialog = ref(false); // TODO check whether to show dialog to add Program
 const programName = ref(""); // TODO check new program name
 const programLabel = ref(""); // TODO check new program note
-const searchProgram = ref<string>(); // TODO check
-// TODO const showVariantList = computed(() => Boolean(selectedExercise.value));
+const searchProgram = ref<string>();
 const showVariantForm = computed(() =>
   Boolean(addingNewVariant.value || selectedVariant.value),
 );
@@ -380,24 +383,20 @@ const programs = computed(() => {
 
 // Get options to display on variant creation or update
 const exerciseMuscleGroupsOptions = computed(() => {
-  return [
-    ...new Set(
-      exercises.value.reduce(
-        (outList, exercise) => outList.concat(exercise.muscleGroups),
-        [] as string[],
-      ),
+  return uniqueValues(
+    exercises.value.reduce(
+      (outList, exercise) => outList.concat(exercise.muscleGroups),
+      [] as string[],
     ),
-  ].sort();
+  );
 });
 const exerciseEquipmentOptions = computed(() => {
-  return [
-    ...new Set(
-      exercises.value.reduce(
-        (outList, exercise) => outList.concat(exercise.equipment),
-        [] as string[],
-      ),
+  return uniqueValues(
+    exercises.value.reduce(
+      (outList, exercise) => outList.concat(exercise.equipment),
+      [] as string[],
     ),
-  ].sort();
+  );
 });
 
 // Show dialog deleting dialog when required
@@ -641,7 +640,7 @@ function clearVariant() {
 function createProgram() {
   const newProgram = new Program({
     name: programName.value,
-    label: programLabel.value,
+    labels: [programLabel.value], // TODO multiple labels
   });
   newProgram.saveNew({
     onSuccess: () => {
@@ -664,7 +663,7 @@ function createProgram() {
 function updateProgram() {
   if (updatingProgram.value) {
     updatingProgram.value.name = programName.value;
-    updatingProgram.value.label = programLabel.value;
+    updatingProgram.value.labels = [programLabel.value]; // TODO multiple labels
     updatingProgram.value.saveUpdate({
       onSuccess: () => {
         clearProgram();
@@ -689,7 +688,7 @@ function onUpdateProgram(program: Program) {
   updatingProgram.value = program;
   showProgramDialog.value = true;
   programName.value = program.name ?? "";
-  programLabel.value = program.label ?? "";
+  programLabel.value = program.labels?.[0] ?? ""; // TODO multiple labels
 }
 
 /** TODO check
@@ -700,59 +699,4 @@ function clearProgram() {
   programLabel.value = "";
   showProgramDialog.value = false;
 }
-
-/** TODO check
- * Filter exercises by name in the corresponding table
- */
-const filteredExercises = computed(() => {
-  if (!searchExercise.value) {
-    return exercises.value || [];
-  }
-
-  const search = searchExercise.value.toLowerCase();
-  return exercises.value.filter(
-    (exercise) => exercise.name?.toLowerCase().includes(search),
-  );
-});
-
-// Watch for changes in search exercise input
-watch(searchExercise, () => {});
-
-/** TODO check
- * Filter variants by name in the corresponding table
- */
-const filteredVariants = computed(() => {
-  const variants = selectedExercise?.value?.variants;
-  if (!searchVariant.value) {
-    return variants ?? [];
-  }
-
-  const search = searchVariant.value.toLowerCase();
-  return variants
-    ? variants.filter(
-        (variant) =>
-          variant.name && variant.name.toLowerCase().includes(search),
-      )
-    : [];
-});
-
-// Watch for changes in searchVariant input
-watch(searchVariant, () => {});
-
-/** TODO check
- * Filter programs by name in the corresponding table
- */
-const filteredPrograms = computed(() => {
-  if (!searchProgram.value) {
-    return programs.value || [];
-  }
-
-  const search = searchProgram.value.toLowerCase();
-  return programs.value.filter(
-    (program) => program.name?.toLowerCase().includes(search),
-  );
-});
-
-// Watch for changes in search exercise input
-watch(searchProgram, () => {});
 </script>
