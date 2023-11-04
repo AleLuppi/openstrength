@@ -22,6 +22,7 @@ import {
   reduceExercises,
   sortExercises,
 } from "@/helpers/exercises/listManagement";
+import { MaxLift, MaxLiftProps } from "@/helpers/maxlifts/maxlift";
 import { useUserStore } from "./user";
 
 export const useCoachInfoStore = defineStore("coachInfo", () => {
@@ -33,6 +34,9 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
 
   // Library of programs
   const programs = ref<Program[]>();
+
+  // Max lifts of managed athletes
+  const maxlifts = ref<MaxLift[]>();
 
   /**
    * Load list of athletes for a coach.
@@ -164,12 +168,54 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
   }
 
   /**
+   * Load list of max lift for coach's athletes.
+   *
+   * @param coachId ID of the coach for which max lifts should be loaded.
+   * @param quiet if true, skip loading if max lifts are already present, otherwise force reload.
+   */
+  async function loadMaxLifts(
+    coachId?: string,
+    quiet: boolean = false,
+    {
+      onSuccess,
+      onError,
+    }: {
+      onSuccess?: Function;
+      onError?: Function;
+    } = {},
+  ) {
+    // Abort if there is no need to check
+    if (!coachId || (quiet && maxlifts.value)) return;
+
+    // Get documents
+    doGetDocs(
+      usersCollection,
+      [
+        ["coachId", "==", coachId],
+        ["role", "==", UserRole.athlete],
+      ],
+      {
+        onSuccess: (docs: { [key: string]: MaxLiftProps }) => {
+          const _maxlifts: MaxLift[] = [];
+          Object.entries(docs).forEach(([uid, doc]) =>
+            _maxlifts.push(new MaxLift({ ...doc, uid: uid })),
+          );
+          maxlifts.value = _maxlifts;
+          onSuccess?.(maxlifts);
+        },
+        onError: onError,
+      },
+    );
+  }
+
+  /**
    * Reset values in user storage.
    */
   function $reset() {
     athletes.value = undefined;
     exercises.value = undefined;
     programs.value = undefined;
+    maxlifts.value = undefined;
   }
 
   return {
@@ -179,6 +225,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     loadAthletes,
     loadExercises,
     loadPrograms,
+    loadMaxLifts,
     $reset,
   };
 });
