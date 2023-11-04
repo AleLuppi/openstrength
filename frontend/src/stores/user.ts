@@ -14,6 +14,10 @@ import { objectAssignNotUndefined } from "@/helpers/object";
 export const useUserStore = defineStore("user", () => {
   // Store user instance (private attribute)
   const user = ref<User | CoachUser | AthleteUser>();
+  const baseUser = computed({
+    get: () => user.value,
+    set: (val) => (user.value = val),
+  }); // public instance
 
   // Main user info, see User
   const uid = computed(() => user.value?.uid);
@@ -42,13 +46,13 @@ export const useUserStore = defineStore("user", () => {
    * @param uid ID of the user that shall be loaded.
    * @param forceNew if true, force the creation of a new user, otherwise just try to update arguments.
    */
-  function loadUser(uid?: string, forceNew?: boolean) {
+  async function loadUser(uid?: string, forceNew?: boolean) {
     // Check user ID
     const docId = uid ?? user.value?.uid;
     if (!docId) return;
 
     // Try to load user
-    loadDocUser(docId, {
+    await loadDocUser(docId, {
       onSuccess: (docUser: User | undefined) => {
         if (docUser) {
           // Document found: assign to current user instance
@@ -104,6 +108,19 @@ export const useUserStore = defineStore("user", () => {
   }
 
   /**
+   * Save user info on database, where user document must already exist.
+   *
+   * @param userInstance user instance that shall be saved.
+   */
+  async function saveUser(userInstance?: User | CoachUser | AthleteUser) {
+    // Check user
+    const userToSave = userInstance ?? user.value;
+
+    // Save current user info
+    await userToSave?.saveUpdate();
+  }
+
+  /**
    * Reset values in user storage.
    */
   function $reset() {
@@ -111,6 +128,7 @@ export const useUserStore = defineStore("user", () => {
   }
 
   return {
+    baseUser,
     uid,
     email,
     displayName,
@@ -132,6 +150,7 @@ export const useUserStore = defineStore("user", () => {
     isSignedIn,
     loadUser,
     loadFirebaseUser,
+    saveUser,
     $reset,
   };
 });

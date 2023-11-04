@@ -1,22 +1,27 @@
 <template>
-  <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
+  <q-page class="q-pa-sm q-pb-lg q-mx-auto limit-max-width">
     <!-- Logo -->
     <div class="full-width text-center">
-      <img :src="logoFullImage" alt="Logo" />
+      <img :src="logoFullImage" :srcset="logoFullImage + ' 1.3x'" alt="Logo" />
     </div>
 
     <!-- Title -->
-    <div class="text-center">
+    <div class="text-center q-pt-sm q-pb-lg">
       <h3 class="q-my-xs">
         {{ $t("user.auth.signup_title") }}
       </h3>
-      <h6 class="q-my-xs">
-        {{ $t("user.auth.signup_subtitle") }}
-      </h6>
+
+      <!-- Redirect to login -->
+      <p>
+        {{ $t("user.auth.already_registered") }}
+        <router-link :to="{ name: 'login' }">{{
+          $t("user.auth.signup_to_signin")
+        }}</router-link>
+      </p>
     </div>
 
     <!-- Registration form -->
-    <q-form @submit="onSubmit" class="q-my-xs q-gutter-xs column">
+    <q-form @submit="onSubmit" class="column">
       <!-- Google Sign up -->
       <q-btn
         :label="$t('user.auth.register_with_google')"
@@ -27,7 +32,7 @@
       />
 
       <!-- Text separator-->
-      <osWrapWithLines class="q-my-sm">
+      <osWrapWithLines class="q-my-sm text-xs">
         {{ $t("user.auth.signup_with_email") }}
       </osWrapWithLines>
 
@@ -44,6 +49,7 @@
         ]"
         :error="emailError"
         :error-message="emailErrorMessage"
+        class="q-mt-sm"
       />
 
       <os-input
@@ -69,7 +75,7 @@
       </os-input>
 
       <!-- Acceptance flag -->
-      <div class="row items-center text-left">
+      <div class="row items-center text-left text-xs">
         <q-toggle
           v-model="accept"
           checked-icon="check"
@@ -77,10 +83,14 @@
           unchecked-icon="clear"
         />
 
-        <span class="col" style="min-width: 8em">
-          {{ $t("user.auth.acceptance_before")
-          }}<router-link :to="{ name: 'privacy_policy' }" @click.stop="">{{
-            $t("layout.views.privacy_policy")
+        <span @click="accept = !accept" class="col" style="min-width: 8em">
+          {{ $t("user.auth.acceptance_before") }}
+
+          <router-link :to="{ name: 'privacy_policy' }" @click.stop=""
+            >{{ $t("layout.views.privacy_policy") }},
+          </router-link>
+          <router-link :to="{ name: 'cookie_policy' }" @click.stop="">{{
+            $t("layout.views.cookie_policy")
           }}</router-link
           >{{ $t("user.auth.acceptance_between")
           }}<router-link :to="{ name: 'terms_conditions' }" @click.stop="">{{
@@ -98,12 +108,7 @@
         class="q-my-lg"
       />
     </q-form>
-
-    <!-- Redirect to login -->
-    <router-link :to="{ name: 'login' }">{{
-      $t("user.auth.signup_to_signin")
-    }}</router-link>
-  </div>
+  </q-page>
 </template>
 
 <script setup lang="ts">

@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md">
+  <q-page class="q-pa-md">
     <!-- Title -->
     <h2 class="col">{{ $t("layout.views.library_title") }}</h2>
 
@@ -63,6 +63,7 @@
                 :on-update="onExerciseUpdate"
                 :on-delete="onExerciseDelete"
                 :add-new="addingNewExercise"
+                :filter="searchExercise"
               />
             </q-card>
           </div>
@@ -113,6 +114,7 @@
                 :variants="selectedExercise?.variants"
                 :on-update="onVariantUpdate"
                 :on-delete="onVariantDelete"
+                :filter="searchVariant"
               />
             </q-card>
           </div>
@@ -246,6 +248,7 @@
           <TableProgramLibrary
             :programs="programs"
             :on-update="onUpdateProgram"
+            :filter="searchProgram"
           />
         </q-card>
 
@@ -308,7 +311,7 @@
         </q-dialog>
       </q-tab-panel>
     </q-tab-panels>
-  </div>
+  </q-page>
 </template>
 
 <script setup lang="ts">
@@ -323,6 +326,7 @@ import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLi
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { Program } from "@/helpers/programs/program";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
+import { uniqueValues } from "@/helpers/array";
 
 // Use plugins
 const $q = useQuasar();
@@ -336,8 +340,8 @@ const coachInfo = useCoachInfoStore();
 const selectedTab = ref("exercise"); // TODO main tab to show
 const exerciseTableElement = ref<typeof TableExerciseLibrary>();
 const variantFormElement = ref<typeof FormExerciseVariantLibrary>();
-const searchExercise = ref<string>(); // TODO search
-const searchVariant = ref<string>(); // TODO search
+const searchExercise = ref<string>();
+const searchVariant = ref<string>();
 const addingNewExercise = ref(false);
 const addingNewVariant = ref(false);
 const deletingExercise = ref<Exercise>();
@@ -349,8 +353,7 @@ const updatingProgram = ref<Program>(); // TODO check Program that is currently 
 const showProgramDialog = ref(false); // TODO check whether to show dialog to add Program
 const programName = ref(""); // TODO check new program name
 const programLabel = ref(""); // TODO check new program note
-const searchProgram = ref<string>(); // TODO check TODO search
-// TODO const showVariantList = computed(() => Boolean(selectedExercise.value));
+const searchProgram = ref<string>();
 const showVariantForm = computed(() =>
   Boolean(addingNewVariant.value || selectedVariant.value),
 );
@@ -380,24 +383,20 @@ const programs = computed(() => {
 
 // Get options to display on variant creation or update
 const exerciseMuscleGroupsOptions = computed(() => {
-  return [
-    ...new Set(
-      exercises.value.reduce(
-        (outList, exercise) => outList.concat(exercise.muscleGroups),
-        [] as string[],
-      ),
+  return uniqueValues(
+    exercises.value.reduce(
+      (outList, exercise) => outList.concat(exercise.muscleGroups),
+      [] as string[],
     ),
-  ].sort();
+  );
 });
 const exerciseEquipmentOptions = computed(() => {
-  return [
-    ...new Set(
-      exercises.value.reduce(
-        (outList, exercise) => outList.concat(exercise.equipment),
-        [] as string[],
-      ),
+  return uniqueValues(
+    exercises.value.reduce(
+      (outList, exercise) => outList.concat(exercise.equipment),
+      [] as string[],
     ),
-  ].sort();
+  );
 });
 
 // Show dialog deleting dialog when required
@@ -641,7 +640,7 @@ function clearVariant() {
 function createProgram() {
   const newProgram = new Program({
     name: programName.value,
-    label: programLabel.value,
+    labels: [programLabel.value], // TODO multiple labels
   });
   newProgram.saveNew({
     onSuccess: () => {
@@ -664,7 +663,7 @@ function createProgram() {
 function updateProgram() {
   if (updatingProgram.value) {
     updatingProgram.value.name = programName.value;
-    updatingProgram.value.label = programLabel.value;
+    updatingProgram.value.labels = [programLabel.value]; // TODO multiple labels
     updatingProgram.value.saveUpdate({
       onSuccess: () => {
         clearProgram();
@@ -689,7 +688,7 @@ function onUpdateProgram(program: Program) {
   updatingProgram.value = program;
   showProgramDialog.value = true;
   programName.value = program.name ?? "";
-  programLabel.value = program.label ?? "";
+  programLabel.value = program.labels?.[0] ?? ""; // TODO multiple labels
 }
 
 /** TODO check

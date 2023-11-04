@@ -1,11 +1,12 @@
 <template>
-  <div class="q-pa-md">
+  <q-page class="q-pa-md">
     <h2>{{ $t("user.profile.profile_title") }}</h2>
 
+    <!-- Profile info card-->
     <q-card class="q-mb-lg">
       <h6 class="q-mx-md q-py-md">{{ $t("user.profile.info_title") }}</h6>
 
-      <div class="row justify-between">
+      <div class="row justify-around">
         <!-- Profile Image-->
         <q-section class="column align-left q-mx-md">
           <q-img
@@ -59,12 +60,31 @@
       </q-card-actions>
     </q-card>
 
+    <!-- Useful links card -->
+    <q-card class="q-mb-lg q-pb-md">
+      <h6 class="q-mx-md q-py-md">{{ $t("user.profile.link_title") }}</h6>
+
+      <div class="row justify-around">
+        <router-link :to="{ name: 'privacy_policy' }">{{
+          $t("user.profile.privacy_link")
+        }}</router-link>
+
+        <router-link :to="{ name: 'cookie_policy' }">{{
+          $t("user.profile.cookie_link")
+        }}</router-link>
+
+        <router-link :to="{ name: 'terms_conditions' }">{{
+          $t("user.profile.terms_link")
+        }}</router-link>
+      </div>
+    </q-card>
+
     <q-btn
       color="button-secondary"
       :label="$t('user.auth.signout_title')"
       @click="signOut"
     />
-  </div>
+  </q-page>
 </template>
 
 <script setup lang="ts">

@@ -22,24 +22,37 @@
       "profile": "Profile",
       "signin": "Sign in",
       "privacy_policy": "privacy policy",
+      "cookie_policy": "cookie policy",
       "terms_conditions": "terms and conditions"
     }
   },
   "homepage": {
     "welcome_with_name": "Hi { name }, let's work together!",
     "welcome_without_name": "Welcome back, ready to work together?",
+    "welcome_unsigned_user": "Log in or create an account to start!",
+    "welcome_unknown_user": "Welcome to OpenStrength!",
     "actions": {
       "to_athletes": "Manage your athletes",
       "to_athletes_caption": "Add new athletes, view or modify the existing ones",
       "to_library": "Manage library",
       "to_library_caption": "Add new exercises to your library, view or modify the existing ones",
       "to_program": "Manage programs",
-      "to_program_caption": "Create new programs, view or modify existing ones"
+      "to_program_caption": "Create new programs, view or modify existing ones",
+      "to_login": "Let's start now!",
+      "to_login_caption": "Log in or register to start working with us. We look forward in helping you!",
+      "to_onboarding": "Let's meet better",
+      "to_onboarding_caption": "Click here to let us configure the app for you",
+      "check_drawer": "Select your next action from the menu"
     }
   },
   "comingsoon": {
     "title": "Coming soon!",
     "subtitle": "You have to wait a bit more for the athlete's version. We’ll inform you via email when it will be ready. It’ll be worth it, we promise. Keep training!"
+  },
+  "pagenotfound": {
+    "title": "Page not found",
+    "subtitle": "You didn't break anything but we could not find what you are looking for. No worries we will take you to the homepage. Click the link below!",
+    "redirect": "Save me please!"
   },
   "user": {
     "auth": {
@@ -56,7 +69,7 @@
       "password_invalid": "Password must be at least 8 characters long, and should include one uppercase letter, one lowercase letter, and one number",
       "password_wrong": "Wrong password, please retry",
       "acceptance_required": "To continue, you must first read and accept our terms",
-      "acceptance_before": "By clicking here, you declare to have read and accepted our ",
+      "acceptance_before": "By clicking here, you accept our ",
       "acceptance_between": " and our ",
       "acceptance_after": ".",
       "login_button": "Log in with email",
@@ -70,7 +83,8 @@
       "signup_title": "Create your account",
       "signup_subtitle": "Your day to day workout planning helper is waiting for you!",
       "signup_with_email": "or sign up with email",
-      "signup_to_signin": "Already registered? Go to sign in",
+      "signup_to_signin": "Go to login",
+      "already_registered": "Already registered?",
       "signin_title": "Log in to your account",
       "signin_subtitle": "Your day to day helper is waiting for you",
       "signin_to_signup": " Register now",
@@ -91,7 +105,11 @@
       "role": "Role",
       "status": "Status",
       "uid": "Your ID",
-      "info_edit": "Edit your info"
+      "info_edit": "Your info",
+      "link_title": "Useful links",
+      "privacy_link": "Privacy Policy",
+      "cookie_link": "Cookie Policy",
+      "terms_link": "Terms and Conditions"
     },
     "onboarding": {
       "header_step1": "Start here",

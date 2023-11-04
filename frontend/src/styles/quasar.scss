@@ -9,7 +9,7 @@ h1,
   margin-block-start: 0.6em;
   margin-block-end: 0.4em;
   font-weight: $os-fontweight-bold;
-  font-size: $os-fontsize-xxl;
+  font-size: $os-fontsize-xxxl;
   color: $os-secondary-9;
 }
 
@@ -58,6 +58,11 @@ h6,
   color: $os-secondary-7;
 }
 
+.text-margin-xs {
+  margin-block-start: 0em;
+  margin-block-end: 0.2em;
+}
+
 p {
   margin-block-start: 0;
   margin-block-end: 0.2em;
@@ -79,6 +84,15 @@ a {
     @extend .no-decoration;
   }
 }
+
+.text-xs {
+  margin-block-start: 0;
+  margin-block-end: 0.2em;
+  font-weight: $os-fontweight-regular;
+  font-size: $os-fontsize-xs;
+  color: $os-grey-8;
+}
+
 
 /***** Setup colors *****/
 // Brand colors

@@ -1,9 +1,9 @@
 <template>
-  <!-- Show coming soon in case of athlete -->
-  <div
+  <q-page
     v-if="user.role == UserRole.athlete"
-    class="q-mx-auto q-px-md q-py-lg limit-max-width text-center"
+    class="q-mx-auto q-px-md q-py-lg text-center column justify-center items-stretch"
   >
+    <!-- Show coming soon in case of athlete -->
     <img :src="logoFullImage" alt="Logo" />
     <h2>
       {{ $t("comingsoon.title") }}
@@ -11,10 +11,13 @@
     <p>
       {{ $t("comingsoon.subtitle") }}
     </p>
-  </div>
+  </q-page>
 
-  <!-- Show homepage in case of coach -->
-  <div v-else-if="user.role == UserRole.coach">
+  <q-page
+    v-else-if="user.role == UserRole.coach"
+    class="q-mx-auto q-px-md q-py-lg text-center column justify-center items-stretch"
+  >
+    <!-- Show homepage in case of coach -->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
       <h2 class="text-center">
         {{
@@ -27,10 +30,10 @@
       </h2>
     </div>
 
-    <!-- Show common actions -->
+    <!-- Common actions -->
     <div class="row q-gutter-lg justify-center items-center">
       <router-link
-        v-for="buttonInfo in buttonsInfo"
+        v-for="buttonInfo in buttonsCoachAction"
         :key="buttonInfo.to"
         :to="{ name: buttonInfo.to }"
         class="link-child"
@@ -41,7 +44,7 @@
           <!-- Animate when on -->
           <span class="q-focus-helper"></span>
 
-          <!-- Show icon, title, and subtitle -->
+          <!-- Icon, title, and subtitle -->
           <q-icon :name="buttonInfo.icon" size="6em" color="icon-color" />
           <h4>
             {{ $t(buttonInfo.title) }}
@@ -52,12 +55,67 @@
         </q-card>
       </router-link>
     </div>
-  </div>
+  </q-page>
 
-  <!-- TODO Show call to action to unsigner user -->
-  <div v-else class="q-mx-auto q-px-md q-py-lg limit-max-width text-center">
-    <img :src="logoFullImage" alt="Logo" />
-  </div>
+  <q-page
+    v-else-if="!user.isSignedIn"
+    class="q-mx-auto q-px-md q-py-lg text-center column justify-center items-stretch"
+  >
+    <!-- Show call to action to unsigner user -->
+    <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
+      <h2 class="text-center">
+        {{ $t("homepage.welcome_unsigned_user") }}
+      </h2>
+    </div>
+
+    <!-- Common actions -->
+    <div class="row q-gutter-lg justify-center items-center">
+      <router-link
+        v-for="buttonUnsignedUser in buttonsUnsigedAction"
+        :key="buttonUnsignedUser.to"
+        :to="{ name: buttonUnsignedUser.to }"
+        class="link-child"
+      >
+        <q-card
+          class="q-pa-lg column items-center justify-center square-card q-hoverable text-center"
+        >
+          <!-- Animate when on -->
+          <span class="q-focus-helper"></span>
+
+          <!-- Icon, title, and subtitle -->
+          <q-icon
+            :name="buttonUnsignedUser.icon"
+            size="6em"
+            color="icon-color"
+          />
+          <h4>
+            {{ $t(buttonUnsignedUser.title) }}
+          </h4>
+          <p class="q-px-md text-weight-light">
+            {{ $t(buttonUnsignedUser.subtitle) }}
+          </p>
+        </q-card>
+      </router-link>
+    </div>
+  </q-page>
+
+  <q-page
+    v-else
+    class="q-mx-auto q-px-md q-py-lg text-center column justify-center items-stretch"
+  >
+    <!-- Show something else in all other cases -->
+    <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
+      <h2 class="text-center">
+        {{ $t("homepage.welcome_unknown_user") }}
+      </h2>
+    </div>
+
+    <!-- Common actions -->
+    <div class="row q-gutter-lg justify-center items-center">
+      <q-icon name="menu_open" size="4em" />
+      <h6>{{ $t("homepage.actions.check_drawer") }}</h6>
+    </div>
+  </q-page>
 </template>
 
 <script setup lang="ts">
@@ -68,8 +126,8 @@ import { UserRole } from "@/helpers/users/user";
 // Get user state
 const user = useUserStore();
 
-// Set action buttons
-const buttonsInfo = [
+// Set coach action buttons
+const buttonsCoachAction = [
   {
     to: "athletes",
     icon: "person_add",
@@ -87,6 +145,16 @@ const buttonsInfo = [
     icon: "rocket_launch",
     title: "homepage.actions.to_program",
     subtitle: "homepage.actions.to_program_caption",
+  },
+];
+
+// Set unsigned user action buttons
+const buttonsUnsigedAction = [
+  {
+    to: "login",
+    icon: "fa-solid fa-right-to-bracket",
+    title: "homepage.actions.to_login",
+    subtitle: "homepage.actions.to_login_caption",
   },
 ];
 </script>
