@@ -1,5 +1,5 @@
 <template>
-  <div class="q-mx-auto q-px-md q-py-lg limit-max-width text-center">
+  <q-page class="q-mx-auto q-px-md q-py-lg limit-max-width text-center">
     <h2>
       {{ $t("pagenotfound.title") }}
     </h2>
@@ -13,7 +13,7 @@
     <q-btn :to="{ name: 'home' }" class="q-my-md"
       >{{ $t("pagenotfound.redirect") }}
     </q-btn>
-  </div>
+  </q-page>
 </template>
 
 <script setup lang="ts">

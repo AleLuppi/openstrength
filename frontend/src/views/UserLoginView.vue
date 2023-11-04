@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-sm q-pb-lg q-mx-auto limit-max-width">
+  <q-page class="q-pa-sm q-pb-lg q-mx-auto limit-max-width">
     <!-- Logo -->
     <div class="full-width text-center">
       <img :src="logoFullImage" :srcset="logoFullImage + ' 1.3x'" alt="Logo" />
@@ -82,7 +82,7 @@
         $t("user.auth.forgot_password")
       }}</router-link>
     </div>
-  </div>
+  </q-page>
 </template>
 
 <script setup lang="ts">

@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md">
+  <q-page class="q-pa-md">
     <h2>{{ $t("user.profile.profile_title") }}</h2>
 
     <!-- Profile info card-->
@@ -84,7 +84,7 @@
       :label="$t('user.auth.signout_title')"
       @click="signOut"
     />
-  </div>
+  </q-page>
 </template>
 
 <script setup lang="ts">

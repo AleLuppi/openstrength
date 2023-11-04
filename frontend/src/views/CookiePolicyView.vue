@@ -1,5 +1,5 @@
 <template>
-  <div class="q-px-xl q-py-lg">
+  <q-page class="q-px-xl q-py-lg">
     <h2>
       <span>Cookie Policy di OpenStrength</span>
     </h2>
@@ -662,5 +662,5 @@
       <span>Ultima modifica: 20 Ottobre 2023</span>
     </p>
     <p><span></span></p>
-  </div>
+  </q-page>
 </template>

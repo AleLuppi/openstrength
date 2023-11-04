@@ -1,9 +1,9 @@
 <template>
-  <!-- Show coming soon in case of athlete -->
-  <div
+  <q-page
     v-if="user.role == UserRole.athlete"
-    class="q-mx-auto q-px-md q-py-lg limit-max-width text-center"
+    class="q-mx-auto q-px-md q-py-lg text-center column justify-center items-stretch"
   >
+    <!-- Show coming soon in case of athlete -->
     <img :src="logoFullImage" alt="Logo" />
     <h2>
       {{ $t("comingsoon.title") }}
@@ -11,10 +11,13 @@
     <p>
       {{ $t("comingsoon.subtitle") }}
     </p>
-  </div>
+  </q-page>
 
-  <!-- Show homepage in case of coach -->
-  <div v-else-if="user.role == UserRole.coach">
+  <q-page
+    v-else-if="user.role == UserRole.coach"
+    class="q-mx-auto q-px-md q-py-lg text-center column justify-center items-stretch"
+  >
+    <!-- Show homepage in case of coach -->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
       <h2 class="text-center">
         {{
@@ -52,13 +55,13 @@
         </q-card>
       </router-link>
     </div>
-  </div>
+  </q-page>
 
-  <!-- Show call to action to unsigner user -->
-  <div
+  <q-page
     v-else-if="!user.isSignedIn"
-    class="q-mx-auto q-px-md q-py-lg limit-max-width text-center"
+    class="q-mx-auto q-px-md q-py-lg text-center column justify-center items-stretch"
   >
+    <!-- Show call to action to unsigner user -->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
       <h2 class="text-center">
         {{ $t("homepage.welcome_unsigned_user") }}
@@ -94,10 +97,13 @@
         </q-card>
       </router-link>
     </div>
-  </div>
+  </q-page>
 
-  <!-- Show something else in all other cases -->
-  <div v-else class="q-mx-auto q-px-md q-py-lg limit-max-width text-center">
+  <q-page
+    v-else
+    class="q-mx-auto q-px-md q-py-lg text-center column justify-center items-stretch"
+  >
+    <!-- Show something else in all other cases -->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
       <h2 class="text-center">
         {{ $t("homepage.welcome_unknown_user") }}
@@ -109,7 +115,7 @@
       <q-icon name="menu_open" size="4em" />
       <h6>{{ $t("homepage.actions.check_drawer") }}</h6>
     </div>
-  </div>
+  </q-page>
 </template>
 
 <script setup lang="ts">

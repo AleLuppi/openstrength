@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md">
+  <q-page class="q-pa-md">
     <!-- Title and actions -->
     <div class="row items-center">
       <h2 class="col">{{ $t("layout.views.home_title") }}</h2>
@@ -112,7 +112,7 @@
         </q-form>
       </q-card>
     </q-dialog>
-  </div>
+  </q-page>
 </template>
 
 <script setup lang="ts">

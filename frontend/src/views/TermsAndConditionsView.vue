@@ -1,5 +1,5 @@
 <template>
-  <div class="q-px-xl q-py-lg">
+  <q-page class="q-px-xl q-py-lg">
     <h1 class="c1">
       <span class="c31 c37">Termini e Condizioni di&nbsp;</span
       ><span class="c31 c32">OpenStrength</span>
@@ -348,5 +348,5 @@
         convengono che la competenza sia esclusiva del Foro di Milano.</span
       >
     </p>
-  </div>
+  </q-page>
 </template>

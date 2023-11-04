@@ -21,6 +21,22 @@ const CookiePolicyView = () => import("@/views/CookiePolicyView.vue");
 const TermsAndConditionView = () =>
   import("@/views/TermsAndConditionsView.vue");
 
+/**
+ * Currently available meta info in routes:
+ *  - title : To set the page title in browser.
+ *  - showHeader: If true, show top header. Default is true.
+ *  - showFooter: If true, show bottom footer. Default is true.
+ *  - restrictAccessByRole : List of user roles that can access the page. If not provided,
+ *                           anyone can access the page. Admin can always access.
+ *  - redirectNotAuthorized : View to redirect user when trying to access a view that is
+ *                            restricted by user role.
+ *  - redirectAuthenticated : View to redirect user if authenticated. This is a special
+ *                            restriction by role where no role can access a page.
+ *  - redirectNotAuthenticated : View to redirect user if not authenticated. This is a special
+ *                               restriction by role where any role can access, if role is
+ *                               defined.
+ */
+
 const routes = [
   {
     path: "/",

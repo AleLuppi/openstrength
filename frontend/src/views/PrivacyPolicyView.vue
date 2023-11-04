@@ -1,5 +1,5 @@
 <template>
-  <div class="q-px-xl q-py-lg">
+  <q-page class="q-px-xl q-py-lg">
     <h1><span>Privacy Policy di&nbsp;</span><span>OpenStrength</span></h1>
     <p>
       <span
@@ -1112,5 +1112,5 @@
       ><span>ottobre </span><span>2023</span>
     </p>
     <p><span></span></p>
-  </div>
+  </q-page>
 </template>
