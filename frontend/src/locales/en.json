@@ -180,6 +180,7 @@
       "delete_variant": "Delete variant",
       "delete_variant_confirm": "Are you sure you want to delete \"{ variant }\" variant from \"{ exercise }\"?",
       "delete_proceed": "Delete it",
+      "default_variant": "(default)",
       "fields": {
         "name": "Name",
         "variant": "Variant",

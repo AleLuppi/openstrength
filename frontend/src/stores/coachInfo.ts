@@ -1,11 +1,5 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-import {
-  UserRole,
-  AthleteUser,
-  AthleteUserProps,
-  CoachUser,
-} from "@/helpers/users/user";
 import { doGetDocs } from "@/helpers/database/readwrite";
 import {
   exercisesCollection,
@@ -13,16 +7,21 @@ import {
   programsCollection,
 } from "@/helpers/database/collections";
 import {
+  UserRole,
+  AthleteUser,
+  AthleteUserProps,
+  CoachUser,
+} from "@/helpers/users/user";
+import {
   Exercise,
-  ExerciseVariantProps,
   packExerciseVariantInfo,
 } from "@/helpers/exercises/exercise";
 import { Program } from "@/helpers/programs/program";
+import { useUserStore } from "@/stores/user";
 import {
   reduceExercises,
   sortExercises,
 } from "@/helpers/exercises/listManagement";
-import { useUserStore } from "./user";
 
 export const useCoachInfoStore = defineStore("coachInfo", () => {
   // Managed athletes

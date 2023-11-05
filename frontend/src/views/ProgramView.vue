@@ -6,12 +6,7 @@
       style="height: 100%"
     >
       <template v-slot:before>
-        <TableProgramBuilder
-          :program="program"
-          :exercises="coachInfo.exercises"
-          class="q-pa-sm"
-          cd
-        ></TableProgramBuilder>
+        <!-- Show table to build program on the left -->
         <TableProgramBuilder
           :program="program"
           :exercises="coachInfo.exercises"
@@ -21,6 +16,7 @@
       </template>
 
       <template v-slot:after>
+        <!-- Show charts on the right -->
         <div class="q-pa-sm">
           <!-- TODO i18n -->
           <h6 class="text-margin-xs">Charts Section</h6>
@@ -29,6 +25,7 @@
       </template>
 
       <template v-slot:separator>
+        <!-- Add a middle separator -->
         <q-avatar
           color="primary"
           text-color="white"
@@ -43,7 +40,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
-import { Program, ProgramLine } from "@/helpers/programs/program";
+import {
+  Program,
+  ProgramExercise,
+  ProgramLine,
+} from "@/helpers/programs/program";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import ChartSelector from "@/components/charts/ChartSelector.vue";
 
@@ -60,49 +61,108 @@ onMounted(() => {
 const program = new Program({
   uid: "prova",
   name: "Program name",
-  lines: [
-    new ProgramLine({
+  programExercises: [
+    new ProgramExercise({
+      exercise: coachInfo.exercises?.[0],
       scheduleWeek: "A",
       scheduleDay: 1,
       scheduleOrder: 5,
-      setsBaseValue: "sets",
-      repsBaseValue: "reps",
-      loadBaseValue: "load",
-      rpeBaseValue: "rpe",
-      exercise: coachInfo.exercises?.[0],
+      lines: [
+        new ProgramLine({
+          setsBaseValue: "sets",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+        }),
+        new ProgramLine({
+          setsBaseValue: "sets",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+        }),
+      ],
     }),
-    new ProgramLine({
-      scheduleWeek: "A",
-      scheduleDay: 1,
-      scheduleOrder: 3,
-      setsBaseValue: "sets",
-      repsBaseValue: "reps",
-      loadBaseValue: "load",
-      rpeBaseValue: "rpe",
-      requestFeedbackText: true,
-      exercise: coachInfo.exercises?.[0],
+    new ProgramExercise({
+      exercise: coachInfo.exercises?.[1],
+      exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
+      scheduleWeek: "B",
+      scheduleDay: 4,
+      scheduleOrder: 2,
+      lines: [
+        new ProgramLine({
+          setsBaseValue: "2",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+          lineOrder: 2,
+        }),
+        new ProgramLine({
+          setsBaseValue: "4",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+          lineOrder: 4,
+        }),
+        new ProgramLine({
+          setsBaseValue: "1",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+          lineOrder: 1,
+        }),
+      ],
     }),
-    new ProgramLine({
+    new ProgramExercise({
+      exercise: coachInfo.exercises?.[2],
       scheduleWeek: "B",
       scheduleDay: 4,
       scheduleOrder: 1,
-      setsBaseValue: "sets",
-      repsBaseValue: "reps",
-      loadBaseValue: "load",
-      rpeBaseValue: "rpe",
-      requestFeedbackText: true,
-      exercise: coachInfo.exercises?.[1],
-      exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
+      lines: [
+        new ProgramLine({
+          setsBaseValue: "2222222222222222222",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+          lineOrder: 2,
+        }),
+        new ProgramLine({
+          setsBaseValue: "4",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+          lineOrder: 4,
+        }),
+        new ProgramLine({
+          setsBaseValue: "1",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+          lineOrder: 1,
+        }),
+      ],
     }),
-    new ProgramLine({
+    new ProgramExercise({
+      exercise: coachInfo.exercises?.[2],
+      exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
       scheduleWeek: "B",
       scheduleDay: "1",
       scheduleOrder: 1,
-      setsBaseValue: "sets",
-      repsBaseValue: "reps",
-      loadBaseValue: "load",
-      rpeBaseValue: "rpe",
-      requestFeedbackText: true,
+      lines: [
+        new ProgramLine({
+          setsBaseValue: "sets",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+        }),
+      ],
     }),
   ],
 });
