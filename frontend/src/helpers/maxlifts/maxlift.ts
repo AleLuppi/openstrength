@@ -6,7 +6,7 @@ import { maxliftsCollection } from "@/helpers/database/collections";
 /**
  * Define available max lift types
  */
-export enum MaxLiftTypes {
+export enum MaxLiftType {
   _1RM = "1RM",
   _3RM = "3RM",
   _5RM = "5RM",
@@ -22,7 +22,7 @@ export enum MaxLiftTypes {
 export type MaxLiftProps = {
   // Basic max lift info
   uid?: string;
-  type?: MaxLiftTypes[];
+  type?: MaxLiftType;
   exercise?: ExerciseVariant;
   value?: string; // TODO: add measurement unit
 
@@ -47,7 +47,7 @@ export type MaxLiftProps = {
 export class MaxLift {
   // Basic max lift info
   uid?: string;
-  type?: MaxLiftTypes[];
+  type?: MaxLiftType;
   exercise?: ExerciseVariant;
   value?: string; // TODO: add measurement unit
 

@@ -11,6 +11,7 @@ import {
   exercisesCollection,
   usersCollection,
   programsCollection,
+  maxliftsCollection,
 } from "@/helpers/database/collections";
 import {
   Exercise,
@@ -184,28 +185,27 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
       onError?: Function;
     } = {},
   ) {
+    // Get user ID if needed
+    if (!coachId) {
+      const user = useUserStore();
+      if (user.role == UserRole.coach) coachId = user.uid;
+    }
+
     // Abort if there is no need to check
     if (!coachId || (quiet && maxlifts.value)) return;
 
     // Get documents
-    doGetDocs(
-      usersCollection,
-      [
-        ["coachId", "==", coachId],
-        ["role", "==", UserRole.athlete],
-      ],
-      {
-        onSuccess: (docs: { [key: string]: MaxLiftProps }) => {
-          const _maxlifts: MaxLift[] = [];
-          Object.entries(docs).forEach(([uid, doc]) =>
-            _maxlifts.push(new MaxLift({ ...doc, uid: uid })),
-          );
-          maxlifts.value = _maxlifts;
-          onSuccess?.(maxlifts);
-        },
-        onError: onError,
+    doGetDocs(maxliftsCollection, [["coachId", "==", coachId]], {
+      onSuccess: (docs: { [key: string]: MaxLiftProps }) => {
+        const _maxlifts: MaxLift[] = [];
+        Object.entries(docs).forEach(([uid, doc]) =>
+          _maxlifts.push(new MaxLift({ ...doc, uid: uid })),
+        );
+        maxlifts.value = _maxlifts;
+        onSuccess?.(maxlifts);
       },
-    );
+      onError: onError,
+    });
   }
 
   /**
@@ -222,6 +222,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     athletes,
     exercises,
     programs,
+    maxlifts,
     loadAthletes,
     loadExercises,
     loadPrograms,
