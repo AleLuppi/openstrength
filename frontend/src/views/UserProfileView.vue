@@ -51,13 +51,6 @@
           <p class="text-left text-primary">{{ user.role }}</p>
         </q-section>
       </div>
-
-      <q-card-actions class="row justify-end q-mx-xl q-pb-md">
-        <!-- TODO connect to an edit box (e.g. onboarding page) -->
-        <q-btn outline color="button-primary">
-          {{ $t("user.profile.info_edit") }}</q-btn
-        >
-      </q-card-actions>
     </q-card>
 
     <!-- Useful links card -->
