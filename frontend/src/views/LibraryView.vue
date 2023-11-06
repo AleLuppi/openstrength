@@ -70,10 +70,9 @@
 
           <!-- List variants -->
           <!-- TODO card or pagination -->
-          <div class="col-12 col-sm-6">
+          <div v-if="isAnyExerciseSelected" class="col-12 col-sm-6">
+            <!-- Show card when an exercise is selected -->
             <q-card>
-              <!-- TODO hide everything if exercise is not selected -->
-
               <q-card-section>
                 <h6>
                   {{ $t("coach.exercise_management.list.title_variant") }}
@@ -117,6 +116,20 @@
                 :filter="searchVariant"
               />
             </q-card>
+          </div>
+
+          <div v-else class="col-12 col-sm-6">
+            <div class="row flex-center" style="height: 100%">
+              <div class="row">
+                <q-icon
+                  name="fa-regular fa-hand-pointer"
+                  size="2rem"
+                  color="light-dark"
+                  class="q-px-md"
+                ></q-icon>
+                <p>Select an exercise to show its variants</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -358,6 +371,9 @@ const showVariantForm = computed(() =>
   Boolean(addingNewVariant.value || selectedVariant.value),
 );
 const showDialogVariantForm = ref(false);
+const isAnyExerciseSelected = computed(() => {
+  return !!selectedExercise.value;
+});
 
 // Update dialog show status
 watch(showVariantForm, (val) => (showDialogVariantForm.value = val));
