@@ -164,6 +164,7 @@
         "search_exercise": "Search exercise...",
         "search_variant": "Search variant..."
       },
+      "no_selected_exercises": "Select an exercise to show its variants",
       "add": "Add a new exercise",
       "add_button": "Add new",
       "add_proceed": "Save",
