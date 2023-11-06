@@ -518,6 +518,9 @@ function onNewVariant() {
   addingNewVariant.value = true;
   selectedVariant.value = new ExerciseVariant({
     exercise: selectedExercise.value,
+    loadType: selectedExercise.value?.variants?.[0].loadType,
+    muscleGroups: selectedExercise.value?.variants?.[0].muscleGroups,
+    equipment: selectedExercise.value?.variants?.[0].equipment,
   });
 }
 
