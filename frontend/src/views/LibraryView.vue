@@ -127,7 +127,9 @@
                   color="light-dark"
                   class="q-px-md"
                 ></q-icon>
-                <p>{{ $t('coach.exercise_management.no_selected_exercises') }}</p>
+                <p>
+                  {{ $t("coach.exercise_management.no_selected_exercises") }}
+                </p>
               </div>
             </div>
           </div>
@@ -372,7 +374,7 @@ const showVariantForm = computed(() =>
 );
 const showDialogVariantForm = ref(false);
 const isAnyExerciseSelected = computed(() => {
-  return !!selectedExercise.value;
+  return !!selectedExercise.value || addingNewExercise.value;
 });
 
 // Update dialog show status
@@ -457,6 +459,7 @@ function onExerciseAdd(exerciseName: string) {
       coachInfo.exercises = reduceExercises(
         [newExercise].concat(coachInfo.exercises || []),
       );
+      selectedVariant.value = newExercise.variants?.[0];
       showDialogVariantForm.value = true;
       // TODO put in a separate method
       // Inform user about exercise successfully saved
