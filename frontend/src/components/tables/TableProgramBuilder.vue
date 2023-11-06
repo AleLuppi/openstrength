@@ -128,6 +128,7 @@
             (value: any) =>
               onModelValueUpdate(idWeekDay.toString(), exerciseName, value)
           "
+          :showNewLine="true"
           dense
           class="col os-light-border"
         >
