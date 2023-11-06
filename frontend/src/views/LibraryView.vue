@@ -127,7 +127,7 @@
                   color="light-dark"
                   class="q-px-md"
                 ></q-icon>
-                <p>Select an exercise to show its variants</p>
+                <p>{{ $t('coach.exercise_management.no_selected_exercises') }}</p>
               </div>
             </div>
           </div>
