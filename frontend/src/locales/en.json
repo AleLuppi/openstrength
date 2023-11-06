@@ -252,7 +252,8 @@
         "update_proceed": "Update max lift"
       },
       "fields": {
-        "exercise": "Exercise variant name",
+        "exercise": "Exercise name",
+        "variant": "Variant name",
         "type": "Max lift type",
         "value": "Max lift value",
         "date": "Max lift date"       

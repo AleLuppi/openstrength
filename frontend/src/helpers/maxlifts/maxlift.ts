@@ -10,6 +10,7 @@ export enum MaxLiftType {
   _1RM = "1RM",
   _3RM = "3RM",
   _5RM = "5RM",
+  _6RM = "6RM",
   _8RM = "8RM",
   _10RM = "10RM",
   _maxrep = "Max Reps",

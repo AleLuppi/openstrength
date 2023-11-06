@@ -101,11 +101,25 @@
                   class="q-my-md q-gutter-sm column"
                 >
                   <q-card-section class="q-gutter-x-xs">
-                    <os-input
-                      v-model="maxliftExercise"
-                      required
+                    <os-select
+                      v-model="selectedExerciseName"
                       :label="$t('coach.maxlift_management.fields.exercise')"
-                    ></os-input>
+                      :options="exercises.map((exercise) => exercise.name)"
+                      emit-value
+                      map-options
+                      dense
+                    >
+                    </os-select>
+                    <os-select
+                      v-model="selectedExerciseVariantsName"
+                      :label="$t('coach.maxlift_management.fields.variant')"
+                      :options="
+                        selectedExercise?.value?.variants?.map(
+                          (variant) => variant.name,
+                        )
+                      "
+                    >
+                    </os-select>
 
                     <!-- TYPE -->
                     <os-select
@@ -200,7 +214,7 @@ import { useCoachInfoStore } from "@/stores/coachInfo";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import { useUserStore } from "@/stores/user";
-import { ExerciseVariant } from "@/helpers/exercises/exercise";
+import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 
@@ -217,6 +231,10 @@ const searchMaxLift = ref<string>();
 const updatingMaxLift = ref<MaxLift>();
 const showMaxLiftAddDialog = ref(false);
 
+const selectedExerciseName = ref<string>();
+const selectedExerciseVariantsName = ref<string>();
+const selectedExercise = ref<Exercise>();
+
 const maxliftExercise = ref<ExerciseVariant>(); // TODO check
 const maxliftType = ref<MaxLiftType>(); // TODO check
 const availableMaxLiftTypes: string[] = Object.values(MaxLiftType);
@@ -224,6 +242,12 @@ const availableMaxLiftTypes: string[] = Object.values(MaxLiftType);
 const maxliftValue = ref(""); // TODO check
 
 const maxliftDate = ref<Date>(); // TODO check
+
+// Get exercises to display
+const exercises = computed<Exercise[]>(() => {
+  coachInfo.loadExercises(user.uid, true);
+  return coachInfo.exercises || [];
+});
 
 // Get maxlifts for a coach to display
 const maxlifts = computed(() => {
@@ -237,6 +261,8 @@ const maxliftValueSuffix = computed(() => {
   } else if (maxliftType.value === MaxLiftType._3RM) {
     return "kg";
   } else if (maxliftType.value === MaxLiftType._5RM) {
+    return "kg";
+  } else if (maxliftType.value === MaxLiftType._6RM) {
     return "kg";
   } else if (maxliftType.value === MaxLiftType._8RM) {
     return "kg";
