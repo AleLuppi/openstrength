@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import {
   Program,
@@ -53,9 +53,6 @@ const splitterModel = ref(70);
 
 // TODO fix user
 const coachInfo = useCoachInfoStore();
-onMounted(() => {
-  coachInfo.loadExercises(undefined, true);
-});
 
 // TODO load programs
 const program = new Program({

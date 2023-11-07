@@ -24,14 +24,44 @@ import {
 } from "@/helpers/exercises/listManagement";
 
 export const useCoachInfoStore = defineStore("coachInfo", () => {
+  // Coach ID
+  const coachId = ref<string>();
+
   // Managed athletes
-  const athletes = ref<AthleteUser[]>();
+  const _athletes = ref<AthleteUser[]>(); // private
+  const athletes = computed({
+    get: () => {
+      if (!_athletes.value) loadAthletes(coachId.value, true);
+      return _athletes.value;
+    },
+    set: (value) => {
+      _athletes.value = value;
+    },
+  });
 
   // Library of exercises
-  const exercises = ref<Exercise[]>();
+  const _exercises = ref<Exercise[]>(); // private
+  const exercises = computed({
+    get: () => {
+      if (!_exercises.value) loadExercises(coachId.value, true);
+      return _exercises.value;
+    },
+    set: (value) => {
+      _exercises.value = value;
+    },
+  });
 
   // Library of programs
-  const programs = ref<Program[]>();
+  const _programs = ref<Program[]>(); // private
+  const programs = computed({
+    get: () => {
+      if (!_programs.value) loadPrograms(coachId.value, true);
+      return _programs.value;
+    },
+    set: (value) => {
+      _programs.value = value;
+    },
+  });
 
   /**
    * Load list of athletes for a coach.
@@ -68,12 +98,12 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
       ],
       {
         onSuccess: (docs: { [key: string]: AthleteUserProps }) => {
-          const _athletes: AthleteUser[] = [];
+          const athletesFromDoc: AthleteUser[] = [];
           Object.entries(docs).forEach(([uid, doc]) =>
-            _athletes.push(new AthleteUser({ ...doc, uid: uid })),
+            athletesFromDoc.push(new AthleteUser({ ...doc, uid: uid })),
           );
-          athletes.value = _athletes;
-          onSuccess?.(athletes);
+          _athletes.value = athletesFromDoc;
+          onSuccess?.(athletesFromDoc);
         },
         onError: onError,
       },
@@ -109,13 +139,13 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     // Get documents
     doGetDocs(exercisesCollection, [["userId", "==", coachId]], {
       onSuccess: (docs: { [key: string]: any }) => {
-        const _exercises: Exercise[] = [];
+        const exercisesFromDoc: Exercise[] = [];
         Object.entries(docs).forEach(([uid, doc]) =>
-          _exercises.push(packExerciseVariantInfo(doc, uid)),
+          exercisesFromDoc.push(packExerciseVariantInfo(doc, uid)),
         );
-        exercises.value = reduceExercises(_exercises);
-        sortExercises(exercises.value, true);
-        onSuccess?.(athletes);
+        _exercises.value = reduceExercises(exercisesFromDoc);
+        sortExercises(_exercises.value, true);
+        onSuccess?.(exercisesFromDoc);
       },
       onError: onError,
     });
@@ -151,12 +181,12 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     // Get documents
     doGetDocs(programsCollection, [["coachId", "==", coachId]], {
       onSuccess: (docs: { [key: string]: Program }) => {
-        const _programs: Program[] = [];
+        const programsFromDoc: Program[] = [];
         Object.entries(docs).forEach(([uid, doc]) =>
-          _programs.push(new Program({ ...doc, uid: uid })),
+          programsFromDoc.push(new Program({ ...doc, uid: uid })),
         );
-        programs.value = _programs;
-        onSuccess?.(programs);
+        _programs.value = programsFromDoc;
+        onSuccess?.(programsFromDoc);
       },
       onError: onError,
     });
