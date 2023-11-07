@@ -1,6 +1,6 @@
 import { DocumentReference } from "firebase/firestore";
 import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
-import { ExerciseVariant } from "../exercises/exercise";
+import { Exercise, ExerciseVariant } from "../exercises/exercise";
 import { maxliftsCollection } from "@/helpers/database/collections";
 
 /**
@@ -24,7 +24,8 @@ export type MaxLiftProps = {
   // Basic max lift info
   uid?: string;
   type?: MaxLiftType;
-  exercise?: ExerciseVariant;
+  exercise?: Exercise;
+  variant?: ExerciseVariant;
   value?: string; // TODO: add measurement unit
 
   // Max lift status
@@ -49,7 +50,8 @@ export class MaxLift {
   // Basic max lift info
   uid?: string;
   type?: MaxLiftType;
-  exercise?: ExerciseVariant;
+  exercise?: Exercise;
+  variant?: ExerciseVariant;
   value?: string; // TODO: add measurement unit
 
   // Max lift status
@@ -68,6 +70,7 @@ export class MaxLift {
     uid,
     type,
     exercise,
+    variant,
     value,
     coachId,
     athleteId,
@@ -79,6 +82,7 @@ export class MaxLift {
     this.uid = uid;
     this.type = type;
     this.exercise = exercise;
+    this.variant = variant;
     this.value = value;
     this.coachId = coachId;
     this.athleteId = athleteId;
