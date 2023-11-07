@@ -107,9 +107,15 @@
             emit-value
           >
           </osSelect>
-          {{ selectedExerciseVariantsName[idWeekDay][exerciseName] }}
-          {{ selectedExerciseVariants[idWeekDay][exerciseName]?.name }}
-          {{ selectedExerciseVariants[idWeekDay][exerciseName]?.isDefault }}
+          <osInput
+            :model-value="selectedExercisesNote[idWeekDay][exerciseName]"
+            @update:model-value="
+              (value: any) =>
+                onNoteValueUpdate(idWeekDay.toString(), exerciseName, value)
+            "
+            type="textarea"
+          >
+          </osInput>
         </div>
 
         <!-- Data table -->
@@ -126,7 +132,7 @@
           ]"
           @update:model-value="
             (value: any) =>
-              onModelValueUpdate(idWeekDay.toString(), exerciseName, value)
+              onTableValueUpdate(idWeekDay.toString(), exerciseName, value)
           "
           :showNewLine="true"
           dense
@@ -180,6 +186,9 @@ const selectedExercisesName = ref<{
   [key: string]: { [subkey: string]: string | undefined };
 }>({});
 const selectedExerciseVariantsName = ref<{
+  [key: string]: { [subkey: string]: string | undefined };
+}>({});
+const selectedExercisesNote = ref<{
   [key: string]: { [subkey: string]: string | undefined };
 }>({});
 const selectedExercises = ref<{
@@ -279,6 +288,7 @@ function updateTableData() {
   linesTable.value = {};
   selectedExercisesName.value = {};
   selectedExerciseVariantsName.value = {};
+  selectedExercisesNote.value = {};
 
   // Set new table values
   Object.entries(exercisesPerWeekDay.value).forEach(
@@ -294,6 +304,13 @@ function updateTableData() {
         (out: { [key: string]: string | undefined }, exercise) => ({
           ...out,
           [exercise.exercise?.name ?? ""]: exercise.exerciseVariant?.name,
+        }),
+        {},
+      );
+      selectedExercisesNote.value[idWeekDay] = exercises.reduce(
+        (out: { [key: string]: string | undefined }, exercise) => ({
+          ...out,
+          [exercise.exercise?.name ?? ""]: exercise.exerciseNote ?? "",
         }),
         {},
       );
@@ -411,11 +428,11 @@ const allDays = computed(() => {
 // Define debounce method for each table to store changes
 function storeChanges(
   key: string,
-  changeType: "exercise" | "variant" | "data",
+  changeType: "exercise" | "variant" | "note" | "data",
   changeData: any,
 ) {
   if (!(key in storeChangesMethods)) storeChangesMethods[key] = {};
-  if (!(changeType in storeChangesMethods))
+  if (!(changeType in storeChangesMethods[key]))
     storeChangesMethods[key][changeType] = debounce((changeValue: any) => {
       changes.push([key, changeType, changeValue]);
     }, 1000);
@@ -429,7 +446,7 @@ function storeChanges(
  * @param exerciseName exercise related to table.
  * @param value current table value.
  */
-function onModelValueUpdate(
+function onTableValueUpdate(
   idWeekDay: string,
   exerciseName: string,
   value: any,
@@ -437,6 +454,26 @@ function onModelValueUpdate(
   storeChanges(
     mergeWeekDayNamesWithExercise(idWeekDay, exerciseName),
     "data",
+    value,
+  );
+}
+
+/**
+ * Things to perform when exercise note gets updated.
+ *
+ * @param idWeekDay week and day id.
+ * @param exerciseName exercise related to table.
+ * @param value current note value.
+ */
+function onNoteValueUpdate(
+  idWeekDay: string,
+  exerciseName: string,
+  value: any,
+) {
+  selectedExercisesNote.value[idWeekDay][exerciseName] = value;
+  storeChanges(
+    mergeWeekDayNamesWithExercise(idWeekDay, exerciseName),
+    "note",
     value,
   );
 }
