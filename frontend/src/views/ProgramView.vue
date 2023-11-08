@@ -1,26 +1,13 @@
 <template>
   <q-page style="height: 0">
-    <q-splitter
-      v-model="splitterModel"
-      :limits="[50, 100]"
-      style="height: 100%"
-    >
+    <q-splitter v-model="splitterModel" :limits="[50, 100]" style="height: 100%">
       <template v-slot:before>
-        <TableProgramBuilder
-          :program="program"
-          :exercises="coachInfo.exercises"
-          class="q-pa-sm"
-          cd
-        ></TableProgramBuilder>
-        <TableProgramBuilder
-          :program="program"
-          :exercises="coachInfo.exercises"
-          class="q-pa-sm"
-          cd
-        ></TableProgramBuilder>
+        <!-- Show table to build program on the left -->
+        <TableProgramBuilder :program="program" :exercises="coachInfo.exercises" class="q-pa-sm" cd></TableProgramBuilder>
       </template>
 
       <template v-slot:after>
+        <!-- Show charts on the right -->
         <div class="q-pa-sm">
           <!-- TODO i18n -->
           <!-- TODO: add navigation in the right drawer -->
@@ -35,138 +22,72 @@
               <h6 class="text-margin-xs">Max Lifts section</h6>
 
               <div class="row q-gutter-x-md items-center">
-                <os-input
-                  v-model="searchMaxLift"
-                  :placeholder="
-                    $t('coach.maxlift_management.list.search_maxlift')
-                  "
-                  hide-bottom-space
-                  debounce="500"
-                  class="col"
-                >
+                <os-input v-model="searchMaxLift" :placeholder="$t('coach.maxlift_management.list.search_maxlift')
+                  " hide-bottom-space debounce="500" class="col">
                   <template v-slot:prepend>
                     <q-icon name="search" />
                   </template>
                 </os-input>
 
                 <!-- Add new maxlift -->
-                <q-btn
-                  icon="add"
-                  outline
-                  @click="
-                    updatingMaxLift = undefined;
-                    showMaxLiftAddDialog = true;
-                  "
-                />
+                <q-btn icon="add" outline @click="
+                  updatingMaxLift = undefined;
+                showMaxLiftAddDialog = true;
+                " />
               </div>
             </q-card-section>
 
             <q-separator />
 
-            <TableMaxLifts
-              :maxlifts="maxlifts"
-              :on-update="onUpdateMaxLift"
-              :filter="searchMaxLift"
-            />
+            <TableMaxLifts :maxlifts="maxlifts" :on-update="onUpdateMaxLift" :filter="searchMaxLift" />
 
             <!-- Dialog to add a new max lift -->
-            <q-dialog
-              v-model="showMaxLiftAddDialog"
-              @hide="updatingMaxLift ? clearMaxLift() : {}"
-            >
+            <q-dialog v-model="showMaxLiftAddDialog" @hide="updatingMaxLift ? clearMaxLift() : {}">
               <q-card class="q-pa-sm dialog-min-width">
                 <q-card-section class="row items-center q-pb-none">
                   <h5>
                     {{
                       updatingMaxLift
-                        ? $t("coach.maxlift_management.list.update")
-                        : $t("coach.maxlift_management.list.add")
+                      ? $t("coach.maxlift_management.list.update")
+                      : $t("coach.maxlift_management.list.add")
                     }}
                   </h5>
 
                   <q-space />
-                  <q-btn
-                    icon="close"
-                    flat
-                    round
-                    dense
-                    color="button-negative"
-                    v-close-popup
-                  />
+                  <q-btn icon="close" flat round dense color="button-negative" v-close-popup />
                 </q-card-section>
 
-                <q-form
-                  @submit="updatingMaxLift ? updateMaxLift() : createMaxLift()"
-                  @reset="clearMaxLift"
-                  class="q-my-md q-gutter-sm column"
-                >
+                <q-form @submit="updatingMaxLift ? updateMaxLift() : createMaxLift()" @reset="clearMaxLift"
+                  class="q-my-md q-gutter-sm column">
                   <q-card-section class="q-gutter-x-xs">
-                    <os-select
-                      v-model="selectedExercise"
-                      :label="$t('coach.maxlift_management.fields.exercise')"
-                      :options="exercises.map((exercise) => exercise.name)"
-                      emit-value
-                      map-options
-                      dense
-                    >
+                    <os-select v-model="selectedExercise" :label="$t('coach.maxlift_management.fields.exercise')"
+                      :options="exercises.map((exercise) => exercise.name)" emit-value map-options dense>
                     </os-select>
-                    <os-select
-                      v-model="selectedVariant"
-                      :label="$t('coach.maxlift_management.fields.variant')"
-                      :options="
-                        selectedExercise?.variants?.map(
-                          (variant) => variant.name,
-                        )
-                      "
-                    >
+                    <os-select v-model="selectedVariant" :label="$t('coach.maxlift_management.fields.variant')" :options="selectedExercise?.variants?.map(
+                      (variant) => variant.name,
+                    )
+                      ">
                     </os-select>
 
                     <!-- TYPE -->
-                    <os-select
-                      v-model="maxliftType"
-                      :label="$t('coach.maxlift_management.fields.type')"
-                      use-input
-                      :options="availableMaxLiftTypes"
-                      emit-value
-                      map-options
-                      class="col-12"
-                    />
+                    <os-select v-model="maxliftType" :label="$t('coach.maxlift_management.fields.type')" use-input
+                      :options="availableMaxLiftTypes" emit-value map-options class="col-12" />
 
                     <!-- VALUE -->
-                    <os-input
-                      v-model="maxliftValue"
-                      :suffix="maxliftValueSuffix"
-                      :label="$t('coach.maxlift_management.fields.value')"
-                    ></os-input>
+                    <os-input v-model="maxliftValue" :suffix="maxliftValueSuffix"
+                      :label="$t('coach.maxlift_management.fields.value')"></os-input>
 
-                    <p
-                      class="text-input-top-label text-uppercase text-weight-medium text-left"
-                      style="line-height: 1.6em"
-                    >
+                    <p class="text-input-top-label text-uppercase text-weight-medium text-left"
+                      style="line-height: 1.6em">
                       {{ i18n.t("coach.maxlift_management.fields.date") }}
                     </p>
-                    <q-input
-                      outlined
-                      dense
-                      v-model="maxliftDate"
-                      mask="date"
-                      :rules="['date']"
-                    >
+                    <q-input outlined dense v-model="maxliftDate" mask="date" :rules="['date']">
                       <template v-slot:append>
                         <q-icon name="event" class="cursor-pointer">
-                          <q-popup-proxy
-                            cover
-                            transition-show="scale"
-                            transition-hide="scale"
-                          >
+                          <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date v-model="maxliftDate">
                               <div class="row items-center justify-end">
-                                <q-btn
-                                  v-close-popup
-                                  label="Close"
-                                  color="primary"
-                                  flat
-                                />
+                                <q-btn v-close-popup label="Close" color="primary" flat />
                               </div>
                             </q-date>
                           </q-popup-proxy>
@@ -177,14 +98,10 @@
 
                   <q-card-actions align="right">
                     <q-btn flat :label="$t('common.cancel')" type="reset" />
-                    <q-btn
-                      :label="
-                        updatingMaxLift
-                          ? $t('coach.maxlift_management.list.update_proceed')
-                          : $t('coach.maxlift_management.list.add_proceed')
-                      "
-                      type="submit"
-                    />
+                    <q-btn :label="updatingMaxLift
+                      ? $t('coach.maxlift_management.list.update_proceed')
+                      : $t('coach.maxlift_management.list.add_proceed')
+                      " type="submit" />
                   </q-card-actions>
                 </q-form>
               </q-card>
@@ -194,21 +111,21 @@
       </template>
 
       <template v-slot:separator>
-        <q-avatar
-          color="primary"
-          text-color="white"
-          size="40px"
-          icon="drag_indicator"
-        />
+        <!-- Add a middle separator -->
+        <q-avatar color="primary" text-color="white" size="40px" icon="drag_indicator" />
       </template>
     </q-splitter>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
+import { ref, computed } from "vue";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
-import { Program, ProgramLine } from "@/helpers/programs/program";
+import {
+  Program,
+  ProgramExercise,
+  ProgramLine,
+} from "@/helpers/programs/program";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 //import ChartSelector from "@/components/charts/ChartSelector.vue";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
@@ -357,57 +274,114 @@ function onUpdateMaxLift(maxlift: MaxLift) {
 const splitterModel = ref(70);
 
 // TODO fix user
-onMounted(() => {
-  coachInfo.loadExercises(undefined, true);
-});
+const coachInfo = useCoachInfoStore();
 
 // TODO load programs
 const program = new Program({
   uid: "prova",
   name: "Program name",
-  lines: [
-    new ProgramLine({
+  programExercises: [
+    new ProgramExercise({
+      exercise: coachInfo.exercises?.[0],
       scheduleWeek: "A",
       scheduleDay: 1,
       scheduleOrder: 5,
-      setsBaseValue: "sets",
-      repsBaseValue: "reps",
-      loadBaseValue: "load",
-      rpeBaseValue: "rpe",
-      exercise: coachInfo.exercises?.[0],
+      lines: [
+        new ProgramLine({
+          setsBaseValue: "sets",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+        }),
+        new ProgramLine({
+          setsBaseValue: "sets",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+        }),
+      ],
     }),
-    new ProgramLine({
-      scheduleWeek: "A",
-      scheduleDay: 1,
-      scheduleOrder: 3,
-      setsBaseValue: "sets",
-      repsBaseValue: "reps",
-      loadBaseValue: "load",
-      rpeBaseValue: "rpe",
-      requestFeedbackText: true,
-      exercise: coachInfo.exercises?.[0],
+    new ProgramExercise({
+      exercise: coachInfo.exercises?.[1],
+      exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
+      scheduleWeek: "B",
+      scheduleDay: 4,
+      scheduleOrder: 2,
+      lines: [
+        new ProgramLine({
+          setsBaseValue: "2",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+          lineOrder: 2,
+        }),
+        new ProgramLine({
+          setsBaseValue: "4",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+          lineOrder: 4,
+        }),
+        new ProgramLine({
+          setsBaseValue: "1",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+          lineOrder: 1,
+        }),
+      ],
     }),
-    new ProgramLine({
+    new ProgramExercise({
+      exercise: coachInfo.exercises?.[2],
       scheduleWeek: "B",
       scheduleDay: 4,
       scheduleOrder: 1,
-      setsBaseValue: "sets",
-      repsBaseValue: "reps",
-      loadBaseValue: "load",
-      rpeBaseValue: "rpe",
-      requestFeedbackText: true,
-      exercise: coachInfo.exercises?.[1],
-      exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
+      lines: [
+        new ProgramLine({
+          setsBaseValue: "2222222222222222222",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+          lineOrder: 2,
+        }),
+        new ProgramLine({
+          setsBaseValue: "4",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+          lineOrder: 4,
+        }),
+        new ProgramLine({
+          setsBaseValue: "1",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+          lineOrder: 1,
+        }),
+      ],
     }),
-    new ProgramLine({
+    new ProgramExercise({
+      exercise: coachInfo.exercises?.[2],
+      exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
       scheduleWeek: "B",
       scheduleDay: "1",
       scheduleOrder: 1,
-      setsBaseValue: "sets",
-      repsBaseValue: "reps",
-      loadBaseValue: "load",
-      rpeBaseValue: "rpe",
-      requestFeedbackText: true,
+      lines: [
+        new ProgramLine({
+          setsBaseValue: "sets",
+          repsBaseValue: "reps",
+          loadBaseValue: "load",
+          rpeBaseValue: "rpe",
+          requestFeedbackText: true,
+        }),
+      ],
     }),
   ],
 });

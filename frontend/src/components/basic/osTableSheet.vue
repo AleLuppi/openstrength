@@ -58,7 +58,7 @@
             :ref="
               (el) => (childElements[getCellName(props.row.id, col.id)] = el)
             "
-            :model-value="modelValue[props.rowIndex][col.name]"
+            :model-value="(modelValue[props.rowIndex] ?? newRow)[col.name]"
             @update:model-value="
               (value) => onModelValueUpdate(props.rowIndex, col.name, value)
             "
@@ -84,6 +84,10 @@ const props = defineProps({
   headers: {
     type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
     required: false,
+  },
+  showNewLine: {
+    type: Boolean,
+    default: false,
   },
   dense: {
     type: Boolean,
@@ -138,10 +142,17 @@ const columns = computed(() =>
   })),
 );
 const rows = computed(() =>
-  props.modelValue.map((row, rowIndex) => ({
-    id: getCellName(rowIndex),
-    ...row,
-  })),
+  [...props.modelValue, ...(props.showNewLine ? [newRow.value] : [])].map(
+    (row, rowIndex) => ({
+      id: getCellName(rowIndex),
+      ...row,
+    }),
+  ),
+);
+
+// Set an empty new line
+const newRow = computed(() =>
+  columns.value.reduce((out, col) => ({ ...out, [col.name]: "" }), {}),
 );
 
 /**
@@ -159,8 +170,13 @@ function onModelValueUpdate(
   // Get a copy of current data
   const outValue = props.modelValue;
 
+  // Add a new line if necessary
+  if (rowId == outValue.length && String(newValue).trim()) {
+    outValue[rowId] = {};
+  }
+
   // Update with new value
-  if (newValue && rowId < outValue.length) {
+  if (newValue != null && rowId < outValue.length) {
     outValue[rowId][colId] = String(newValue);
     emit("update:modelValue", outValue);
   }

@@ -64,7 +64,7 @@ const rows = computed(() => {
     note: "", // TODO program.note
     label: {
       element: "chip",
-      label: program.label?.toLocaleLowerCase(),
+      label: program.labels?.[0]?.toLocaleLowerCase(), // TODO handle all labels
       color: "primary",
     },
     update: {

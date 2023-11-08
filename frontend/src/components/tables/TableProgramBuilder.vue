@@ -2,21 +2,21 @@
   <div>
     <!-- Day element -->
     <div
-      :ref="(el) => (dayTableElements[numWeekDay] = el)"
-      v-for="(tableData, numWeekDay) in linesTable"
-      :key="numWeekDay"
+      :ref="(el) => (dayTableElements[idWeekDay] = el)"
+      v-for="(tableData, idWeekDay) in linesTable"
+      :key="idWeekDay"
       class="q-pa-md q-my-md shadow-2"
       style="border-radius: 24px"
     >
       <!-- Show week and day and allow navigation -->
       <h6 class="q-mt-none">
         <span class="underlined-dashed cursor-pointer">
-          {{ getWeekDisplayName(numWeekDay, true) }}
+          {{ getWeekDisplayName(idWeekDay, true) }}
           <q-menu auto-close>
             <q-list
               v-for="week in allWeeks.filter(
                 (oneWeek) =>
-                  oneWeek != splitWeekDayNames(numWeekDay.toString())[0],
+                  oneWeek != splitWeekDayNames(idWeekDay.toString())[0],
               )"
               :key="week"
               style="min-width: 100px"
@@ -28,7 +28,7 @@
                     dayTableElements[
                       mergeWeekDayNames(
                         week,
-                        splitWeekDayNames(numWeekDay.toString())[1],
+                        splitWeekDayNames(idWeekDay.toString())[1],
                       )
                     ] ??
                       dayTableElements[
@@ -46,14 +46,14 @@
         </span>
         -
         <span class="underlined-dashed cursor-pointer">
-          {{ getDayDisplayName(numWeekDay, true) }}
+          {{ getDayDisplayName(idWeekDay, true) }}
           <q-menu auto-close>
             <q-list
               v-for="day in allDays[
-                splitWeekDayNames(numWeekDay.toString())[0]
+                splitWeekDayNames(idWeekDay.toString())[0]
               ].filter(
                 (oneDay) =>
-                  oneDay != splitWeekDayNames(numWeekDay.toString())[1],
+                  oneDay != splitWeekDayNames(idWeekDay.toString())[1],
               )"
               :key="day"
               style="min-width: 100px"
@@ -64,7 +64,7 @@
                   scrollToElement(
                     dayTableElements[
                       mergeWeekDayNames(
-                        splitWeekDayNames(numWeekDay.toString())[0],
+                        splitWeekDayNames(idWeekDay.toString())[0],
                         day,
                       )
                     ],
@@ -78,31 +78,49 @@
         </span>
       </h6>
 
-      <div class="row items-start justify-evenly">
+      <!-- Exercise element -->
+      <div
+        v-for="exerciseName in Object.keys(selectedExercises[idWeekDay] ?? {})"
+        :key="exerciseName"
+        class="row items-start justify-evenly q-mb-md"
+      >
         <!-- Exercise info -->
         <div class="col-2 q-pa-sm bg-lighter os-exercise-form os-light-border">
           <osSelect
-            v-model="selectedExercisesName[numWeekDay]"
+            v-model="selectedExercisesName[idWeekDay][exerciseName]"
             :options="exercises.map((exercise) => exercise.name)"
-            emit-value
-            map-options
-            dense
           >
           </osSelect>
           <osSelect
-            v-model="selectedExerciseVariantsName[numWeekDay]"
+            v-model="selectedExerciseVariantsName[idWeekDay][exerciseName]"
             :options="
-              selectedExercises[numWeekDay]?.variants?.map(
-                (variant) => variant.name,
+              selectedExercises[idWeekDay][exerciseName]?.variants?.map(
+                (variant) => ({
+                  label: variant.isDefault
+                    ? $t('coach.exercise_management.default_variant')
+                    : variant.name,
+                  value: variant.isDefault ? '' : variant.name,
+                }),
               )
             "
+            map-options
+            emit-value
           >
           </osSelect>
+          <osInput
+            :model-value="selectedExercisesNote[idWeekDay][exerciseName]"
+            @update:model-value="
+              (value: any) =>
+                onNoteValueUpdate(idWeekDay.toString(), exerciseName, value)
+            "
+            type="textarea"
+          >
+          </osInput>
         </div>
 
         <!-- Data table -->
         <osTableSheet
-          :modelValue="tableData"
+          :modelValue="tableData[exerciseName]"
           :headers="[
             'load',
             'reps',
@@ -113,8 +131,10 @@
             'requestVideo',
           ]"
           @update:model-value="
-            (value: any) => onModelValueUpdate(numWeekDay, value)
+            (value: any) =>
+              onTableValueUpdate(idWeekDay.toString(), exerciseName, value)
           "
+          :showNewLine="true"
           dense
           class="col os-light-border"
         >
@@ -128,8 +148,8 @@
 import { ref, computed, PropType, watch } from "vue";
 import { debounce } from "quasar";
 import { useI18n } from "vue-i18n";
-import { Program, ProgramLine } from "@/helpers/programs/program";
-import { orderLines } from "@/helpers/programs/linesManagement";
+import { Program } from "@/helpers/programs/program";
+import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { scrollToElement } from "@/helpers/scroller";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { uniqueValues } from "@/helpers/array";
@@ -152,69 +172,106 @@ const props = defineProps({
 // Set useful values
 const sepWekDay = ".";
 const changes: any[] = [];
+const storeChangesMethods: { [key: string]: { [subkey: string]: Function } } =
+  {};
 
 // Set ref
 const dayTableElements = ref<{
-  [key: string | number]: any;
+  [key: string]: any; // TODO Element type
 }>({});
 const linesTable = ref<{
-  [key: string | number]: ProgramLine[];
+  [key: string]: { [subkey: string]: Object[] };
 }>({});
 const selectedExercisesName = ref<{
-  [key: string | number]: string | undefined;
+  [key: string]: { [subkey: string]: string | undefined };
 }>({});
 const selectedExerciseVariantsName = ref<{
-  [key: string | number]: string | undefined;
+  [key: string]: { [subkey: string]: string | undefined };
+}>({});
+const selectedExercisesNote = ref<{
+  [key: string]: { [subkey: string]: string | undefined };
 }>({});
 const selectedExercises = ref<{
-  [key: string | number]: Exercise | undefined;
+  [key: string]: { [subkey: string]: Exercise | undefined };
 }>({});
 const selectedExerciseVariants = ref<{
-  [key: string | number]: ExerciseVariant | undefined;
+  [key: string]: { [subkey: string]: ExerciseVariant | undefined };
 }>({});
 
 // Update selected exercises and variants
 watch(
   selectedExercisesName,
-  (exercisesName) => {
+  (dailyExercisesName) => {
     selectedExercises.value = Object.assign(
       {},
-      ...Object.entries(exercisesName).map(([key, exerciseName]) => {
-        const selectedExercise = props.exercises.find(
-          (exercise) => exercise.name == exerciseName,
+      ...Object.entries(dailyExercisesName).map(([key, exercisesName]) => {
+        const keySelectedExercises: {
+          [key: string]: Exercise | undefined;
+        } = {};
+        Object.entries(exercisesName).forEach(
+          ([originalExerciseName, exerciseName]) => {
+            if (exerciseName) {
+              keySelectedExercises[originalExerciseName] = props.exercises.find(
+                (exercise) => exercise.name == exerciseName,
+              );
+              if (
+                selectedExercises.value[key]?.[originalExerciseName] !=
+                keySelectedExercises[originalExerciseName]
+              )
+                storeChanges(
+                  mergeWeekDayNamesWithExercise(key, originalExerciseName),
+                  "exercise",
+                  keySelectedExercises,
+                );
+            }
+          },
         );
-        if (selectedExercises.value[key] != selectedExercise)
-          storeChanges.value[key]?.["exercise"]?.(selectedExercise);
         return {
-          [key]: selectedExercise,
+          [key]: keySelectedExercises,
         };
       }),
     );
+    console.log(dailyExercisesName, selectedExercises.value);
   },
   { deep: true, immediate: true },
 );
 watch(
   selectedExerciseVariantsName,
-  (variantsName) => {
+  (dailyVariantsName) => {
     selectedExerciseVariants.value = Object.assign(
       {},
-      ...Object.entries(variantsName).map(([key, variantName]) => {
-        const selectedVariant = selectedExercises.value[key]?.variants?.find(
-          (variant) => variant.name == variantName,
-        );
-        if (selectedExerciseVariants.value[key] != selectedVariant)
-          storeChanges.value[key]?.["variant"]?.(selectedVariant);
-        return { [key]: selectedVariant };
+      ...Object.entries(dailyVariantsName).map(([key, variantsName]) => {
+        const keySelectedVariants: {
+          [key: string]: ExerciseVariant | undefined;
+        } = {};
+        Object.entries(variantsName).forEach(([exerciseName, variantName]) => {
+          if (variantName) {
+            keySelectedVariants[exerciseName] = selectedExercises.value[key][
+              exerciseName
+            ]?.variants?.find((variant) => variant.name == variantName);
+            if (
+              selectedExerciseVariants.value[key]?.[exerciseName] !=
+              keySelectedVariants[exerciseName]
+            )
+              storeChanges(
+                mergeWeekDayNamesWithExercise(key, exerciseName),
+                "variant",
+                keySelectedVariants,
+              );
+          }
+        });
+        return { [key]: keySelectedVariants };
       }),
     );
-    console.log(selectedExerciseVariants.value);
   },
   { deep: true, immediate: true },
 );
 
 // Get all program lines for each week and day
-const allLines = computed(() =>
-  props.program.lines ? orderLines(props.program.lines, mergeWeekDayNames) : {},
+const exercisesPerWeekDay = computed(() =>
+  props.program.programExercises
+    ? orderProgramExercises(props.program.programExercises, mergeWeekDayNames)
+    : {},
 );
 
 // Update data table on input change
@@ -231,25 +288,48 @@ function updateTableData() {
   linesTable.value = {};
   selectedExercisesName.value = {};
   selectedExerciseVariantsName.value = {};
+  selectedExercisesNote.value = {};
 
   // Set new table values
-  Object.keys(allLines.value).forEach((key) => {
-    selectedExerciseVariantsName.value[key] =
-      allLines.value[key][0].exerciseVariant?.name;
-    selectedExercisesName.value[key] = (
-      allLines.value[key][0].exerciseVariant?.exercise ??
-      allLines.value[key][0].exercise
-    )?.name;
-    linesTable.value[key] = allLines.value[key].map((line) => ({
-      load: line.loadBaseValue,
-      reps: line.repsBaseValue,
-      sets: line.setsBaseValue,
-      rpe: line.rpeBaseValue,
-      note: line.note,
-      requestText: line.requestFeedbackText,
-      requestVideo: line.requestFeedbackVideo,
-    }));
-  });
+  Object.entries(exercisesPerWeekDay.value).forEach(
+    ([idWeekDay, exercises]) => {
+      selectedExercisesName.value[idWeekDay] = exercises.reduce(
+        (out: { [key: string]: string | undefined }, exercise) => ({
+          ...out,
+          [exercise.exercise?.name ?? ""]: exercise.exercise?.name,
+        }),
+        {},
+      );
+      selectedExerciseVariantsName.value[idWeekDay] = exercises.reduce(
+        (out: { [key: string]: string | undefined }, exercise) => ({
+          ...out,
+          [exercise.exercise?.name ?? ""]: exercise.exerciseVariant?.name,
+        }),
+        {},
+      );
+      selectedExercisesNote.value[idWeekDay] = exercises.reduce(
+        (out: { [key: string]: string | undefined }, exercise) => ({
+          ...out,
+          [exercise.exercise?.name ?? ""]: exercise.exerciseNote ?? "",
+        }),
+        {},
+      );
+      linesTable.value[idWeekDay] = {};
+      exercises.forEach((exercise) => {
+        if (exercise.lines)
+          linesTable.value[idWeekDay][exercise.exercise?.name ?? ""] =
+            exercise.lines?.map((line) => ({
+              load: line.loadBaseValue,
+              reps: line.repsBaseValue,
+              sets: line.setsBaseValue,
+              rpe: line.rpeBaseValue,
+              note: line.note,
+              requestText: line.requestFeedbackText,
+              requestVideo: line.requestFeedbackVideo,
+            }));
+      });
+    },
+  );
 }
 
 /**
@@ -257,15 +337,17 @@ function updateTableData() {
  *
  * @param weekId week name.
  * @param dayId day name.
+ * @param optId optional additional id to consider.
  * @param sep string separator.
  * @returns a string with merged names.
  */
 function mergeWeekDayNames(
   weekId: string | number,
   dayId: string | number,
+  optId?: string,
   sep: string = sepWekDay,
 ) {
-  return `${weekId}${sep}${dayId}`;
+  return [weekId, dayId, optId].filter(Boolean).join(sep);
 }
 
 /**
@@ -278,6 +360,27 @@ function mergeWeekDayNames(
  */
 function splitWeekDayNames(nameWeekDay: string, sep: string = sepWekDay) {
   return nameWeekDay.split(sep);
+}
+
+/**
+ * Merge week and day names to a single string.
+ *
+ * @param weekId week name.
+ * @param dayId day name.
+ * @param optId optional additional id to consider.
+ * @param sep string separator.
+ * @returns a string with merged names.
+ */
+function mergeWeekDayNamesWithExercise(
+  idWeekDay: string,
+  exerciseName: string,
+  sep: string = sepWekDay,
+) {
+  return mergeWeekDayNames(
+    ...(splitWeekDayNames(idWeekDay, sep) as []),
+    exerciseName,
+    sep,
+  );
 }
 
 /**
@@ -307,12 +410,14 @@ function getDayDisplayName(dayId: string | number, split: boolean = false) {
 // Get a reference to all weeks and days available
 const allWeeks = computed(() =>
   uniqueValues(
-    Object.keys(allLines.value).map((key) => splitWeekDayNames(key)[0]),
+    Object.keys(exercisesPerWeekDay.value).map(
+      (key) => splitWeekDayNames(key)[0],
+    ),
   ),
 );
 const allDays = computed(() => {
   const outDays: { [key: string | number]: string[] } = {};
-  Object.keys(allLines.value).forEach((key) => {
+  Object.keys(exercisesPerWeekDay.value).forEach((key) => {
     const [week, day] = splitWeekDayNames(key);
     if (!outDays[week]) outDays[week] = [];
     outDays[week].push(day);
@@ -321,37 +426,56 @@ const allDays = computed(() => {
 });
 
 // Define debounce method for each table to store changes
-const storeChanges = computed(() => {
-  const outMethods: {
-    [key: string | number]: {
-      exercise?: Function;
-      variant?: Function;
-      data?: Function;
-    };
-  } = {};
-  Object.keys(allLines.value).forEach((key) => {
-    outMethods[key] = {};
-    for (const changeType of ["exercise", "variant", "data"] as (
-      | "exercise"
-      | "variant"
-      | "data"
-    )[]) {
-      outMethods[key][changeType] = debounce((changeValue: any) => {
-        changes.push([key, changeType, changeValue]);
-      }, 1000);
-    }
-  });
-  return outMethods;
-});
+function storeChanges(
+  key: string,
+  changeType: "exercise" | "variant" | "note" | "data",
+  changeData: any,
+) {
+  if (!(key in storeChangesMethods)) storeChangesMethods[key] = {};
+  if (!(changeType in storeChangesMethods[key]))
+    storeChangesMethods[key][changeType] = debounce((changeValue: any) => {
+      changes.push([key, changeType, changeValue]);
+    }, 1000);
+  storeChangesMethods[key][changeType](changeData);
+}
 
 /**
  * Things to perform when table gets updated.
  *
- * @param key week/day key.
+ * @param idWeekDay week and day id.
+ * @param exerciseName exercise related to table.
  * @param value current table value.
  */
-function onModelValueUpdate(key: string | number, value: any) {
-  storeChanges.value[key]?.["data"]?.(value);
+function onTableValueUpdate(
+  idWeekDay: string,
+  exerciseName: string,
+  value: any,
+) {
+  storeChanges(
+    mergeWeekDayNamesWithExercise(idWeekDay, exerciseName),
+    "data",
+    value,
+  );
+}
+
+/**
+ * Things to perform when exercise note gets updated.
+ *
+ * @param idWeekDay week and day id.
+ * @param exerciseName exercise related to table.
+ * @param value current note value.
+ */
+function onNoteValueUpdate(
+  idWeekDay: string,
+  exerciseName: string,
+  value: any,
+) {
+  selectedExercisesNote.value[idWeekDay][exerciseName] = value;
+  storeChanges(
+    mergeWeekDayNamesWithExercise(idWeekDay, exerciseName),
+    "note",
+    value,
+  );
 }
 </script>
 

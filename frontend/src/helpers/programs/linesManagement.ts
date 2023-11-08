@@ -1,22 +1,32 @@
-import { ProgramLine } from "@/helpers/programs/program";
+import { ProgramExercise, ProgramLine } from "@/helpers/programs/program";
 
 /**
- * Sort program lines according to week, day, order.
+ * Sort program exercises according to week, day, order.
  *
- * @param lines program lines to sort.
- * @returns sorted program lines.
+ * @param exercises program exercises to sort.
+ * @param sortLines
+ * @returns sorted program exercises.
  */
-export function sortLines(lines: ProgramLine[]) {
-  return [...lines].sort((lineA, lineB) => {
+export function sortProgramExercises(
+  exercises: ProgramExercise[],
+  sortLines: boolean = true,
+) {
+  if (sortLines)
+    exercises.forEach((exercise) => {
+      if (exercise.lines) exercise.lines = sortProgramLines(exercise.lines);
+    });
+  return [...exercises].sort((exerciseA, exerciseB) => {
     // Prepare variables
-    const weekA = lineA.scheduleWeek ?? lineB.scheduleWeek ?? "undefined";
-    const weekB = lineB.scheduleWeek ?? weekA;
-    const dayA = lineA.scheduleDay ?? lineB.scheduleDay ?? "undefined";
-    const dayB = lineB.scheduleDay ?? dayA;
-    const orderA = lineA.scheduleOrder ?? lineB.scheduleOrder ?? "undefined";
-    const orderB = lineB.scheduleOrder ?? orderA;
+    const weekA =
+      exerciseA.scheduleWeek ?? exerciseB.scheduleWeek ?? "undefined";
+    const weekB = exerciseB.scheduleWeek ?? weekA;
+    const dayA = exerciseA.scheduleDay ?? exerciseB.scheduleDay ?? "undefined";
+    const dayB = exerciseB.scheduleDay ?? dayA;
+    const orderA =
+      exerciseA.scheduleOrder ?? exerciseB.scheduleOrder ?? "undefined";
+    const orderB = exerciseB.scheduleOrder ?? orderA;
 
-    // Sort lines by week, day, order, with precedence
+    // Sort exercises by week, day, order, with precedence
     if (weekA < weekB) return -1;
     else if (weekA > weekB) return 1;
     else if (dayA < dayB) return -1;
@@ -30,34 +40,53 @@ export function sortLines(lines: ProgramLine[]) {
 }
 
 /**
- * Get a list of ordered program lines for each day, sorted by week and day number.
+ * Sort program lines according to line order.
  *
- * @param lines program lines to order.
- * @param getName method providing key name given week and day names.
- * @returns nested object having week and day as keys, and ordered list of lines as values.
+ * @param lines program lines to sort.
+ * @returns sorted program lines.
  */
-export function orderLines(
-  lines: ProgramLine[],
+export function sortProgramLines(lines: ProgramLine[]) {
+  return [...lines].sort((lineA, lineB) => {
+    // Prepare variables
+    const orderA = lineA.lineOrder ?? lineB.lineOrder ?? 99;
+    const orderB = lineB.lineOrder ?? orderA;
+
+    // Sort lines by order
+    if (orderA < orderB) return -1;
+    else if (orderA > orderB) return 1;
+    return 0;
+  });
+}
+
+/**
+ * Get a list of ordered program exercises for each day, sorted by week and day number.
+ *
+ * @param exercises program exercises to order.
+ * @param getName method providing key name given week and day names.
+ * @param sep string used as separator to build keys via default naming method.
+ * @returns object having week and day string as keys, and ordered list of exercises as values.
+ */
+export function orderProgramExercises(
+  exercises: ProgramExercise[],
   getName: Function = (week: string | number, day: string | number) =>
     `${week}${sep}${day}`,
   sep: string = ".",
+  sortLines: boolean = true,
 ) {
   // Prepare in and out variables
-  const sortedLines = sortLines(lines);
-  const outLines: {
-    [key: string]: ProgramLine[];
+  const sortedExercises = sortProgramExercises(exercises, sortLines);
+  const outExercises: {
+    [key: string]: ProgramExercise[];
   } = {};
 
-  console.log(sortedLines);
-
-  // Order lines
-  sortedLines.forEach((line) => {
-    const week = line.scheduleWeek ?? -1;
-    const day = line.scheduleDay ?? -1;
+  // Order exercises
+  sortedExercises.forEach((exercise) => {
+    const week = exercise.scheduleWeek ?? -1;
+    const day = exercise.scheduleDay ?? -1;
     const keyName = getName(week, day);
-    if (!outLines[keyName]) outLines[keyName] = [];
-    outLines[keyName].push(line);
+    if (!outExercises[keyName]) outExercises[keyName] = [];
+    outExercises[keyName].push(exercise);
   });
 
-  return outLines;
+  return outExercises;
 }

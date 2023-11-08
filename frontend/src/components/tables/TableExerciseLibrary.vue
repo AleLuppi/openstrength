@@ -116,7 +116,7 @@ const rows = computed(() => {
       ? [
           (item as ExerciseVariant).exercise?.name,
           (item as ExerciseVariant).isDefault
-            ? `(${i18n.t("common.default").toLocaleLowerCase()})`
+            ? i18n.t("coach.exercise_management.default_variant")
             : item.name,
         ].join("  ")
       : item.name ?? {

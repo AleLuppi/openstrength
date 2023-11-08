@@ -141,10 +141,7 @@ const athleteSurname = ref(""); // new athlete surname
 const athleteNote = ref(""); // new athlete note
 
 // Get athletes to display
-const athletes = computed(() => {
-  coachInfo.loadAthletes(user.uid, true);
-  return coachInfo.athletes || [];
-});
+const athletes = computed(() => coachInfo.athletes || []);
 
 /**
  * Create a new athlete user and assign logged coach to him/her.

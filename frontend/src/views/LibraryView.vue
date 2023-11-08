@@ -333,7 +333,6 @@
 import { computed, nextTick, ref, watch } from "vue";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
-import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import TableExerciseLibrary from "@/components/tables/TableExerciseLibrary.vue";
 import TableProgramLibrary from "@/components/tables/TableProgramLibrary.vue";
@@ -348,7 +347,6 @@ const $q = useQuasar();
 const i18n = useI18n();
 
 // Get store
-const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
 // Set ref
@@ -388,16 +386,10 @@ watch(selectedExercise, (exercise) =>
 );
 
 // Get exercises to display
-const exercises = computed<Exercise[]>(() => {
-  coachInfo.loadExercises(user.uid, true);
-  return coachInfo.exercises || [];
-});
+const exercises = computed<Exercise[]>(() => coachInfo.exercises || []);
 
 // Get programs to display
-const programs = computed(() => {
-  coachInfo.loadPrograms(user.uid, true);
-  return coachInfo.programs || [];
-});
+const programs = computed(() => coachInfo.programs || []);
 
 // Get options to display on variant creation or update
 const exerciseMuscleGroupsOptions = computed(() => {
@@ -461,7 +453,7 @@ function onExerciseAdd(exerciseName: string) {
       );
       selectedVariant.value = newExercise.variants?.[0];
       showDialogVariantForm.value = true;
-      // TODO put in a separate method
+
       // Inform user about exercise successfully saved
       $q.notify({
         type: "positive",
@@ -473,7 +465,6 @@ function onExerciseAdd(exerciseName: string) {
       selectedExercise.value = newExercise;
     },
     onError: () => {
-      // TODO put in a separate method
       // Inform user about error while saving exercise
       $q.notify({
         type: "negative",

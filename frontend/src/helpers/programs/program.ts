@@ -1,7 +1,8 @@
 import { DocumentReference } from "firebase/firestore";
 import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
 import { programsCollection } from "@/helpers/database/collections";
-import { Exercise, ExerciseVariant } from "../exercises/exercise";
+import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+import { AthleteUser, CoachUser } from "@/helpers/users/user";
 
 /**
  * Training program properties.
@@ -14,11 +15,11 @@ export type ProgramProps = {
   labels?: string[];
 
   // Program composition
-  lines?: ProgramLine[];
+  programExercises?: ProgramExercise[];
 
   // Program status
-  coachId?: string;
-  athleteId?: string;
+  coach?: CoachUser;
+  athlete?: AthleteUser;
   startedOn?: Date;
   finishedOn?: Date;
 
@@ -27,14 +28,17 @@ export type ProgramProps = {
   lastUpdated?: Date;
 
   // Computed info
+  coachId?: string;
+  athleteId?: string;
+  isAssigned?: boolean;
   isOngoing?: boolean;
 };
 
 /**
  * Program line properties.
  */
-export type ProgramLineProps = {
-  // Basic program line info
+export type ProgramExerciseProps = {
+  // Basic program exercise info
   uid?: string;
 
   // Father program instance
@@ -48,6 +52,24 @@ export type ProgramLineProps = {
   // Exercise-related info
   exercise?: Exercise;
   exerciseVariant?: ExerciseVariant;
+  exerciseNote?: string;
+
+  // Lines composing exercise
+  lines?: ProgramLine[];
+};
+
+/**
+ * Program line properties.
+ */
+export type ProgramLineProps = {
+  // Basic program line info
+  uid?: string;
+
+  // Father program exercise instance
+  programExercise?: ProgramExercise;
+
+  // Schedule info
+  lineOrder?: number;
 
   // Line-specific info
   setsBaseValue?: string;
@@ -108,17 +130,31 @@ export class Program {
   labels?: string[];
 
   // Program composition
-  lines?: ProgramLine[];
+  programExercises?: ProgramExercise[];
 
   // Program status
-  coachId?: string;
-  athleteId?: string;
+  coach?: CoachUser;
+  athlete?: AthleteUser;
   startedOn?: Date;
   finishedOn?: Date;
 
   // App specific info
   createdOn?: Date;
   lastUpdated?: Date;
+
+  // Get reference users ID
+  public get coachId() {
+    return this.coach?.uid;
+  }
+  public get athleteId() {
+    return this.athlete?.uid;
+  }
+
+  // Check if program is assigned to an athlete
+  public get isAssigned() {
+    // Program is assigned if athlete is known
+    return Boolean(this.athleteId);
+  }
 
   // Check if program is currently in progress by athlete
   public get isOngoing() {
@@ -131,9 +167,9 @@ export class Program {
     name,
     description,
     labels,
-    lines,
-    coachId,
-    athleteId,
+    programExercises,
+    coach,
+    athlete,
     startedOn,
     finishedOn,
     createdOn,
@@ -143,9 +179,12 @@ export class Program {
     this.name = name;
     this.description = description;
     this.labels = labels;
-    this.lines = lines;
-    this.coachId = coachId;
-    this.athleteId = athleteId;
+    programExercises?.forEach((exercise) => {
+      if (!exercise.program) exercise.program = this;
+    });
+    this.programExercises = programExercises;
+    this.coach = coach;
+    this.athlete = athlete;
     this.startedOn = startedOn;
     this.finishedOn = finishedOn;
     this.createdOn = createdOn;
@@ -183,12 +222,12 @@ export class Program {
 }
 
 /**
- * Program line entity.
+ * Program exercise entity.
  *
  * @public
  */
-export class ProgramLine {
-  // Basic program line info
+export class ProgramExercise {
+  // Basic program exercise info
   uid?: string;
 
   // Father program instance
@@ -202,6 +241,51 @@ export class ProgramLine {
   // Exercise-related info
   exercise?: Exercise;
   exerciseVariant?: ExerciseVariant;
+  exerciseNote?: string;
+
+  // Lines composing exercise
+  lines?: ProgramLine[];
+
+  constructor({
+    uid,
+    program,
+    scheduleWeek,
+    scheduleDay,
+    scheduleOrder,
+    exercise,
+    exerciseVariant,
+    exerciseNote,
+    lines,
+  }: ProgramExerciseProps = {}) {
+    this.uid = uid;
+    this.program = program;
+    this.scheduleWeek = scheduleWeek;
+    this.scheduleDay = scheduleDay;
+    this.scheduleOrder = scheduleOrder;
+    this.exercise = exercise;
+    this.exerciseVariant = exerciseVariant;
+    this.exerciseNote = exerciseNote;
+    lines?.forEach((line) => {
+      if (!line.programExercise) line.programExercise = this;
+    });
+    this.lines = lines;
+  }
+}
+
+/**
+ * Program line entity.
+ *
+ * @public
+ */
+export class ProgramLine {
+  // Basic program line info
+  uid?: string;
+
+  // Father program exercise instance
+  programExercise?: ProgramExercise;
+
+  // Schedule info
+  lineOrder?: number;
 
   // Line-specific info
   setsBaseValue?: string;
@@ -222,12 +306,8 @@ export class ProgramLine {
 
   constructor({
     uid,
-    program,
-    scheduleWeek,
-    scheduleDay,
-    scheduleOrder,
-    exercise,
-    exerciseVariant,
+    programExercise,
+    lineOrder,
     setsBaseValue,
     setsReference,
     repsBaseValue,
@@ -241,12 +321,8 @@ export class ProgramLine {
     requestFeedbackVideo,
   }: ProgramLineProps = {}) {
     this.uid = uid;
-    this.program = program;
-    this.scheduleWeek = scheduleWeek;
-    this.scheduleDay = scheduleDay;
-    this.scheduleOrder = scheduleOrder;
-    this.exercise = exercise;
-    this.exerciseVariant = exerciseVariant;
+    this.programExercise = programExercise;
+    this.lineOrder = lineOrder;
     this.setsBaseValue = setsBaseValue;
     this.setsReference = setsReference;
     this.repsBaseValue = repsBaseValue;
