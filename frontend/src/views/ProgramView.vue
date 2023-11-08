@@ -1,9 +1,18 @@
 <template>
   <q-page style="height: 0">
-    <q-splitter v-model="splitterModel" :limits="[50, 100]" style="height: 100%">
+    <q-splitter
+      v-model="splitterModel"
+      :limits="[50, 100]"
+      style="height: 100%"
+    >
       <template v-slot:before>
         <!-- Show table to build program on the left -->
-        <TableProgramBuilder :program="program" :exercises="coachInfo.exercises" class="q-pa-sm" cd></TableProgramBuilder>
+        <TableProgramBuilder
+          :program="program"
+          :exercises="coachInfo.exercises"
+          class="q-pa-sm"
+          cd
+        ></TableProgramBuilder>
       </template>
 
       <template v-slot:after>
@@ -22,72 +31,138 @@
               <h6 class="text-margin-xs">Max Lifts section</h6>
 
               <div class="row q-gutter-x-md items-center">
-                <os-input v-model="searchMaxLift" :placeholder="$t('coach.maxlift_management.list.search_maxlift')
-                  " hide-bottom-space debounce="500" class="col">
+                <os-input
+                  v-model="searchMaxLift"
+                  :placeholder="
+                    $t('coach.maxlift_management.list.search_maxlift')
+                  "
+                  hide-bottom-space
+                  debounce="500"
+                  class="col"
+                >
                   <template v-slot:prepend>
                     <q-icon name="search" />
                   </template>
                 </os-input>
 
                 <!-- Add new maxlift -->
-                <q-btn icon="add" outline @click="
-                  updatingMaxLift = undefined;
-                showMaxLiftAddDialog = true;
-                " />
+                <q-btn
+                  icon="add"
+                  outline
+                  @click="
+                    updatingMaxLift = undefined;
+                    showMaxLiftAddDialog = true;
+                  "
+                />
               </div>
             </q-card-section>
 
             <q-separator />
 
-            <TableMaxLifts :maxlifts="maxlifts" :on-update="onUpdateMaxLift" :filter="searchMaxLift" />
+            <TableMaxLifts
+              :maxlifts="maxlifts"
+              :on-update="onUpdateMaxLift"
+              :filter="searchMaxLift"
+            />
 
             <!-- Dialog to add a new max lift -->
-            <q-dialog v-model="showMaxLiftAddDialog" @hide="updatingMaxLift ? clearMaxLift() : {}">
+            <q-dialog
+              v-model="showMaxLiftAddDialog"
+              @hide="updatingMaxLift ? clearMaxLift() : {}"
+            >
               <q-card class="q-pa-sm dialog-min-width">
                 <q-card-section class="row items-center q-pb-none">
                   <h5>
                     {{
                       updatingMaxLift
-                      ? $t("coach.maxlift_management.list.update")
-                      : $t("coach.maxlift_management.list.add")
+                        ? $t("coach.maxlift_management.list.update")
+                        : $t("coach.maxlift_management.list.add")
                     }}
                   </h5>
 
                   <q-space />
-                  <q-btn icon="close" flat round dense color="button-negative" v-close-popup />
+                  <q-btn
+                    icon="close"
+                    flat
+                    round
+                    dense
+                    color="button-negative"
+                    v-close-popup
+                  />
                 </q-card-section>
 
-                <q-form @submit="updatingMaxLift ? updateMaxLift() : createMaxLift()" @reset="clearMaxLift"
-                  class="q-my-md q-gutter-sm column">
+                <q-form
+                  @submit="updatingMaxLift ? updateMaxLift() : createMaxLift()"
+                  @reset="clearMaxLift"
+                  class="q-my-md q-gutter-sm column"
+                >
                   <q-card-section class="q-gutter-x-xs">
-                    <os-select v-model="selectedExercise" :label="$t('coach.maxlift_management.fields.exercise')"
-                      :options="exercises.map((exercise) => exercise.name)" emit-value map-options dense>
+                    <os-select
+                      v-model="selectedExercise"
+                      :label="$t('coach.maxlift_management.fields.exercise')"
+                      :options="exercises.map((exercise) => exercise.name)"
+                      emit-value
+                      map-options
+                      dense
+                    >
                     </os-select>
-                    <os-select v-model="selectedVariant" :label="$t('coach.maxlift_management.fields.variant')" :options="selectedExercise?.variants?.map(
-                      (variant) => variant.name,
-                    )
-                      ">
+                    <os-select
+                      v-model="selectedVariant"
+                      :label="$t('coach.maxlift_management.fields.variant')"
+                      :options="
+                        selectedExercise?.variants?.map(
+                          (variant) => variant.name,
+                        )
+                      "
+                    >
                     </os-select>
 
                     <!-- TYPE -->
-                    <os-select v-model="maxliftType" :label="$t('coach.maxlift_management.fields.type')" use-input
-                      :options="availableMaxLiftTypes" emit-value map-options class="col-12" />
+                    <os-select
+                      v-model="maxliftType"
+                      :label="$t('coach.maxlift_management.fields.type')"
+                      use-input
+                      :options="availableMaxLiftTypes"
+                      emit-value
+                      map-options
+                      class="col-12"
+                    />
 
                     <!-- VALUE -->
-                    <os-input v-model="maxliftValue" :suffix="maxliftValueSuffix"
-                      :label="$t('coach.maxlift_management.fields.value')"></os-input>
+                    <os-input
+                      v-model="maxliftValue"
+                      :suffix="maxliftValueSuffix"
+                      :label="$t('coach.maxlift_management.fields.value')"
+                    ></os-input>
 
-                    <p class="text-input-top-label text-uppercase text-weight-medium text-left"
-                      style="line-height: 1.6em">
+                    <p
+                      class="text-input-top-label text-uppercase text-weight-medium text-left"
+                      style="line-height: 1.6em"
+                    >
                       {{ i18n.t("coach.maxlift_management.fields.date") }}
                     </p>
-                    <q-input outlined dense v-model="maxliftDate" mask="date" :rules="['date']">
+                    <q-input
+                      outlined
+                      dense
+                      v-model="maxliftDate"
+                      mask="date"
+                      :rules="['date']"
+                    >
                       <template v-slot:append>
                         <q-icon name="event" class="cursor-pointer">
-                          <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                          <q-popup-proxy
+                            cover
+                            transition-show="scale"
+                            transition-hide="scale"
+                          >
                             <q-date v-model="maxliftDate">
                               <div class="row items-center justify-end">
-                                <q-btn v-close-popup label="Close" color="primary" flat />
+                                <q-btn
+                                  v-close-popup
+                                  label="Close"
+                                  color="primary"
+                                  flat
+                                />
                               </div>
                             </q-date>
                           </q-popup-proxy>
@@ -98,10 +173,14 @@
 
                   <q-card-actions align="right">
                     <q-btn flat :label="$t('common.cancel')" type="reset" />
-                    <q-btn :label="updatingMaxLift
-                      ? $t('coach.maxlift_management.list.update_proceed')
-                      : $t('coach.maxlift_management.list.add_proceed')
-                      " type="submit" />
+                    <q-btn
+                      :label="
+                        updatingMaxLift
+                          ? $t('coach.maxlift_management.list.update_proceed')
+                          : $t('coach.maxlift_management.list.add_proceed')
+                      "
+                      type="submit"
+                    />
                   </q-card-actions>
                 </q-form>
               </q-card>
@@ -112,7 +191,12 @@
 
       <template v-slot:separator>
         <!-- Add a middle separator -->
-        <q-avatar color="primary" text-color="white" size="40px" icon="drag_indicator" />
+        <q-avatar
+          color="primary"
+          text-color="white"
+          size="40px"
+          icon="drag_indicator"
+        />
       </template>
     </q-splitter>
   </q-page>
@@ -272,9 +356,6 @@ function onUpdateMaxLift(maxlift: MaxLift) {
 // PROGRAMS
 // TODO
 const splitterModel = ref(70);
-
-// TODO fix user
-const coachInfo = useCoachInfoStore();
 
 // TODO load programs
 const program = new Program({
