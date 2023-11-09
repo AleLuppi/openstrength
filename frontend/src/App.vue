@@ -93,8 +93,9 @@ const coachInfo = useCoachInfoStore();
 
 // Set ref
 const route = useRoute();
-const leftDrawerOpen = ref(false);
-const rightDrawerOpen = ref(false); // TODO
+const leftDrawerOpen = computed(() => route.meta?.showLeftDrawer ?? true);
+const rightDrawerOpen = computed(() => route.meta?.showRightDrawer ?? true);
+
 const showHeader = computed(() => route.meta?.showHeader ?? true);
 const showFooter = computed(() => route.meta?.showFooter ?? true);
 const showDialogOnboarding = ref(false);
