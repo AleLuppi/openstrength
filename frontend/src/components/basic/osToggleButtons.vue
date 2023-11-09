@@ -35,7 +35,7 @@ interface extendedBtnProps extends QBtnProps {
 }
 const props = defineProps<extendedBtnProps>();
 const emit = defineEmits(["update:modelValue"]);
-defineExpose({ validate: validate });
+defineExpose({ validate });
 
 // Set ref
 const selected = ref<string[]>([]);

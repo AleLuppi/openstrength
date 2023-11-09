@@ -27,7 +27,7 @@ function selectRowByName(name: string, clearOnFail: boolean = false) {
   else if (clearOnFail) selected.value = [];
 }
 defineExpose({
-  selectRowByName: selectRowByName,
+  selectRowByName,
 });
 
 // Define props

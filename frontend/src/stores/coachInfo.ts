@@ -232,6 +232,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     // Abort if there is no need to check
     if (!coachId || (quiet && maxlifts.value)) return;
 
+    // TODO check documents format
     // Get documents
     doGetDocs(maxliftsCollection, [["coachId", "==", coachId]], {
       onSuccess: (docs: { [key: string]: MaxLiftProps }) => {

@@ -4,7 +4,7 @@
  * @param email string to check
  * @returns true if string is a valid email address.
  */
-export function validateEmail(email: string): Boolean {
+export function validateEmail(email: string): boolean {
   return Boolean(
     String(email)
       .toLowerCase()
@@ -19,7 +19,7 @@ export function validateEmail(email: string): Boolean {
  * @param password string to check.
  * @returns true if string is a valid password.
  */
-export function validatePassword(password: string): Boolean {
+export function validatePassword(password: string): boolean {
   return Boolean(
     String(password).match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/),
   );
@@ -31,7 +31,7 @@ export function validatePassword(password: string): Boolean {
  * @param url string to check.
  * @returns true if string is a valid url.
  */
-export function validateUrlHttp(url: string): Boolean {
+export function validateUrlHttp(url: string): boolean {
   const urlPattern = new RegExp(
     "^(https?:\\/\\/)?" + // validate protocol
       "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // validate domain name
