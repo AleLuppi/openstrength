@@ -23,8 +23,8 @@ const TermsAndConditionView = () =>
   import("@/views/TermsAndConditionsView.vue");
 
 /* Define components that will be passed to routes */
-const RightDrawerMenu = defineAsyncComponent(
-  () => import("@/components/layout/RightDrawerMenu.vue"),
+const RightDrawerProgramElements = defineAsyncComponent(
+  () => import("@/components/layout/RightDrawerProgramElements.vue"),
 );
 
 /**
@@ -83,7 +83,7 @@ const routes = [
       title: "Program",
       restrictAccessByRole: [UserRole.coach],
       redirectNotAuthorized: "home",
-      showRightDrawer: RightDrawerMenu,
+      showRightDrawer: RightDrawerProgramElements,
     },
   },
   {

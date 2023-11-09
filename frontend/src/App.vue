@@ -37,10 +37,10 @@
       :mini-width="100"
       class="bg-lightest"
     >
-      <DrawerList />
+      <LeftDrawerElements />
 
       <template v-slot:mini>
-        <DrawerList :mini="true" />
+        <LeftDrawerElements :mini="true" />
       </template>
     </q-drawer>
 
@@ -91,7 +91,7 @@ import { useCoachInfoStore } from "@/stores/coachInfo";
 import { addCallbackOnAuthStateChanged } from "@/helpers/users/auth";
 import { User, UserRole } from "@/helpers/users/user";
 import { setLocale } from "@/helpers/locales";
-import DrawerList from "@/components/layout/DrawerList.vue";
+import LeftDrawerElements from "@/components/layout/LeftDrawerElements.vue";
 import UserOnboarding from "@/components/forms/UserOnboarding.vue";
 
 // Init plugin
