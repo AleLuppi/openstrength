@@ -13,26 +13,26 @@
 
     <!-- Display each page title as a separate item -->
     <q-item
-      v-for="(icon, page) in drawerPages"
-      :key="page"
+      v-for="page in drawerPages"
+      :key="page.route"
       clickable
       tag="a"
-      :to="{ name: page }"
+      :to="{ name: page.route }"
       active-class="os-child-bg-primary"
       class="link-child os-text-unselected"
     >
       <!-- Icon near text on expanded drawer -->
       <q-item-section v-if="!props.mini" avatar>
-        <q-icon :name="icon" />
+        <q-icon :name="page.icon" />
       </q-item-section>
       <q-item-section v-if="!props.mini">
-        <q-item-label>{{ $t("layout.views." + page) }}</q-item-label>
+        <q-item-label>{{ $t(page.caption) }}</q-item-label>
       </q-item-section>
 
       <!-- Icon over text on mini drawer -->
       <q-card v-else flat class="q-py-sm bg-inherit width-90">
-        <q-avatar :icon="icon" />
-        <p>{{ $t("layout.views." + page) }}</p>
+        <q-avatar :icon="page.icon" />
+        <p>{{ $t(page.caption) }}</p>
       </q-card>
     </q-item>
 
@@ -97,22 +97,37 @@ const props = defineProps({
 const user = useUserStore();
 
 // Set navigation in drawer
-const allDrawerPages = {
-  home: "fa-solid fa-house-chimney",
-  athletes: "fa-solid fa-users",
-  library: "fa-solid fa-book",
-  program: "fa-solid fa-dumbbell",
-};
+const allDrawerPages = [
+  {
+    route: "home",
+    caption: "layout.views.home",
+    icon: "fa-solid fa-house-chimney",
+  },
+  {
+    route: "athletes",
+    caption: "layout.views.athletes",
+    icon: "fa-solid fa-users",
+  },
+  {
+    route: "library",
+    caption: "layout.views.library",
+    icon: "fa-solid fa-book",
+  },
+  {
+    route: "program",
+    caption: "layout.views.program",
+    icon: "fa-solid fa-dumbbell",
+  },
+];
 
+// Limit shown page to those accessible by user
 const drawerPages = computed(() =>
-  Object.fromEntries(
-    Object.entries(allDrawerPages).filter(([name]) => {
-      const route = router
-        .getRoutes()
-        .find((route) => String(route.name) == name);
-      return route && routeAccessibleByUser(user, route);
-    }),
-  ),
+  allDrawerPages.filter((page) => {
+    const route = router
+      .getRoutes()
+      .find((route) => String(route.name) == page.route);
+    return route && routeAccessibleByUser(user, route);
+  }),
 );
 </script>
 
