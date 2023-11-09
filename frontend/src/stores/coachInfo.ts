@@ -5,6 +5,7 @@ import {
   exercisesCollection,
   usersCollection,
   programsCollection,
+  maxliftsCollection,
 } from "@/helpers/database/collections";
 import {
   UserRole,
@@ -22,6 +23,7 @@ import {
   reduceExercises,
   sortExercises,
 } from "@/helpers/exercises/listManagement";
+import { MaxLift, MaxLiftProps } from "@/helpers/maxlifts/maxlift";
 
 export const useCoachInfoStore = defineStore("coachInfo", () => {
   // Coach ID
@@ -60,6 +62,18 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     },
     set: (value) => {
       _programs.value = value;
+    },
+  });
+
+  // Max lifts of managed athletes
+  const _maxlifts = ref<MaxLift[]>(); // private
+  const maxlifts = computed({
+    get: () => {
+      if (!_maxlifts.value) loadMaxLifts(coachId.value, true);
+      return _maxlifts.value;
+    },
+    set: (value) => {
+      _maxlifts.value = value;
     },
   });
 
@@ -193,21 +207,64 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
   }
 
   /**
+   * Load list of max lift for coach's athletes.
+   *
+   * @param coachId ID of the coach for which max lifts should be loaded.
+   * @param quiet if true, skip loading if max lifts are already present, otherwise force reload.
+   */
+  async function loadMaxLifts(
+    coachId?: string,
+    quiet: boolean = false,
+    {
+      onSuccess,
+      onError,
+    }: {
+      onSuccess?: Function;
+      onError?: Function;
+    } = {},
+  ) {
+    // Get user ID if needed
+    if (!coachId) {
+      const user = useUserStore();
+      if (user.role == UserRole.coach) coachId = user.uid;
+    }
+
+    // Abort if there is no need to check
+    if (!coachId || (quiet && maxlifts.value)) return;
+
+    // Get documents
+    doGetDocs(maxliftsCollection, [["coachId", "==", coachId]], {
+      onSuccess: (docs: { [key: string]: MaxLiftProps }) => {
+        const maxliftsFromDoc: MaxLift[] = [];
+        Object.entries(docs).forEach(([uid, doc]) =>
+          maxliftsFromDoc.push(new MaxLift({ ...doc, uid: uid })),
+        );
+        _maxlifts.value = maxliftsFromDoc;
+        onSuccess?.(maxliftsFromDoc);
+      },
+      onError: onError,
+    });
+  }
+
+  /**
    * Reset values in user storage.
    */
   function $reset() {
     athletes.value = undefined;
     exercises.value = undefined;
     programs.value = undefined;
+    maxlifts.value = undefined;
   }
 
   return {
     athletes,
     exercises,
     programs,
+    maxlifts,
     loadAthletes,
     loadExercises,
     loadPrograms,
+    loadMaxLifts,
     $reset,
   };
 });

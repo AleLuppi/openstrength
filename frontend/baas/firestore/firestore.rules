@@ -39,17 +39,25 @@ service cloud.firestore {
     // Manage "exercises" collection
     match /exercises/{exerciseId} {
       allow read: if (userSignedIn() && (request.auth.uid == resource.data.userId)) || userIsAdmin(); // only proprietary
-      allow create: if (userSignedIn()) || userIsAdmin(); // TODO user must be coach (&& request.resource.data.role != "coach")
+      allow create: if (userSignedIn() && (getUserRole() == "coach")) || userIsAdmin(); // user must be coach
       allow update: if (userSignedIn() && (request.auth.uid == resource.data.userId)) || userIsAdmin(); // only proprietary
       allow delete: if (userSignedIn() && (request.auth.uid == resource.data.userId)) || userIsAdmin(); // only proprietary
     }
 
     // Manage "programs" collection
     match /programs/{programId} {
-      allow read: if (userSignedIn() && (request.auth.uid == resource.data.userId)) || userIsAdmin(); // TODO only proprietary or assigned athlete
-      allow create: if (userSignedIn()) || userIsAdmin(); // TODO user must be coach (&& request.resource.data.role != "coach")
-      allow update: if (userSignedIn() && (request.auth.uid == resource.data.userId)) || userIsAdmin(); // only proprietary
-      allow delete: if (userSignedIn() && (request.auth.uid == resource.data.userId)) || userIsAdmin(); // only proprietary
+      allow read: if (userSignedIn() && (request.auth.uid == resource.data.coachId)) || userIsAdmin(); // TODO only proprietary or assigned athlete
+      allow create: if (userSignedIn() && (getUserRole() == "coach")) || userIsAdmin(); // user must be coach
+      allow update: if (userSignedIn() && (request.auth.uid == resource.data.coachId)) || userIsAdmin(); // only proprietary
+      allow delete: if (userSignedIn() && (request.auth.uid == resource.data.coachId)) || userIsAdmin(); // only proprietary
+    }
+
+    // Manage "maxlifts" collection
+    match /maxlifts/{maxliftId} {
+      allow read: if (userSignedIn() && (request.auth.uid == resource.data.coachId)) || userIsAdmin(); // TODO only proprietary or assigned athlete
+      allow create: if (userSignedIn() && ((getUserRole() == "coach") || (getUserRole() == "athlete"))) || userIsAdmin(); // user must be coach or athlete
+      allow update: if (userSignedIn() && (request.auth.uid == resource.data.coachId)) || userIsAdmin(); // TODO only proprietary or assigned athlete
+      allow delete: if (userSignedIn() && (request.auth.uid == resource.data.coachId)) || userIsAdmin(); // only proprietary
     }
 
     // Avoid any other data manipulation

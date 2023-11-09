@@ -26,6 +26,7 @@
     </q-header>
 
     <q-drawer
+      v-if="showLeftDrawer"
       v-model="leftDrawerOpen"
       side="left"
       show-if-above
@@ -43,6 +44,7 @@
 
     <!-- TODO -->
     <q-drawer
+      v-if="showRightDrawer"
       v-model="rightDrawerOpen"
       side="right"
       show-if-above
@@ -97,6 +99,8 @@ const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false); // TODO
 const showHeader = computed(() => route.meta?.showHeader ?? true);
 const showFooter = computed(() => route.meta?.showFooter ?? true);
+const showLeftDrawer = computed(() => route.meta?.showLeftDrawer ?? true);
+const showRightDrawer = computed(() => route.meta?.showRightDrawer ?? false);
 const showDialogOnboarding = ref(false);
 
 // Run few useful things before app starts rendering

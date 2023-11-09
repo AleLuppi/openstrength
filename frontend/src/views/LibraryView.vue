@@ -1,8 +1,5 @@
 <template>
   <q-page class="q-pa-md">
-    <!-- Title -->
-    <h2 class="col">{{ $t("layout.views.library_title") }}</h2>
-
     <!-- Navigation -->
     <q-tabs v-model="selectedTab" class="text-dark q-pa-md">
       <q-tab
@@ -70,10 +67,9 @@
 
           <!-- List variants -->
           <!-- TODO card or pagination -->
-          <div class="col-12 col-sm-6">
+          <div v-if="Boolean(selectedExercise)" class="col-12 col-sm-6">
+            <!-- Show card when an exercise is selected -->
             <q-card>
-              <!-- TODO hide everything if exercise is not selected -->
-
               <q-card-section>
                 <h6>
                   {{ $t("coach.exercise_management.list.title_variant") }}
@@ -117,6 +113,23 @@
                 :filter="searchVariant"
               />
             </q-card>
+          </div>
+
+          <!-- Show text when no exercise is selected -->
+          <div v-else class="col-12 col-sm-6">
+            <div class="row flex-center" style="height: 100%">
+              <div class="row">
+                <q-icon
+                  name="fa-regular fa-hand-pointer"
+                  size="2rem"
+                  color="light-dark"
+                  class="q-px-md"
+                ></q-icon>
+                <p>
+                  {{ $t("coach.exercise_management.no_selected_exercises") }}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -433,6 +446,7 @@ function onExerciseAdd(exerciseName: string) {
       coachInfo.exercises = reduceExercises(
         [newExercise].concat(coachInfo.exercises || []),
       );
+      selectedVariant.value = newExercise.defaultVariant;
       showDialogVariantForm.value = true;
 
       // Inform user about exercise successfully saved
@@ -490,6 +504,9 @@ function onNewVariant() {
   addingNewVariant.value = true;
   selectedVariant.value = new ExerciseVariant({
     exercise: selectedExercise.value,
+    loadType: selectedExercise.value?.defaultVariant?.loadType,
+    muscleGroups: selectedExercise.value?.defaultVariant?.muscleGroups,
+    equipment: selectedExercise.value?.defaultVariant?.equipment,
   });
 }
 

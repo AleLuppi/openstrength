@@ -164,6 +164,7 @@
         "search_exercise": "Search exercise...",
         "search_variant": "Search variant..."
       },
+      "no_selected_exercises": "Select or add an exercise to show its variants",
       "add": "Add a new exercise",
       "add_button": "Add new",
       "add_proceed": "Save",
@@ -241,6 +242,22 @@
       "builder": {
         "week_name": "Week { week }",
         "day_name": "Day { day }"
+      }
+    },
+    "maxlift_management": {
+      "list": {
+        "search_maxlift": "Search...",
+        "add": "Add a new max lift",
+        "add_proceed": "Confirm",
+        "update": "Insert max lift info",
+        "update_proceed": "Update max lift"
+      },
+      "fields": {
+        "exercise": "Exercise name",
+        "variant": "Variant name",
+        "type": "Max lift type",
+        "value": "Max lift value",
+        "date": "Max lift date"
       }
     }
   },

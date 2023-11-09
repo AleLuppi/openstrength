@@ -3,8 +3,8 @@
     :columns="columns"
     :rows="rows"
     virtual-scroll
-    table-style="max-height: 60vh"
     hide-pagination
+    class="os-table-max-height"
     selection="single"
   ></os-table>
 </template>
@@ -78,3 +78,9 @@ const rows = computed(() => {
   }));
 });
 </script>
+
+<style scoped lang="scss">
+.os-table-max-height {
+  max-height: calc(100vh - 120px - 140px);
+}
+</style>

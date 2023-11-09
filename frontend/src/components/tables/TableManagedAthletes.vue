@@ -1,5 +1,11 @@
 <template>
-  <os-table :columns="columns" :rows="rows"></os-table>
+  <os-table
+    :columns="columns"
+    :rows="rows"
+    virtual-scroll
+    hide-pagination
+    class="os-table-max-height"
+  ></os-table>
 </template>
 
 <script setup lang="ts">
@@ -75,3 +81,9 @@ const rows = computed(() => {
   }));
 });
 </script>
+
+<style scoped lang="scss">
+.os-table-max-height {
+  max-height: calc(100vh - 160px);
+}
+</style>

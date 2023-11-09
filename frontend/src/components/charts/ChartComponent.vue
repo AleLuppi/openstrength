@@ -8,8 +8,13 @@
 
         <div class="col-auto">
           <q-icon name="fas fa-circle-info" size="1.7rem" color="grey-5">
-            <q-tooltip anchor="center left" self="center right" transition-show="fade" transition-hide="fade"
-              class="bg-primary text-body2">
+            <q-tooltip
+              anchor="center left"
+              self="center right"
+              transition-show="fade"
+              transition-hide="fade"
+              class="bg-primary text-body2"
+            >
               {{ props.description }}
             </q-tooltip>
           </q-icon>

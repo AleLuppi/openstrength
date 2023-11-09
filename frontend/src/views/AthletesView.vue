@@ -1,10 +1,5 @@
 <template>
   <q-page class="q-pa-md">
-    <!-- Title and actions -->
-    <div class="row items-center">
-      <h2 class="col">{{ $t("layout.views.home_title") }}</h2>
-    </div>
-
     <!-- Display athletes -->
     <q-card>
       <q-card-section>

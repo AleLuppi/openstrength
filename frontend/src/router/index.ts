@@ -74,6 +74,7 @@ const routes = [
       title: "Program",
       restrictAccessByRole: [UserRole.coach],
       redirectNotAuthorized: "home",
+      showRightDrawer: true,
     },
   },
   {
