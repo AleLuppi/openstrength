@@ -106,16 +106,6 @@
                       dense
                     >
                     </os-select>
-                    <os-select
-                      v-model="selectedVariant"
-                      :label="$t('coach.maxlift_management.fields.variant')"
-                      :options="
-                        selectedExercise?.variants?.map(
-                          (variant) => variant.name,
-                        )
-                      "
-                    >
-                    </os-select>
 
                     <!-- TYPE -->
                     <os-select
@@ -215,7 +205,7 @@ import { useCoachInfoStore } from "@/stores/coachInfo";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import { useUserStore } from "@/stores/user";
-import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+import { Exercise } from "@/helpers/exercises/exercise";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 
@@ -233,7 +223,6 @@ const updatingMaxLift = ref<MaxLift>();
 const showMaxLiftAddDialog = ref(false);
 
 const selectedExercise = ref<Exercise | undefined>();
-const selectedVariant = ref<ExerciseVariant | undefined>();
 
 const maxliftType = ref<MaxLiftType>(); // TODO check
 const availableMaxLiftTypes: string[] = Object.values(MaxLiftType);
@@ -280,7 +269,6 @@ const maxliftValueSuffix = computed(() => {
 function createMaxLift() {
   const newMaxLift = new MaxLift({
     exercise: selectedExercise.value,
-    variant: selectedVariant.value,
     type: maxliftType.value,
     value: maxliftValue.value,
     lastUpdated: maxliftDate.value,
@@ -306,7 +294,6 @@ function createMaxLift() {
 function updateMaxLift() {
   if (updatingMaxLift.value) {
     updatingMaxLift.value.exercise = selectedExercise.value;
-    updatingMaxLift.value.variant = selectedVariant.value;
     updatingMaxLift.value.type = maxliftType.value;
     updatingMaxLift.value.value = maxliftValue.value;
     updatingMaxLift.value.lastUpdated = maxliftDate.value;
@@ -330,7 +317,6 @@ function updateMaxLift() {
  */
 function clearMaxLift() {
   selectedExercise.value = undefined;
-  selectedVariant.value = undefined;
   maxliftType.value = undefined;
   maxliftValue.value = "";
   maxliftDate.value = undefined;
@@ -347,7 +333,6 @@ function onUpdateMaxLift(maxlift: MaxLift) {
   updatingMaxLift.value = maxlift;
   showMaxLiftAddDialog.value = true;
   selectedExercise.value = maxlift.exercise ?? undefined;
-  selectedVariant.value = maxlift.variant ?? undefined;
   maxliftType.value = maxlift.type ?? undefined;
   maxliftValue.value = maxlift.value ?? "";
   maxliftDate.value = maxlift.lastUpdated ?? undefined;

@@ -25,7 +25,6 @@ export type MaxLiftProps = {
   uid?: string;
   type?: MaxLiftType;
   exercise?: Exercise;
-  variant?: ExerciseVariant;
   value?: string; // TODO: add measurement unit
 
   // Max lift status
@@ -70,7 +69,6 @@ export class MaxLift {
     uid,
     type,
     exercise,
-    variant,
     value,
     coachId,
     athleteId,
@@ -82,7 +80,6 @@ export class MaxLift {
     this.uid = uid;
     this.type = type;
     this.exercise = exercise;
-    this.variant = variant;
     this.value = value;
     this.coachId = coachId;
     this.athleteId = athleteId;
