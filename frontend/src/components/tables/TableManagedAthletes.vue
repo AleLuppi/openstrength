@@ -1,5 +1,11 @@
 <template>
-  <os-table :columns="columns" :rows="rows"></os-table>
+  <os-table
+    :columns="columns"
+    :rows="rows"
+    virtual-scroll
+    hide-pagination
+    class="os-sticky-header os-athletes-max-height-override"
+  ></os-table>
 </template>
 
 <script setup lang="ts">

@@ -3,8 +3,8 @@
     :columns="columns"
     :rows="rows"
     virtual-scroll
-    table-style="max-height: 60vh"
     hide-pagination
+    class="os-sticky-header os-exercises-max-height-override"
     @row-click="$props.onUpdate"
     :selection="isVariant ? 'none' : 'single'"
     v-model:selected="selected"

@@ -348,6 +348,59 @@ a {
   color: $os-grey-cold-7;
 }
 
+.os-sticky-header {
+  /* height or max-height is important */
+  max-height: 60vh;
+
+  .q-table__top,
+  .q-table__bottom,
+  thead tr:first-child th {
+    /* bg color is important for th; just specify one */
+    background-color: table-header;
+  }
+
+  thead tr th {
+    position: sticky;
+    z-index: 1;
+  }
+
+  thead tr:first-child th {
+    top: 0;
+  }
+
+  /* this is when the loading indicator appears */
+  &.q-table--loading thead tr:last-child th {
+    /* height of all previous header rows */
+    top: 48px;
+  }
+
+  /* prevent scrolling behind sticky top row on focus */
+  tbody {
+    /* height of all previous header rows */
+    scroll-margin-top: 48px;
+  }
+}
+
+.os-athletes-max-height-override {
+  max-height: calc(
+    100vh - 160px
+  ); 
+}
+.os-exercises-max-height-override {
+  max-height: calc(
+    100vh - 120px - 140px
+  ); 
+}
+.os-programs-max-height-override {
+  max-height: calc(
+    100vh - 120px - 140px
+  ); 
+}
+.os-maxlifts-max-height-override {
+  max-height: calc(
+    100vh - 128px
+  ); 
+}
 
 // Input
 .text-input-top-label {

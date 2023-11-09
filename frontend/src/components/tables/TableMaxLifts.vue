@@ -3,7 +3,7 @@
     :columns="columns"
     :rows="rows"
     virtual-scroll
-    table-style="max-height: 60vh"
+    class="os-sticky-header os-maxlifts-max-height-override"
     hide-pagination
     selection="single"
   ></os-table>

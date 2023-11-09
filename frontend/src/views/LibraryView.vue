@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <!-- Title -->
-    <h2 class="col">{{ $t("layout.views.library_title") }}</h2>
+    <!-- <h2 class="col">{{ $t("layout.views.library_title") }}</h2> -->
 
     <!-- Navigation -->
     <q-tabs v-model="selectedTab" class="text-dark q-pa-md">

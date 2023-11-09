@@ -1,6 +1,6 @@
 <template>
   <q-page class="q-pa-md">
-    <h2>{{ $t("user.profile.profile_title") }}</h2>
+    <!-- <h2>{{ $t("user.profile.profile_title") }}</h2> -->
 
     <!-- Profile info card-->
     <q-card class="q-mb-lg">
