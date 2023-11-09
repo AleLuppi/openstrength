@@ -1,8 +1,5 @@
 <template>
   <q-page class="q-pa-md">
-    <!-- Title -->
-    <!-- <h2 class="col">{{ $t("layout.views.library_title") }}</h2> -->
-
     <!-- Navigation -->
     <q-tabs v-model="selectedTab" class="text-dark q-pa-md">
       <q-tab
@@ -70,7 +67,7 @@
 
           <!-- List variants -->
           <!-- TODO card or pagination -->
-          <div v-if="isAnyExerciseSelected" class="col-12 col-sm-6">
+          <div v-if="Boolean(selectedExercise)" class="col-12 col-sm-6">
             <!-- Show card when an exercise is selected -->
             <q-card>
               <q-card-section>
@@ -118,6 +115,7 @@
             </q-card>
           </div>
 
+          <!-- Show text when no exercise is selected -->
           <div v-else class="col-12 col-sm-6">
             <div class="row flex-center" style="height: 100%">
               <div class="row">
@@ -371,9 +369,6 @@ const showVariantForm = computed(() =>
   Boolean(addingNewVariant.value || selectedVariant.value),
 );
 const showDialogVariantForm = ref(false);
-const isAnyExerciseSelected = computed(() => {
-  return !!selectedExercise.value || addingNewExercise.value;
-});
 
 // Update dialog show status
 watch(showVariantForm, (val) => (showDialogVariantForm.value = val));
@@ -451,7 +446,7 @@ function onExerciseAdd(exerciseName: string) {
       coachInfo.exercises = reduceExercises(
         [newExercise].concat(coachInfo.exercises || []),
       );
-      selectedVariant.value = newExercise.variants?.[0];
+      selectedVariant.value = newExercise.defaultVariant;
       showDialogVariantForm.value = true;
 
       // Inform user about exercise successfully saved
@@ -509,9 +504,9 @@ function onNewVariant() {
   addingNewVariant.value = true;
   selectedVariant.value = new ExerciseVariant({
     exercise: selectedExercise.value,
-    loadType: selectedExercise.value?.variants?.[0].loadType,
-    muscleGroups: selectedExercise.value?.variants?.[0].muscleGroups,
-    equipment: selectedExercise.value?.variants?.[0].equipment,
+    loadType: selectedExercise.value?.defaultVariant?.loadType,
+    muscleGroups: selectedExercise.value?.defaultVariant?.muscleGroups,
+    equipment: selectedExercise.value?.defaultVariant?.equipment,
   });
 }
 

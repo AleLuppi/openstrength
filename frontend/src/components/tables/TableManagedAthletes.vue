@@ -4,7 +4,7 @@
     :rows="rows"
     virtual-scroll
     hide-pagination
-    class="os-sticky-header os-athletes-max-height-override"
+    class="os-table-max-height"
   ></os-table>
 </template>
 
@@ -81,3 +81,9 @@ const rows = computed(() => {
   }));
 });
 </script>
+
+<style scoped lang="scss">
+.os-table-max-height {
+  max-height: calc(100vh - 160px);
+}
+</style>

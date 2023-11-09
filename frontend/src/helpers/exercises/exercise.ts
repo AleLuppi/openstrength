@@ -136,7 +136,7 @@ export class Exercise {
     });
     this.variants = variants;
     this.variants ?? this.addDefaultVariant();
-    this.defaultVariant = variants?.find((variant) => variant.isDefault);
+    this.defaultVariant = this.variants?.find((variant) => variant.isDefault);
   }
 
   /**

@@ -66,7 +66,16 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
   });
 
   // Max lifts of managed athletes
-  const maxlifts = ref<MaxLift[]>();
+  const _maxlifts = ref<MaxLift[]>(); // private
+  const maxlifts = computed({
+    get: () => {
+      if (!_maxlifts.value) loadMaxLifts(coachId.value, true);
+      return _maxlifts.value;
+    },
+    set: (value) => {
+      _maxlifts.value = value;
+    },
+  });
 
   /**
    * Load list of athletes for a coach.
@@ -226,12 +235,12 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     // Get documents
     doGetDocs(maxliftsCollection, [["coachId", "==", coachId]], {
       onSuccess: (docs: { [key: string]: MaxLiftProps }) => {
-        const _maxlifts: MaxLift[] = [];
+        const maxliftsFromDoc: MaxLift[] = [];
         Object.entries(docs).forEach(([uid, doc]) =>
-          _maxlifts.push(new MaxLift({ ...doc, uid: uid })),
+          maxliftsFromDoc.push(new MaxLift({ ...doc, uid: uid })),
         );
-        maxlifts.value = _maxlifts;
-        onSuccess?.(maxlifts);
+        _maxlifts.value = maxliftsFromDoc;
+        onSuccess?.(maxliftsFromDoc);
       },
       onError: onError,
     });

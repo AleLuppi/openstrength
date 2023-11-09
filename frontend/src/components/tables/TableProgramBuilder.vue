@@ -85,7 +85,7 @@
         class="row items-start justify-evenly q-mb-md"
       >
         <!-- Exercise info -->
-        <div class="col-2 q-pa-sm bg-lighter os-exercise-form os-light-border">
+        <div class="col-3 q-pa-sm bg-lighter os-exercise-form os-light-border">
           <osSelect
             v-model="selectedExercisesName[idWeekDay][exerciseName]"
             :options="exercises.map((exercise) => exercise.name)"

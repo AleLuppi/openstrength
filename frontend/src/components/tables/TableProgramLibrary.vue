@@ -4,7 +4,7 @@
     :rows="rows"
     virtual-scroll
     hide-pagination
-    class="os-sticky-header os-programs-max-height-override"
+    class="os-table-max-height"
     selection="single"
   ></os-table>
 </template>
@@ -78,3 +78,9 @@ const rows = computed(() => {
   }));
 });
 </script>
+
+<style scoped lang="scss">
+.os-table-max-height {
+  max-height: calc(100vh - 120px - 140px);
+}
+</style>

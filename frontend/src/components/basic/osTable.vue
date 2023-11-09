@@ -13,6 +13,7 @@
     :hide-selected-banner="true"
     row-key="name"
     v-model:selected="selected"
+    class="os-table-sticky-header"
   >
     <!-- Set header style -->
     <template v-slot:header="props">
@@ -102,6 +103,34 @@ function onRowClick(_: any, row: { [key: string]: any }, selection?: string) {
 </script>
 
 <style scoped lang="scss">
+.os-table-sticky-header {
+  /* Make header sticky */
+  thead tr {
+    height: 48px;
+
+    & th {
+      position: sticky;
+      z-index: 1;
+    }
+
+    &:first-child th {
+      top: 0;
+    }
+  }
+
+  /* Handle loading indicator appearance */
+  &.q-table--loading thead tr:last-child th {
+    /* height of all previous header rows */
+    top: 48px;
+  }
+
+  /* Prevent scrolling behind sticky top row on focus */
+  tbody {
+    /* height of all previous header rows */
+    scroll-margin-top: 48px;
+  }
+}
+
 .os-tr-selected {
   & > .os-td-selected {
     border-color: $primary;

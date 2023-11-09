@@ -44,8 +44,6 @@ const routes = [
     component: HomeView,
     meta: {
       title: "Home",
-      showLeftDrawer: true,
-      showRightDrawer: false,
     },
   },
   {
@@ -56,8 +54,6 @@ const routes = [
       title: "Athletes",
       restrictAccessByRole: [UserRole.coach],
       redirectNotAuthorized: "home",
-      showLeftDrawer: true,
-      showRightDrawer: false,
     },
   },
   {
@@ -68,8 +64,6 @@ const routes = [
       title: "Library",
       restrictAccessByRole: [UserRole.coach],
       redirectNotAuthorized: "home",
-      showLeftDrawer: true,
-      showRightDrawer: false,
     },
   },
   {
@@ -80,7 +74,6 @@ const routes = [
       title: "Program",
       restrictAccessByRole: [UserRole.coach],
       redirectNotAuthorized: "home",
-      showLeftDrawer: true,
       showRightDrawer: true,
     },
   },
@@ -92,8 +85,6 @@ const routes = [
     meta: {
       title: "Login",
       redirectAuthenticated: "home",
-      showLeftDrawer: true,
-      showRightDrawer: false,
     },
   },
   {
@@ -103,8 +94,6 @@ const routes = [
     meta: {
       title: "Register",
       redirectAuthenticated: "home",
-      showLeftDrawer: true,
-      showRightDrawer: false,
     },
   },
   {
@@ -114,8 +103,6 @@ const routes = [
     meta: {
       title: "Profile",
       redirectNotAuthenticated: "login",
-      showLeftDrawer: true,
-      showRightDrawer: false,
     },
   },
   {
@@ -124,8 +111,6 @@ const routes = [
     component: PrivacyPolicyView,
     meta: {
       title: "Privacy Policy",
-      showLeftDrawer: true,
-      showRightDrawer: false,
     },
   },
   {
@@ -134,8 +119,6 @@ const routes = [
     component: CookiePolicyView,
     meta: {
       title: "Cookie Policy",
-      showLeftDrawer: true,
-      showRightDrawer: false,
     },
   },
   {
@@ -144,8 +127,6 @@ const routes = [
     component: TermsAndConditionView,
     meta: {
       title: "Terms and Conditions",
-      showLeftDrawer: true,
-      showRightDrawer: false,
     },
   },
   {
@@ -155,8 +136,6 @@ const routes = [
     component: PageNotFoundView,
     meta: {
       title: "Page not found",
-      showLeftDrawer: true,
-      showRightDrawer: false,
     },
   },
 ];
