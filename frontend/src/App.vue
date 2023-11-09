@@ -1,5 +1,6 @@
 <template>
   <q-layout view="lHh LpR lFf">
+    <!-- Header -->
     <q-header v-if="showHeader" bordered class="bg-lightest text-light">
       <q-toolbar v-if="$q.screen.lt.md">
         <q-btn
@@ -25,6 +26,7 @@
       </q-toolbar>
     </q-header>
 
+    <!-- Left drawer -->
     <q-drawer
       v-if="showLeftDrawer"
       v-model="leftDrawerOpen"
@@ -42,23 +44,30 @@
       </template>
     </q-drawer>
 
-    <!-- TODO -->
+    <!-- Optional right drawer, customizible by route view -->
     <q-drawer
-      v-if="showRightDrawer"
+      v-if="rightDrawerElement"
       v-model="rightDrawerOpen"
       side="right"
       show-if-above
       bordered
-      :width="48"
+      :width="50"
       class="bg-lightest"
     >
-      <RightDrawerMenu />
+      <component
+        :is="rightDrawerElement"
+        @drawerClick="onRightDrawerClick"
+      ></component>
     </q-drawer>
 
+    <!-- Actual page content -->
     <q-page-container>
-      <RouterView />
+      <RouterView v-slot="{ Component }">
+        <component ref="viewComponent" :is="Component" />
+      </RouterView>
     </q-page-container>
 
+    <!-- Footer -->
     <q-footer v-if="showFooter">
       <!-- TODO -->
     </q-footer>
@@ -83,10 +92,10 @@ import { addCallbackOnAuthStateChanged } from "@/helpers/users/auth";
 import { User, UserRole } from "@/helpers/users/user";
 import { setLocale } from "@/helpers/locales";
 import DrawerList from "@/components/layout/DrawerList.vue";
-import RightDrawerMenu from "@/components/layout/RightDrawerMenu.vue";
 import UserOnboarding from "@/components/forms/UserOnboarding.vue";
 
 // Init plugin
+const route = useRoute();
 const $q = useQuasar();
 
 // Get state
@@ -94,13 +103,13 @@ const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
 // Set ref
-const route = useRoute();
+const viewComponent = ref<any>(null);
 const leftDrawerOpen = ref(false);
-const rightDrawerOpen = ref(false); // TODO
+const rightDrawerOpen = ref(false);
+const rightDrawerElement = computed(() => route.meta?.showRightDrawer);
 const showHeader = computed(() => route.meta?.showHeader ?? true);
 const showFooter = computed(() => route.meta?.showFooter ?? true);
 const showLeftDrawer = computed(() => route.meta?.showLeftDrawer ?? true);
-const showRightDrawer = computed(() => route.meta?.showRightDrawer ?? false);
 const showDialogOnboarding = ref(false);
 
 // Run few useful things before app starts rendering
@@ -141,5 +150,14 @@ function onOnboardingSubmit(data: { [key: string]: any }) {
   showDialogOnboarding.value = false;
   Object.assign(user.baseUser as User, data);
   user.saveUser();
+}
+
+/**
+ * Allow view component to handle custom right drawer click.
+ *
+ * @param clickParam parameters provided by drawer on click.
+ */
+function onRightDrawerClick(clickParam: any) {
+  viewComponent.value?.handleDrawerClick?.(clickParam);
 }
 </script>

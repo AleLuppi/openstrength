@@ -8,7 +8,7 @@ const { getScrollTarget, setVerticalScrollPosition } = scroll;
  * @param durationMs scroll duration in ms.
  */
 export function scrollToElement(
-  element: HTMLElement,
+  element: HTMLElement | null,
   durationMs: number = 500,
 ) {
   if (!(element && element.offsetTop)) return;

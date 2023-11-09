@@ -6,9 +6,10 @@ import {
   routeAccessibleByAuthenticated,
   routeAccessibleByNotAuthenticated,
 } from "@/router/routeAccessManagement";
+import { defineAsyncComponent } from "vue";
 
-/* (dinamically) import the views */
-import HomeView from "../views/HomeView.vue";
+/* Dinamically import the views */
+import HomeView from "@/views/HomeView.vue";
 const AthletesView = () => import("@/views/AthletesView.vue");
 const LibraryView = () => import("@/views/LibraryView.vue");
 const ProgramView = () => import("@/views/ProgramView.vue");
@@ -21,11 +22,19 @@ const CookiePolicyView = () => import("@/views/CookiePolicyView.vue");
 const TermsAndConditionView = () =>
   import("@/views/TermsAndConditionsView.vue");
 
+/* Define components that will be passed to routes */
+const RightDrawerMenu = defineAsyncComponent(
+  () => import("@/components/layout/RightDrawerMenu.vue"),
+);
+
 /**
  * Currently available meta info in routes:
  *  - title : To set the page title in browser.
  *  - showHeader: If true, show top header. Default is true.
  *  - showFooter: If true, show bottom footer. Default is true.
+ *  - showLeftDrawer: If true, show left drawer. Default is true.
+ *  - showRightDrawer: If false, do not show right drawer. If a component is provided, use
+ *                     it as right drawer. The default is false.
  *  - restrictAccessByRole : List of user roles that can access the page. If not provided,
  *                           anyone can access the page. Admin can always access.
  *  - redirectNotAuthorized : View to redirect user when trying to access a view that is
@@ -74,7 +83,7 @@ const routes = [
       title: "Program",
       restrictAccessByRole: [UserRole.coach],
       redirectNotAuthorized: "home",
-      showRightDrawer: true,
+      showRightDrawer: RightDrawerMenu,
     },
   },
   {
@@ -174,7 +183,7 @@ router.beforeEach(async (to) => {
 /* Set the page title */
 router.afterEach((to) => {
   document.title =
-    (to.meta.title ? to.meta.title + " - " : "") + "OpenStrength"; // TODO + app name
+    (to.meta.title ? to.meta.title + " - " : "") + "OpenStrength";
 });
 
 export default router;

@@ -241,7 +241,9 @@
       },
       "builder": {
         "week_name": "Week { week }",
-        "day_name": "Day { day }"
+        "day_name": "Day { day }",
+        "show_charts_tooltip": "Charts",
+        "show_maxlifts_tooltip": "Reference Table"
       }
     },
     "maxlift_management": {

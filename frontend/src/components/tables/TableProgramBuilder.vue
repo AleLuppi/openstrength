@@ -177,7 +177,7 @@ const storeChangesMethods: { [key: string]: { [subkey: string]: Function } } =
 
 // Set ref
 const dayTableElements = ref<{
-  [key: string]: any; // TODO Element type
+  [key: string]: HTMLElement | any;
 }>({});
 const linesTable = ref<{
   [key: string]: { [subkey: string]: Object[] };

@@ -19,14 +19,14 @@
         <!-- Show charts on the right -->
         <div class="q-pa-sm">
           <!-- TODO i18n -->
-          <!-- TODO: add navigation in the right drawer -->
-
           <!-- CHART SELECTOR SECTION -->
-          <!--  <h6 class="text-margin-xs">Charts Section</h6>
-          <ChartSelector></ChartSelector> -->
+          <div v-if="showingUtils == UtilsOptions.charts">
+            <h6 class="text-margin-xs">Charts Section</h6>
+            <ChartSelector></ChartSelector>
+          </div>
 
           <!-- MAX LIFT SECTION -->
-          <q-card>
+          <q-card v-else-if="showingUtils == UtilsOptions.maxlifts">
             <q-card-section>
               <h6 class="text-margin-xs">Max Lifts section</h6>
 
@@ -201,13 +201,16 @@ import {
   ProgramLine,
 } from "@/helpers/programs/program";
 import { useCoachInfoStore } from "@/stores/coachInfo";
-//import ChartSelector from "@/components/charts/ChartSelector.vue";
+import ChartSelector from "@/components/charts/ChartSelector.vue";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import { useUserStore } from "@/stores/user";
 import { Exercise } from "@/helpers/exercises/exercise";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
+
+// Set expose
+defineExpose({ handleDrawerClick });
 
 // Use plugins
 const $q = useQuasar();
@@ -216,6 +219,15 @@ const i18n = useI18n();
 // Get store
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
+
+// Set constants
+const UtilsOptions = {
+  charts: "charts",
+  maxlifts: "maxlifts",
+};
+
+// Set ref
+const showingUtils = ref(UtilsOptions.charts);
 
 // Max lift declarations
 const searchMaxLift = ref<string>();
@@ -451,6 +463,22 @@ const program = new Program({
     }),
   ],
 });
+
+/**
+ * Handle custom right drawer click.
+ *
+ * @param clickParam parameters provided by drawer on click.
+ */
+function handleDrawerClick(clickParam: any) {
+  switch (clickParam) {
+    case 0:
+      showingUtils.value = UtilsOptions.charts;
+      break;
+    case 1:
+      showingUtils.value = UtilsOptions.maxlifts;
+      break;
+  }
+}
 </script>
 
 <style scoped>
