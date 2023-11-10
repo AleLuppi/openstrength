@@ -16,6 +16,7 @@
               true,
             ) || $t('coach.exercise_management.add_variant_already_exists'),
         ]"
+        :disable="isDefaultVariant"
         class="col-12"
       >
         <template v-slot:before>
@@ -28,7 +29,6 @@
       <os-select
         v-model="variantMuscleGroups"
         :label="$t('coach.exercise_management.fields.musclegroups')"
-        use-input
         :options="variantMuscleGroupsOptions"
         emit-value
         map-options
@@ -48,7 +48,6 @@
       <os-select
         v-model="variantEquipment"
         :label="$t('coach.exercise_management.fields.equipment')"
-        use-input
         :options="variantEquipmentOptions"
         emit-value
         map-options
@@ -111,6 +110,8 @@ const props = defineProps({
     default: undefined,
   },
 });
+
+const isDefaultVariant = computed(() => props.variant.isDefault === true);
 
 // Set expose
 defineExpose({

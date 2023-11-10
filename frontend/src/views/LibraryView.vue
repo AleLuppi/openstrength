@@ -503,6 +503,7 @@ function onNewVariant() {
   clearVariant();
   addingNewVariant.value = true;
   selectedVariant.value = new ExerciseVariant({
+    name: " ",
     exercise: selectedExercise.value,
     loadType: selectedExercise.value?.defaultVariant?.loadType,
     muscleGroups: selectedExercise.value?.defaultVariant?.muscleGroups,
