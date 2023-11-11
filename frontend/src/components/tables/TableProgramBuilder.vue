@@ -130,6 +130,10 @@
             'requestText',
             'requestVideo',
           ]"
+          :types="{
+            requestText: 'checkbox',
+            requestVideo: 'checkbox',
+          }"
           @update:model-value="
             (value: any) =>
               onTableValueUpdate(idWeekDay.toString(), exerciseName, value)
