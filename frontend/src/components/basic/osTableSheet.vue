@@ -8,7 +8,7 @@
     separator="cell"
     bordered
     :pagination="{ rowsPerPage: 0 }"
-    :hide-header="!props.headers || props.headers instanceof Array"
+    :hide-header="hideHeaders"
     :hide-bottom="true"
     row-key="row"
     @mouseup="onSelectionEnd"
@@ -109,6 +109,11 @@ const selected = ref<{
   colTo: number;
 }>();
 const isSelecting = ref(false);
+
+// Set when to show headers
+const hideHeaders = computed(
+  () => !props.headers || props.headers instanceof Array,
+);
 
 // Get headers map
 const headers = computed(() => {
@@ -283,7 +288,8 @@ function onCopy(clipboardEvent: ClipboardEvent) {
   for (let row = rowStart; row <= rowEnd; row++) {
     colData.length = 0;
     for (let col = colStart; col <= colEnd; col++) {
-      colData.push(props.modelValue[row][getHeaderName(col)]);
+      if (row < props.modelValue.length)
+        colData.push(props.modelValue[row][getHeaderName(col)]);
     }
     rowData.push(colData.join("\t"));
   }
