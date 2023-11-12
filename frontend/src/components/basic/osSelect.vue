@@ -1,14 +1,14 @@
 <template>
   <div v-on="$attrs">
     <!-- Title -->
-    <h6
+    <p
       v-if="props.label"
-      class="q-my-none text-input-top-label text-uppercase text-weight-medium"
+      class="text-input-top-label text-uppercase text-weight-medium"
       :class="{ 'input-required': props.required }"
       style="line-height: 1.6em"
     >
       {{ props.label }}
-    </h6>
+    </p>
 
     <!-- Styled input -->
     <q-select
