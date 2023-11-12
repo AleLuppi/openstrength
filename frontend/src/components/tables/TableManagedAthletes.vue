@@ -5,17 +5,39 @@
     virtual-scroll
     hide-pagination
     class="os-table-max-height"
+    @row-click="$props.onUpdate"
+    :selection="isAthlete ? 'none' : 'single'"
+    v-model:selected="selected"
   ></os-table>
 </template>
 
 <script setup lang="ts">
-import { PropType, computed } from "vue";
+import { PropType, computed, ref } from "vue";
 import { AthleteUser } from "@/helpers/users/user";
+import { Program } from "@/helpers/programs/program";
+
+// See if any row is selected
+const isAthlete = computed(() => Boolean(props.athletes));
+
+// Allow row selection from parent
+const selected = ref<{ [key: string]: any }[]>();
+function selectRowByName(name: string, clearOnFail: boolean = false) {
+  const row = rows.value.find((row) => Boolean(name) && row.name == name);
+  if (row) selected.value = [row];
+  else if (clearOnFail) selected.value = [];
+}
+defineExpose({
+  selectRowByName,
+});
 
 // Define props
 const props = defineProps({
   athletes: {
     type: Array as PropType<AthleteUser[]>,
+    required: true,
+  },
+  programs: {
+    type: Array as PropType<Program[]>,
     required: true,
   },
   onUpdate: {
@@ -48,12 +70,13 @@ const columns = [
     sortable: true,
   },
   {
-    name: "note",
+    name: "program",
+    required: true,
+    label: "Program",
     align: "left",
-    label: "Note",
-    field: "note",
+    field: "program",
+    sortable: true,
   },
-  { name: "update", align: "center", label: "", field: "update" },
 ];
 
 // Set table rows
@@ -69,14 +92,14 @@ const rows = computed(() => {
     name: athlete.name,
     surname: athlete.surname,
     displayName: athlete.displayName,
-    note: athlete.coachNote,
-    update: {
-      element: "button",
-      on: { click: () => props.onUpdate(athlete) },
-      label: "Update",
-      rounded: true,
-      color: "button-primary",
-      outline: true,
+    program: {
+      element: "chip",
+      label: athlete.hasAssignedProgram(props.programs)
+        ? "Assigned"
+        : "Unassigned",
+      color: athlete.hasAssignedProgram(props.programs)
+        ? "positive"
+        : "negative",
     },
   }));
 });
