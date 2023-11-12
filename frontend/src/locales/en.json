@@ -139,7 +139,8 @@
         "update_proceed": "Proceed",
         "update_error": "It was not possible to update the athlete, please retry",
         "remove": "Remove athlete",
-        "remove_confirm": "Are you sure you want to remove { name }?"
+        "remove_confirm": "Are you sure you want to remove { name }?",
+
       },
       "filter": {
         "all": "All",
@@ -151,9 +152,23 @@
         "old": "Old"
       },
       "fields": {
-        "name": "Athlete's name",
-        "surname": "Athlete's surname",
-        "note": "Add a note"
+        "name": "Name",
+        "surname": "Surname",
+        "birthday": "Birthday",
+        "gender": "Gender",
+        "gender_available": {
+          "male": "Male",
+          "female": "Female"
+        },
+        "height": "Height",
+        "weight": "Weight",
+        "note": "Note",
+        "update": "Update athlete", 
+        "program_name": "Program Name",
+        "program_start": "Start Date",
+        "program_finish": "End Date",
+        "program_description": "Description"
+
       }
     },
     "exercise_management": {
