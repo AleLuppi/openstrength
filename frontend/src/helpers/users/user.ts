@@ -8,6 +8,7 @@ import {
   changeDocId,
 } from "@/helpers/database/readwrite";
 import { usersCollection } from "@/helpers/database/collections";
+import { Program } from "../programs/program";
 
 /**
  * Define available user roles.
@@ -17,6 +18,14 @@ export enum UserRole {
   coach = "coach",
   athlete = "athlete",
   unknown = "unknown",
+}
+
+/**
+ * Define available user gender.
+ */
+export enum UserGender {
+  male = "male",
+  female = "female",
 }
 
 /**
@@ -37,7 +46,8 @@ export type UserProps = {
   name?: string;
   surname?: string;
   middlename?: string;
-  birthday?: Date;
+  gender?: UserGender;
+  birthday?: string;
   address?: string;
 
   // Account info
@@ -74,6 +84,13 @@ export type AthleteUserProps = UserProps & {
   coaches?: string[];
   coachesFrom?: (Date | null)[];
   coachesTo?: (Date | null)[];
+
+  // Athlete-related specific
+  height?: string;
+  weight?: string;
+
+  // Computed info
+  hasAssignedProgram?: boolean;
 };
 
 /**
@@ -96,7 +113,8 @@ export class User {
   name?: string;
   surname?: string;
   middlename?: string;
-  birthday?: Date;
+  gender?: UserGender;
+  birthday?: string;
   address?: string;
 
   // Account info
@@ -125,6 +143,7 @@ export class User {
     name,
     surname,
     middlename,
+    gender,
     birthday,
     address,
     createdOn,
@@ -140,9 +159,11 @@ export class User {
     this.displayName = displayName;
     this.photoUrl = photoUrl;
     this.phoneNumber = phoneNumber;
+    this.emailVerified = emailVerified;
     this.name = name;
     this.surname = surname;
     this.middlename = middlename;
+    this.gender = gender;
     this.birthday = birthday;
     this.address = address;
     this.createdOn = createdOn;
@@ -213,12 +234,29 @@ export class AthleteUser extends User {
   coachesFrom?: (Date | null)[];
   coachesTo?: (Date | null)[];
 
+  // Athlete-related specific
+  height?: string;
+  weight?: string;
+
+  // Computed property
+  // Check if the athlete has an assigned program
+  public hasAssignedProgram(programs: Program[]): boolean {
+    return Boolean(
+      programs.some(
+        (program) =>
+          program.coachId === this.coachId || program.athleteId === this.uid,
+      ),
+    );
+  }
+
   constructor({
     coachId,
     coachNote,
     coaches,
     coachesFrom,
     coachesTo,
+    height,
+    weight,
     ...props
   }: AthleteUserProps = {}) {
     // Set super properties
@@ -231,6 +269,8 @@ export class AthleteUser extends User {
     this.coaches = coaches;
     this.coachesFrom = coachesFrom;
     this.coachesTo = coachesTo;
+    this.height = height;
+    this.weight = weight;
   }
 }
 
