@@ -416,12 +416,8 @@ const programs = computed(() => coachInfo.programs || []);
 // Update table selection
 watch(selectedAthlete, (athlete) =>
   nextTick(() => {
-    athleteTableElement.value?.selectRowByName(athlete?.name, true);
-    const athleteMaxlifts = maxlifts.value.filter(
-      (maxlift: MaxLift) =>
-        maxlift.athleteId === selectedAthlete.value?.uid ||
-        maxlift.coachId === selectedAthlete.value?.coachId,
-    );
+    // athleteTableElement.value?.selectRowByName(athlete?.name, true);
+    athleteTableElement.value?.selectRowById(athlete?.uid, true);
   }),
 );
 
@@ -454,10 +450,15 @@ const maxlifts = computed(() => {
   coachInfo.loadMaxLifts(user.uid, true);
   return coachInfo.maxlifts || [];
 });
-console.log("maxlifts", maxlifts);
 
 // Get maxlifts for the selected athlete
-
+const athleteMaxlifts = computed(() =>
+  maxlifts.value.filter(
+    (maxlift: MaxLift) =>
+      maxlift.athleteId === selectedAthlete.value?.uid &&
+      maxlift.coachId === selectedAthlete.value?.coachId,
+  ),
+);
 console.log("sel athlete", selectedAthlete.value);
 console.log("selectedath.uid", selectedAthlete.value?.uid);
 console.log("user.uid", user.uid);
