@@ -407,11 +407,11 @@ function onTabChange(tab) {
   //send confirmation of saved info
 }
 
-// Get athletes to display
+// Get coach info
 const athletes = computed(() => coachInfo.athletes || []);
-console.log("all coach athletes", athletes);
-// Get all program of the coach
 const programs = computed(() => coachInfo.programs || []);
+const exercises = computed(() => coachInfo.exercises || []);
+const maxlifts = computed(() => coachInfo.maxlifts || []);
 
 // Update table selection
 watch(selectedAthlete, (athlete) =>
@@ -439,18 +439,6 @@ const currentProgram = new Program({
   lastUpdated: new Date(2023, 5, 8),
 });
 
-// Get exercises to display
-const exercises = computed<Exercise[]>(() => {
-  coachInfo.loadExercises(user.uid, true);
-  return coachInfo.exercises || [];
-});
-
-// Get maxlifts for a coach to display
-const maxlifts = computed(() => {
-  coachInfo.loadMaxLifts(user.uid, true);
-  return coachInfo.maxlifts || [];
-});
-
 // Get maxlifts for the selected athlete
 const athleteMaxlifts = computed(() =>
   maxlifts.value.filter(
@@ -459,10 +447,6 @@ const athleteMaxlifts = computed(() =>
       maxlift.coachId === selectedAthlete.value?.coachId,
   ),
 );
-console.log("sel athlete", selectedAthlete.value);
-console.log("selectedath.uid", selectedAthlete.value?.uid);
-console.log("user.uid", user.uid);
-console.log("athleteMaxlifts", athleteMaxlifts);
 
 const maxliftValueSuffix = computed(() => {
   if (maxliftType.value === MaxLiftType._1RM) {
