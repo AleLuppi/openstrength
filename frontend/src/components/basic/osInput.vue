@@ -2,25 +2,25 @@
   <div v-on="$attrs">
     <!-- Title -->
     <p
-      v-if="props.label"
+      v-if="label"
       class="text-input-top-label text-uppercase text-weight-medium text-left"
-      :class="{ 'input-required': props.required }"
+      :class="{ 'input-required': required }"
       style="line-height: 1.6em"
     >
-      {{ props.label }}
+      {{ label }}
     </p>
 
     <!-- Styled input -->
     <q-input
       ref="inputElement"
-      v-bind="props"
+      v-bind="$props"
       outlined
       dense
       :label="undefined"
       :rules="
-        (props.rules ?? []).concat([
+        (rules ?? []).concat([
           (val: string) =>
-            !props.required ||
+            !required ||
             Boolean(val) ||
             $t('layout.interaction.input_required'),
         ])
@@ -44,7 +44,7 @@ interface extendedInputProps extends QInputProps {
   placeholder?: string; // missing in QInputProps
   required?: boolean;
 }
-const props = defineProps<extendedInputProps>();
+defineProps<extendedInputProps>();
 
 // Define methods (expose child's)
 const inputElement = ref<QInput>();

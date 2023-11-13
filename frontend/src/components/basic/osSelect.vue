@@ -2,30 +2,30 @@
   <div v-on="$attrs">
     <!-- Title -->
     <h6
-      v-if="props.label"
+      v-if="label"
       class="q-my-none text-input-top-label text-uppercase text-weight-medium"
       :class="{ 'input-required': props.required }"
       style="line-height: 1.6em"
     >
-      {{ props.label }}
+      {{ label }}
     </h6>
 
     <!-- Styled input -->
     <q-select
       ref="selectElement"
-      v-bind="props"
+      v-bind="$props"
       behavior="menu"
       outlined
       dense
       :options="options"
       @filter="filter"
       :label="undefined"
-      :use-chips="props.multiple"
+      :use-chips="multiple"
       new-value-mode="add-unique"
       :rules="
-        (props.rules ?? []).concat([
+        (rules ?? []).concat([
           (val: string) =>
-            !props.required ||
+            !required ||
             Boolean(val) ||
             $t('layout.interaction.input_required'),
         ])
@@ -49,7 +49,7 @@ interface extendedInputProps extends QSelectProps {
   required?: boolean;
 }
 const props = defineProps<extendedInputProps>();
-defineEmits(["update:props.modelValue"]);
+defineEmits(["update:modelValue"]);
 
 // Define methods (expose child's)
 const selectElement = ref<QSelect>();
