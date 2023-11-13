@@ -91,7 +91,7 @@ function filter(val: string, doneFn: Function) {
   // No input, display all options
   if (val === "") {
     doneFn(() => {
-      options.value = props.options;
+      options.value = props.options?.slice();
     });
     return;
   }
@@ -99,14 +99,18 @@ function filter(val: string, doneFn: Function) {
   // Filter according to input
   doneFn(() => {
     const inTxt = val.toLowerCase();
-    options.value = props.options?.filter((v) =>
-      v.toLowerCase().startsWith(inTxt),
-    );
+    options.value = props.options?.filter((opt) => {
+      const optVal = String(props.mapOptions ? opt.label : opt);
+      return optVal.toLowerCase().startsWith(inTxt);
+    });
     options.value?.push(
-      ...(props.options ?? []).filter(
-        (v) =>
-          v.toLowerCase().includes(inTxt) && !v.toLowerCase().startsWith(inTxt),
-      ),
+      ...(props.options ?? []).filter((opt) => {
+        const optVal = String(props.mapOptions ? opt.label : opt);
+        return (
+          optVal.toLowerCase().includes(inTxt) &&
+          !optVal.toLowerCase().startsWith(inTxt)
+        );
+      }),
     );
   });
 }
