@@ -87,12 +87,24 @@
         <!-- Exercise info -->
         <div class="col-3 q-pa-sm bg-lighter os-exercise-form os-light-border">
           <osSelect
-            v-model="selectedExercisesName[idWeekDay][exerciseName]"
+            :modelValue="selectedExercisesName[idWeekDay][exerciseName]"
+            @update:model-value="
+              (val?: string) =>
+                updateSelectedExercise(idWeekDay.toString(), exerciseName, val)
+            "
             :options="exercises.map((exercise) => exercise.name)"
           >
           </osSelect>
           <osSelect
-            v-model="selectedExerciseVariantsName[idWeekDay][exerciseName]"
+            :modelValue="selectedExerciseVariantsName[idWeekDay][exerciseName]"
+            @update:model-value="
+              (val?: string) =>
+                updateSelectedExerciseVariant(
+                  idWeekDay.toString(),
+                  exerciseName,
+                  val,
+                )
+            "
             :options="
               selectedExercises[idWeekDay][exerciseName]?.variants?.map(
                 (variant) => ({
@@ -171,7 +183,14 @@ const props = defineProps({
     type: Array as PropType<Exercise[]>,
     default: () => [],
   },
+  saved: {
+    type: Boolean,
+    default: true,
+  },
 });
+
+// Define emits
+const emits = defineEmits(["update:saved"]);
 
 // Set useful values
 const sepWekDay = ".";
@@ -202,74 +221,97 @@ const selectedExerciseVariants = ref<{
   [key: string]: { [subkey: string]: ExerciseVariant | undefined };
 }>({});
 
-// Update selected exercises and variants
-watch(
-  selectedExercisesName,
-  (dailyExercisesName) => {
-    selectedExercises.value = Object.assign(
-      {},
-      ...Object.entries(dailyExercisesName).map(([key, exercisesName]) => {
+// Initialize selected exercises and variants
+function initSelectedExercises() {
+  selectedExercises.value = Object.assign(
+    {},
+    ...Object.entries(selectedExercisesName.value).map(
+      ([key, exercisesName]) => {
         const keySelectedExercises: {
           [key: string]: Exercise | undefined;
         } = {};
         Object.entries(exercisesName).forEach(
           ([originalExerciseName, exerciseName]) => {
-            if (exerciseName) {
-              keySelectedExercises[originalExerciseName] = props.exercises.find(
-                (exercise) => exercise.name == exerciseName,
-              );
-              if (
-                selectedExercises.value[key]?.[originalExerciseName] !=
-                keySelectedExercises[originalExerciseName]
-              )
-                storeChanges(
-                  mergeWeekDayNamesWithExercise(key, originalExerciseName),
-                  "exercise",
-                  keySelectedExercises,
-                );
-            }
+            keySelectedExercises[originalExerciseName] = props.exercises.find(
+              (exercise) => exercise.name == exerciseName,
+            );
           },
         );
         return {
           [key]: keySelectedExercises,
         };
-      }),
-    );
-    console.log(dailyExercisesName, selectedExercises.value);
-  },
-  { deep: true, immediate: true },
-);
-watch(
-  selectedExerciseVariantsName,
-  (dailyVariantsName) => {
-    selectedExerciseVariants.value = Object.assign(
-      {},
-      ...Object.entries(dailyVariantsName).map(([key, variantsName]) => {
+      },
+    ),
+  );
+}
+function initSelectedExerciseVariants() {
+  selectedExerciseVariants.value = Object.assign(
+    {},
+    ...Object.entries(selectedExerciseVariantsName.value).map(
+      ([key, variantsName]) => {
         const keySelectedVariants: {
           [key: string]: ExerciseVariant | undefined;
         } = {};
         Object.entries(variantsName).forEach(([exerciseName, variantName]) => {
-          if (variantName) {
-            keySelectedVariants[exerciseName] = selectedExercises.value[key][
-              exerciseName
-            ]?.variants?.find((variant) => variant.name == variantName);
-            if (
-              selectedExerciseVariants.value[key]?.[exerciseName] !=
-              keySelectedVariants[exerciseName]
-            )
-              storeChanges(
-                mergeWeekDayNamesWithExercise(key, exerciseName),
-                "variant",
-                keySelectedVariants,
-              );
-          }
+          keySelectedVariants[exerciseName] = selectedExercises.value[key][
+            exerciseName
+          ]?.variants?.find((variant) => variant.name == variantName);
         });
         return { [key]: keySelectedVariants };
-      }),
+      },
+    ),
+  );
+}
+
+// Update selected exercises and variants
+function updateSelectedExercise(
+  idWeekDay: string,
+  exerciseName: string,
+  newName?: string,
+) {
+  // Update name
+  selectedExercisesName.value[idWeekDay][exerciseName] = newName;
+
+  // Update exercise
+  if (newName) {
+    const selectedExercise = props.exercises.find(
+      (exercise) => exercise.name == newName,
     );
-  },
-  { deep: true, immediate: true },
-);
+    if (selectedExercise != selectedExercises.value[idWeekDay]?.[exerciseName])
+      storeChanges(
+        mergeWeekDayNamesWithExercise(idWeekDay, exerciseName),
+        "exercise",
+        selectedExercise,
+      );
+    selectedExercises.value[idWeekDay][exerciseName] = selectedExercise;
+  } else selectedExercises.value[idWeekDay][exerciseName] = undefined;
+}
+function updateSelectedExerciseVariant(
+  idWeekDay: string,
+  exerciseName: string,
+  newName?: string,
+) {
+  // Update name
+  selectedExerciseVariantsName.value[idWeekDay][exerciseName] = newName;
+
+  // Update exercise
+  if (newName) {
+    const selectedVariant = selectedExercises.value[idWeekDay][
+      exerciseName
+    ]?.variants?.find((variant) => variant.name == newName);
+    if (
+      selectedVariant !=
+      selectedExerciseVariants.value[idWeekDay]?.[exerciseName]
+    )
+      storeChanges(
+        mergeWeekDayNamesWithExercise(idWeekDay, exerciseName),
+        "variant",
+        selectedVariant,
+      );
+
+    selectedExerciseVariants.value[idWeekDay][exerciseName] = selectedVariant;
+  } else selectedExerciseVariants.value[idWeekDay][exerciseName] = undefined;
+}
 
 // Get all program lines for each week and day
 const exercisesPerWeekDay = computed(() =>
@@ -279,12 +321,12 @@ const exercisesPerWeekDay = computed(() =>
 );
 
 // Update data table on input change
-watch(props.program, () => updateTableData(), { immediate: true });
+watch(props.program, () => resetTableData(), { immediate: true });
 
 /**
  * Update table data according to input data.
  */
-function updateTableData() {
+function resetTableData() {
   // Epmty changes
   changes.length = 0;
 
@@ -334,6 +376,10 @@ function updateTableData() {
       });
     },
   );
+
+  // Init selected evercises
+  initSelectedExercises();
+  initSelectedExerciseVariants();
 }
 
 /**
@@ -441,6 +487,7 @@ function storeChanges(
       changes.push([key, changeType, changeValue]);
     }, 1000);
   storeChangesMethods[key][changeType](changeData);
+  emits("update:saved", false);
 }
 
 /**
