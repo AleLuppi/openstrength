@@ -30,7 +30,7 @@
     <q-separator />
 
     <TableMaxLifts
-      :maxlifts="maxlifts"
+      :maxlifts="athleteMaxlifts"
       :on-update="onUpdateMaxLift"
       :filter="searchMaxLift"
     />
@@ -149,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, PropType } from "vue";
 
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
@@ -158,6 +158,7 @@ import { useUserStore } from "@/stores/user";
 import { Exercise } from "@/helpers/exercises/exercise";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
+import { AthleteUser } from "@/helpers/users/user";
 
 // Use plugins
 const $q = useQuasar();
@@ -166,6 +167,14 @@ const i18n = useI18n();
 // Get store
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
+
+// Define props
+const props = defineProps({
+  athlete: {
+    type: AthleteUser as PropType<AthleteUser | undefined>,
+    required: true,
+  },
+});
 
 // Max lift declarations
 const searchMaxLift = ref<string>();
@@ -190,6 +199,18 @@ const maxlifts = computed(() => {
   coachInfo.loadMaxLifts(user.uid, true);
   return coachInfo.maxlifts || [];
 });
+
+// Get maxlifts for the selected athlete
+const athleteMaxlifts = maxlifts.value.filter(
+  (maxlift: MaxLift) =>
+    maxlift.athleteId === props.athlete?.uid ||
+    maxlift.coachId === props.athlete?.coachId,
+);
+
+console.log("sel athlete", props.athlete);
+console.log("selectedath.uid", props.athlete?.uid);
+console.log("user.uid", user.uid);
+console.log("athleteMaxlifts", athleteMaxlifts);
 
 const maxliftValueSuffix = computed(() => {
   if (maxliftType.value === MaxLiftType._1RM) {
@@ -222,6 +243,8 @@ function createMaxLift() {
     type: maxliftType.value,
     value: maxliftValue.value,
     lastUpdated: maxliftDate.value,
+    athleteId: props.athlete?.uid,
+    coachId: user.uid,
   });
   newMaxLift.saveNew({
     onSuccess: () => {
