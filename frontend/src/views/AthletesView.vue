@@ -116,7 +116,10 @@
       <!-- Right card: athlete data -->
       <div v-if="Boolean(selectedAthlete)" class="col-12 col-sm-8">
         <q-card>
-          <q-card-section class="q-gutter-x-xs">
+          <q-card-section
+            class="q-gutter-x-xs"
+            style="height: calc(100vh - 38px)"
+          >
             <h6>Athlete Info</h6>
             <q-tabs
               @update:model-value="onTabChange"
@@ -550,8 +553,8 @@ function onUpdateMaxLift(maxlift: MaxLift) {
 /**
  * Allow athlete modification.
  *
- * @param athleteOrAny might be exercise to be updated, requires type check.
- * @param row optional row of the table where exercise was selected.
+ * @param athleteOrAny might be athlete to be updated, requires type check.
+ * @param row optional row of the table where athlete was selected.
  */
 function onAthleteSelection(
   athleteOrAny: AthleteUser | any,

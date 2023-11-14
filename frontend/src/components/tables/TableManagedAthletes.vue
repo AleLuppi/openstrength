@@ -2,33 +2,24 @@
   <os-table
     :columns="columns"
     :rows="rows"
+    row-key="rowId"
     virtual-scroll
     hide-pagination
     class="os-table-max-height"
     @row-click="$props.onUpdate"
-    :selection="isAthlete ? 'none' : 'single'"
+    selection="single"
     v-model:selected="selected"
   ></os-table>
 </template>
 
 <script setup lang="ts">
-import { PropType, computed, ref } from "vue";
+import { PropType, computed, ref, watch } from "vue";
 import { AthleteUser } from "@/helpers/users/user";
 import { Program } from "@/helpers/programs/program";
 
-// See if any row is selected
-const isAthlete = computed(() => Boolean(props.athletes));
-
 // Allow row selection from parent
 const selected = ref<{ [key: string]: any }[]>();
-function selectRowByName(name: string, clearOnFail: boolean = false) {
-  const row = rows.value.find((row) => Boolean(name) && row.name == name);
-  if (row) selected.value = [row];
-  else if (clearOnFail) selected.value = [];
-}
-defineExpose({
-  selectRowByName,
-});
+watch(selected, (val) => console.log(val));
 
 // Define props
 const props = defineProps({
@@ -101,6 +92,7 @@ const rows = computed(() => {
         ? "positive"
         : "negative",
     },
+    rowId: athlete.uid,
   }));
 });
 </script>

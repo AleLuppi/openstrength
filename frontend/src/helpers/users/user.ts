@@ -244,7 +244,7 @@ export class AthleteUser extends User {
     return Boolean(
       programs.some(
         (program) =>
-          program.coachId === this.coachId || program.athleteId === this.uid,
+          program.coachId === this.coachId && program.athleteId === this.uid,
       ),
     );
   }

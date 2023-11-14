@@ -4,6 +4,19 @@
     <div>
       <h6>Active Program</h6>
       <div class="q-mb-md">
+        <q-btn
+          :to="{ name: 'program', params: { programId: 123456 } }"
+          label="Link to Program"
+        ></q-btn>
+
+        <!-- <q-btn label="Modify Current">
+          <router-link
+            exact
+            :to="{ name: 'program', params: { userId: 123 } }"
+            class="absolute full-width full-height"
+          ></router-link>
+        </q-btn> -->
+
         <q-btn outline label="Modify current" class="q-mx-sm"></q-btn>
         <q-btn outline label="Create new"></q-btn>
       </div>

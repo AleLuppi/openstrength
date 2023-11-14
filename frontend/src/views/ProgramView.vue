@@ -7,6 +7,7 @@
     >
       <template v-slot:before>
         <!-- Show table to build program on the left -->
+        <h6>{{ gotParamFromRouter }}</h6>
         <TableProgramBuilder
           :program="program"
           :exercises="coachInfo.exercises"
@@ -208,6 +209,7 @@ import { useUserStore } from "@/stores/user";
 import { Exercise } from "@/helpers/exercises/exercise";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
+import { useRoute } from "vue-router";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -215,10 +217,13 @@ defineExpose({ handleDrawerClick });
 // Use plugins
 const $q = useQuasar();
 const i18n = useI18n();
+const route = useRoute();
 
 // Get store
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
+
+const gotParamFromRouter = computed(() => route.params.programId);
 
 // Set constants
 const UtilsOptions = {
