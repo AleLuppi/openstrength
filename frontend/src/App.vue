@@ -1,5 +1,10 @@
 <template>
-  <q-layout view="lHh LpR lFf">
+  <q-layout
+    view="lHh LpR lFf"
+    @mousedown="interacted = true"
+    @scroll="interacted = true"
+    @touchstart="interacted = true"
+  >
     <!-- Header -->
     <q-header v-if="showHeader" bordered class="bg-lightest text-light">
       <q-toolbar v-if="$q.screen.lt.md">
@@ -112,6 +117,9 @@ const showFooter = computed(() => route.meta?.showFooter ?? true);
 const showLeftDrawer = computed(() => route.meta?.showLeftDrawer ?? true);
 const showDialogOnboarding = ref(false);
 
+// Check if any interaction with the app has ever occurred
+let interacted = false;
+
 // Run few useful things before app starts rendering
 onBeforeMount(() => {
   // Set default props of components
@@ -124,6 +132,14 @@ onBeforeMount(() => {
       await user.loadUser();
       if (user.locale) setLocale(user.locale);
 
+      // Try original page app is unused yet, otherwise just check for authorizations
+      if (route.redirectedFrom && !interacted)
+        router.replace(route.redirectedFrom);
+      else
+        router.replace({
+          params: { userId: user.uid },
+        });
+
       // Show onboarding dialog if required
       if (!user.role || user.role == UserRole.unknown)
         showDialogOnboarding.value = true;
@@ -131,11 +147,10 @@ onBeforeMount(() => {
     onUserOut: () => {
       user.$reset();
       coachInfo.$reset();
-    },
-    onUserChange: () => {
-      // Refresh page to ensure user info change accordingly
+
+      // Refresh page to allow redirect if on unauthorized page
       router.replace({
-        params: { uid: user.uid ?? "" },
+        params: { userId: "" },
       });
     },
   });
