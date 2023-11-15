@@ -21,7 +21,23 @@
           v-model="athleteBirthday"
           :label="$t('coach.athlete_management.fields.birthday')"
           :readonly="readonly"
-        />
+        >
+          <template v-slot:append>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy
+                cover
+                transition-show="scale"
+                transition-hide="scale"
+              >
+                <q-date v-model="athleteBirthday">
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Close" color="primary" flat />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </os-input>
       </div>
 
       <div class="row q-col-gutter-x-md">
@@ -105,7 +121,7 @@ defineExpose({
 const formElement = ref<QForm>();
 const athleteName = ref<string>();
 const athleteSurname = ref<string>();
-const athleteBirthday = ref<string>();
+const athleteBirthday = ref<Date>();
 const athleteGender = ref<UserGender>();
 const athleteHeight = ref<string>();
 const athleteWeight = ref<string>();

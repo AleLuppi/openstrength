@@ -7,7 +7,7 @@
     >
       <template v-slot:before>
         <!-- Show table to build program on the left -->
-        <h6>{{ gotParamFromRouter }}</h6>
+        <h6>Program uid {{ programIdFromRouter }}</h6>
         <TableProgramBuilder
           :program="program"
           :exercises="coachInfo.exercises"
@@ -223,7 +223,7 @@ const route = useRoute();
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
-const gotParamFromRouter = computed(() => route.params.programId);
+const programIdFromRouter = computed(() => route.params.programId);
 
 // Set constants
 const UtilsOptions = {

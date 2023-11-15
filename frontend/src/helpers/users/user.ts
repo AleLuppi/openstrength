@@ -47,7 +47,7 @@ export type UserProps = {
   surname?: string;
   middlename?: string;
   gender?: UserGender;
-  birthday?: string;
+  birthday?: Date;
   address?: string;
 
   // Account info
@@ -91,6 +91,7 @@ export type AthleteUserProps = UserProps & {
 
   // Computed info
   hasAssignedProgram?: boolean;
+  hasAssignedOngoingProgram?: boolean;
 };
 
 /**
@@ -114,7 +115,7 @@ export class User {
   surname?: string;
   middlename?: string;
   gender?: UserGender;
-  birthday?: string;
+  birthday?: Date;
   address?: string;
 
   // Account info
@@ -245,6 +246,18 @@ export class AthleteUser extends User {
       programs.some(
         (program) =>
           program.coachId === this.coachId && program.athleteId === this.uid,
+      ),
+    );
+  }
+
+  // Check if the athlete has an assigned ongoing program
+  public hasAssignedOngoingProgram(programs: Program[]): boolean {
+    return Boolean(
+      programs.some(
+        (program) =>
+          program.coachId === this.coachId &&
+          program.athleteId === this.uid &&
+          program.isOngoing === true,
       ),
     );
   }

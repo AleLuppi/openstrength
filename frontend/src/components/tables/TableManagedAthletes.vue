@@ -85,10 +85,10 @@ const rows = computed(() => {
     displayName: athlete.displayName,
     program: {
       element: "chip",
-      label: athlete.hasAssignedProgram(props.programs)
-        ? "Assigned"
+      label: athlete.hasAssignedOngoingProgram(props.programs)
+        ? "Ongoing"
         : "Unassigned",
-      color: athlete.hasAssignedProgram(props.programs)
+      color: athlete.hasAssignedOngoingProgram(props.programs)
         ? "positive"
         : "negative",
     },

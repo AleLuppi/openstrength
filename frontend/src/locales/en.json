@@ -135,12 +135,12 @@
         "search": "Search athlete...",
         "add_proceed": "Proceed",
         "add_error": "It was not possible to add the athlete, please retry",
+        "add_succeed": "Athlete info successfully updated",
         "update": "Update athlete",
         "update_proceed": "Proceed",
         "update_error": "It was not possible to update the athlete, please retry",
         "remove": "Remove athlete",
-        "remove_confirm": "Are you sure you want to remove { name }?",
-
+        "remove_confirm": "Are you sure you want to remove { name }?"
       },
       "filter": {
         "all": "All",
@@ -154,7 +154,7 @@
       "fields": {
         "name": "Name",
         "surname": "Surname",
-        "birthday": "Birthday",
+        "birthday": "Birth Date",
         "gender": "Gender",
         "gender_available": {
           "male": "Male",
@@ -167,8 +167,8 @@
         "program_name": "Program Name",
         "program_start": "Start Date",
         "program_finish": "End Date",
-        "program_description": "Description"
-
+        "program_description": "Description",
+        "program_update": "Program info successfully updated"
       }
     },
     "exercise_management": {

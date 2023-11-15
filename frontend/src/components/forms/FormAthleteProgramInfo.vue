@@ -5,20 +5,11 @@
       <h6>Active Program</h6>
       <div class="q-mb-md">
         <q-btn
-          :to="{ name: 'program', params: { programId: 123456 } }"
-          label="Link to Program"
+          outline
+          :to="{ name: 'program', params: { programId: props.program.uid } }"
+          label="Modify Program"
+          class="q-mr-md"
         ></q-btn>
-
-        <!-- <q-btn label="Modify Current">
-          <router-link
-            exact
-            :to="{ name: 'program', params: { userId: 123 } }"
-            class="absolute full-width full-height"
-          ></router-link>
-        </q-btn> -->
-
-        <q-btn outline label="Modify current" class="q-mx-sm"></q-btn>
-        <q-btn outline label="Create new"></q-btn>
       </div>
 
       <div class="row q-col-gutter-x-md">
@@ -27,18 +18,52 @@
           v-model="programName"
           :label="$t('coach.athlete_management.fields.program_name')"
         />
+
         <!-- Start date -->
         <os-input
           v-model="programStartedOn"
           :label="$t('coach.athlete_management.fields.program_start')"
           class="col-3"
-        />
+        >
+          <template v-slot:append>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy
+                cover
+                transition-show="scale"
+                transition-hide="scale"
+              >
+                <q-date v-model="programStartedOn">
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Close" color="primary" flat />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </os-input>
+
         <!-- End date -->
         <os-input
           v-model="programFinishedOn"
           :label="$t('coach.athlete_management.fields.program_finish')"
           class="col-3"
-        />
+        >
+          <template v-slot:append>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy
+                cover
+                transition-show="scale"
+                transition-hide="scale"
+              >
+                <q-date v-model="programFinishedOn">
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Close" color="primary" flat />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </os-input>
       </div>
 
       <!-- Program description -->
@@ -49,7 +74,7 @@
       />
       <q-btn
         type="submit"
-        :label="$t('coach.athlete_management.fields.update')"
+        :label="$t('coach.athlete_management.fields.program_update')"
         class="full-width"
       ></q-btn>
     </div>

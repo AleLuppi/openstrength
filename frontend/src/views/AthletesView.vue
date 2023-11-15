@@ -140,11 +140,30 @@
             <q-tab-panels v-model="selectedTab">
               <!-- Program info -->
               <q-tab-panel name="Status">
-                <FormAthleteProgramInfo
-                  ref="athleteProgramFormElement"
-                  v-if="selectedAthlete"
-                  :program="currentProgram"
-                />
+                <!-- If selected athlete has ongoing program show program data form-->
+                <div v-if="selectedAthlete && Boolean(athleteCurrentProgram)">
+                  <FormAthleteProgramInfo
+                    ref="athleteProgramFormElement"
+                    :program="athleteCurrentProgram ?? new Program()"
+                  />
+                </div>
+                <!-- If selected athlete has no programs at all -->
+                <div v-else-if="selectedAthlete && Boolean(athletePrograms)">
+                  <h6>
+                    {{ selectedAthlete.name + " " + selectedAthlete.surname }}
+                    non ha programmi
+                  </h6>
+
+                  <q-btn
+                    outline
+                    :to="{
+                      name: 'program',
+                      params: { program: 123456 },
+                    }"
+                    label="Create Program"
+                    class="q-mr-md"
+                  ></q-btn>
+                </div>
               </q-tab-panel>
 
               <!-- Athlete Anagraphic and phisical data -->
@@ -419,28 +438,38 @@ const maxlifts = computed(() => coachInfo.maxlifts || []);
 // Update table selection
 watch(selectedAthlete, (athlete) =>
   nextTick(() => {
-    // athleteTableElement.value?.selectRowByName(athlete?.name, true);
-    athleteTableElement.value?.selectRowById(athlete?.uid, true);
+    athleteTableElement.value?.selectRowByName(athlete?.name, true);
+    //athleteTableElement.value?.selectRowById(athlete?.uid, true);
   }),
 );
 
 // Get current program
 const athletePrograms = programs.value.filter(
   (program: Program) =>
-    program.athleteId === selectedAthlete.value?.uid ||
+    program.athleteId === selectedAthlete.value?.uid &&
     program.coachId === selectedAthlete.value?.coachId,
 );
 console.log(athletePrograms);
 //const currentProgram = athletePrograms[0]; // TODO: get currently active or latest program
 
-const currentProgram = new Program({
-  uid: "prova",
+const athleteCurrentProgram = computed(() =>
+  programs.value.find(
+    (program: Program) =>
+      program.athleteId === selectedAthlete.value?.uid &&
+      program.coachId === selectedAthlete.value?.coachId &&
+      program.isOngoing,
+  ),
+);
+
+/* const currentProgram = new Program({
+  uid: "fsSAG899kjbsa92n",
   name: "Program name",
   description: "questa è la descrizione",
   startedOn: new Date(2023, 4, 7),
   finishedOn: new Date(2023, 5, 8),
   lastUpdated: new Date(2023, 5, 8),
-});
+  isOngoing: true,
+}); */
 
 // Get maxlifts for the selected athlete
 const athleteMaxlifts = computed(() =>
