@@ -21,6 +21,9 @@ A clear and concise description of what you'd like to happen:
 A clear and concise description of any alternative solutions or features you've considered.
 These might include in-project alternative solutions, or external features from different projects.
 
+**Existing features it is based on**
+If the feature is not brand-new, but rather it is an extension of an already implemented feature, reference it here. If available, also mention original feature request issue.
+
 **Screenshots**
 If available, share any screenshots that explain your feature (e.g. from a similar project, or depicting one of our pages where your feature should be inserted). Add comments when needed.
 
