@@ -1,22 +1,24 @@
 <template>
-  <div>
-    <!-- Day element -->
+  <div class="q-pa-md q-ma-md shadow-2" style="border-radius: 24px">
+    <!-- Program exercise element -->
     <div
-      :ref="(el) => (dayTableElements[idWeekDay] = el)"
-      v-for="(tableData, idWeekDay) in linesTable"
-      :key="idWeekDay"
-      class="q-pa-md q-my-md shadow-2"
-      style="border-radius: 24px"
+      :ref="(el) => (dayTableElements[idScheduleInfo] = el)"
+      v-for="(tableData, idScheduleInfo) in linesTable"
+      :key="idScheduleInfo"
     >
       <!-- Show week and day and allow navigation -->
-      <h6 class="q-mt-none">
+      <h6
+        v-if="splitScheduleInfoNames(idScheduleInfo.toString())[2] == '0'"
+        class="q-mt-none"
+      >
         <span class="underlined-dashed cursor-pointer">
-          {{ getWeekDisplayName(idWeekDay, true) }}
+          {{ getWeekDisplayName(idScheduleInfo, true) }}
           <q-menu auto-close>
             <q-list
               v-for="week in allWeeks.filter(
                 (oneWeek) =>
-                  oneWeek != splitWeekDayNames(idWeekDay.toString())[0],
+                  oneWeek !=
+                  splitScheduleInfoNames(idScheduleInfo.toString())[0],
               )"
               :key="week"
               style="min-width: 100px"
@@ -26,14 +28,15 @@
                 @click="
                   scrollToElement(
                     dayTableElements[
-                      mergeWeekDayNames(
+                      mergeScheduleInfoNames(
                         week,
-                        splitWeekDayNames(idWeekDay.toString())[1],
+                        splitScheduleInfoNames(idScheduleInfo.toString())[1],
+                        splitScheduleInfoNames(idScheduleInfo.toString())[2],
                       )
                     ] ??
                       dayTableElements[
                         Object.keys(dayTableElements).find(
-                          (key) => splitWeekDayNames(key)[0] == week,
+                          (key) => splitScheduleInfoNames(key)[0] == week,
                         ) ?? 'undefined'
                       ],
                   )
@@ -46,14 +49,15 @@
         </span>
         -
         <span class="underlined-dashed cursor-pointer">
-          {{ getDayDisplayName(idWeekDay, true) }}
+          {{ getDayDisplayName(idScheduleInfo, true) }}
           <q-menu auto-close>
             <q-list
               v-for="day in allDays[
-                splitWeekDayNames(idWeekDay.toString())[0]
+                splitScheduleInfoNames(idScheduleInfo.toString())[0]
               ].filter(
                 (oneDay) =>
-                  oneDay != splitWeekDayNames(idWeekDay.toString())[1],
+                  oneDay !=
+                  splitScheduleInfoNames(idScheduleInfo.toString())[1],
               )"
               :key="day"
               style="min-width: 100px"
@@ -63,9 +67,10 @@
                 @click="
                   scrollToElement(
                     dayTableElements[
-                      mergeWeekDayNames(
-                        splitWeekDayNames(idWeekDay.toString())[0],
+                      mergeScheduleInfoNames(
+                        splitScheduleInfoNames(idScheduleInfo.toString())[0],
                         day,
+                        splitScheduleInfoNames(idScheduleInfo.toString())[2],
                       )
                     ],
                   )
@@ -79,51 +84,41 @@
       </h6>
 
       <!-- Exercise element -->
-      <div
-        v-for="exerciseName in Object.keys(selectedExercises[idWeekDay] ?? {})"
-        :key="exerciseName"
-        class="row items-start justify-evenly q-mb-md"
-      >
+      <div class="row items-start justify-evenly q-mb-md">
         <!-- Exercise info -->
         <div class="col-3 q-pa-sm bg-lighter os-exercise-form os-light-border">
           <osSelect
-            :modelValue="selectedExercisesName[idWeekDay][exerciseName]"
+            :modelValue="selectedExercisesName[idScheduleInfo]"
             @update:model-value="
               (val?: string) =>
-                updateSelectedExercise(idWeekDay.toString(), exerciseName, val)
+                updateSelectedExercise(idScheduleInfo.toString(), val)
             "
             :options="exercises.map((exercise) => exercise.name)"
           >
           </osSelect>
           <osSelect
-            :modelValue="selectedExerciseVariantsName[idWeekDay][exerciseName]"
+            :modelValue="selectedExerciseVariantsName[idScheduleInfo]"
             @update:model-value="
               (val?: string) =>
-                updateSelectedExerciseVariant(
-                  idWeekDay.toString(),
-                  exerciseName,
-                  val,
-                )
+                updateSelectedExerciseVariant(idScheduleInfo.toString(), val)
             "
             :options="
-              selectedExercises[idWeekDay][exerciseName]?.variants?.map(
-                (variant) => ({
-                  label: variant.isDefault
-                    ? $t('coach.exercise_management.default_variant')
-                    : variant.name,
-                  value: variant.isDefault ? '' : variant.name,
-                }),
-              )
+              selectedExercises[idScheduleInfo]?.variants?.map((variant) => ({
+                label: variant.isDefault
+                  ? $t('coach.exercise_management.default_variant')
+                  : variant.name,
+                value: variant.isDefault ? '' : variant.name,
+              }))
             "
             map-options
             emit-value
           >
           </osSelect>
           <osInput
-            :model-value="selectedExercisesNote[idWeekDay][exerciseName]"
+            :model-value="selectedExercisesNote[idScheduleInfo]"
             @update:model-value="
               (value: any) =>
-                onNoteValueUpdate(idWeekDay.toString(), exerciseName, value)
+                onNoteValueUpdate(idScheduleInfo.toString(), value)
             "
             type="textarea"
           >
@@ -132,7 +127,7 @@
 
         <!-- Data table -->
         <osTableSheet
-          :modelValue="tableData[exerciseName]"
+          :modelValue="tableData"
           :headers="[
             'load',
             'reps',
@@ -147,8 +142,7 @@
             requestVideo: 'checkbox',
           }"
           @update:model-value="
-            (value: any) =>
-              onTableValueUpdate(idWeekDay.toString(), exerciseName, value)
+            (value: any) => onTableValueUpdate(idScheduleInfo.toString(), value)
           "
           :showNewLine="true"
           dense
@@ -203,125 +197,97 @@ const dayTableElements = ref<{
   [key: string]: HTMLElement | any;
 }>({});
 const linesTable = ref<{
-  [key: string]: { [subkey: string]: Object[] };
+  [key: string]: Object[];
 }>({});
 const selectedExercisesName = ref<{
-  [key: string]: { [subkey: string]: string | undefined };
+  [key: string]: string | undefined;
 }>({});
 const selectedExerciseVariantsName = ref<{
-  [key: string]: { [subkey: string]: string | undefined };
+  [key: string]: string | undefined;
 }>({});
 const selectedExercisesNote = ref<{
-  [key: string]: { [subkey: string]: string | undefined };
+  [key: string]: string | undefined;
 }>({});
 const selectedExercises = ref<{
-  [key: string]: { [subkey: string]: Exercise | undefined };
+  [key: string]: Exercise | undefined;
 }>({});
 const selectedExerciseVariants = ref<{
-  [key: string]: { [subkey: string]: ExerciseVariant | undefined };
+  [key: string]: ExerciseVariant | undefined;
 }>({});
 
-// Initialize selected exercises and variants
+// Get all program lines for each week and day
+const sortedProgramExercises = computed(() =>
+  props.program.programExercises
+    ? orderProgramExercises(
+        props.program.programExercises,
+        mergeScheduleInfoNames,
+      )
+    : {},
+);
+
+// Get a reference to all weeks and days available
+const allWeeks = computed(() =>
+  uniqueValues(
+    Object.keys(sortedProgramExercises.value).map(
+      (key) => splitScheduleInfoNames(key)[0],
+    ),
+  ),
+);
+const allDays = computed(() => {
+  const outDays: { [key: string | number]: string[] } = {};
+  Object.keys(sortedProgramExercises.value).forEach((key) => {
+    const [week, day] = splitScheduleInfoNames(key);
+    if (!outDays[week]) outDays[week] = [];
+    if (!outDays[week].includes(day)) outDays[week].push(day);
+  });
+  return outDays;
+});
+
+// Update data table on input change
+watch(props.program, () => resetTableData(), { immediate: true });
+
+// Ensure program gets saved if requested from outside
+let savedValue = true;
+watch(
+  () => props.saved,
+  (val) => {
+    if (val && !savedValue) save();
+    savedValue = val;
+  },
+  { immediate: true },
+);
+
+/**
+ * Initialize selected exercises.
+ */
 function initSelectedExercises() {
   selectedExercises.value = Object.assign(
     {},
     ...Object.entries(selectedExercisesName.value).map(
-      ([key, exercisesName]) => {
-        const keySelectedExercises: {
-          [key: string]: Exercise | undefined;
-        } = {};
-        Object.entries(exercisesName).forEach(
-          ([originalExerciseName, exerciseName]) => {
-            keySelectedExercises[originalExerciseName] = props.exercises.find(
-              (exercise) => exercise.name == exerciseName,
-            );
-          },
-        );
-        return {
-          [key]: keySelectedExercises,
-        };
-      },
+      ([key, exerciseName]) => ({
+        [key]: props.exercises.find(
+          (exercise) => exercise.name == exerciseName,
+        ),
+      }),
     ),
   );
 }
+
+/**
+ * Initialize selected variants.
+ */
 function initSelectedExerciseVariants() {
   selectedExerciseVariants.value = Object.assign(
     {},
     ...Object.entries(selectedExerciseVariantsName.value).map(
-      ([key, variantsName]) => {
-        const keySelectedVariants: {
-          [key: string]: ExerciseVariant | undefined;
-        } = {};
-        Object.entries(variantsName).forEach(([exerciseName, variantName]) => {
-          keySelectedVariants[exerciseName] = selectedExercises.value[key][
-            exerciseName
-          ]?.variants?.find((variant) => variant.name == variantName);
-        });
-        return { [key]: keySelectedVariants };
-      },
+      ([key, variantName]) => ({
+        [key]: selectedExercises.value[key]?.variants?.find(
+          (variant) => variant.name == variantName,
+        ),
+      }),
     ),
   );
 }
-
-// Update selected exercises and variants
-function updateSelectedExercise(
-  idWeekDay: string,
-  exerciseName: string,
-  newName?: string,
-) {
-  // Update name
-  selectedExercisesName.value[idWeekDay][exerciseName] = newName;
-
-  // Update exercise
-  if (newName) {
-    const selectedExercise = props.exercises.find(
-      (exercise) => exercise.name == newName,
-    );
-    if (selectedExercise != selectedExercises.value[idWeekDay]?.[exerciseName])
-      storeChanges(
-        mergeWeekDayNamesWithExercise(idWeekDay, exerciseName),
-        "exercise",
-        selectedExercise,
-      );
-    selectedExercises.value[idWeekDay][exerciseName] = selectedExercise;
-  } else selectedExercises.value[idWeekDay][exerciseName] = undefined;
-}
-function updateSelectedExerciseVariant(
-  idWeekDay: string,
-  exerciseName: string,
-  newName?: string,
-) {
-  // Update name
-  selectedExerciseVariantsName.value[idWeekDay][exerciseName] = newName;
-
-  // Update exercise
-  if (newName) {
-    const selectedVariant = selectedExercises.value[idWeekDay][
-      exerciseName
-    ]?.variants?.find((variant) => variant.name == newName);
-    if (
-      selectedVariant !=
-      selectedExerciseVariants.value[idWeekDay]?.[exerciseName]
-    )
-      storeChanges(
-        mergeWeekDayNamesWithExercise(idWeekDay, exerciseName),
-        "variant",
-        selectedVariant,
-      );
-
-    selectedExerciseVariants.value[idWeekDay][exerciseName] = selectedVariant;
-  } else selectedExerciseVariants.value[idWeekDay][exerciseName] = undefined;
-}
-
-// Get all program lines for each week and day
-const exercisesPerWeekDay = computed(() =>
-  props.program.programExercises
-    ? orderProgramExercises(props.program.programExercises, mergeWeekDayNames)
-    : {},
-);
-
-// Update data table on input change
-watch(props.program, () => resetTableData(), { immediate: true });
 
 /**
  * Update table data according to input data.
@@ -337,43 +303,27 @@ function resetTableData() {
   selectedExercisesNote.value = {};
 
   // Set new table values
-  Object.entries(exercisesPerWeekDay.value).forEach(
-    ([idWeekDay, exercises]) => {
-      selectedExercisesName.value[idWeekDay] = exercises.reduce(
-        (out: { [key: string]: string | undefined }, exercise) => ({
-          ...out,
-          [exercise.exercise?.name ?? ""]: exercise.exercise?.name,
-        }),
-        {},
-      );
-      selectedExerciseVariantsName.value[idWeekDay] = exercises.reduce(
-        (out: { [key: string]: string | undefined }, exercise) => ({
-          ...out,
-          [exercise.exercise?.name ?? ""]: exercise.exerciseVariant?.name,
-        }),
-        {},
-      );
-      selectedExercisesNote.value[idWeekDay] = exercises.reduce(
-        (out: { [key: string]: string | undefined }, exercise) => ({
-          ...out,
-          [exercise.exercise?.name ?? ""]: exercise.exerciseNote ?? "",
-        }),
-        {},
-      );
-      linesTable.value[idWeekDay] = {};
-      exercises.forEach((exercise) => {
-        if (exercise.lines)
-          linesTable.value[idWeekDay][exercise.exercise?.name ?? ""] =
-            exercise.lines?.map((line) => ({
-              load: line.loadBaseValue,
-              reps: line.repsBaseValue,
-              sets: line.setsBaseValue,
-              rpe: line.rpeBaseValue,
-              note: line.note,
-              requestText: line.requestFeedbackText,
-              requestVideo: line.requestFeedbackVideo,
-            }));
-      });
+  Object.entries(sortedProgramExercises.value).forEach(
+    ([idScheduleInfo, programExercise]) => {
+      // Prepare exercise-related values
+      selectedExercisesName.value[idScheduleInfo] =
+        programExercise.exercise?.name;
+      selectedExerciseVariantsName.value[idScheduleInfo] =
+        programExercise.exerciseVariant?.name;
+      selectedExercisesNote.value[idScheduleInfo] =
+        programExercise.exerciseNote ?? "";
+
+      // Prepare data-related values
+      linesTable.value[idScheduleInfo] =
+        programExercise.lines?.map((line) => ({
+          load: line.loadBaseValue,
+          reps: line.repsBaseValue,
+          sets: line.setsBaseValue,
+          rpe: line.rpeBaseValue,
+          note: line.note,
+          requestText: line.requestFeedbackText,
+          requestVideo: line.requestFeedbackVideo,
+        })) ?? [];
     },
   );
 
@@ -383,54 +333,102 @@ function resetTableData() {
 }
 
 /**
- * Merge week and day names to a single string.
+ * Update selected exercises.
+ *
+ * @param idScheduleInfo schedule info id whose exercise shall be updated.
+ * @param newName new name of the exercise.
+ */
+function updateSelectedExercise(idScheduleInfo: string, newName?: string) {
+  // Update name
+  selectedExercisesName.value[idScheduleInfo] = newName;
+
+  // Update exercise
+  if (newName) {
+    const selectedExercise = props.exercises.find(
+      (exercise) => exercise.name == newName,
+    );
+    if (selectedExercise != selectedExercises.value[idScheduleInfo])
+      storeChanges(idScheduleInfo, "exercise", selectedExercise);
+    selectedExercises.value[idScheduleInfo] = selectedExercise;
+  } else selectedExercises.value[idScheduleInfo] = undefined;
+}
+
+/**
+ * Update selected variants.
+ *
+ * @param idScheduleInfo schedule info id whose variant shall be updated.
+ * @param newName new name of the variant.
+ */
+function updateSelectedExerciseVariant(
+  idScheduleInfo: string,
+  newName?: string,
+) {
+  // Update name
+  selectedExerciseVariantsName.value[idScheduleInfo] = newName;
+
+  // Update exercise
+  if (newName) {
+    const selectedVariant = selectedExercises.value[
+      idScheduleInfo
+    ]?.variants?.find((variant) => variant.name == newName);
+    if (selectedVariant != selectedExerciseVariants.value[idScheduleInfo])
+      storeChanges(idScheduleInfo, "variant", selectedVariant);
+
+    selectedExerciseVariants.value[idScheduleInfo] = selectedVariant;
+  } else selectedExerciseVariants.value[idScheduleInfo] = undefined;
+}
+
+/**
+ * Things to perform when table gets updated.
+ *
+ * @param idScheduleInfo schedule info id whose table data shall be updated.
+ * @param value current table value.
+ */
+function onTableValueUpdate(idScheduleInfo: string, value: any) {
+  storeChanges(idScheduleInfo, "data", value);
+}
+
+/**
+ * Things to perform when exercise note gets updated.
+ *
+ * @param idScheduleInfo schedule info id whose note shall be updated.
+ * @param value current note value.
+ */
+function onNoteValueUpdate(idScheduleInfo: string, value: any) {
+  selectedExercisesNote.value[idScheduleInfo] = value;
+  storeChanges(idScheduleInfo, "note", value);
+}
+
+/**
+ * Merge week, day, order values to a single string.
  *
  * @param weekId week name.
  * @param dayId day name.
- * @param optId optional additional id to consider.
+ * @param orderId order value.
  * @param sep string separator.
  * @returns a string with merged names.
  */
-function mergeWeekDayNames(
+function mergeScheduleInfoNames(
   weekId: string | number,
   dayId: string | number,
-  optId?: string,
+  orderId: string | number,
   sep: string = sepWekDay,
 ) {
-  return [weekId, dayId, optId].filter(Boolean).join(sep);
+  return [weekId, dayId, orderId].filter(Boolean).join(sep);
 }
 
 /**
- * Separate week and day names from a single name string.
+ * Separate week, day, order values from a single name string.
  *
- * @param weekId week name.
- * @param dayId day name.
+ * @param nameScheduleInfo full name string.
  * @param sep string separator.
- * @returns a couple of names for week and day.
+ * @returns a triplet of names for week, day, order.
  */
-function splitWeekDayNames(nameWeekDay: string, sep: string = sepWekDay) {
-  return nameWeekDay.split(sep);
-}
-
-/**
- * Merge week and day names to a single string.
- *
- * @param weekId week name.
- * @param dayId day name.
- * @param optId optional additional id to consider.
- * @param sep string separator.
- * @returns a string with merged names.
- */
-function mergeWeekDayNamesWithExercise(
-  idWeekDay: string,
-  exerciseName: string,
+function splitScheduleInfoNames(
+  nameScheduleInfo: string,
   sep: string = sepWekDay,
 ) {
-  return mergeWeekDayNames(
-    ...(splitWeekDayNames(idWeekDay, sep) as []),
-    exerciseName,
-    sep,
-  );
+  return nameScheduleInfo.split(sep);
 }
 
 /**
@@ -441,7 +439,9 @@ function mergeWeekDayNamesWithExercise(
  */
 function getWeekDisplayName(weekId: string | number, split: boolean = false) {
   return i18n.t("coach.program_management.builder.week_name", {
-    week: split ? splitWeekDayNames(weekId.toString())[0] : weekId.toString(),
+    week: split
+      ? splitScheduleInfoNames(weekId.toString())[0]
+      : weekId.toString(),
   });
 }
 
@@ -453,29 +453,17 @@ function getWeekDisplayName(weekId: string | number, split: boolean = false) {
  */
 function getDayDisplayName(dayId: string | number, split: boolean = false) {
   return i18n.t("coach.program_management.builder.day_name", {
-    day: split ? splitWeekDayNames(dayId.toString())[1] : dayId.toString(),
+    day: split ? splitScheduleInfoNames(dayId.toString())[1] : dayId.toString(),
   });
 }
 
-// Get a reference to all weeks and days available
-const allWeeks = computed(() =>
-  uniqueValues(
-    Object.keys(exercisesPerWeekDay.value).map(
-      (key) => splitWeekDayNames(key)[0],
-    ),
-  ),
-);
-const allDays = computed(() => {
-  const outDays: { [key: string | number]: string[] } = {};
-  Object.keys(exercisesPerWeekDay.value).forEach((key) => {
-    const [week, day] = splitWeekDayNames(key);
-    if (!outDays[week]) outDays[week] = [];
-    outDays[week].push(day);
-  });
-  return outDays;
-});
-
-// Define debounce method for each table to store changes
+/**
+ * Define debounce method for each table to store changes.
+ *
+ * @param key id of the exercise that is being updated.
+ * @param changeType type of data being updated.
+ * @param changeData actual data value.
+ */
 function storeChanges(
   key: string,
   changeType: "exercise" | "variant" | "note" | "data",
@@ -485,48 +473,26 @@ function storeChanges(
   if (!(changeType in storeChangesMethods[key]))
     storeChangesMethods[key][changeType] = debounce((changeValue: any) => {
       changes.push([key, changeType, changeValue]);
+      console.log(changes);
     }, 1000);
   storeChangesMethods[key][changeType](changeData);
-  emits("update:saved", false);
+  savedValue = false;
+  emits("update:saved", savedValue);
 }
 
 /**
- * Things to perform when table gets updated.
- *
- * @param idWeekDay week and day id.
- * @param exerciseName exercise related to table.
- * @param value current table value.
+ * TODO Save all changes to program.
  */
-function onTableValueUpdate(
-  idWeekDay: string,
-  exerciseName: string,
-  value: any,
-) {
-  storeChanges(
-    mergeWeekDayNamesWithExercise(idWeekDay, exerciseName),
-    "data",
-    value,
-  );
-}
+function save() {
+  // Update program
+  changes.forEach((change) => {
+    // TODO
+    console.log(change);
+  });
 
-/**
- * Things to perform when exercise note gets updated.
- *
- * @param idWeekDay week and day id.
- * @param exerciseName exercise related to table.
- * @param value current note value.
- */
-function onNoteValueUpdate(
-  idWeekDay: string,
-  exerciseName: string,
-  value: any,
-) {
-  selectedExercisesNote.value[idWeekDay][exerciseName] = value;
-  storeChanges(
-    mergeWeekDayNamesWithExercise(idWeekDay, exerciseName),
-    "note",
-    value,
-  );
+  // Inform parent of update
+  savedValue = true;
+  emits("update:saved", savedValue);
 }
 </script>
 

@@ -68,25 +68,32 @@ export function sortProgramLines(lines: ProgramLine[]) {
  */
 export function orderProgramExercises(
   exercises: ProgramExercise[],
-  getName: Function = (week: string | number, day: string | number) =>
-    `${week}${sep}${day}`,
+  getName: Function = (
+    week: string | number,
+    day: string | number,
+    order: string | number,
+  ) => [week, day, order].join(sep),
   sep: string = ".",
   sortLines: boolean = true,
-) {
-  // Prepare in and out variables
+): {
+  [key: string]: ProgramExercise;
+} {
+  // Sort exercises
   const sortedExercises = sortProgramExercises(exercises, sortLines);
-  const outExercises: {
-    [key: string]: ProgramExercise[];
-  } = {};
 
-  // Order exercises
-  sortedExercises.forEach((exercise) => {
-    const week = exercise.scheduleWeek ?? -1;
-    const day = exercise.scheduleDay ?? -1;
-    const keyName = getName(week, day);
-    if (!outExercises[keyName]) outExercises[keyName] = [];
-    outExercises[keyName].push(exercise);
-  });
-
-  return outExercises;
+  // Build the output object
+  return sortedExercises.reduce(
+    (
+      out: {
+        [key: string]: ProgramExercise;
+      },
+      exercise,
+    ) => {
+      const week = exercise.scheduleWeek ?? -1;
+      const day = exercise.scheduleDay ?? -1;
+      const order = exercise.scheduleOrder ?? -1;
+      return { ...out, [getName(week, day, order)]: exercise };
+    },
+    {},
+  );
 }
