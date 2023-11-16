@@ -499,9 +499,24 @@ function storeChanges(
 ) {
   if (!(key in storeChangesMethods)) storeChangesMethods[key] = {};
   if (!(changeType in storeChangesMethods[key]))
-    storeChangesMethods[key][changeType] = debounce((changeValue: any) => {
-      changes.push([key, changeType, changeValue]);
-    }, 1000);
+    switch (changeType) {
+      case "data":
+      case "note":
+        storeChangesMethods[key][changeType] = debounce((changeValue: any) => {
+          changes.push([key, changeType, changeValue]);
+        }, 1000);
+        break;
+      case "exercise":
+      case "variant":
+        storeChangesMethods[key][changeType] = (changeValue: any) => {
+          changes.push([key, changeType, changeValue]);
+        };
+        break;
+      default:
+        storeChangesMethods[key][changeType] = (changeValue: any) => {
+          changes.push([key, changeType, changeValue]);
+        };
+    }
   storeChangesMethods[key][changeType](changeData);
   savedValue = false;
   emits("update:saved", savedValue);
