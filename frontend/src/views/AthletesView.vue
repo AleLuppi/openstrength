@@ -113,7 +113,7 @@
         </q-dialog>
       </div>
 
-      <!-- Right card: athlete data -->
+      <!-- Right card: selected athlete data -->
       <div v-if="Boolean(selectedAthlete)" class="col-12 col-sm-8">
         <q-card>
           <q-card-section
@@ -139,7 +139,7 @@
             </q-tabs>
             <q-tab-panels v-model="selectedTab">
               <!-- Program info -->
-              <q-tab-panel name="Status">
+              <q-tab-panel name="Programs">
                 <!-- If selected athlete has ongoing program show program data form-->
                 <div v-if="selectedAthlete && Boolean(athleteCurrentProgram)">
                   <FormAthleteProgramInfo
@@ -147,22 +147,49 @@
                     :program="athleteCurrentProgram ?? new Program()"
                   />
                 </div>
+
                 <!-- If selected athlete has no programs at all -->
                 <div v-else-if="selectedAthlete && Boolean(athletePrograms)">
-                  <h6>
-                    {{ selectedAthlete.name + " " + selectedAthlete.surname }}
-                    non ha programmi
-                  </h6>
+                  <!-- TODO: pass athlete id -->
 
-                  <q-btn
-                    outline
-                    :to="{
-                      name: 'program',
-                      params: { program: 123456 },
-                    }"
-                    label="Create Program"
-                    class="q-mr-md"
-                  ></q-btn>
+                  <div
+                    class="row q-gutter-lg justify-center items-center"
+                    style="height: 100%"
+                  >
+                    <router-link
+                      :to="{ name: 'program', params: { programId: 1234 } }"
+                      class="link-child"
+                    >
+                      <q-card
+                        class="col-3 q-pa-lg column items-center justify-center square-card q-hoverable text-center"
+                      >
+                        <!-- Animate when on -->
+                        <span class="q-focus-helper"></span>
+
+                        <!-- Icon, title, and subtitle -->
+                        <q-icon
+                          name="fa-regular fa-folder-open"
+                          size="6em"
+                          color="icon-color"
+                        />
+                        <h6>
+                          {{
+                            $t("coach.athlete_management.call_to_action.title")
+                          }}
+                          {{
+                            selectedAthlete.name + " " + selectedAthlete.surname
+                          }}
+                        </h6>
+                        <p class="q-px-md text-weight-light">
+                          {{
+                            $t(
+                              "coach.athlete_management.call_to_action.subtitle",
+                            )
+                          }}
+                        </p>
+                      </q-card>
+                    </router-link>
+                  </div>
                 </div>
               </q-tab-panel>
 
@@ -177,7 +204,11 @@
 
               <!-- Personal Best table -->
               <q-tab-panel name="Personal Best">
-                <h6>Personal best table</h6>
+                <h6>
+                  {{
+                    $t("coach.athlete_management.call_to_action.maxlift_title")
+                  }}
+                </h6>
                 <!-- MAX LIFT SECTION -->
                 <q-card>
                   <q-card-section>
@@ -346,6 +377,23 @@
           </q-card-section>
         </q-card>
       </div>
+
+      <!-- Right card: no athlete selected call to action -->
+      <div v-else class="col-12 col-sm-8">
+        <div class="row flex-center" style="height: 100%">
+          <div class="row">
+            <q-icon
+              name="fa-regular fa-hand-pointer"
+              size="2rem"
+              color="light-dark"
+              class="q-px-md"
+            ></q-icon>
+            <p>
+              {{ $t("coach.athlete_management.no_selected_athlete") }}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   </q-page>
 </template>
@@ -376,10 +424,10 @@ const coachInfo = useCoachInfoStore();
 // Set ref for tab navigation
 const allTabs = [
   {
-    key: "status",
-    name: "Status",
-    label: "Status",
-    icon: "fa-solid fa-circle-half-stroke",
+    key: "programs",
+    name: "Programs",
+    label: "Programs",
+    icon: "fa-regular fa-file-lines",
   },
   {
     key: "anagraphic",
@@ -403,7 +451,7 @@ const athleteTableElement = ref<typeof TableManagedAthletes>();
 const athleteFormElement = ref<typeof FormAthleteAnagraphicInfo>();
 const athleteProgramFormElement = ref<typeof FormAthleteProgramInfo>();
 
-const selectedTab = ref("Status"); // TODO main tab to show
+const selectedTab = ref("Programs"); // TODO main tab to show
 const showAthleteDialog = ref(false); // whether to show dialog to add athlete
 
 // Athlete info for add dialog
@@ -423,12 +471,6 @@ const availableMaxLiftTypes: string[] = Object.values(MaxLiftType);
 const maxliftValue = ref(""); // TODO check
 const maxliftDate = ref<Date>(); // TODO check
 
-function onTabChange(tab) {
-  selectedTab.value = tab;
-
-  //send confirmation of saved info
-}
-
 // Get coach info
 const athletes = computed(() => coachInfo.athletes || []);
 const programs = computed(() => coachInfo.programs || []);
@@ -439,19 +481,17 @@ const maxlifts = computed(() => coachInfo.maxlifts || []);
 watch(selectedAthlete, (athlete) =>
   nextTick(() => {
     athleteTableElement.value?.selectRowByName(athlete?.name, true);
-    //athleteTableElement.value?.selectRowById(athlete?.uid, true);
   }),
 );
 
-// Get current program
+// Get all programs for the selected athlete
 const athletePrograms = programs.value.filter(
   (program: Program) =>
     program.athleteId === selectedAthlete.value?.uid &&
     program.coachId === selectedAthlete.value?.coachId,
 );
-console.log(athletePrograms);
-//const currentProgram = athletePrograms[0]; // TODO: get currently active or latest program
 
+// Get active current program for the selected athlete
 const athleteCurrentProgram = computed(() =>
   programs.value.find(
     (program: Program) =>
@@ -461,7 +501,7 @@ const athleteCurrentProgram = computed(() =>
   ),
 );
 
-/* const currentProgram = new Program({
+/* const athleteCurrentProgram = new Program({
   uid: "fsSAG899kjbsa92n",
   name: "Program name",
   description: "questa è la descrizione",
@@ -501,6 +541,13 @@ const maxliftValueSuffix = computed(() => {
     return ""; //
   }
 });
+
+/** TODO check
+ * Allow tab navigation
+ */
+function onTabChange(tab) {
+  selectedTab.value = tab;
+}
 
 /** TODO check
  * Create a new maxlift and assign to a coach
@@ -636,3 +683,11 @@ function clearAthlete() {
   showAthleteDialog.value = false;
 }
 </script>
+
+<style scoped lang="scss">
+.square-card {
+  border-radius: 16px;
+  background: $os-grey-cold-0;
+  box-shadow: 0px 8px 32px 0px rgba(51, 38, 174, 0.08);
+}
+</style>

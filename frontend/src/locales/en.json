@@ -141,6 +141,7 @@
         "update_error": "It was not possible to update the athlete, please retry",
         "remove": "Remove athlete",
         "remove_confirm": "Are you sure you want to remove { name }?"
+
       },
       "filter": {
         "all": "All",
@@ -168,8 +169,14 @@
         "program_start": "Start Date",
         "program_finish": "End Date",
         "program_description": "Description",
-        "program_update": "Program info successfully updated"
-      }
+        "program_update": "Update program info"
+      },
+      "call_to_action":{
+        "title": "Create a program for",
+        "subtitle": "The are no programs available at the moment, create one to start",
+        "maxlift_title": "Register your athlete PRs"
+      },
+      "no_selected_athlete": "Select or add an athlete to start" 
     },
     "exercise_management": {
       "list": {
