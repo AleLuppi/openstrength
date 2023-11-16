@@ -1,29 +1,8 @@
 {
   "layout": {
-    "drawer": {
-      "welcome_logged_in": "Ciao, { name }",
-      "welcome_logged_in_noname": "Bentornato!",
-      "welcome_logged_out": "Accedi / Registrati"
-    },
+
     "header": {
       "button_feedback": "Feedback?"
-    },
-    "interaction": {
-      "input_required": "Questo campo è obbligatorio"
-    },
-    "views": {
-      "home": "Home",
-      "home_title": "Homepage",
-      "athletes": "Atleti",
-      "library": "Libreria",
-      "library_title": "Libreria",
-      "program": "Programma",
-      "program_title": "Programma",
-      "profile": "Profilo",
-      "signin": "Accedi",
-      "privacy_policy": "informativa sulla privacy",
-      "cookie_policy": "informativa sui cookie",
-      "terms_conditions": "condizioni d'uso"
     }
   }
 }
