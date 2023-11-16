@@ -2,86 +2,94 @@
   <div class="q-pa-md q-ma-md shadow-2" style="border-radius: 24px">
     <!-- Program exercise element -->
     <div
-      :ref="(el) => (dayTableElements[idScheduleInfo] = el)"
+      :ref="(el) => (tableElements[idScheduleInfo] = el)"
       v-for="(tableData, idScheduleInfo) in linesTable"
       :key="idScheduleInfo"
     >
       <!-- Show week and day and allow navigation -->
-      <h6
-        v-if="splitScheduleInfoNames(idScheduleInfo.toString())[2] == '0'"
-        class="q-mt-none"
+      <div
+        v-if="firstTablesInDay.includes(idScheduleInfo.toString())"
+        class="row items-center q-px-md"
+        :class="{
+          'q-mt-lg': firstTablesInDay.indexOf(idScheduleInfo.toString()) > 0,
+        }"
       >
-        <span class="underlined-dashed cursor-pointer">
-          {{ getWeekDisplayName(idScheduleInfo, true) }}
-          <q-menu auto-close>
-            <q-list
-              v-for="week in allWeeks.filter(
-                (oneWeek) =>
-                  oneWeek !=
-                  splitScheduleInfoNames(idScheduleInfo.toString())[0],
-              )"
-              :key="week"
-              style="min-width: 100px"
-            >
-              <q-item
-                clickable
-                @click="
-                  scrollToElement(
-                    dayTableElements[
-                      mergeScheduleInfoNames(
-                        week,
-                        splitScheduleInfoNames(idScheduleInfo.toString())[1],
-                        splitScheduleInfoNames(idScheduleInfo.toString())[2],
-                      )
-                    ] ??
-                      dayTableElements[
-                        Object.keys(dayTableElements).find(
-                          (key) => splitScheduleInfoNames(key)[0] == week,
-                        ) ?? 'undefined'
+        <h6 class="q-mt-none">
+          <span class="underlined-dashed cursor-pointer">
+            {{ getWeekDisplayName(idScheduleInfo, true) }}
+            <q-menu auto-close>
+              <q-list
+                v-for="week in allWeeks.filter(
+                  (oneWeek) =>
+                    oneWeek !=
+                    splitScheduleInfoNames(idScheduleInfo.toString())[0],
+                )"
+                :key="week"
+                style="min-width: 100px"
+              >
+                <q-item
+                  clickable
+                  @click="
+                    scrollToElement(
+                      tableElements[
+                        mergeScheduleInfoNames(
+                          week,
+                          splitScheduleInfoNames(idScheduleInfo.toString())[1],
+                          splitScheduleInfoNames(idScheduleInfo.toString())[2],
+                        )
+                      ] ??
+                        tableElements[
+                          Object.keys(tableElements).find(
+                            (key) => splitScheduleInfoNames(key)[0] == week,
+                          ) ?? 'undefined'
+                        ],
+                    )
+                  "
+                >
+                  <q-item-section>{{
+                    getWeekDisplayName(week)
+                  }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </span>
+          -
+          <span class="underlined-dashed cursor-pointer">
+            {{ getDayDisplayName(idScheduleInfo, true) }}
+            <q-menu auto-close>
+              <q-list
+                v-for="day in allDays[
+                  splitScheduleInfoNames(idScheduleInfo.toString())[0]
+                ].filter(
+                  (oneDay) =>
+                    oneDay !=
+                    splitScheduleInfoNames(idScheduleInfo.toString())[1],
+                )"
+                :key="day"
+                style="min-width: 100px"
+              >
+                <q-item
+                  clickable
+                  @click="
+                    scrollToElement(
+                      tableElements[
+                        mergeScheduleInfoNames(
+                          splitScheduleInfoNames(idScheduleInfo.toString())[0],
+                          day,
+                          splitScheduleInfoNames(idScheduleInfo.toString())[2],
+                        )
                       ],
-                  )
-                "
-              >
-                <q-item-section>{{ getWeekDisplayName(week) }}</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </span>
-        -
-        <span class="underlined-dashed cursor-pointer">
-          {{ getDayDisplayName(idScheduleInfo, true) }}
-          <q-menu auto-close>
-            <q-list
-              v-for="day in allDays[
-                splitScheduleInfoNames(idScheduleInfo.toString())[0]
-              ].filter(
-                (oneDay) =>
-                  oneDay !=
-                  splitScheduleInfoNames(idScheduleInfo.toString())[1],
-              )"
-              :key="day"
-              style="min-width: 100px"
-            >
-              <q-item
-                clickable
-                @click="
-                  scrollToElement(
-                    dayTableElements[
-                      mergeScheduleInfoNames(
-                        splitScheduleInfoNames(idScheduleInfo.toString())[0],
-                        day,
-                        splitScheduleInfoNames(idScheduleInfo.toString())[2],
-                      )
-                    ],
-                  )
-                "
-              >
-                <q-item-section>{{ getDayDisplayName(day) }}</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </span>
-      </h6>
+                    )
+                  "
+                >
+                  <q-item-section>{{ getDayDisplayName(day) }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </span>
+        </h6>
+        <q-separator inset size="1px" class="col" />
+      </div>
 
       <!-- Exercise element -->
       <div class="row items-start justify-evenly q-mb-md">
@@ -158,11 +166,11 @@
 import { ref, computed, PropType, watch } from "vue";
 import { debounce } from "quasar";
 import { useI18n } from "vue-i18n";
+import { scrollToElement } from "@/helpers/scroller";
+import { compareArrays, uniqueValues } from "@/helpers/array";
 import { Program } from "@/helpers/programs/program";
 import { orderProgramExercises } from "@/helpers/programs/linesManagement";
-import { scrollToElement } from "@/helpers/scroller";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
-import { uniqueValues } from "@/helpers/array";
 
 // Init plugin
 const i18n = useI18n();
@@ -191,9 +199,10 @@ const sepWekDay = ".";
 const changes: any[] = [];
 const storeChangesMethods: { [key: string]: { [subkey: string]: Function } } =
   {};
+const firstTablesInDay: string[] = [];
 
 // Set ref
-const dayTableElements = ref<{
+const tableElements = ref<{
   [key: string]: HTMLElement | any;
 }>({});
 const linesTable = ref<{
@@ -302,6 +311,9 @@ function resetTableData() {
   selectedExerciseVariantsName.value = {};
   selectedExercisesNote.value = {};
 
+  // Reset list of first tables
+  firstTablesInDay.length = 0;
+
   // Set new table values
   Object.entries(sortedProgramExercises.value).forEach(
     ([idScheduleInfo, programExercise]) => {
@@ -324,6 +336,21 @@ function resetTableData() {
           requestText: line.requestFeedbackText,
           requestVideo: line.requestFeedbackVideo,
         })) ?? [];
+
+      // Check if table is first in the day
+      const idScheduleInfoSplit = splitScheduleInfoNames(idScheduleInfo).slice(
+        0,
+        2,
+      );
+      if (
+        !firstTablesInDay.some((key) =>
+          compareArrays(
+            splitScheduleInfoNames(key).slice(0, 2),
+            idScheduleInfoSplit,
+          ),
+        )
+      )
+        firstTablesInDay.push(idScheduleInfo);
     },
   );
 
@@ -385,6 +412,7 @@ function updateSelectedExerciseVariant(
  * @param value current table value.
  */
 function onTableValueUpdate(idScheduleInfo: string, value: any) {
+  // TODO check why bool data are not saved
   storeChanges(idScheduleInfo, "data", value);
 }
 
@@ -473,7 +501,6 @@ function storeChanges(
   if (!(changeType in storeChangesMethods[key]))
     storeChangesMethods[key][changeType] = debounce((changeValue: any) => {
       changes.push([key, changeType, changeValue]);
-      console.log(changes);
     }, 1000);
   storeChangesMethods[key][changeType](changeData);
   savedValue = false;

@@ -10,3 +10,14 @@ export function uniqueValues(array: any[], sorted: boolean = true) {
   if (sorted) return newArray.sort();
   return newArray;
 }
+
+/**
+ * Check if the values inside two arrays are all equal (type not checked).
+ *
+ * @param arrayA first array to compare.
+ * @param arrayB second array to compare.
+ * @returns true if the values inside arrays are equal, false otherwise.
+ */
+export function compareArrays(arrayA: any[], arrayB: any[]) {
+  return JSON.stringify(arrayA) === JSON.stringify(arrayB);
+}
