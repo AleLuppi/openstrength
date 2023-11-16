@@ -199,7 +199,6 @@ const sepWekDay = ".";
 const changes: any[] = [];
 const storeChangesMethods: { [key: string]: { [subkey: string]: Function } } =
   {};
-const firstTablesInDay: string[] = [];
 
 // Set ref
 const tableElements = ref<{
@@ -232,6 +231,20 @@ const sortedProgramExercises = computed(() =>
         mergeScheduleInfoNames,
       )
     : {},
+);
+
+// Get id of first table element for each day
+const firstTablesInDay = computed(() =>
+  Object.keys(linesTable.value).reduce((out: string[], key) => {
+    const keySplit = splitScheduleInfoNames(key).slice(0, 2);
+    if (
+      !out.some((firstInDay) =>
+        compareArrays(splitScheduleInfoNames(firstInDay).slice(0, 2), keySplit),
+      )
+    )
+      return [...out, key];
+    return out;
+  }, []),
 );
 
 // Get a reference to all weeks and days available
@@ -311,9 +324,6 @@ function resetTableData() {
   selectedExerciseVariantsName.value = {};
   selectedExercisesNote.value = {};
 
-  // Reset list of first tables
-  firstTablesInDay.length = 0;
-
   // Set new table values
   Object.entries(sortedProgramExercises.value).forEach(
     ([idScheduleInfo, programExercise]) => {
@@ -336,21 +346,6 @@ function resetTableData() {
           requestText: line.requestFeedbackText,
           requestVideo: line.requestFeedbackVideo,
         })) ?? [];
-
-      // Check if table is first in the day
-      const idScheduleInfoSplit = splitScheduleInfoNames(idScheduleInfo).slice(
-        0,
-        2,
-      );
-      if (
-        !firstTablesInDay.some((key) =>
-          compareArrays(
-            splitScheduleInfoNames(key).slice(0, 2),
-            idScheduleInfoSplit,
-          ),
-        )
-      )
-        firstTablesInDay.push(idScheduleInfo);
     },
   );
 
