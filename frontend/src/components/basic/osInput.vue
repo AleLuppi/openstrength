@@ -26,6 +26,7 @@
         ])
       "
       lazy-rules
+      :rows="rows ?? 3"
     >
       <template v-for="(_, slot) in $slots as Readonly<QInputSlots>" #[slot]>
         <slot :name="slot" />
@@ -43,6 +44,7 @@ import type { QInputProps, QInputSlots } from "quasar";
 interface extendedInputProps extends QInputProps {
   placeholder?: string; // missing in QInputProps
   required?: boolean;
+  rows?: number;
 }
 defineProps<extendedInputProps>();
 
