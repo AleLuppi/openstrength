@@ -3,13 +3,13 @@
     <!-- Program exercise element -->
     <div
       :ref="(el) => (tableElements[idScheduleInfo] = el)"
-      v-for="(tableData, idScheduleInfo) in linesTable"
+      v-for="(exerciseModelValue, idScheduleInfo) in exercisesValues"
       :key="idScheduleInfo"
     >
       <!-- Show week and day and allow navigation -->
       <div
         v-if="firstTablesInDay.includes(idScheduleInfo.toString())"
-        class="row items-center q-px-md"
+        class="row items-center"
         :class="{
           'q-mt-lg': firstTablesInDay.indexOf(idScheduleInfo.toString()) > 0,
         }"
@@ -93,10 +93,27 @@
 
       <!-- Exercise element -->
       <div class="row items-start justify-evenly q-mb-md">
+        <div class="col-1 self-center column justify-center">
+          <q-btn
+            icon="arrow_drop_up"
+            flat
+            dense
+            color="secondary"
+            :disable="firstTablesInDay.includes(idScheduleInfo.toString())"
+          />
+          <q-btn
+            icon="arrow_drop_down"
+            flat
+            dense
+            color="secondary"
+            :disable="lastTablesInDay.includes(idScheduleInfo.toString())"
+          />
+        </div>
+
         <!-- Exercise info -->
         <div class="col-3 q-pa-sm bg-lighter os-exercise-form os-light-border">
           <osSelect
-            :modelValue="selectedExercisesName[idScheduleInfo]"
+            :modelValue="exerciseModelValue.exercise"
             @update:model-value="
               (val?: string) =>
                 updateSelectedExercise(idScheduleInfo.toString(), val)
@@ -105,11 +122,7 @@
           >
           </osSelect>
           <osSelect
-            :modelValue="selectedExerciseVariantsName[idScheduleInfo]"
-            @update:model-value="
-              (val?: string) =>
-                updateSelectedExerciseVariant(idScheduleInfo.toString(), val)
-            "
+            v-model="exerciseModelValue.variant"
             :options="
               selectedExercises[idScheduleInfo]?.variants?.map((variant) => ({
                 label: variant.isDefault
@@ -122,20 +135,12 @@
             emit-value
           >
           </osSelect>
-          <osInput
-            :model-value="selectedExercisesNote[idScheduleInfo]"
-            @update:model-value="
-              (value: any) =>
-                onNoteValueUpdate(idScheduleInfo.toString(), value)
-            "
-            type="textarea"
-          >
-          </osInput>
+          <osInput v-model="exerciseModelValue.note" type="textarea"> </osInput>
         </div>
 
         <!-- Data table -->
         <osTableSheet
-          :modelValue="tableData"
+          v-model="exerciseModelValue.data"
           :headers="[
             'load',
             'reps',
@@ -149,9 +154,6 @@
             requestText: 'checkbox',
             requestVideo: 'checkbox',
           }"
-          @update:model-value="
-            (value: any) => onTableValueUpdate(idScheduleInfo.toString(), value)
-          "
           :showNewLine="true"
           dense
           class="col os-light-border"
@@ -171,6 +173,7 @@ import { compareArrays, uniqueValues } from "@/helpers/array";
 import { Program } from "@/helpers/programs/program";
 import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+import { objectMap } from "@/helpers/object";
 
 // Init plugin
 const i18n = useI18n();
@@ -197,31 +200,45 @@ const emits = defineEmits(["update:saved"]);
 // Set useful values
 const sepWekDay = ".";
 const changes: any[] = [];
-const storeChangesMethods: { [key: string]: { [subkey: string]: Function } } =
-  {};
+const storeChangesMethods: {
+  [key: string]: Function;
+} = {};
 
 // Set ref
 const tableElements = ref<{
   [key: string]: HTMLElement | any;
 }>({});
-const linesTable = ref<{
-  [key: string]: Object[];
+const exercisesValues = ref<{
+  [key: string]: {
+    data: Object[];
+    exercise: string | undefined;
+    variant: string | undefined;
+    note: string | undefined;
+  };
 }>({});
-const selectedExercisesName = ref<{
-  [key: string]: string | undefined;
-}>({});
-const selectedExerciseVariantsName = ref<{
-  [key: string]: string | undefined;
-}>({});
-const selectedExercisesNote = ref<{
-  [key: string]: string | undefined;
-}>({});
-const selectedExercises = ref<{
+
+// Extract selected exercise and variant for each table
+const selectedExercises = computed<{
   [key: string]: Exercise | undefined;
-}>({});
-const selectedExerciseVariants = ref<{
+}>(() =>
+  objectMap(exercisesValues.value, (exerciseValue) =>
+    props.exercises.find((exercise) => exercise.name == exerciseValue.exercise),
+  ),
+);
+const selectedExerciseVariants = computed<{
   [key: string]: ExerciseVariant | undefined;
-}>({});
+}>(() =>
+  objectMap(
+    exercisesValues.value,
+    (exerciseValue, key) =>
+      selectedExercises.value[key]?.variants?.find(
+        (variant) => variant.name == exerciseValue.variant,
+      ),
+  ),
+);
+
+// TODO delete
+watch(selectedExerciseVariants, (val) => console.log(val));
 
 // Get all program lines for each week and day
 const sortedProgramExercises = computed(() =>
@@ -233,9 +250,9 @@ const sortedProgramExercises = computed(() =>
     : {},
 );
 
-// Get id of first table element for each day
+// Get id of first and last table element for each day
 const firstTablesInDay = computed(() =>
-  Object.keys(linesTable.value).reduce((out: string[], key) => {
+  Object.keys(exercisesValues.value).reduce((out: string[], key) => {
     const keySplit = splitScheduleInfoNames(key).slice(0, 2);
     if (
       !out.some((firstInDay) =>
@@ -246,18 +263,35 @@ const firstTablesInDay = computed(() =>
     return out;
   }, []),
 );
+const lastTablesInDay = computed(() =>
+  Object.keys(exercisesValues.value)
+    .reverse()
+    .reduce((out: string[], key) => {
+      const keySplit = splitScheduleInfoNames(key).slice(0, 2);
+      if (
+        !out.some((firstInDay) =>
+          compareArrays(
+            splitScheduleInfoNames(firstInDay).slice(0, 2),
+            keySplit,
+          ),
+        )
+      )
+        return [...out, key];
+      return out;
+    }, []),
+);
 
 // Get a reference to all weeks and days available
 const allWeeks = computed(() =>
   uniqueValues(
-    Object.keys(sortedProgramExercises.value).map(
+    Object.keys(exercisesValues.value).map(
       (key) => splitScheduleInfoNames(key)[0],
     ),
   ),
 );
 const allDays = computed(() => {
   const outDays: { [key: string | number]: string[] } = {};
-  Object.keys(sortedProgramExercises.value).forEach((key) => {
+  Object.keys(exercisesValues.value).forEach((key) => {
     const [week, day] = splitScheduleInfoNames(key);
     if (!outDays[week]) outDays[week] = [];
     if (!outDays[week].includes(day)) outDays[week].push(day);
@@ -266,7 +300,18 @@ const allDays = computed(() => {
 });
 
 // Update data table on input change
-watch(props.program, () => resetTableData(), { immediate: true });
+watch(
+  () => props.program,
+  () => resetTableData(),
+  { immediate: true },
+);
+
+// Store changes upon data change
+watch(
+  exercisesValues,
+  (newValue, oldValue) => storeChanges("", newValue, oldValue),
+  { deep: true },
+);
 
 // Ensure program gets saved if requested from outside
 let savedValue = true;
@@ -280,38 +325,6 @@ watch(
 );
 
 /**
- * Initialize selected exercises.
- */
-function initSelectedExercises() {
-  selectedExercises.value = Object.assign(
-    {},
-    ...Object.entries(selectedExercisesName.value).map(
-      ([key, exerciseName]) => ({
-        [key]: props.exercises.find(
-          (exercise) => exercise.name == exerciseName,
-        ),
-      }),
-    ),
-  );
-}
-
-/**
- * Initialize selected variants.
- */
-function initSelectedExerciseVariants() {
-  selectedExerciseVariants.value = Object.assign(
-    {},
-    ...Object.entries(selectedExerciseVariantsName.value).map(
-      ([key, variantName]) => ({
-        [key]: selectedExercises.value[key]?.variants?.find(
-          (variant) => variant.name == variantName,
-        ),
-      }),
-    ),
-  );
-}
-
-/**
  * Update table data according to input data.
  */
 function resetTableData() {
@@ -319,24 +332,29 @@ function resetTableData() {
   changes.length = 0;
 
   // Delete previously stored values
-  linesTable.value = {};
-  selectedExercisesName.value = {};
-  selectedExerciseVariantsName.value = {};
-  selectedExercisesNote.value = {};
+  exercisesValues.value = {};
 
-  // Set new table values
+  // Set new exercise values
   Object.entries(sortedProgramExercises.value).forEach(
     ([idScheduleInfo, programExercise]) => {
+      if (!exercisesValues.value[idScheduleInfo])
+        exercisesValues.value[idScheduleInfo] = {
+          data: [],
+          exercise: undefined,
+          variant: undefined,
+          note: undefined,
+        };
+
       // Prepare exercise-related values
-      selectedExercisesName.value[idScheduleInfo] =
+      exercisesValues.value[idScheduleInfo].exercise =
         programExercise.exercise?.name;
-      selectedExerciseVariantsName.value[idScheduleInfo] =
+      exercisesValues.value[idScheduleInfo].variant =
         programExercise.exerciseVariant?.name;
-      selectedExercisesNote.value[idScheduleInfo] =
+      exercisesValues.value[idScheduleInfo].note =
         programExercise.exerciseNote ?? "";
 
       // Prepare data-related values
-      linesTable.value[idScheduleInfo] =
+      exercisesValues.value[idScheduleInfo].data =
         programExercise.lines?.map((line) => ({
           load: line.loadBaseValue,
           reps: line.repsBaseValue,
@@ -348,10 +366,6 @@ function resetTableData() {
         })) ?? [];
     },
   );
-
-  // Init selected evercises
-  initSelectedExercises();
-  initSelectedExerciseVariants();
 }
 
 /**
@@ -361,65 +375,12 @@ function resetTableData() {
  * @param newName new name of the exercise.
  */
 function updateSelectedExercise(idScheduleInfo: string, newName?: string) {
+  // Reset variant name
+  if (exercisesValues.value[idScheduleInfo].exercise != newName)
+    exercisesValues.value[idScheduleInfo].variant = undefined;
+
   // Update name
-  selectedExercisesName.value[idScheduleInfo] = newName;
-
-  // Update exercise
-  if (newName) {
-    const selectedExercise = props.exercises.find(
-      (exercise) => exercise.name == newName,
-    );
-    if (selectedExercise != selectedExercises.value[idScheduleInfo])
-      storeChanges(idScheduleInfo, "exercise", selectedExercise);
-    selectedExercises.value[idScheduleInfo] = selectedExercise;
-  } else selectedExercises.value[idScheduleInfo] = undefined;
-}
-
-/**
- * Update selected variants.
- *
- * @param idScheduleInfo schedule info id whose variant shall be updated.
- * @param newName new name of the variant.
- */
-function updateSelectedExerciseVariant(
-  idScheduleInfo: string,
-  newName?: string,
-) {
-  // Update name
-  selectedExerciseVariantsName.value[idScheduleInfo] = newName;
-
-  // Update exercise
-  if (newName) {
-    const selectedVariant = selectedExercises.value[
-      idScheduleInfo
-    ]?.variants?.find((variant) => variant.name == newName);
-    if (selectedVariant != selectedExerciseVariants.value[idScheduleInfo])
-      storeChanges(idScheduleInfo, "variant", selectedVariant);
-
-    selectedExerciseVariants.value[idScheduleInfo] = selectedVariant;
-  } else selectedExerciseVariants.value[idScheduleInfo] = undefined;
-}
-
-/**
- * Things to perform when table gets updated.
- *
- * @param idScheduleInfo schedule info id whose table data shall be updated.
- * @param value current table value.
- */
-function onTableValueUpdate(idScheduleInfo: string, value: any) {
-  // TODO check why bool data are not saved
-  storeChanges(idScheduleInfo, "data", value);
-}
-
-/**
- * Things to perform when exercise note gets updated.
- *
- * @param idScheduleInfo schedule info id whose note shall be updated.
- * @param value current note value.
- */
-function onNoteValueUpdate(idScheduleInfo: string, value: any) {
-  selectedExercisesNote.value[idScheduleInfo] = value;
-  storeChanges(idScheduleInfo, "note", value);
+  exercisesValues.value[idScheduleInfo].exercise = newName;
 }
 
 /**
@@ -487,32 +448,14 @@ function getDayDisplayName(dayId: string | number, split: boolean = false) {
  * @param changeType type of data being updated.
  * @param changeData actual data value.
  */
-function storeChanges(
-  key: string,
-  changeType: "exercise" | "variant" | "note" | "data",
-  changeData: any,
-) {
-  if (!(key in storeChangesMethods)) storeChangesMethods[key] = {};
-  if (!(changeType in storeChangesMethods[key]))
-    switch (changeType) {
-      case "data":
-      case "note":
-        storeChangesMethods[key][changeType] = debounce((changeValue: any) => {
-          changes.push([key, changeType, changeValue]);
-        }, 1000);
-        break;
-      case "exercise":
-      case "variant":
-        storeChangesMethods[key][changeType] = (changeValue: any) => {
-          changes.push([key, changeType, changeValue]);
-        };
-        break;
-      default:
-        storeChangesMethods[key][changeType] = (changeValue: any) => {
-          changes.push([key, changeType, changeValue]);
-        };
-    }
-  storeChangesMethods[key][changeType](changeData);
+function storeChanges(key: string, changeDataTo: any, changeDataFrom: any) {
+  if (!(key in storeChangesMethods))
+    storeChangesMethods[key] = debounce((newValue: any, oldValue: any) => {
+      changes.push([newValue, oldValue]);
+      console.log(changes);
+    }, 1000);
+  console.log("doing");
+  storeChangesMethods[key](changeDataTo, changeDataFrom);
   savedValue = false;
   emits("update:saved", savedValue);
 }

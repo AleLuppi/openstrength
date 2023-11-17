@@ -24,3 +24,23 @@ export function objectAssignNotUndefined(
 ) {
   Object.assign(objA, filterOutUndefined(objB));
 }
+
+/**
+ * Map object values according to a specified function.
+ *
+ * @param obj object whose values shall be mapped.
+ * @param updateFunc values update method.
+ * @returns new object with mapped values.
+ */
+export function objectMap<T extends object>(
+  obj: T,
+  updateFunc: (
+    value: T[keyof T] extends infer V ? V : never,
+    key: keyof T,
+    index: number,
+  ) => any,
+) {
+  return Object.fromEntries(
+    Object.entries(obj).map(([k, v], i) => [k, updateFunc(v, k as keyof T, i)]),
+  );
+}
