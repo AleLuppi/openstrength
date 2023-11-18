@@ -26,13 +26,29 @@ export function objectAssignNotUndefined(
 }
 
 /**
+ * Map object keys according to a specified function.
+ *
+ * @param obj object whose keys shall be mapped.
+ * @param updateFunc keys update method.
+ * @returns new object with mapped keys.
+ */
+export function objectMapKeys<T extends object>(
+  obj: T,
+  updateFunc: (key: keyof T, index: number) => keyof T,
+) {
+  return Object.fromEntries(
+    Object.entries(obj).map(([k, v], i) => [updateFunc(k as keyof T, i), v]),
+  );
+}
+
+/**
  * Map object values according to a specified function.
  *
  * @param obj object whose values shall be mapped.
  * @param updateFunc values update method.
  * @returns new object with mapped values.
  */
-export function objectMap<T extends object>(
+export function objectMapValues<T extends object>(
   obj: T,
   updateFunc: (
     value: T[keyof T] extends infer V ? V : never,
@@ -43,4 +59,18 @@ export function objectMap<T extends object>(
   return Object.fromEntries(
     Object.entries(obj).map(([k, v], i) => [k, updateFunc(v, k as keyof T, i)]),
   );
+}
+
+/**
+ * Pop a specific key from object.
+ *
+ * @param obj object to pop key from.
+ * @param key key that shall be popped.
+ * @returns value associated to just popped key.
+ */
+export function objectPop<T extends object>(obj: T, key?: keyof T) {
+  const popKey = (key ?? Object.keys(obj).at(-1)) as keyof T;
+  const val = obj[popKey];
+  delete obj[popKey];
+  return val;
 }

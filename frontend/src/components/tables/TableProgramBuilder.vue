@@ -95,6 +95,7 @@
       <div class="row items-start justify-evenly q-mb-md">
         <div class="col-1 self-center column justify-center">
           <q-btn
+            @click="reorderTableRelative(idScheduleInfo.toString(), -1)"
             icon="arrow_drop_up"
             flat
             dense
@@ -102,6 +103,7 @@
             :disable="firstTablesInDay.includes(idScheduleInfo.toString())"
           />
           <q-btn
+            @click="reorderTableRelative(idScheduleInfo.toString(), +1)"
             icon="arrow_drop_down"
             flat
             dense
@@ -173,7 +175,7 @@ import { compareArrays, uniqueValues } from "@/helpers/array";
 import { Program } from "@/helpers/programs/program";
 import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
-import { objectMap } from "@/helpers/object";
+import { objectMapKeys, objectMapValues } from "@/helpers/object";
 
 // Init plugin
 const i18n = useI18n();
@@ -221,14 +223,14 @@ const exercisesValues = ref<{
 const selectedExercises = computed<{
   [key: string]: Exercise | undefined;
 }>(() =>
-  objectMap(exercisesValues.value, (exerciseValue) =>
+  objectMapValues(exercisesValues.value, (exerciseValue) =>
     props.exercises.find((exercise) => exercise.name == exerciseValue.exercise),
   ),
 );
 const selectedExerciseVariants = computed<{
   [key: string]: ExerciseVariant | undefined;
 }>(() =>
-  objectMap(
+  objectMapValues(
     exercisesValues.value,
     (exerciseValue, key) =>
       selectedExercises.value[key]?.variants?.find(
@@ -384,6 +386,100 @@ function updateSelectedExercise(idScheduleInfo: string, newName?: string) {
 }
 
 /**
+ * Sort a list of schedule ids according to week, day, order values.
+ *
+ * @param scheduleIds list of schedule ids.
+ * @returns sorted list of schedule ids.
+ */
+function sortScheduleId(scheduleIds: string[]) {
+  return scheduleIds.sort((scheduleIdA, scheduleIdB) => {
+    const infoA = splitScheduleInfoNames(scheduleIdA);
+    const infoB = splitScheduleInfoNames(scheduleIdB);
+
+    if (infoA[0] < infoB[0]) return -1;
+    else if (infoA[0] > infoB[0]) return 1;
+    else if (infoA[1] < infoB[1]) return -1;
+    else if (infoA[1] > infoB[1]) return 1;
+    else if (infoA[2] < infoB[2]) return -1;
+    else if (infoA[2] > infoB[2]) return 1;
+    return 0;
+  });
+}
+
+/**
+ * Move one table from one scheduling order to another.
+ *
+ * @param srcId source scheduling id of table.
+ * @param dstId destination scheduling id of table.
+ */
+function reorderTable(srcId: string, dstId: string) {
+  const srcSchedule = splitScheduleInfoNames(srcId);
+  const srcOrder = Number(srcSchedule[2]);
+  const dstSchedule = splitScheduleInfoNames(dstId);
+  const dstOrder = Number(dstSchedule[2]);
+
+  // Map from current to new indexes for each day and week
+  const renameMap = Object.keys(exercisesValues.value).reduce(
+    (outMap: { [key: string]: string }, currId) => {
+      let offset = 0;
+      const currSchedule = splitScheduleInfoNames(currId);
+      const currOrder = Number(currSchedule[2]);
+      if (
+        compareArrays(currSchedule.slice(0, 2), srcSchedule.slice(0, 2)) &&
+        currOrder > srcOrder
+      )
+        offset -= 1;
+      if (
+        compareArrays(currSchedule.slice(0, 2), dstSchedule.slice(0, 2)) &&
+        currOrder + offset >= dstOrder
+      )
+        offset += 1;
+      if (offset)
+        return {
+          ...outMap,
+          [currId]: mergeScheduleInfoNames(
+            currSchedule[0],
+            currSchedule[1],
+            currOrder + offset,
+          ),
+        };
+      return outMap;
+    },
+    {},
+  );
+  renameMap[srcId] = dstId;
+  const unorderedExercisesValues = objectMapKeys(
+    exercisesValues.value,
+    (key) => renameMap[key] ?? key,
+  );
+
+  // Sort new object of exercises by order
+  const sortedKeys = sortScheduleId(Object.keys(unorderedExercisesValues));
+  exercisesValues.value = sortedKeys.reduce(
+    (out, key) => ({ ...out, [key]: unorderedExercisesValues[key] }),
+    {},
+  );
+}
+
+/**
+ * Move one table from one scheduling order to another, while keeping week and day schedule.
+ *
+ * @param srcId source scheduling id of table.
+ * @param dstId destination scheduling id of table.
+ */
+function reorderTableRelative(srcId: string, moveBy: number) {
+  const srcSchedule = splitScheduleInfoNames(srcId);
+  reorderTable(
+    srcId,
+    mergeScheduleInfoNames(
+      srcSchedule[0],
+      srcSchedule[1],
+      Number(srcSchedule[2]) + moveBy,
+    ),
+  );
+}
+
+/**
  * Merge week, day, order values to a single string.
  *
  * @param weekId week name.
@@ -452,9 +548,8 @@ function storeChanges(key: string, changeDataTo: any, changeDataFrom: any) {
   if (!(key in storeChangesMethods))
     storeChangesMethods[key] = debounce((newValue: any, oldValue: any) => {
       changes.push([newValue, oldValue]);
-      console.log(changes);
     }, 1000);
-  console.log("doing");
+  console.log("changes");
   storeChangesMethods[key](changeDataTo, changeDataFrom);
   savedValue = false;
   emits("update:saved", savedValue);
