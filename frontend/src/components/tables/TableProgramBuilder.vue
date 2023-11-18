@@ -93,6 +93,7 @@
 
       <!-- Exercise element -->
       <div class="row items-start justify-evenly q-mb-md">
+        <!-- Reordering arrows -->
         <div class="col-1 self-center column justify-center">
           <q-btn
             @click="reorderTableRelative(idScheduleInfo.toString(), -1)"
@@ -113,7 +114,10 @@
         </div>
 
         <!-- Exercise info -->
-        <div class="col-3 q-pa-sm bg-lighter os-exercise-form os-light-border">
+        <div
+          class="col-3 q-pa-sm bg-lighter os-exercise-form os-light-border"
+          style="position: relative"
+        >
           <osSelect
             :modelValue="exerciseModelValue.exercise"
             @update:model-value="
@@ -138,6 +142,17 @@
           >
           </osSelect>
           <osInput v-model="exerciseModelValue.note" type="textarea"> </osInput>
+
+          <!-- Delete buttons -->
+          <q-btn
+            icon="clear"
+            @click="deleteTable(idScheduleInfo)"
+            round
+            unelevated
+            size="0.5em"
+            color="red"
+            class="os-exercise-delete-btn"
+          />
         </div>
 
         <!-- Data table -->
@@ -480,6 +495,15 @@ function reorderTableRelative(srcId: string, moveBy: number) {
 }
 
 /**
+ * Delete one exercise from the list.
+ *
+ * @param idScheduleInfo full name string.
+ */
+function deleteTable(idScheduleInfo: string) {
+  delete exercisesValues.value[idScheduleInfo];
+}
+
+/**
  * Merge week, day, order values to a single string.
  *
  * @param weekId week name.
@@ -549,7 +573,6 @@ function storeChanges(key: string, changeDataTo: any, changeDataFrom: any) {
     storeChangesMethods[key] = debounce((newValue: any, oldValue: any) => {
       changes.push([newValue, oldValue]);
     }, 1000);
-  console.log("changes");
   storeChangesMethods[key](changeDataTo, changeDataFrom);
   savedValue = false;
   emits("update:saved", savedValue);
@@ -579,5 +602,12 @@ function save() {
 .os-exercise-form {
   border-radius: 10px 0 0 10px;
   margin-inline-end: -1px;
+}
+
+.os-exercise-delete-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -40%);
 }
 </style>
