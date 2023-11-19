@@ -177,6 +177,27 @@
         >
         </osTableSheet>
       </div>
+
+      <!-- New element button -->
+      <div
+        v-if="lastTablesInDay.includes(idScheduleInfo.toString())"
+        class="row items-center justify-center q-gutter-md"
+      >
+        <q-btn
+          icon="add"
+          label="Exercise"
+          @click="addTable(idScheduleInfo.toString())"
+          rounded
+          unelevated
+        />
+        <q-btn
+          icon="add"
+          label="Day"
+          @click="addTable(idScheduleInfo.toString())"
+          rounded
+          unelevated
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -332,6 +353,9 @@ watch(
   { deep: true },
 );
 
+// Reorder exercises upon update
+watch(exercisesValues, () => sortExerciseValues());
+
 // Ensure program gets saved if requested from outside
 let savedValue = true;
 watch(
@@ -413,14 +437,27 @@ function sortScheduleId(scheduleIds: string[]) {
     const infoA = splitScheduleInfoNames(scheduleIdA);
     const infoB = splitScheduleInfoNames(scheduleIdB);
 
-    if (infoA[0] < infoB[0]) return -1;
-    else if (infoA[0] > infoB[0]) return 1;
-    else if (infoA[1] < infoB[1]) return -1;
-    else if (infoA[1] > infoB[1]) return 1;
-    else if (infoA[2] < infoB[2]) return -1;
-    else if (infoA[2] > infoB[2]) return 1;
+    let res = 0;
+    for (let idx = 0; idx < 3; idx++) {
+      res = infoA[idx]
+        .padStart(infoB[idx].length, "0")
+        .localeCompare(infoB[idx].padStart(infoA[idx].length, "0"));
+      if (res) return res;
+    }
     return 0;
   });
+}
+
+/**
+ * Sort exercises by week, day, order.
+ */
+function sortExerciseValues() {
+  const sortedKeys = sortScheduleId(Object.keys(exercisesValues.value));
+  if (!compareArrays(sortedKeys, Object.keys(exercisesValues.value)))
+    exercisesValues.value = sortedKeys.reduce(
+      (out, key) => ({ ...out, [key]: exercisesValues.value[key] }),
+      {},
+    );
 }
 
 /**
@@ -465,16 +502,9 @@ function reorderTable(srcId: string, dstId: string) {
     {},
   );
   renameMap[srcId] = dstId;
-  const unorderedExercisesValues = objectMapKeys(
+  exercisesValues.value = objectMapKeys(
     exercisesValues.value,
     (key) => renameMap[key] ?? key,
-  );
-
-  // Sort new object of exercises by order
-  const sortedKeys = sortScheduleId(Object.keys(unorderedExercisesValues));
-  exercisesValues.value = sortedKeys.reduce(
-    (out, key) => ({ ...out, [key]: unorderedExercisesValues[key] }),
-    {},
   );
 }
 
@@ -503,6 +533,45 @@ function reorderTableRelative(srcId: string, moveBy: number) {
  */
 function deleteTable(idScheduleInfo: string) {
   delete exercisesValues.value[idScheduleInfo];
+}
+
+/**
+ * Add one exercise to the list.
+ *
+ * @param idScheduleInfo full name that shall be assigned to the new table, only gets week and day codes if not available.
+ */
+function addTable(idScheduleInfo: string) {
+  // Get the proper new table id
+  if (idScheduleInfo in exercisesValues.value) {
+    const scheduleInfo = splitScheduleInfoNames(idScheduleInfo);
+    const largestOrder = Math.max(
+      ...Object.keys(exercisesValues.value).reduce((orders: number[], key) => {
+        const currScheduleInfo = splitScheduleInfoNames(key);
+        if (
+          currScheduleInfo[0] == scheduleInfo[0] &&
+          currScheduleInfo[1] == scheduleInfo[1]
+        )
+          return [...orders, Number(currScheduleInfo[2])];
+        return orders;
+      }, []),
+    );
+    idScheduleInfo = mergeScheduleInfoNames(
+      scheduleInfo[0],
+      scheduleInfo[1],
+      largestOrder + 1,
+    );
+  }
+
+  // Reload whole object to force reorder check
+  exercisesValues.value = {
+    ...exercisesValues.value,
+    [idScheduleInfo]: {
+      data: [],
+      exercise: undefined,
+      variant: undefined,
+      note: undefined,
+    },
+  };
 }
 
 /**

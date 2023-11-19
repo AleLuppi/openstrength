@@ -17,25 +17,32 @@ export function sortProgramExercises(
     });
   return [...exercises].sort((exerciseA, exerciseB) => {
     // Prepare variables
-    const weekA =
-      exerciseA.scheduleWeek ?? exerciseB.scheduleWeek ?? "undefined";
-    const weekB = exerciseB.scheduleWeek ?? weekA;
-    const dayA = exerciseA.scheduleDay ?? exerciseB.scheduleDay ?? "undefined";
-    const dayB = exerciseB.scheduleDay ?? dayA;
-    const orderA =
-      exerciseA.scheduleOrder ?? exerciseB.scheduleOrder ?? "undefined";
-    const orderB = exerciseB.scheduleOrder ?? orderA;
+    const weekA = String(
+      exerciseA.scheduleWeek ?? exerciseB.scheduleWeek ?? "undefined",
+    );
+    const weekB = String(exerciseB.scheduleWeek ?? weekA);
+    const dayA = String(
+      exerciseA.scheduleDay ?? exerciseB.scheduleDay ?? "undefined",
+    );
+    const dayB = String(exerciseB.scheduleDay ?? dayA);
+    const orderA = String(
+      exerciseA.scheduleOrder ?? exerciseB.scheduleOrder ?? "undefined",
+    );
+    const orderB = String(exerciseB.scheduleOrder ?? orderA);
 
     // Sort exercises by week, day, order, with precedence
-    if (weekA < weekB) return -1;
-    else if (weekA > weekB) return 1;
-    else if (dayA < dayB) return -1;
-    else if (dayA > dayB) return 1;
-    else if (orderA < orderB) return -1;
-    else if (orderA > orderB) return 1;
-
-    // Equal sorting values
-    return 0;
+    let res = weekA
+      .padStart(weekB.length, "0")
+      .localeCompare(weekB.padStart(weekA.length, "0"));
+    if (res) return res;
+    res = dayA
+      .padStart(dayB.length, "0")
+      .localeCompare(dayB.padStart(dayA.length, "0"));
+    if (res) return res;
+    res = orderA
+      .padStart(orderB.length, "0")
+      .localeCompare(orderB.padStart(orderA.length, "0"));
+    return res;
   });
 }
 
