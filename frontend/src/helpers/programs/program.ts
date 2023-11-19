@@ -32,6 +32,7 @@ export type ProgramProps = {
   athleteId?: string;
   isAssigned?: boolean;
   isOngoing?: boolean;
+  isCompleted?: boolean;
 };
 
 /**
@@ -161,6 +162,10 @@ export class Program {
     // Program is ongoing if it has been started but not finished yet
     return Boolean(this.startedOn) && !this.finishedOn;
   }
+  public get isCompleted() {
+    // Program is ongoing if it has been started but not finished yet
+    return Boolean(this.finishedOn);
+  }
 
   constructor({
     uid,
@@ -219,6 +224,25 @@ export class Program {
       onError: onError,
     });
   }
+
+  /**
+   * Duplicate program.
+   *
+   * @param shallow avoid copying identifying fields such as uid and parent instance.
+   * @returns a new program with duplicate fields.
+   */
+  duplicate(shallow: boolean = false) {
+    return new Program({
+      ...this,
+      programExercises: this.programExercises?.map((programExercise) =>
+        programExercise.duplicate(),
+      ),
+      ...(shallow && {
+        uid: undefined,
+        name: undefined,
+      }),
+    });
+  }
 }
 
 /**
@@ -269,6 +293,23 @@ export class ProgramExercise {
       if (!line.programExercise) line.programExercise = this;
     });
     this.lines = lines;
+  }
+
+  /**
+   * Duplicate program exercise.
+   *
+   * @param shallow avoid copying identifying fields such as uid and parent instance.
+   * @returns a new program exercise with duplicate fields.
+   */
+  duplicate(shallow: boolean = false) {
+    return new ProgramExercise({
+      ...this,
+      lines: this.lines?.map((line) => line.duplicate(shallow)),
+      ...(shallow && {
+        uid: undefined,
+        program: undefined,
+      }),
+    });
   }
 }
 
@@ -334,6 +375,22 @@ export class ProgramLine {
     this.note = note;
     this.requestFeedbackText = requestFeedbackText;
     this.requestFeedbackVideo = requestFeedbackVideo;
+  }
+
+  /**
+   * Duplicate program line.
+   *
+   * @param shallow avoid copying identifying fields such as uid and parent instance.
+   * @returns a new program line with duplicate fields.
+   */
+  duplicate(shallow: boolean = false) {
+    return new ProgramLine({
+      ...this,
+      ...(shallow && {
+        uid: undefined,
+        programExercise: undefined,
+      }),
+    });
   }
 }
 

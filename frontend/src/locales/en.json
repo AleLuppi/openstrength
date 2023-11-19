@@ -240,6 +240,8 @@
         "label": "Label"
       },
       "builder": {
+        "save": "Save",
+        "save_error": "Could not save program, please retry",
         "week_name": "Week { week }",
         "day_name": "Day { day }",
         "show_charts_tooltip": "Charts",

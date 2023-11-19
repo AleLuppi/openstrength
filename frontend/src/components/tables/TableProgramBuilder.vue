@@ -146,7 +146,7 @@
           <!-- Delete buttons -->
           <q-btn
             icon="clear"
-            @click="deleteTable(idScheduleInfo)"
+            @click="deleteTable(idScheduleInfo.toString())"
             round
             unelevated
             size="0.5em"
@@ -183,16 +183,21 @@
 
 <script setup lang="ts">
 import { ref, computed, PropType, watch } from "vue";
-import { debounce } from "quasar";
+import { debounce, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { scrollToElement } from "@/helpers/scroller";
 import { compareArrays, uniqueValues } from "@/helpers/array";
-import { Program } from "@/helpers/programs/program";
+import {
+  Program,
+  ProgramExercise,
+  ProgramLine,
+} from "@/helpers/programs/program";
 import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { objectMapKeys, objectMapValues } from "@/helpers/object";
 
 // Init plugin
+const $q = useQuasar();
 const i18n = useI18n();
 
 // Define props
@@ -212,7 +217,7 @@ const props = defineProps({
 });
 
 // Define emits
-const emits = defineEmits(["update:saved"]);
+const emits = defineEmits(["update:program", "update:saved"]);
 
 // Set useful values
 const sepWekDay = ".";
@@ -227,7 +232,7 @@ const tableElements = ref<{
 }>({});
 const exercisesValues = ref<{
   [key: string]: {
-    data: Object[];
+    data: { [key: string]: any }[];
     exercise: string | undefined;
     variant: string | undefined;
     note: string | undefined;
@@ -253,9 +258,6 @@ const selectedExerciseVariants = computed<{
       ),
   ),
 );
-
-// TODO delete
-watch(selectedExerciseVariants, (val) => console.log(val));
 
 // Get all program lines for each week and day
 const sortedProgramExercises = computed(() =>
@@ -579,18 +581,64 @@ function storeChanges(key: string, changeDataTo: any, changeDataFrom: any) {
 }
 
 /**
- * TODO Save all changes to program.
+ * Save all changes to program.
  */
 function save() {
   // Update program
-  changes.forEach((change) => {
-    // TODO
-    console.log(change);
-  });
+  const program = props.program.duplicate();
+  program.programExercises = [];
+  Object.entries(exercisesValues.value).forEach(
+    ([scheduleId, exerciseInfo]) => {
+      const scheduleInfo = splitScheduleInfoNames(scheduleId);
+      program.programExercises!.push(
+        new ProgramExercise({
+          program: program,
+          scheduleWeek: scheduleInfo[0],
+          scheduleDay: scheduleInfo[1],
+          scheduleOrder: Number(scheduleInfo[2]),
+          exercise: selectedExercises.value[scheduleId],
+          exerciseVariant: selectedExerciseVariants.value[scheduleId],
+          exerciseNote: exerciseInfo.note,
+          lines: exerciseInfo.data.map(
+            (lineInfo, idx) =>
+              new ProgramLine({
+                lineOrder: idx,
+                setsBaseValue: lineInfo.sets,
+                setsReference: undefined, // TODO
+                repsBaseValue: lineInfo.reps,
+                repsReference: undefined, // TODO
+                loadBaseValue: lineInfo.load,
+                loadReference: undefined, // TODO
+                rpeBaseValue: lineInfo.rpe,
+                rpeReference: undefined, // TODO
+                note: lineInfo.note,
+                requestFeedbackText: lineInfo.requestText,
+                requestFeedbackVideo: lineInfo.requestVideo,
+              }),
+          ),
+        }),
+      );
+    },
+  );
 
-  // Inform parent of update
-  savedValue = true;
-  emits("update:saved", savedValue);
+  // Save current instance
+  program.saveUpdate({
+    onSuccess: () => {
+      // Inform parent of update
+      savedValue = true;
+      emits("update:program", program);
+      emits("update:saved", savedValue);
+    },
+    onError: () => {
+      $q.notify({
+        type: "negative",
+        message: i18n.t("coach.program_management.builder.save_error"),
+        position: "bottom",
+      });
+      savedValue = false;
+      emits("update:saved", savedValue);
+    },
+  });
 }
 </script>
 

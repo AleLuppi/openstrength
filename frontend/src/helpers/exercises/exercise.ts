@@ -158,12 +158,14 @@ export class Exercise {
   /**
    * Duplicate exercise.
    *
+   * @param shallow avoid copying identifying fields such as uid and parent instance.
    * @returns a new exercise with duplicate fields.
    */
-  duplicate() {
+  duplicate(shallow: boolean = false) {
     return new Exercise({
       ...this,
-      variants: this.variants?.map((variant) => variant.duplicate()),
+      variants: this.variants?.map((variant) => variant.duplicate(shallow)),
+      ...(shallow && { uid: undefined, name: undefined }),
     });
   }
 
@@ -284,7 +286,7 @@ export class ExerciseVariant {
   /**
    * Duplicate exercise variant.
    *
-   * @param shallow avoid copying identifying fields such as uid, name, exercise.
+   * @param shallow avoid copying identifying fields such as uid and parent instance.
    * @returns a new variant with duplicate fields.
    */
   duplicate(shallow: boolean = false) {
