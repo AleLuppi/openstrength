@@ -196,8 +196,14 @@ export class Program {
     this.lastUpdated = lastUpdated;
   }
 
+  /**
+   * Store a new program on database.
+   *
+   * @param program element that shall be stored.
+   * @param onSuccess function to execute when operation is successful.
+   * @param onError function to execute when operation fails.
+   */
   saveNew({
-    // TODO
     program,
     onSuccess,
     onError,
@@ -206,11 +212,20 @@ export class Program {
     onSuccess?: Function;
     onError?: Function;
   } = {}) {
-    addDocProgram(program || this, { onSuccess: onSuccess, onError: onError });
+    const programToSave = program || this;
+    programToSave.createdOn = new Date();
+    programToSave.lastUpdated = new Date();
+    addDocProgram(programToSave, { onSuccess: onSuccess, onError: onError });
   }
 
+  /**
+   * Update an existing program on database.
+   *
+   * @param program element that shall be updated.
+   * @param onSuccess function to execute when operation is successful.
+   * @param onError function to execute when operation fails.
+   */
   saveUpdate({
-    // TODO
     program,
     onSuccess,
     onError,
@@ -219,10 +234,34 @@ export class Program {
     onSuccess?: Function;
     onError?: Function;
   } = {}) {
-    updateDocProgram(program || this, {
+    const programToUpdate = program || this;
+    programToUpdate.lastUpdated = new Date();
+    updateDocProgram(programToUpdate, {
       onSuccess: onSuccess,
       onError: onError,
     });
+  }
+
+  /**
+   * Store a new program on database, or update id already exists.
+   *
+   * @param program element that shall be saved or updated.
+   * @param onSuccess function to execute when operation is successful.
+   * @param onError function to execute when operation fails.
+   */
+  save({
+    program,
+    onSuccess,
+    onError,
+  }: {
+    program?: Program;
+    onSuccess?: Function;
+    onError?: Function;
+  } = {}) {
+    const programToSave = program || this;
+    if (programToSave.uid)
+      programToSave.saveUpdate({ onSuccess: onSuccess, onError: onError });
+    else programToSave.saveNew({ onSuccess: onSuccess, onError: onError });
   }
 
   /**
@@ -397,7 +436,7 @@ export class ProgramLine {
 /**
  * Store program on database.
  *
- * @param program program info to store on database.
+ * @param program element to store on database.
  * @param onSuccess function to execute when operation is successful.
  * @param onError function to execute when operation fails.
  */
@@ -405,12 +444,11 @@ export function addDocProgram(
   program: Program,
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
-  const { uid: _, ...programObj } = program;
+  const { uid, ...programObj } = flattenProgram(program);
   doAddDoc(programsCollection, programObj, {
-    addUserId: true,
     onSuccess: (docRef: DocumentReference) => {
-      onSuccess?.();
       program.uid = docRef.id;
+      onSuccess?.(docRef);
     },
     onError: onError,
   });
@@ -419,16 +457,16 @@ export function addDocProgram(
 /**
  * Update program on database.
  *
- * @param program program to store on database.
+ * @param program element to update on database.
  * @param onSuccess function to execute when operation is successful.
  * @param onError function to execute when operation fails.
  */
 export function updateDocProgram(
-  user: Program,
+  program: Program,
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
-  const { uid: docId, ...programObj } = user;
-  programObj.lastUpdated = new Date();
+  const { uid, ...programObj } = flattenProgram(program);
+  const docId = program.uid;
   if (docId)
     doUpdateDoc(programsCollection, docId, programObj, {
       addUserId: true,
@@ -438,4 +476,39 @@ export function updateDocProgram(
       onError: onError,
     });
   else onError?.();
+}
+
+/**
+ * Flatten a program to avoid nested class instances
+ *
+ * @param program instance to flatten.
+ * @returns flattened program.
+ */
+function flattenProgram(program: Program) {
+  const { programExercises, coach, athlete, ...programObj } = program;
+  const flatProgram = {
+    ...programObj,
+    coachId: program.coach?.uid,
+    athleteId: program.athlete?.uid,
+    lines: program.programExercises?.reduce(
+      (out: object[], exerciseToSpread) => {
+        const { program, exerciseVariant, lines, ...exerciseObj } =
+          exerciseToSpread;
+        const flatExercise = {
+          ...exerciseObj,
+          exercise: exerciseToSpread.exerciseVariant?.uid,
+        };
+        return [
+          ...out,
+          ...(exerciseToSpread.lines?.map((lineToSpread) => {
+            const { uid, programExercise, ...lineObj } = lineToSpread;
+            return { ...flatExercise, ...lineObj };
+          }) || []),
+        ];
+      },
+      [],
+    ),
+  };
+
+  return flatProgram;
 }

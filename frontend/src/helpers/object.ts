@@ -4,7 +4,7 @@
  * @param obj object that shall be filtered.
  * @returns filtered version of the object.
  */
-export function filterOutUndefined(obj: { [key: string]: any }) {
+export function objectFilterOutUndefined(obj: { [key: string]: any }) {
   const ret: { [key: string]: any } = {};
   Object.keys(obj)
     .filter((key) => obj[key] !== undefined)
@@ -22,7 +22,7 @@ export function objectAssignNotUndefined(
   objA: { [key: string]: any },
   objB: { [key: string]: any },
 ) {
-  Object.assign(objA, filterOutUndefined(objB));
+  Object.assign(objA, objectFilterOutUndefined(objB));
 }
 
 /**
@@ -73,4 +73,25 @@ export function objectPop<T extends object>(obj: T, key?: keyof T) {
   const val = obj[popKey];
   delete obj[popKey];
   return val;
+}
+
+/**
+ * Deep compare two objects, including keys order.
+ *
+ * @param objA first object to compare.
+ * @param objB second object to compare.
+ * @returns value associated to just popped key.
+ */
+export function objectDeepCompare(objA: object, objB: object) {
+  return JSON.stringify(objA) === JSON.stringify(objB);
+}
+
+/**
+ * Create a deep copy of an object.
+ *
+ * @param obj object to copy.
+ * @returns copied object.
+ */
+export function objectDeepCopy<T extends object>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj));
 }

@@ -410,8 +410,8 @@ export function addDocExerciseVariant(
   doAddDoc(exercisesCollection, extendedVariantObj, {
     addUserId: true,
     onSuccess: (docRef: DocumentReference) => {
-      onSuccess?.(docRef);
       exerciseVariant.uid = docRef.id;
+      onSuccess?.(docRef);
     },
     onError: onError,
   });

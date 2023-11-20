@@ -215,7 +215,12 @@ import {
 } from "@/helpers/programs/program";
 import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
-import { objectMapKeys, objectMapValues } from "@/helpers/object";
+import {
+  objectDeepCompare,
+  objectDeepCopy,
+  objectMapKeys,
+  objectMapValues,
+} from "@/helpers/object";
 
 // Init plugin
 const $q = useQuasar();
@@ -242,7 +247,7 @@ const emits = defineEmits(["update:program", "update:saved"]);
 
 // Set useful values
 const sepWekDay = ".";
-const changes: any[] = [];
+const changes = ref<any[]>([]);
 const storeChangesMethods: {
   [key: string]: Function;
 } = {};
@@ -252,6 +257,14 @@ const tableElements = ref<{
   [key: string]: HTMLElement | any;
 }>({});
 const exercisesValues = ref<{
+  [key: string]: {
+    data: { [key: string]: any }[];
+    exercise: string | undefined;
+    variant: string | undefined;
+    note: string | undefined;
+  };
+}>({});
+const exercisesValuesLast = ref<{
   [key: string]: {
     data: { [key: string]: any }[];
     exercise: string | undefined;
@@ -349,8 +362,13 @@ watch(
 // Store changes upon data change
 watch(
   exercisesValues,
-  (newValue, oldValue) => storeChanges("", newValue, oldValue),
-  { deep: true },
+  (newValue) => {
+    if (!objectDeepCompare(newValue, exercisesValuesLast.value))
+      storeChanges("main", newValue);
+  },
+  {
+    deep: true,
+  },
 );
 
 // Reorder exercises upon update
@@ -372,7 +390,7 @@ watch(
  */
 function resetTableData() {
   // Epmty changes
-  changes.length = 0;
+  changes.value.length = 0;
 
   // Delete previously stored values
   exercisesValues.value = {};
@@ -636,15 +654,15 @@ function getDayDisplayName(dayId: string | number, split: boolean = false) {
  * Define debounce method for each table to store changes.
  *
  * @param key id of the exercise that is being updated.
- * @param changeType type of data being updated.
  * @param changeData actual data value.
  */
-function storeChanges(key: string, changeDataTo: any, changeDataFrom: any) {
+function storeChanges(key: string, changeData: any) {
   if (!(key in storeChangesMethods))
-    storeChangesMethods[key] = debounce((newValue: any, oldValue: any) => {
-      changes.push([newValue, oldValue]);
+    storeChangesMethods[key] = debounce((newValue: any) => {
+      changes.value.push({ value: objectDeepCopy(newValue) });
     }, 1000);
-  storeChangesMethods[key](changeDataTo, changeDataFrom);
+  storeChangesMethods[key](changeData);
+  exercisesValuesLast.value = objectDeepCopy(changeData);
   savedValue = false;
   emits("update:saved", savedValue);
 }
@@ -691,7 +709,7 @@ function save() {
   );
 
   // Save current instance
-  program.saveUpdate({
+  program.save({
     onSuccess: () => {
       // Inform parent of update
       savedValue = true;
