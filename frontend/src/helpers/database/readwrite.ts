@@ -42,17 +42,12 @@ export async function doAddDoc(
     onError?: Function;
   } = {},
 ) {
-  // Translate from undefined data to null
-  Object.keys(data).forEach((key) => {
-    data[key] = data[key] ?? null;
-  });
-
   // Add user ID if required
   if (addUserId) {
     const user = useUserStore();
     data = {
       ...data,
-      userId: user.uid ?? null,
+      userId: user.uid ?? undefined,
     };
   }
 
@@ -100,17 +95,12 @@ export async function doAddDocWithId(
     onError?: Function;
   } = {},
 ) {
-  // Translate from undefined data to null
-  Object.keys(data).forEach((key) => {
-    data[key] = data[key] ?? null;
-  });
-
   // Add user ID if required
   if (addUserId) {
     const user = useUserStore();
     data = {
       ...data,
-      userId: user.uid ?? null,
+      userId: user.uid ?? undefined,
     };
   }
 
@@ -159,17 +149,12 @@ export async function doUpdateDoc(
     onError?: Function;
   } = {},
 ) {
-  // Translate from undefined data to null
-  Object.keys(data).forEach((key) => {
-    data[key] = data[key] ?? null;
-  });
-
   // Add user ID if required
   if (addUserId) {
     const user = useUserStore();
     data = {
       ...data,
-      userId: user.uid ?? null,
+      userId: user.uid ?? undefined,
     };
   }
 
