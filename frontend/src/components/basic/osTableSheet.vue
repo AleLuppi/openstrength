@@ -8,7 +8,7 @@
     separator="cell"
     bordered
     :pagination="{ rowsPerPage: 0 }"
-    :hide-header="!props.headers || props.headers instanceof Array"
+    :hide-header="hideHeaders"
     :hide-bottom="true"
     row-key="row"
     @mouseup="onSelectionEnd"
@@ -48,13 +48,25 @@
             'os-td-selected': isSelected(props.row.id, col.id),
           }"
           @click="
-            if (getCellName(props.row.id, col.id) in childElements)
-              childElements[getCellName(props.row.id, col.id)]?.focus();
+            if (getCellName(props.row.id, col.id) in childElements) {
+              if (types[props.rowIndex]?.[col.name] == typesAvailable.checkbox)
+                childElements[getCellName(props.row.id, col.id)]?.toggle?.();
+              childElements[getCellName(props.row.id, col.id)]?.focus?.();
+            }
           "
           @mousedown="onSelectionStart(props.row.id, col.id)"
           @mouseover="onSelectionContinue(props.row.id, col.id)"
         >
+          <q-checkbox
+            v-if="types[props.rowIndex]?.[col.name] == typesAvailable.checkbox"
+            :ref="
+              (el) => (childElements[getCellName(props.row.id, col.id)] = el)
+            "
+            v-model="(modelValue[props.rowIndex] ?? newRow)[col.name]"
+          ></q-checkbox>
+
           <q-input
+            v-else
             :ref="
               (el) => (childElements[getCellName(props.row.id, col.id)] = el)
             "
@@ -78,10 +90,14 @@ import { ref, computed, PropType } from "vue";
 // Define props
 const props = defineProps({
   modelValue: {
-    type: Array as PropType<{ [key: string]: string }[]>,
+    type: Array as PropType<{ [key: string]: any }[]>,
     required: true,
   },
   headers: {
+    type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
+    required: false,
+  },
+  types: {
     type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
     required: false,
   },
@@ -110,9 +126,19 @@ const selected = ref<{
 }>();
 const isSelecting = ref(false);
 
+// Set constants
+const typesAvailable = {
+  input: "input",
+  checkbox: "checkbox",
+};
+
+// Set when to show headers
+const hideHeaders = computed(
+  () => !props.headers || props.headers instanceof Array,
+);
+
 // Get headers map
 const headers = computed(() => {
-  console.log(props.headers, props.headers && props.headers instanceof Object);
   if (props.headers) {
     if (props.headers instanceof Array)
       return props.headers.reduce(
@@ -132,6 +158,44 @@ const headers = computed(() => {
   );
 });
 
+// Get type map
+const types = computed(() => {
+  if (props.types) {
+    // Handle case of fixed types
+    const propsTypes = props.types;
+    return props.modelValue.map(() =>
+      Object.keys(headers.value).reduce(
+        (out: { [key: string]: string }, key, idx) => (
+          (out[key] =
+            propsTypes instanceof Array ? propsTypes[idx] : propsTypes[key]),
+          out
+        ),
+        {},
+      ),
+    );
+  } else {
+    // Handle case with unknown type
+    return props.modelValue.map((row) =>
+      Object.entries(row).reduce(
+        (out: { [key: string]: string }, [key, value]) => {
+          switch (typeof value) {
+            case "boolean":
+              out[key] = typesAvailable.checkbox;
+              break;
+            case "string":
+              out[key] = typesAvailable.input;
+              break;
+            default:
+              out[key] = typesAvailable.input;
+          }
+          return out;
+        },
+        {},
+      ),
+    );
+  }
+});
+
 // Set rows and columns
 const columns = computed(() =>
   Object.entries(headers.value).map(([key, val], index) => ({
@@ -139,6 +203,7 @@ const columns = computed(() =>
     name: key,
     field: key,
     label: val,
+    align: "center" as "center",
   })),
 );
 const rows = computed(() =>
@@ -283,7 +348,8 @@ function onCopy(clipboardEvent: ClipboardEvent) {
   for (let row = rowStart; row <= rowEnd; row++) {
     colData.length = 0;
     for (let col = colStart; col <= colEnd; col++) {
-      colData.push(props.modelValue[row][getHeaderName(col)]);
+      if (row < props.modelValue.length)
+        colData.push(props.modelValue[row][getHeaderName(col)]);
     }
     rowData.push(colData.join("\t"));
   }

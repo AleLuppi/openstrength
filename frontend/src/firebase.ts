@@ -2,7 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore, getFirestore } from "firebase/firestore";
 // Other SDKs for Firebase products at following link
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -30,4 +30,7 @@ export const analytics = getAnalytics(app);
 export const auth = getAuth(app);
 
 // Initialize Cloud Firestore and get a reference to the service
+initializeFirestore(app, {
+  ignoreUndefinedProperties: true,
+});
 export const db = getFirestore(app);

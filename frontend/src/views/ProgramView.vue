@@ -1,8 +1,22 @@
 <template>
   <q-page style="height: 0">
+    <!-- Program management card -->
+    <!-- TODO i18n -->
+    <div class="q-mx-md os-top-card shadow-5">
+      <q-btn
+        icon="save"
+        :label="programSaved ? 'Saved!' : 'changes not saved...'"
+        :disable="programSaved"
+        @click="programSaved = true"
+        flat
+      ></q-btn>
+    </div>
+
+    <!-- Program table -->
     <q-splitter
       v-model="splitterModel"
-      :limits="[50, 100]"
+      reverse
+      :limits="[0, 50]"
       style="height: 100%"
     >
       <template v-slot:before>
@@ -11,8 +25,8 @@
         <TableProgramBuilder
           :program="program"
           :exercises="coachInfo.exercises"
+          v-model:saved="programSaved"
           class="q-pa-sm"
-          cd
         ></TableProgramBuilder>
       </template>
 
@@ -233,6 +247,8 @@ const UtilsOptions = {
 
 // Set ref
 const showingUtils = ref(UtilsOptions.charts);
+const splitterModel = ref(30);
+const programSaved = ref(true);
 
 // Max lift declarations
 const searchMaxLift = ref<string>();
@@ -356,8 +372,6 @@ function onUpdateMaxLift(maxlift: MaxLift) {
 }
 
 // PROGRAMS
-// TODO
-const splitterModel = ref(70);
 
 // TODO load programs
 const program = new Program({
@@ -475,40 +489,31 @@ const program = new Program({
  * @param clickParam parameters provided by drawer on click.
  */
 function handleDrawerClick(clickParam: any) {
+  // Get preferred right view
+  let toShow = showingUtils.value;
   switch (clickParam) {
     case 0:
-      showingUtils.value = UtilsOptions.charts;
+      toShow = UtilsOptions.charts;
       break;
     case 1:
-      showingUtils.value = UtilsOptions.maxlifts;
+      toShow = UtilsOptions.maxlifts;
       break;
+  }
+
+  // Update right view or handle view size
+  if (toShow === showingUtils.value) {
+    if (splitterModel.value < 15) splitterModel.value = 30;
+    else splitterModel.value = 0;
+  } else {
+    showingUtils.value = toShow;
+    if (splitterModel.value < 15) splitterModel.value = 30;
   }
 }
 </script>
 
-<style scoped>
-.small-ref-card {
-  width: 350px;
-  height: 250px;
-}
-
-.chart-card {
-  width: 100%;
-  height: 250px;
-}
-
-.program-day-card {
-  width: 100%;
-  height: 400px;
-}
-
-.my-filter-style {
-  width: 180px;
-  padding-bottom: 32px;
-}
-
-.my-tab-panel {
-  width: 240px;
-  height: 87vh;
+<style scoped lang="scss">
+.os-top-card {
+  z-index: 1;
+  border-radius: 0 0 20px 20px;
 }
 </style>

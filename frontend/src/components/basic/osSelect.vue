@@ -2,30 +2,30 @@
   <div v-on="$attrs">
     <!-- Title -->
     <p
-      v-if="props.label"
-      class="text-input-top-label text-uppercase text-weight-medium"
+      v-if="label"
+      class="text-input-top-label text-uppercase text-weight-medium text-left"
       :class="{ 'input-required': props.required }"
       style="line-height: 1.6em"
     >
-      {{ props.label }}
+      {{ label }}
     </p>
 
     <!-- Styled input -->
     <q-select
       ref="selectElement"
-      v-bind="props"
+      v-bind="$props"
       behavior="menu"
       outlined
       dense
       :options="options"
       @filter="filter"
       :label="undefined"
-      :use-chips="props.multiple"
+      :use-chips="multiple"
       new-value-mode="add-unique"
       :rules="
-        (props.rules ?? []).concat([
+        (rules ?? []).concat([
           (val: string) =>
-            !props.required ||
+            !required ||
             Boolean(val) ||
             $t('layout.interaction.input_required'),
         ])
@@ -49,7 +49,7 @@ interface extendedInputProps extends QSelectProps {
   required?: boolean;
 }
 const props = defineProps<extendedInputProps>();
-defineEmits(["update:props.modelValue"]);
+defineEmits(["update:modelValue"]);
 
 // Define methods (expose child's)
 const selectElement = ref<QSelect>();
@@ -91,7 +91,7 @@ function filter(val: string, doneFn: Function) {
   // No input, display all options
   if (val === "") {
     doneFn(() => {
-      options.value = props.options;
+      options.value = props.options?.slice();
     });
     return;
   }
@@ -99,14 +99,18 @@ function filter(val: string, doneFn: Function) {
   // Filter according to input
   doneFn(() => {
     const inTxt = val.toLowerCase();
-    options.value = props.options?.filter((v) =>
-      v.toLowerCase().startsWith(inTxt),
-    );
+    options.value = props.options?.filter((opt) => {
+      const optVal = String(props.mapOptions ? opt.label : opt);
+      return optVal.toLowerCase().startsWith(inTxt);
+    });
     options.value?.push(
-      ...(props.options ?? []).filter(
-        (v) =>
-          v.toLowerCase().includes(inTxt) && !v.toLowerCase().startsWith(inTxt),
-      ),
+      ...(props.options ?? []).filter((opt) => {
+        const optVal = String(props.mapOptions ? opt.label : opt);
+        return (
+          optVal.toLowerCase().includes(inTxt) &&
+          !optVal.toLowerCase().startsWith(inTxt)
+        );
+      }),
     );
   });
 }
