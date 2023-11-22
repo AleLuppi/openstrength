@@ -8,18 +8,13 @@
     class="os-table-max-height"
     @row-click="$props.onUpdate"
     selection="single"
-    v-model:selected="selected"
   ></os-table>
 </template>
 
 <script setup lang="ts">
-import { PropType, computed, ref, watch } from "vue";
+import { computed, PropType } from "vue";
 import { AthleteUser } from "@/helpers/users/user";
 import { Program } from "@/helpers/programs/program";
-
-// Allow row selection from parent
-const selected = ref<{ [key: string]: any }[]>();
-watch(selected, (val) => console.log(val));
 
 // Define props
 const props = defineProps({
@@ -50,7 +45,7 @@ const columns = [
   {
     name: "name",
     required: true,
-    label: "Name",
+    label: "Name", // TODO i18n
     align: "left",
     field: (row: {
       name?: string;
@@ -62,11 +57,9 @@ const columns = [
   },
   {
     name: "program",
-    required: true,
-    label: "Program",
+    label: "Program", // TODO i18n
     align: "left",
     field: "program",
-    sortable: true,
   },
 ];
 
@@ -85,10 +78,10 @@ const rows = computed(() => {
     displayName: athlete.displayName,
     program: {
       element: "chip",
-      label: athlete.hasAssignedOngoingProgram(props.programs)
+      label: athlete.getAssignedProgram(props.programs)?.isOngoing
         ? "Ongoing"
-        : "Unassigned",
-      color: athlete.hasAssignedOngoingProgram(props.programs)
+        : "Unassigned", // TODO i18n
+      color: athlete.getAssignedProgram(props.programs)?.isOngoing
         ? "positive"
         : "negative",
     },

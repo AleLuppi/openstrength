@@ -141,7 +141,6 @@
         "update_error": "It was not possible to update the athlete, please retry",
         "remove": "Remove athlete",
         "remove_confirm": "Are you sure you want to remove { name }?"
-
       },
       "filter": {
         "all": "All",
@@ -164,19 +163,19 @@
         "height": "Height",
         "weight": "Weight",
         "note": "Note",
-        "update": "Update athlete", 
+        "update": "Update athlete",
         "program_name": "Program Name",
         "program_start": "Start Date",
         "program_finish": "End Date",
         "program_description": "Description",
         "program_update": "Update program info"
       },
-      "call_to_action":{
+      "call_to_action": {
         "title": "Create a program for",
         "subtitle": "The are no programs available at the moment, create one to start",
         "maxlift_title": "Register your athlete PRs"
       },
-      "no_selected_athlete": "Select or add an athlete to start" 
+      "no_selected_athlete": "Select or add an athlete to start"
     },
     "exercise_management": {
       "list": {
@@ -202,6 +201,7 @@
       "delete_exercise_confirm": "Are you sure you want to delete exercise \"{ exercise }\" and all related variants?",
       "delete_variant": "Delete variant",
       "delete_variant_confirm": "Are you sure you want to delete \"{ variant }\" variant from \"{ exercise }\"?",
+      "delete_variant_default_confirm": "Deleting default variant will delete exercise \"{ exercise }\" and all related variants. Do you want to proceed?",
       "delete_proceed": "Delete it",
       "default_variant": "(default)",
       "fields": {

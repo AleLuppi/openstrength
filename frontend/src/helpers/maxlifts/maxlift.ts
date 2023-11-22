@@ -117,6 +117,28 @@ export class MaxLift {
       onError: onError,
     });
   }
+
+  /**
+   * Store a new maxlift on database, or update if already exists.
+   *
+   * @param maxlift element that shall be saved or updated.
+   * @param onSuccess function to execute when operation is successful.
+   * @param onError function to execute when operation fails.
+   */
+  save({
+    maxlift,
+    onSuccess,
+    onError,
+  }: {
+    maxlift?: MaxLift;
+    onSuccess?: Function;
+    onError?: Function;
+  } = {}) {
+    const maxliftToSave = maxlift || this;
+    if (maxliftToSave.uid)
+      maxliftToSave.saveUpdate({ onSuccess: onSuccess, onError: onError });
+    else maxliftToSave.saveNew({ onSuccess: onSuccess, onError: onError });
+  }
 }
 
 /**
@@ -130,6 +152,8 @@ export function addDocMaxLift(
   maxlift: MaxLift,
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
+  maxlift.createdOn = new Date();
+  maxlift.lastUpdated = new Date();
   const { uid: _, ...maxliftObj } = maxlift;
   doAddDoc(maxliftsCollection, maxliftObj, {
     addUserId: true,
@@ -149,10 +173,11 @@ export function addDocMaxLift(
  * @param onError function to execute when operation fails.
  */
 export function updateDocMaxLift(
-  user: MaxLift,
+  maxlift: MaxLift,
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
-  const { uid: docId, ...maxliftObj } = user;
+  maxlift.lastUpdated = new Date();
+  const { uid: docId, ...maxliftObj } = maxlift;
   maxliftObj.lastUpdated = new Date();
   if (docId)
     doUpdateDoc(maxliftsCollection, docId, maxliftObj, {

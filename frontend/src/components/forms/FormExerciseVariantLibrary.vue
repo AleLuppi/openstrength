@@ -16,7 +16,8 @@
               true,
             ) || $t('coach.exercise_management.add_variant_already_exists'),
         ]"
-        :disable="isDefaultVariant"
+        :disable="variant.isDefault"
+        required
         class="col-12"
       >
         <template v-slot:before>
@@ -111,8 +112,6 @@ const props = defineProps({
   },
 });
 
-const isDefaultVariant = computed(() => props.variant.isDefault === true);
-
 // Set expose
 defineExpose({
   focus: () => formElement.value?.focus(),
@@ -136,7 +135,9 @@ const variantDescription = ref<string>();
 watch(
   props.variant,
   (variant: ExerciseVariant) => {
-    variantName.value = variant.name;
+    variantName.value = variant.isDefault
+      ? i18n.t("coach.exercise_management.default_variant")
+      : variant.name;
     variantMuscleGroups.value = variant.muscleGroups;
     variantLoadType.value = variant.loadType;
     variantEquipment.value = variant.equipment;
@@ -198,7 +199,7 @@ function onSubmit() {
 }
 
 /**
- * Perform operations on form submit.
+ * Perform operations on form reset.
  */
 function onReset() {
   variantName.value = undefined;

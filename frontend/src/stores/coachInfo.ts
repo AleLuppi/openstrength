@@ -193,7 +193,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
 
     // TODO check documents format
     // Get documents
-    doGetDocs(programsCollection, [["userId", "==", coachId]], {
+    doGetDocs(programsCollection, [["coachId", "==", coachId]], {
       onSuccess: (docs: { [key: string]: Program }) => {
         const programsFromDoc: Program[] = [];
         Object.entries(docs).forEach(([uid, doc]) =>
@@ -234,7 +234,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
 
     // TODO check documents format
     // Get documents
-    doGetDocs(maxliftsCollection, [["userId", "==", coachId]], {
+    doGetDocs(maxliftsCollection, [["coachId", "==", coachId]], {
       onSuccess: (docs: { [key: string]: MaxLiftProps }) => {
         const maxliftsFromDoc: MaxLift[] = [];
         Object.entries(docs).forEach(([uid, doc]) =>

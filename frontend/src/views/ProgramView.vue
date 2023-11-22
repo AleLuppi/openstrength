@@ -21,7 +21,6 @@
     >
       <template v-slot:before>
         <!-- Show table to build program on the left -->
-        <h6>Program uid {{ programIdFromRouter }}</h6>
         <TableProgramBuilder
           :program="program"
           :exercises="coachInfo.exercises"
@@ -237,6 +236,8 @@ const route = useRoute();
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
+// TODO
+// eslint-disable-next-line
 const programIdFromRouter = computed(() => route.params.programId);
 
 // Set constants

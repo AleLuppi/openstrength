@@ -120,6 +120,7 @@
             class="q-gutter-x-xs"
             style="height: calc(100vh - 38px)"
           >
+            <!-- TODO i18n -->
             <h6>Athlete Info</h6>
             <q-tabs
               @update:model-value="onTabChange"
@@ -144,7 +145,7 @@
                 <div v-if="selectedAthlete && Boolean(athleteCurrentProgram)">
                   <FormAthleteProgramInfo
                     ref="athleteProgramFormElement"
-                    :program="athleteCurrentProgram ?? new Program()"
+                    :program="athleteFormProgram"
                   />
                 </div>
 
@@ -250,7 +251,7 @@
                   <!-- Dialog to add a new max lift -->
                   <q-dialog
                     v-model="showMaxLiftAddDialog"
-                    @hide="updatingMaxLift ? clearMaxLift() : {}"
+                    @hide="maxliftFormElement?.reset"
                   >
                     <q-card class="q-pa-sm dialog-min-width">
                       <q-card-section class="row items-center q-pb-none">
@@ -273,102 +274,12 @@
                         />
                       </q-card-section>
 
-                      <q-form
-                        @submit="
-                          updatingMaxLift ? updateMaxLift() : createMaxLift()
-                        "
-                        @reset="clearMaxLift"
-                        class="q-my-md q-gutter-sm column"
-                      >
-                        <q-card-section class="q-gutter-x-xs">
-                          <os-select
-                            v-model="selectedExercise"
-                            :label="
-                              $t('coach.maxlift_management.fields.exercise')
-                            "
-                            :options="
-                              exercises.map((exercise) => exercise.name)
-                            "
-                            emit-value
-                            map-options
-                            dense
-                          >
-                          </os-select>
-
-                          <!-- TYPE -->
-                          <os-select
-                            v-model="maxliftType"
-                            :label="$t('coach.maxlift_management.fields.type')"
-                            use-input
-                            :options="availableMaxLiftTypes"
-                            emit-value
-                            map-options
-                            class="col-12"
-                          />
-
-                          <!-- VALUE -->
-                          <os-input
-                            v-model="maxliftValue"
-                            :suffix="maxliftValueSuffix"
-                            :label="$t('coach.maxlift_management.fields.value')"
-                          ></os-input>
-
-                          <p
-                            class="text-input-top-label text-uppercase text-weight-medium text-left"
-                            style="line-height: 1.6em"
-                          >
-                            {{ i18n.t("coach.maxlift_management.fields.date") }}
-                          </p>
-                          <q-input
-                            outlined
-                            dense
-                            v-model="maxliftDate"
-                            mask="date"
-                            :rules="['date']"
-                          >
-                            <template v-slot:append>
-                              <q-icon name="event" class="cursor-pointer">
-                                <q-popup-proxy
-                                  cover
-                                  transition-show="scale"
-                                  transition-hide="scale"
-                                >
-                                  <q-date v-model="maxliftDate">
-                                    <div class="row items-center justify-end">
-                                      <q-btn
-                                        v-close-popup
-                                        label="Close"
-                                        color="primary"
-                                        flat
-                                      />
-                                    </div>
-                                  </q-date>
-                                </q-popup-proxy>
-                              </q-icon>
-                            </template>
-                          </q-input>
-                        </q-card-section>
-
-                        <q-card-actions align="right">
-                          <q-btn
-                            flat
-                            :label="$t('common.cancel')"
-                            type="reset"
-                          />
-                          <q-btn
-                            :label="
-                              updatingMaxLift
-                                ? $t(
-                                    'coach.maxlift_management.list.update_proceed',
-                                  )
-                                : $t(
-                                    'coach.maxlift_management.list.add_proceed',
-                                  )
-                            "
-                            type="submit"
-                          />
-                        </q-card-actions>
-                      </q-form>
+                      <FormMaxLift
+                        ref="maxliftFormElement"
+                        :maxlift="maxlift"
+                        :exercises="exercises"
+                        :on-submit="createMaxLift"
+                      ></FormMaxLift>
                     </q-card>
                   </q-dialog>
                 </q-card>
@@ -410,8 +321,9 @@ import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
 import FormAthleteAnagraphicInfo from "@/components/forms/FormAthleteAnagraphicInfo.vue";
 import FormAthleteProgramInfo from "@/components/forms/FormAthleteProgramInfo.vue";
 import { Program } from "@/helpers/programs/program";
-import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import { Exercise } from "@/helpers/exercises/exercise";
+import FormMaxLift from "@/components/forms/FormMaxLift.vue";
 
 // Init plugin
 const $q = useQuasar();
@@ -421,7 +333,7 @@ const i18n = useI18n();
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
-// Set ref for tab navigation
+// Set tab navigation info
 const allTabs = [
   {
     key: "programs",
@@ -450,6 +362,7 @@ const selectedAthlete = ref<AthleteUser>(); // athlete that is currently selecte
 const athleteTableElement = ref<typeof TableManagedAthletes>();
 const athleteFormElement = ref<typeof FormAthleteAnagraphicInfo>();
 const athleteProgramFormElement = ref<typeof FormAthleteProgramInfo>();
+const maxliftFormElement = ref<typeof FormMaxLift>();
 
 const selectedTab = ref("Programs"); // TODO main tab to show
 const showAthleteDialog = ref(false); // whether to show dialog to add athlete
@@ -466,10 +379,7 @@ const showMaxLiftAddDialog = ref(false);
 
 const selectedExercise = ref<Exercise | undefined>();
 
-const maxliftType = ref<MaxLiftType>(); // TODO check
-const availableMaxLiftTypes: string[] = Object.values(MaxLiftType);
-const maxliftValue = ref(""); // TODO check
-const maxliftDate = ref<Date>(); // TODO check
+const maxlift = computed<MaxLift>(() => updatingMaxLift.value ?? new MaxLift());
 
 // Get coach info
 const athletes = computed(() => coachInfo.athletes || []);
@@ -485,31 +395,19 @@ watch(selectedAthlete, (athlete) =>
 );
 
 // Get all programs for the selected athlete
-const athletePrograms = programs.value.filter(
-  (program: Program) =>
-    program.athleteId === selectedAthlete.value?.uid &&
-    program.coachId === selectedAthlete.value?.coachId,
+const athletePrograms = computed(
+  () => selectedAthlete.value?.getAllAssignedPrograms(programs.value),
 );
 
 // Get active current program for the selected athlete
-const athleteCurrentProgram = computed(() =>
-  programs.value.find(
-    (program: Program) =>
-      program.athleteId === selectedAthlete.value?.uid &&
-      program.coachId === selectedAthlete.value?.coachId &&
-      program.isOngoing,
-  ),
+const athleteCurrentProgram = computed(
+  () => selectedAthlete.value?.getAssignedProgram(programs.value),
 );
 
-/* const athleteCurrentProgram = new Program({
-  uid: "fsSAG899kjbsa92n",
-  name: "Program name",
-  description: "questa è la descrizione",
-  startedOn: new Date(2023, 4, 7),
-  finishedOn: new Date(2023, 5, 8),
-  lastUpdated: new Date(2023, 5, 8),
-  isOngoing: true,
-}); */
+// Get a program to initialize form
+const athleteFormProgram = computed(
+  () => athleteCurrentProgram.value ?? new Program(),
+);
 
 // Get maxlifts for the selected athlete
 const athleteMaxlifts = computed(() =>
@@ -520,32 +418,10 @@ const athleteMaxlifts = computed(() =>
   ),
 );
 
-const maxliftValueSuffix = computed(() => {
-  if (maxliftType.value === MaxLiftType._1RM) {
-    return "kg";
-  } else if (maxliftType.value === MaxLiftType._3RM) {
-    return "kg";
-  } else if (maxliftType.value === MaxLiftType._5RM) {
-    return "kg";
-  } else if (maxliftType.value === MaxLiftType._6RM) {
-    return "kg";
-  } else if (maxliftType.value === MaxLiftType._8RM) {
-    return "kg";
-  } else if (maxliftType.value === MaxLiftType._10RM) {
-    return "kg";
-  } else if (maxliftType.value === MaxLiftType._maxrep) {
-    return "reps";
-  } else if (maxliftType.value === MaxLiftType._maxtime) {
-    return "s";
-  } else {
-    return ""; //
-  }
-});
-
 /** TODO check
  * Allow tab navigation
  */
-function onTabChange(tab) {
+function onTabChange(tab: string) {
   selectedTab.value = tab;
 }
 
@@ -553,62 +429,33 @@ function onTabChange(tab) {
  * Create a new maxlift and assign to a coach
  */
 function createMaxLift() {
-  const newMaxLift = new MaxLift({
-    exercise: selectedExercise.value,
-    type: maxliftType.value,
-    value: maxliftValue.value,
-    lastUpdated: maxliftDate.value,
-    athleteId: selectedAthlete.value?.uid,
-    coachId: user.uid,
-  });
-  newMaxLift.saveNew({
+  // Get current maxlift and check if already instanciated on db
+  const newMaxLift = maxlift.value;
+  const isNew = Boolean(newMaxLift.uid);
+
+  // Update values
+  if (isNew) {
+    newMaxLift.athleteId = selectedAthlete.value?.uid;
+    newMaxLift.coachId = user.uid;
+  }
+
+  // Save results
+  newMaxLift.save({
     onSuccess: () => {
-      (coachInfo.maxlifts = coachInfo.maxlifts || []).push(newMaxLift);
-      clearMaxLift();
+      if (isNew)
+        (coachInfo.maxlifts = coachInfo.maxlifts || []).push(newMaxLift);
+      maxliftFormElement.value?.reset();
     },
     onError: () =>
       $q.notify({
         type: "negative",
-        message: i18n.t("coach.maxlift_management.list.add_error"),
+        message: i18n.t(
+          "coach.maxlift_management.list." +
+            (isNew ? "add_error" : "update_error"),
+        ),
         position: "bottom",
       }),
   });
-  showMaxLiftAddDialog.value = false;
-}
-
-/** TODO check
- * Update maxlift according to inserted values.
- */
-function updateMaxLift() {
-  if (updatingMaxLift.value) {
-    updatingMaxLift.value.exercise = selectedExercise.value;
-    updatingMaxLift.value.type = maxliftType.value;
-    updatingMaxLift.value.value = maxliftValue.value;
-    updatingMaxLift.value.lastUpdated = maxliftDate.value;
-    updatingMaxLift.value.saveUpdate({
-      onSuccess: () => {
-        clearMaxLift();
-      },
-      onError: () =>
-        $q.notify({
-          type: "negative",
-          message: i18n.t("coach.maxlift_management.list.update_error"),
-          position: "bottom",
-        }),
-    });
-    showMaxLiftAddDialog.value = false;
-  }
-}
-
-/** TODO check
- * Clear values in maxlift insertion form.
- */
-function clearMaxLift() {
-  selectedExercise.value = undefined;
-  maxliftType.value = undefined;
-  maxliftValue.value = "";
-  maxliftDate.value = undefined;
-
   showMaxLiftAddDialog.value = false;
 }
 
@@ -621,9 +468,6 @@ function onUpdateMaxLift(maxlift: MaxLift) {
   updatingMaxLift.value = maxlift;
   showMaxLiftAddDialog.value = true;
   selectedExercise.value = maxlift.exercise ?? undefined;
-  maxliftType.value = maxlift.type ?? undefined;
-  maxliftValue.value = maxlift.value ?? "";
-  maxliftDate.value = maxlift.lastUpdated ?? undefined;
 }
 
 /**

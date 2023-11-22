@@ -8,7 +8,7 @@ import {
   changeDocId,
 } from "@/helpers/database/readwrite";
 import { usersCollection } from "@/helpers/database/collections";
-import { Program } from "../programs/program";
+import { Program } from "@/helpers/programs/program";
 
 /**
  * Define available user roles.
@@ -78,20 +78,19 @@ export type CoachUserProps = UserProps & {
  * Athlete user properties.
  */
 export type AthleteUserProps = UserProps & {
-  // Coach-related specific
+  // Coach-related info
   coachId?: string;
   coachNote?: string;
   coaches?: string[];
   coachesFrom?: (Date | null)[];
   coachesTo?: (Date | null)[];
 
-  // Athlete-related specific
+  // Workout-related info
   height?: string;
   weight?: string;
 
   // Computed info
-  hasAssignedProgram?: boolean;
-  hasAssignedOngoingProgram?: boolean;
+  getAssignedProgram?: boolean;
 };
 
 /**
@@ -228,38 +227,49 @@ export class CoachUser extends User {
  * @public
  */
 export class AthleteUser extends User {
-  // Coach-related specific
+  // Coach-related info
   coachId?: string;
   coachNote?: string;
   coaches?: string[];
   coachesFrom?: (Date | null)[];
   coachesTo?: (Date | null)[];
 
-  // Athlete-related specific
+  // Workout-related info
   height?: string;
   weight?: string;
 
   // Computed property
-  // Check if the athlete has an assigned program
-  public hasAssignedProgram(programs: Program[]): boolean {
-    return Boolean(
-      programs.some(
-        (program) =>
-          program.coachId === this.coachId && program.athleteId === this.uid,
-      ),
+  // Retrieve all programs ever assigned to athlete
+  public getAllAssignedPrograms(programs: Program[]) {
+    return programs.filter(
+      (program) =>
+        program.coachId === this.coachId && program.athleteId === this.uid,
     );
   }
 
-  // Check if the athlete has an assigned ongoing program
-  public hasAssignedOngoingProgram(programs: Program[]): boolean {
-    return Boolean(
-      programs.some(
-        (program) =>
-          program.coachId === this.coachId &&
-          program.athleteId === this.uid &&
-          program.isOngoing === true,
-      ),
-    );
+  // Retrieve most recent program assigned to athlete
+  public getAssignedProgram(programs: Program[]) {
+    const allPrograms = this.getAllAssignedPrograms(programs);
+
+    // Check for ongoing program
+    const ongoingProgram = allPrograms.find((program) => program.isOngoing);
+    if (ongoingProgram) return ongoingProgram;
+
+    // If no ongoing program, get most recent program
+    return allPrograms
+      .sort((programA, programB) => {
+        if (programA.startedOn === undefined)
+          if (programB.startedOn === undefined) return 0;
+          else return 1;
+        if (
+          programB.startedOn === undefined ||
+          programA.startedOn > programB.startedOn
+        )
+          return -1;
+        if (programA.startedOn < programB.startedOn) return 1;
+        return 0;
+      })
+      .at(0);
   }
 
   constructor({

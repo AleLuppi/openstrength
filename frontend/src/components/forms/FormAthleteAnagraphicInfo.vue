@@ -84,7 +84,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, PropType, readonly } from "vue";
 import { useI18n } from "vue-i18n";
-import type QForm from "quasar";
+import type { QForm } from "quasar";
 import { useQuasar } from "quasar";
 import { AthleteUser, UserGender } from "@/helpers/users/user";
 

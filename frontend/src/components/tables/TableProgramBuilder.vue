@@ -190,6 +190,7 @@
           rounded
           unelevated
         />
+        <!-- TODO @click add day -->
         <q-btn
           icon="add"
           label="Day"

@@ -2,6 +2,7 @@
   <q-form ref="formElement" @submit="onSubmit">
     <!-- Actual programs -->
     <div>
+      <!-- TODO i18n -->
       <h6>Active Program</h6>
       <div class="q-mb-md">
         <q-btn
@@ -84,7 +85,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import type QForm from "quasar";
+import type { QForm } from "quasar";
 import { useQuasar } from "quasar";
 import { Program } from "@/helpers/programs/program";
 
