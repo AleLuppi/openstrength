@@ -8,6 +8,7 @@ import {
   changeDocId,
 } from "@/helpers/database/readwrite";
 import { usersCollection } from "@/helpers/database/collections";
+import { Program } from "@/helpers/programs/program";
 
 /**
  * Define available user roles.
@@ -17,6 +18,14 @@ export enum UserRole {
   coach = "coach",
   athlete = "athlete",
   unknown = "unknown",
+}
+
+/**
+ * Define available user gender.
+ */
+export enum UserGender {
+  male = "male",
+  female = "female",
 }
 
 /**
@@ -37,6 +46,7 @@ export type UserProps = {
   name?: string;
   surname?: string;
   middlename?: string;
+  gender?: UserGender;
   birthday?: Date;
   address?: string;
 
@@ -68,12 +78,19 @@ export type CoachUserProps = UserProps & {
  * Athlete user properties.
  */
 export type AthleteUserProps = UserProps & {
-  // Coach-related specific
+  // Coach-related info
   coachId?: string;
   coachNote?: string;
   coaches?: string[];
   coachesFrom?: (Date | null)[];
   coachesTo?: (Date | null)[];
+
+  // Workout-related info
+  height?: string;
+  weight?: string;
+
+  // Computed info
+  getAssignedProgram?: boolean;
 };
 
 /**
@@ -96,6 +113,7 @@ export class User {
   name?: string;
   surname?: string;
   middlename?: string;
+  gender?: UserGender;
   birthday?: Date;
   address?: string;
 
@@ -125,6 +143,7 @@ export class User {
     name,
     surname,
     middlename,
+    gender,
     birthday,
     address,
     createdOn,
@@ -140,9 +159,11 @@ export class User {
     this.displayName = displayName;
     this.photoUrl = photoUrl;
     this.phoneNumber = phoneNumber;
+    this.emailVerified = emailVerified;
     this.name = name;
     this.surname = surname;
     this.middlename = middlename;
+    this.gender = gender;
     this.birthday = birthday;
     this.address = address;
     this.createdOn = createdOn;
@@ -206,12 +227,50 @@ export class CoachUser extends User {
  * @public
  */
 export class AthleteUser extends User {
-  // Coach-related specific
+  // Coach-related info
   coachId?: string;
   coachNote?: string;
   coaches?: string[];
   coachesFrom?: (Date | null)[];
   coachesTo?: (Date | null)[];
+
+  // Workout-related info
+  height?: string;
+  weight?: string;
+
+  // Computed property
+  // Retrieve all programs ever assigned to athlete
+  public getAllAssignedPrograms(programs: Program[]) {
+    return programs.filter(
+      (program) =>
+        program.coachId === this.coachId && program.athleteId === this.uid,
+    );
+  }
+
+  // Retrieve most recent program assigned to athlete
+  public getAssignedProgram(programs: Program[]) {
+    const allPrograms = this.getAllAssignedPrograms(programs);
+
+    // Check for ongoing program
+    const ongoingProgram = allPrograms.find((program) => program.isOngoing);
+    if (ongoingProgram) return ongoingProgram;
+
+    // If no ongoing program, get most recent program
+    return allPrograms
+      .sort((programA, programB) => {
+        if (programA.startedOn === undefined)
+          if (programB.startedOn === undefined) return 0;
+          else return 1;
+        if (
+          programB.startedOn === undefined ||
+          programA.startedOn > programB.startedOn
+        )
+          return -1;
+        if (programA.startedOn < programB.startedOn) return 1;
+        return 0;
+      })
+      .at(0);
+  }
 
   constructor({
     coachId,
@@ -219,6 +278,8 @@ export class AthleteUser extends User {
     coaches,
     coachesFrom,
     coachesTo,
+    height,
+    weight,
     ...props
   }: AthleteUserProps = {}) {
     // Set super properties
@@ -231,6 +292,8 @@ export class AthleteUser extends User {
     this.coaches = coaches;
     this.coachesFrom = coachesFrom;
     this.coachesTo = coachesTo;
+    this.height = height;
+    this.weight = weight;
   }
 }
 

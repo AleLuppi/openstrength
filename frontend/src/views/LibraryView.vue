@@ -186,6 +186,13 @@
                     ? $t("coach.exercise_management.delete_exercise_confirm", {
                         exercise: deletingExercise?.name,
                       })
+                    : deletingVariant?.isDefault
+                    ? $t(
+                        "coach.exercise_management.delete_variant_default_confirm",
+                        {
+                          exercise: deletingVariant?.exercise?.name,
+                        },
+                      )
                     : $t("coach.exercise_management.delete_variant_confirm", {
                         variant: deletingVariant?.name,
                         exercise: deletingVariant?.exercise?.name,
@@ -503,6 +510,7 @@ function onNewVariant() {
   clearVariant();
   addingNewVariant.value = true;
   selectedVariant.value = new ExerciseVariant({
+    name: i18n.t("coach.exercise_management.fields.variant"),
     exercise: selectedExercise.value,
     loadType: selectedExercise.value?.defaultVariant?.loadType,
     muscleGroups: selectedExercise.value?.defaultVariant?.muscleGroups,
@@ -608,6 +616,13 @@ function deleteExercise(exercise: Exercise) {
  * @param variant element that shall be removed.
  */
 function deleteVariant(variant: ExerciseVariant) {
+  // Delete exercise if default variant is being removed
+  if (variant.isDefault) {
+    if (variant.exercise) deleteExercise(variant.exercise);
+    return;
+  }
+
+  // Delete variant
   variant.remove({
     onSuccess: () => {
       if (variant.exercise)

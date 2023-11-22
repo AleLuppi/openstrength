@@ -2,20 +2,28 @@
   <os-table
     :columns="columns"
     :rows="rows"
+    row-key="rowId"
     virtual-scroll
     hide-pagination
     class="os-table-max-height"
+    @row-click="$props.onUpdate"
+    selection="single"
   ></os-table>
 </template>
 
 <script setup lang="ts">
-import { PropType, computed } from "vue";
+import { computed, PropType } from "vue";
 import { AthleteUser } from "@/helpers/users/user";
+import { Program } from "@/helpers/programs/program";
 
 // Define props
 const props = defineProps({
   athletes: {
     type: Array as PropType<AthleteUser[]>,
+    required: true,
+  },
+  programs: {
+    type: Array as PropType<Program[]>,
     required: true,
   },
   onUpdate: {
@@ -37,7 +45,7 @@ const columns = [
   {
     name: "name",
     required: true,
-    label: "Name",
+    label: "Name", // TODO i18n
     align: "left",
     field: (row: {
       name?: string;
@@ -48,12 +56,11 @@ const columns = [
     sortable: true,
   },
   {
-    name: "note",
+    name: "program",
+    label: "Program", // TODO i18n
     align: "left",
-    label: "Note",
-    field: "note",
+    field: "program",
   },
-  { name: "update", align: "center", label: "", field: "update" },
 ];
 
 // Set table rows
@@ -69,15 +76,16 @@ const rows = computed(() => {
     name: athlete.name,
     surname: athlete.surname,
     displayName: athlete.displayName,
-    note: athlete.coachNote,
-    update: {
-      element: "button",
-      on: { click: () => props.onUpdate(athlete) },
-      label: "Update",
-      rounded: true,
-      color: "button-primary",
-      outline: true,
+    program: {
+      element: "chip",
+      label: athlete.getAssignedProgram(props.programs)?.isOngoing
+        ? "Ongoing"
+        : "Unassigned", // TODO i18n
+      color: athlete.getAssignedProgram(props.programs)?.isOngoing
+        ? "positive"
+        : "negative",
     },
+    rowId: athlete.uid,
   }));
 });
 </script>

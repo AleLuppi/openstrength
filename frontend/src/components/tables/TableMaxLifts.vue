@@ -2,6 +2,7 @@
   <os-table
     :columns="columns"
     :rows="rows"
+    row-key="rowId"
     virtual-scroll
     class="os-table-max-height"
     hide-pagination
@@ -77,6 +78,7 @@ const rows = computed(() => {
       outline: true,
       color: "button-primary",
     },
+    rowId: maxlift.uid,
   }));
 });
 </script>

@@ -222,6 +222,7 @@ import { useUserStore } from "@/stores/user";
 import { Exercise } from "@/helpers/exercises/exercise";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
+import { useRoute } from "vue-router";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -229,10 +230,15 @@ defineExpose({ handleDrawerClick });
 // Use plugins
 const $q = useQuasar();
 const i18n = useI18n();
+const route = useRoute();
 
 // Get store
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
+
+// TODO
+// eslint-disable-next-line
+const programIdFromRouter = computed(() => route.params.programId);
 
 // Set constants
 const UtilsOptions = {

@@ -76,7 +76,7 @@ const routes = [
     },
   },
   {
-    path: "/program",
+    path: "/program/:programId?",
     name: "program",
     component: ProgramView,
     meta: {

@@ -243,7 +243,7 @@ export class Program {
   }
 
   /**
-   * Store a new program on database, or update id already exists.
+   * Store a new program on database, or update if already exists.
    *
    * @param program element that shall be saved or updated.
    * @param onSuccess function to execute when operation is successful.

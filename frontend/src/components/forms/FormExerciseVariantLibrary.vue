@@ -16,6 +16,8 @@
               true,
             ) || $t('coach.exercise_management.add_variant_already_exists'),
         ]"
+        :disable="variant.isDefault"
+        required
         class="col-12"
       >
         <template v-slot:before>
@@ -28,7 +30,6 @@
       <os-select
         v-model="variantMuscleGroups"
         :label="$t('coach.exercise_management.fields.musclegroups')"
-        use-input
         :options="variantMuscleGroupsOptions"
         emit-value
         map-options
@@ -48,7 +49,6 @@
       <os-select
         v-model="variantEquipment"
         :label="$t('coach.exercise_management.fields.equipment')"
-        use-input
         :options="variantEquipmentOptions"
         emit-value
         map-options
@@ -135,7 +135,9 @@ const variantDescription = ref<string>();
 watch(
   props.variant,
   (variant: ExerciseVariant) => {
-    variantName.value = variant.name;
+    variantName.value = variant.isDefault
+      ? i18n.t("coach.exercise_management.default_variant")
+      : variant.name;
     variantMuscleGroups.value = variant.muscleGroups;
     variantLoadType.value = variant.loadType;
     variantEquipment.value = variant.equipment;
@@ -197,7 +199,7 @@ function onSubmit() {
 }
 
 /**
- * Perform operations on form submit.
+ * Perform operations on form reset.
  */
 function onReset() {
   variantName.value = undefined;

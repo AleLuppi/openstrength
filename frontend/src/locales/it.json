@@ -1,13 +1,7 @@
 {
   "layout": {
     "header": {
-      "button_feedback": "feedback?"
-    },
-    "drawer": {
-      "home": "Home",
-      "home_caption": "pagina principale",
-      "library": "Libreria",
-      "library_caption": ""
+      "button_feedback": "Feedback?"
     }
   }
 }
