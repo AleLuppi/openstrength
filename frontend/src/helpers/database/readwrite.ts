@@ -22,7 +22,7 @@ import { useUserStore } from "@/stores/user";
  *
  * @param collectionName name of the collection where document shall be saved.
  * @param data data that shall be saved.
- * @param addUserId if true, store ID of user making write request in new document.
+ * @param addUserId if provided, store ID of user in specified field, or under 'userId' if value true.
  * @param addCurrentTimestamp if true, store saving timestamp along with data.
  * @param onSuccess function to execute when write operation is successful.
  * @param onError function to execute when write operation fails.
@@ -36,7 +36,7 @@ export async function doAddDoc(
     onSuccess,
     onError,
   }: {
-    addUserId?: boolean;
+    addUserId?: boolean | string;
     addCurrentTimestamp?: boolean;
     onSuccess?: Function;
     onError?: Function;
@@ -47,7 +47,7 @@ export async function doAddDoc(
     const user = useUserStore();
     data = {
       ...data,
-      userId: user.uid ?? undefined,
+      [addUserId === true ? "userId" : addUserId]: user.uid ?? undefined,
     };
   }
 
@@ -74,7 +74,7 @@ export async function doAddDoc(
  * @param collectionName name of the collection where document shall be saved.
  * @param docId specific ID to use to create the new document.
  * @param data data that shall be saved.
- * @param addUserId if true, store ID of user making write request in new document.
+ * @param addUserId if provided, store ID of user in specified field, or under 'userId' if value true.
  * @param addCurrentTimestamp if true, store saving timestamp along with data.
  * @param onSuccess function to execute when write operation is successful.
  * @param onError function to execute when write operation fails.
@@ -89,7 +89,7 @@ export async function doAddDocWithId(
     onSuccess,
     onError,
   }: {
-    addUserId?: boolean;
+    addUserId?: boolean | string;
     addCurrentTimestamp?: boolean;
     onSuccess?: Function;
     onError?: Function;
@@ -100,7 +100,7 @@ export async function doAddDocWithId(
     const user = useUserStore();
     data = {
       ...data,
-      userId: user.uid ?? undefined,
+      [addUserId === true ? "userId" : addUserId]: user.uid ?? undefined,
     };
   }
 
@@ -128,7 +128,7 @@ export async function doAddDocWithId(
  * @param collectionName name of the collection where document shall be saved.
  * @param docId ID of the document that shall be updated.
  * @param data data that shall be saved.
- * @param addUserId if true, store ID of user making write request in new document.
+ * @param addUserId if provided, store ID of user in specified field, or under 'userId' if value true.
  * @param addCurrentTimestamp if true, store saving timestamp along with data.
  * @param onSuccess function to execute when write operation is successful.
  * @param onError function to execute when write operation fails.
@@ -143,7 +143,7 @@ export async function doUpdateDoc(
     onSuccess,
     onError,
   }: {
-    addUserId?: boolean;
+    addUserId?: boolean | string;
     addCurrentTimestamp?: boolean;
     onSuccess?: Function;
     onError?: Function;
@@ -154,7 +154,7 @@ export async function doUpdateDoc(
     const user = useUserStore();
     data = {
       ...data,
-      userId: user.uid ?? undefined,
+      [addUserId === true ? "userId" : addUserId]: user.uid ?? undefined,
     };
   }
 
