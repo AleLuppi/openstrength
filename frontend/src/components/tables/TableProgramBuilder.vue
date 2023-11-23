@@ -237,6 +237,14 @@ const props = defineProps({
     type: Array as PropType<Exercise[]>,
     default: () => [],
   },
+  filter: {
+    type: Object as PropType<{
+      week: string[];
+      day: string[];
+      exercise: string[];
+    }>,
+    default: () => ({}),
+  },
   saved: {
     type: Boolean,
     default: true,
@@ -359,6 +367,11 @@ watch(
   () => resetTableData(),
   { immediate: true },
 );
+watch(
+  () => props.filter,
+  () => resetTableData(),
+  { immediate: true },
+);
 
 // Store changes upon data change
 watch(
@@ -399,6 +412,20 @@ function resetTableData() {
   // Set new exercise values
   Object.entries(sortedProgramExercises.value).forEach(
     ([idScheduleInfo, programExercise]) => {
+      // Filter table
+      const [currWeek, currDay] = splitScheduleInfoNames(idScheduleInfo);
+      if (props.filter.week.length > 0 && !props.filter.week.includes(currWeek))
+        return;
+      if (props.filter.day.length > 0 && !props.filter.day.includes(currDay))
+        return;
+      if (
+        props.filter.exercise.length > 0 &&
+        (!programExercise.exercise?.name ||
+          !props.filter.exercise.includes(programExercise.exercise?.name))
+      )
+        return;
+
+      // Init element
       if (!exercisesValues.value[idScheduleInfo])
         exercisesValues.value[idScheduleInfo] = {
           data: [],

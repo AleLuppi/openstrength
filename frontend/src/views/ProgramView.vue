@@ -1,17 +1,5 @@
 <template>
   <q-page style="height: 0">
-    <!-- Program management card -->
-    <!-- TODO i18n -->
-    <div class="q-mx-md os-top-card shadow-5">
-      <q-btn
-        icon="save"
-        :label="programSaved ? 'Saved!' : 'changes not saved...'"
-        :disable="programSaved"
-        @click="programSaved = true"
-        flat
-      ></q-btn>
-    </div>
-
     <!-- Program table -->
     <q-splitter
       v-model="splitterModel"
@@ -20,10 +8,71 @@
       style="height: 100%"
     >
       <template v-slot:before>
+        <!-- Program management card -->
+        <!-- TODO i18n -->
+        <div class="q-mx-md q-py-sm os-top-card shadow-5">
+          <!-- Save button -->
+          <q-btn
+            icon="save"
+            :label="programSaved ? 'Saved!' : 'changes not saved...'"
+            :disable="programSaved"
+            @click="programSaved = true"
+            flat
+          ></q-btn>
+
+          <!-- Filter by week, day, exercise -->
+          <div class="row items-end justify-evenly">
+            <h6>{{ "Filter by..." }}</h6>
+            <os-select
+              v-model="filterWeek"
+              :options="
+                arrayUniqueValues(
+                  selectedProgram?.programExercises?.map((exercise) =>
+                    exercise.scheduleWeek?.toString(),
+                  ) || [],
+                )
+              "
+              label="week"
+              multiple
+              hide-bottom-space
+              class="col-3"
+            ></os-select>
+            <os-select
+              v-model="filterDay"
+              :options="
+                arrayUniqueValues(
+                  selectedProgram?.programExercises?.map((exercise) =>
+                    exercise.scheduleDay?.toString(),
+                  ) || [],
+                )
+              "
+              label="Day"
+              multiple
+              hide-bottom-space
+              class="col-3"
+            ></os-select>
+            <os-select
+              v-model="filterExercise"
+              :options="
+                arrayUniqueValues(
+                  selectedProgram?.programExercises?.map(
+                    (exercise) => exercise.exercise?.name,
+                  ) || [],
+                )
+              "
+              label="Exercise"
+              multiple
+              hide-bottom-space
+              class="col-3"
+            ></os-select>
+          </div>
+        </div>
+
         <!-- Show table to build program on the left -->
         <TableProgramBuilder
           :program="program"
           :exercises="coachInfo.exercises"
+          :filter="programFilter"
           v-model:saved="programSaved"
           class="q-pa-sm"
         ></TableProgramBuilder>
@@ -223,6 +272,7 @@ import { Exercise } from "@/helpers/exercises/exercise";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
+import { arrayUniqueValues } from "@/helpers/array";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -235,6 +285,19 @@ const route = useRoute();
 // Get store
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
+
+// Set ref
+const selectedProgram = ref<Program>();
+const filterWeek = ref<string[]>();
+const filterDay = ref<string[]>();
+const filterExercise = ref<string[]>();
+const programFilter = computed(() => ({
+  week: filterWeek.value || [],
+  day: filterDay.value || [],
+  exercise: filterExercise.value || [],
+}));
+
+// ----- TODO CHECK EVERYTHING BELOW -----
 
 // TODO
 // eslint-disable-next-line
