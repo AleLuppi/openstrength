@@ -55,7 +55,7 @@ service cloud.firestore {
     // Manage "maxlifts" collection
     match /maxlifts/{maxliftId} {
       allow read: if (userSignedIn() && (request.auth.uid == resource.data.coachId)) || userIsAdmin(); // TODO only proprietary or assigned athlete
-      allow create: if (userSignedIn() && ((getUserRole() == "coach") || (getUserRole() == "athlete"))) || userIsAdmin(); // user must be coach or athlete
+      allow create: if (userSignedIn() && (getUserRole() in ["coach", "athlete"])) || userIsAdmin(); // user must be coach or athlete
       allow update: if (userSignedIn() && (request.auth.uid == resource.data.coachId)) || userIsAdmin(); // TODO only proprietary or assigned athlete
       allow delete: if (userSignedIn() && (request.auth.uid == resource.data.coachId)) || userIsAdmin(); // only proprietary
     }
