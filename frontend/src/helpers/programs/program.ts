@@ -469,7 +469,6 @@ export function updateDocProgram(
   const docId = program.uid;
   if (docId)
     doUpdateDoc(programsCollection, docId, programObj, {
-      addUserId: true,
       onSuccess: (docRef: DocumentReference) => {
         onSuccess?.(docRef);
       },

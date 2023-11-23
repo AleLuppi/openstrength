@@ -431,7 +431,7 @@ function onTabChange(tab: string) {
 function createMaxLift() {
   // Get current maxlift and check if already instanciated on db
   const newMaxLift = maxlift.value;
-  const isNew = Boolean(newMaxLift.uid);
+  const isNew = !newMaxLift.uid;
 
   // Update values
   if (isNew) {
@@ -439,7 +439,7 @@ function createMaxLift() {
     newMaxLift.coachId = user.uid;
   }
 
-  // Save results
+  // Save maxlift
   newMaxLift.save({
     onSuccess: () => {
       if (isNew)

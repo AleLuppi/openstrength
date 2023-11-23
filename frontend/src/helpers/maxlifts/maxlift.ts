@@ -89,8 +89,14 @@ export class MaxLift {
     this.isCurrent = isCurrent;
   }
 
+  /**
+   * Store a new maxlift on database.
+   *
+   * @param maxlift element that shall be stored.
+   * @param onSuccess function to execute when operation is successful.
+   * @param onError function to execute when operation fails.
+   */
   saveNew({
-    // TODO
     maxlift,
     onSuccess,
     onError,
@@ -99,11 +105,20 @@ export class MaxLift {
     onSuccess?: Function;
     onError?: Function;
   } = {}) {
-    addDocMaxLift(maxlift || this, { onSuccess: onSuccess, onError: onError });
+    const maxliftToUpdate = maxlift || this;
+    maxliftToUpdate.createdOn = new Date();
+    maxliftToUpdate.lastUpdated = new Date();
+    addDocMaxLift(maxliftToUpdate, { onSuccess: onSuccess, onError: onError });
   }
 
+  /**
+   * Update an existing maxlift on database.
+   *
+   * @param maxlift element that shall be updated.
+   * @param onSuccess function to execute when operation is successful.
+   * @param onError function to execute when operation fails.
+   */
   saveUpdate({
-    // TODO
     maxlift,
     onSuccess,
     onError,
@@ -112,7 +127,9 @@ export class MaxLift {
     onSuccess?: Function;
     onError?: Function;
   } = {}) {
-    updateDocMaxLift(maxlift || this, {
+    const maxliftToUpdate = maxlift || this;
+    maxliftToUpdate.lastUpdated = new Date();
+    updateDocMaxLift(maxliftToUpdate, {
       onSuccess: onSuccess,
       onError: onError,
     });
@@ -152,11 +169,12 @@ export function addDocMaxLift(
   maxlift: MaxLift,
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
-  maxlift.createdOn = new Date();
-  maxlift.lastUpdated = new Date();
   const { uid: _, ...maxliftObj } = maxlift;
-  doAddDoc(maxliftsCollection, maxliftObj, {
-    addUserId: true,
+  const flatMaxliftObj = {
+    ...maxliftObj,
+    exercise: maxlift.exercise?.name,
+  };
+  doAddDoc(maxliftsCollection, flatMaxliftObj, {
     onSuccess: (docRef: DocumentReference) => {
       onSuccess?.();
       maxlift.uid = docRef.id;
@@ -176,12 +194,13 @@ export function updateDocMaxLift(
   maxlift: MaxLift,
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
-  maxlift.lastUpdated = new Date();
   const { uid: docId, ...maxliftObj } = maxlift;
-  maxliftObj.lastUpdated = new Date();
+  const flatMaxliftObj = {
+    ...maxliftObj,
+    exercise: maxlift.exercise?.name,
+  };
   if (docId)
-    doUpdateDoc(maxliftsCollection, docId, maxliftObj, {
-      addUserId: true,
+    doUpdateDoc(maxliftsCollection, docId, flatMaxliftObj, {
       onSuccess: (docRef: DocumentReference) => {
         onSuccess?.(docRef);
       },

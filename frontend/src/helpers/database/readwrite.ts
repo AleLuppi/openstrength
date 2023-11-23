@@ -13,6 +13,7 @@ import {
   limit,
   serverTimestamp,
   DocumentData,
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "@/firebase";
 import { useUserStore } from "@/stores/user";
@@ -197,7 +198,10 @@ export async function doGetDocWithID(
   // Obtain document
   const docRef = doc(db, collectionName, docId);
   await getDoc(docRef)
-    .then((documentSnapshot) => onSuccess?.(documentSnapshot.data()))
+    .then(
+      (documentSnapshot) =>
+        onSuccess?.(deepConvertTimestampToDate(documentSnapshot.data())),
+    )
     .catch((error) => {
       console.error(error);
       onError?.(error);
@@ -248,7 +252,9 @@ export async function doGetDocs(
     .then((querySnapshot) => {
       const docsData = querySnapshot.docs.reduce(
         (obj, val) =>
-          val.data() !== undefined ? { ...obj, [val.id]: val.data() } : obj,
+          val.data() !== undefined
+            ? { ...obj, [val.id]: deepConvertTimestampToDate(val.data()) }
+            : obj,
         {},
       );
       onSuccess?.(docsData);
@@ -365,4 +371,19 @@ export async function changeDocId(
       });
     },
   });
+}
+
+/**
+ * Deep convert timestamps in a nested object to dates.
+ *
+ * @param data document where timestamps may be present.
+ * @returns data with converted timestamps to date.
+ */
+function deepConvertTimestampToDate(data?: DocumentData) {
+  if (data instanceof Object)
+    Object.entries(data).forEach(([key, value]) => {
+      if (value instanceof Timestamp) data[key] = value.toDate();
+      deepConvertTimestampToDate(value);
+    });
+  return data;
 }

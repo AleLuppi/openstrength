@@ -67,9 +67,27 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
 
   // Max lifts of managed athletes
   const _maxlifts = ref<MaxLift[]>(); // private
+  const _maxliftsUnresolved = ref<[MaxLift, { [key: string]: any }][]>([]); // private
   const maxlifts = computed({
     get: () => {
       if (!_maxlifts.value) loadMaxLifts(coachId.value, true);
+      if (exercises.value && _maxliftsUnresolved.value.length > 0) {
+        _maxliftsUnresolved.value = _maxliftsUnresolved.value?.reduce(
+          (
+            updatedUnresolved: [MaxLift, { [key: string]: any }][],
+            maxliftUnresolved,
+          ) => {
+            maxliftUnresolved[0].exercise = exercises.value?.find(
+              (exercise) => exercise.name == maxliftUnresolved[1].exerciseName,
+            );
+            return [
+              ...updatedUnresolved,
+              ...(maxliftUnresolved[0].exercise ? [] : [maxliftUnresolved]),
+            ];
+          },
+          [],
+        );
+      }
       return _maxlifts.value;
     },
     set: (value) => {
@@ -232,14 +250,30 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     // Abort if there is no need to check
     if (!coachId || (quiet && maxlifts.value)) return;
 
-    // TODO check documents format
     // Get documents
     doGetDocs(maxliftsCollection, [["coachId", "==", coachId]], {
-      onSuccess: (docs: { [key: string]: MaxLiftProps }) => {
+      onSuccess: (docs: {
+        [key: string]: Omit<MaxLiftProps, "exercise"> & { exercise: string };
+      }) => {
         const maxliftsFromDoc: MaxLift[] = [];
-        Object.entries(docs).forEach(([uid, doc]) =>
-          maxliftsFromDoc.push(new MaxLift({ ...doc, uid: uid })),
-        );
+        Object.entries(docs).forEach(([uid, doc]) => {
+          const { exercise, ...docData } = doc;
+          const exerciseInstance = exercises.value?.find(
+            (exerciseFromList) => exerciseFromList.name == exercise,
+          );
+          maxliftsFromDoc.push(
+            new MaxLift({
+              ...docData,
+              uid: uid,
+              exercise: exerciseInstance,
+            }),
+          );
+          if (!exerciseInstance)
+            (_maxliftsUnresolved.value = _maxliftsUnresolved.value || []).push([
+              maxliftsFromDoc.at(-1)!,
+              { exerciseName: exercise },
+            ]);
+        });
         _maxlifts.value = maxliftsFromDoc;
         onSuccess?.(maxliftsFromDoc);
       },

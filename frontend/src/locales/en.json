@@ -275,8 +275,10 @@
         "search_maxlift": "Search...",
         "add": "Add a new max lift",
         "add_proceed": "Confirm",
+        "add_error": "Could not save max lift, please retry",
         "update": "Insert max lift info",
-        "update_proceed": "Update max lift"
+        "update_proceed": "Update max lift",
+        "update_error": "Could not update max lift, please retry"
       },
       "fields": {
         "exercise": "Exercise name",
