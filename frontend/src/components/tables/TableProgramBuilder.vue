@@ -3,7 +3,7 @@
     <!-- Program exercise element -->
     <div
       :ref="(el) => (tableElements[idScheduleInfo] = el)"
-      v-for="(exerciseModelValue, idScheduleInfo) in exercisesValues"
+      v-for="(exerciseModelValue, idScheduleInfo) in filteredExercisesValues"
       :key="idScheduleInfo"
     >
       <!-- Show week and day and allow navigation -->
@@ -217,7 +217,6 @@ import {
 import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import {
-  objectDeepCompare,
   objectDeepCopy,
   objectMapKeys,
   objectMapValues,
@@ -273,14 +272,28 @@ const exercisesValues = ref<{
     note: string | undefined;
   };
 }>({});
-const exercisesValuesLast = ref<{
-  [key: string]: {
-    data: { [key: string]: any }[];
-    exercise: string | undefined;
-    variant: string | undefined;
-    note: string | undefined;
-  };
-}>({});
+const programCurrentValue = ref<Program>();
+
+// Get a subset of tables to show according to filters
+const filteredExercisesValues = computed(() => {
+  const filteredKeys = Object.keys(exercisesValues.value).filter((key) => {
+    const [currWeek, currDay] = splitScheduleInfoNames(key);
+    const currExercise = exercisesValues.value[key].exercise;
+    if (props.filter.week.length > 0 && !props.filter.week.includes(currWeek))
+      return false;
+    if (props.filter.day.length > 0 && !props.filter.day.includes(currDay))
+      return false;
+    if (
+      props.filter.exercise.length > 0 &&
+      (!currExercise || !props.filter.exercise.includes(currExercise))
+    )
+      return false;
+    return true;
+  }, {});
+  return Object.fromEntries(
+    filteredKeys.map((key) => [key, exercisesValues.value[key]]),
+  );
+});
 
 // Extract selected exercise and variant for each table
 const selectedExercises = computed<{
@@ -364,25 +377,10 @@ const allDays = computed(() => {
 // Update data table on input change
 watch(
   () => props.program,
-  () => resetTableData(),
-  { immediate: true },
-);
-watch(
-  () => props.filter,
-  () => resetTableData(),
-  { immediate: true },
-);
-
-// Store changes upon data change
-watch(
-  exercisesValues,
-  (newValue) => {
-    if (!objectDeepCompare(newValue, exercisesValuesLast.value))
-      storeChanges("main", newValue);
+  () => {
+    if (programCurrentValue.value != props.program) resetTableData();
   },
-  {
-    deep: true,
-  },
+  { immediate: true },
 );
 
 // Reorder exercises upon update
@@ -412,19 +410,6 @@ function resetTableData() {
   // Set new exercise values
   Object.entries(sortedProgramExercises.value).forEach(
     ([idScheduleInfo, programExercise]) => {
-      // Filter table
-      const [currWeek, currDay] = splitScheduleInfoNames(idScheduleInfo);
-      if (props.filter.week.length > 0 && !props.filter.week.includes(currWeek))
-        return;
-      if (props.filter.day.length > 0 && !props.filter.day.includes(currDay))
-        return;
-      if (
-        props.filter.exercise.length > 0 &&
-        (!programExercise.exercise?.name ||
-          !props.filter.exercise.includes(programExercise.exercise?.name))
-      )
-        return;
-
       // Init element
       if (!exercisesValues.value[idScheduleInfo])
         exercisesValues.value[idScheduleInfo] = {
@@ -684,13 +669,14 @@ function getDayDisplayName(dayId: string | number, split: boolean = false) {
  * @param key id of the exercise that is being updated.
  * @param changeData actual data value.
  */
+// TODO
+// eslint-disable-next-line
 function storeChanges(key: string, changeData: any) {
   if (!(key in storeChangesMethods))
     storeChangesMethods[key] = debounce((newValue: any) => {
       changes.value.push({ value: objectDeepCopy(newValue) });
     }, 1000);
   storeChangesMethods[key](changeData);
-  exercisesValuesLast.value = objectDeepCopy(changeData);
   savedValue = false;
   emits("update:saved", savedValue);
 }
@@ -740,6 +726,7 @@ function save() {
   program.save({
     onSuccess: () => {
       // Inform parent of update
+      programCurrentValue.value = program;
       savedValue = true;
       emits("update:program", program);
       emits("update:saved", savedValue);

@@ -256,7 +256,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import {
   Program,
@@ -287,7 +287,8 @@ const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
 // Set ref
-const selectedProgram = ref<Program>();
+const selectedProgram = //ref<Program>();
+  computed(() => program.value);
 const filterWeek = ref<string[]>();
 const filterDay = ref<string[]>();
 const filterExercise = ref<string[]>();
@@ -546,6 +547,7 @@ const program = new Program({
     }),
   ],
 });
+watch(program, () => console.log("from parent"));
 
 /**
  * Handle custom right drawer click.
