@@ -5,7 +5,7 @@
  * @param sorted if true, also sort values.
  * @returns a new array with only unique values.
  */
-export function uniqueValues(array: any[], sorted: boolean = true) {
+export function arrayUniqueValues(array: any[], sorted: boolean = true) {
   const newArray = [...new Set(array)];
   if (sorted) return newArray.sort();
   return newArray;
@@ -18,6 +18,6 @@ export function uniqueValues(array: any[], sorted: boolean = true) {
  * @param arrayB second array to compare.
  * @returns true if the values inside arrays are equal, false otherwise.
  */
-export function compareArrays(arrayA: any[], arrayB: any[]) {
+export function arrayCompare(arrayA: any[], arrayB: any[]) {
   return JSON.stringify(arrayA) === JSON.stringify(arrayB);
 }

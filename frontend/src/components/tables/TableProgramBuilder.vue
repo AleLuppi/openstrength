@@ -208,7 +208,7 @@ import { ref, computed, PropType, watch } from "vue";
 import { debounce, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { scrollToElement } from "@/helpers/scroller";
-import { compareArrays, uniqueValues } from "@/helpers/array";
+import { arrayCompare, arrayUniqueValues } from "@/helpers/array";
 import {
   Program,
   ProgramExercise,
@@ -310,7 +310,7 @@ const firstTablesInDay = computed(() =>
     const keySplit = splitScheduleInfoNames(key).slice(0, 2);
     if (
       !out.some((firstInDay) =>
-        compareArrays(splitScheduleInfoNames(firstInDay).slice(0, 2), keySplit),
+        arrayCompare(splitScheduleInfoNames(firstInDay).slice(0, 2), keySplit),
       )
     )
       return [...out, key];
@@ -324,7 +324,7 @@ const lastTablesInDay = computed(() =>
       const keySplit = splitScheduleInfoNames(key).slice(0, 2);
       if (
         !out.some((firstInDay) =>
-          compareArrays(
+          arrayCompare(
             splitScheduleInfoNames(firstInDay).slice(0, 2),
             keySplit,
           ),
@@ -337,7 +337,7 @@ const lastTablesInDay = computed(() =>
 
 // Get a reference to all weeks and days available
 const allWeeks = computed(() =>
-  uniqueValues(
+  arrayUniqueValues(
     Object.keys(exercisesValues.value).map(
       (key) => splitScheduleInfoNames(key)[0],
     ),
@@ -472,7 +472,7 @@ function sortScheduleId(scheduleIds: string[]) {
  */
 function sortExerciseValues() {
   const sortedKeys = sortScheduleId(Object.keys(exercisesValues.value));
-  if (!compareArrays(sortedKeys, Object.keys(exercisesValues.value)))
+  if (!arrayCompare(sortedKeys, Object.keys(exercisesValues.value)))
     exercisesValues.value = sortedKeys.reduce(
       (out, key) => ({ ...out, [key]: exercisesValues.value[key] }),
       {},
@@ -498,12 +498,12 @@ function reorderTable(srcId: string, dstId: string) {
       const currSchedule = splitScheduleInfoNames(currId);
       const currOrder = Number(currSchedule[2]);
       if (
-        compareArrays(currSchedule.slice(0, 2), srcSchedule.slice(0, 2)) &&
+        arrayCompare(currSchedule.slice(0, 2), srcSchedule.slice(0, 2)) &&
         currOrder > srcOrder
       )
         offset -= 1;
       if (
-        compareArrays(currSchedule.slice(0, 2), dstSchedule.slice(0, 2)) &&
+        arrayCompare(currSchedule.slice(0, 2), dstSchedule.slice(0, 2)) &&
         currOrder + offset >= dstOrder
       )
         offset += 1;

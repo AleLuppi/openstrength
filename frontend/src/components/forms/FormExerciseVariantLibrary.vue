@@ -88,7 +88,7 @@ import {
   ExerciseMuscleGroups,
   ExerciseEquipment,
 } from "@/helpers/exercises/exercise";
-import { uniqueValues } from "@/helpers/array";
+import { arrayUniqueValues } from "@/helpers/array";
 
 // Init plugin
 const i18n = useI18n();
@@ -149,7 +149,7 @@ watch(
 
 // Get options for select fields
 const variantMuscleGroupsOptions = computed(() =>
-  uniqueValues(
+  arrayUniqueValues(
     Object.keys(ExerciseMuscleGroups).concat(
       props.optionsMuscleGroups ?? props.variant.muscleGroups ?? [],
     ),
@@ -171,7 +171,7 @@ const variantLoadTypeOptions = computed(() =>
     })),
 );
 const variantEquipmentOptions = computed(() =>
-  uniqueValues(
+  arrayUniqueValues(
     Object.keys(ExerciseEquipment).concat(
       props.optionsEquipment ?? props.variant.equipment ?? [],
     ),

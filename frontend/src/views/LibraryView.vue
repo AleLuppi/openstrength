@@ -345,7 +345,7 @@ import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLi
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { Program } from "@/helpers/programs/program";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
-import { uniqueValues } from "@/helpers/array";
+import { arrayUniqueValues } from "@/helpers/array";
 
 // Use plugins
 const $q = useQuasar();
@@ -395,7 +395,7 @@ const programs = computed(() => coachInfo.programs || []);
 
 // Get options to display on variant creation or update
 const exerciseMuscleGroupsOptions = computed(() => {
-  return uniqueValues(
+  return arrayUniqueValues(
     exercises.value.reduce(
       (outList, exercise) => outList.concat(exercise.muscleGroups),
       [] as string[],
@@ -403,7 +403,7 @@ const exerciseMuscleGroupsOptions = computed(() => {
   );
 });
 const exerciseEquipmentOptions = computed(() => {
-  return uniqueValues(
+  return arrayUniqueValues(
     exercises.value.reduce(
       (outList, exercise) => outList.concat(exercise.equipment),
       [] as string[],
