@@ -62,6 +62,7 @@ export type UserProps = {
   lastNotificationRead?: Date;
 
   // Computed info
+  referencename?: string;
   isSignedIn?: boolean;
 };
 
@@ -127,6 +128,11 @@ export class User {
   role: UserRole;
   lastAccess?: Date;
   lastNotificationRead?: Date;
+
+  // Get user displayable name
+  public get referenceName() {
+    return this.displayName ?? [this.name, this.surname].join(" ");
+  }
 
   // Check if user is signed in
   public get isSignedIn() {
