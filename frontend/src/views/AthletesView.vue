@@ -45,7 +45,7 @@
             ref="athletesTableElement"
             :athletes="athletes"
             :programs="programs"
-            :on-update="onAthleteSelection"
+            @selection="onAthleteSelection"
             :filter="searchAthlete"
           />
         </q-card>

@@ -6,7 +6,7 @@
     virtual-scroll
     hide-pagination
     class="os-table-max-height"
-    @row-click="$props.onUpdate"
+    @row-click="(...params: any[]) => emits('selection', ...params)"
     selection="single"
   ></os-table>
 </template>
@@ -26,12 +26,10 @@ const props = defineProps({
     type: Array as PropType<Program[]>,
     required: true,
   },
-  onUpdate: {
-    type: Function,
-    required: false,
-    default: () => {},
-  },
 });
+
+// Define emits
+const emits = defineEmits(["selection"]);
 
 // Set table columns
 const columns = [
