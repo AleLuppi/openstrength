@@ -4,6 +4,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { createPinia } from "pinia";
+import VueGtag from "vue-gtag";
 
 // Additional styling and frontend management
 import { Quasar } from "quasar";
@@ -40,7 +41,14 @@ app.component("osVariableElement", osVariableElement);
 app.component("osWrapWithLines", osWrapWithLines);
 
 // Add plugins
-app.use(router).use(createPinia()).use(i18n).use(Quasar, quasarUserOptions);
+app
+  .use(router)
+  .use(createPinia())
+  .use(i18n)
+  .use(Quasar, quasarUserOptions)
+  .use(VueGtag, {
+    config: { id: "G-G8BLW1JL0M" },
+  });
 
 // Mount the application
 app.mount("#app");
