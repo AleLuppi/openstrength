@@ -25,7 +25,7 @@
             <q-btn
               @click="showAthleteAssigningDialog = true"
               :label="selectedProgram.athlete ? undefined : 'Assign to athlete'"
-              color="secondary"
+              :color="selectedProgram.athlete ? 'secondary' : 'primary'"
               outline
               :dense="Boolean(selectedProgram.athlete)"
             >
@@ -45,6 +45,17 @@
                 <q-item-section>{{
                   selectedProgram.athlete.referenceName
                 }}</q-item-section>
+                <q-item-section thumbnail>
+                  <q-btn
+                    icon="clear"
+                    @click.stop="selectedProgram.athlete = undefined"
+                    round
+                    unelevated
+                    size="0.5em"
+                    color="red"
+                    class="q-mr-sm"
+                  />
+                </q-item-section>
               </q-item>
             </q-btn>
           </div>
@@ -297,10 +308,7 @@
     <DialogProgramAssignAthlete
       v-model="showAthleteAssigningDialog"
       :athletes="coachInfo.athletes ?? []"
-      @selection="
-        (_, row) =>
-          assignAthleteToProgram('uid' in row ? (row.uid as string) : undefined)
-      "
+      v-model:selected="selectedProgram.athlete"
     >
     </DialogProgramAssignAthlete>
   </q-page>
@@ -352,12 +360,6 @@ const programFilter = computed(() => ({
   day: filterDay.value || [],
   exercise: filterExercise.value || [],
 }));
-
-function assignAthleteToProgram(uid?: string) {
-  const athlete = coachInfo.athletes?.find((athlete) => athlete.uid === uid);
-  if (athlete) selectedProgram.value.athlete = athlete;
-  console.log(selectedProgram.value.athlete);
-}
 
 // ----- TODO CHECK EVERYTHING BELOW -----
 const visible = ref(false);

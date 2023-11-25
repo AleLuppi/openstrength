@@ -26,6 +26,8 @@
         ref="athletesTableElement"
         :athletes="athletes"
         @selection="onAthleteSelection"
+        :selected="selected"
+        @update:selected="(val) => emits('update:selected', val)"
         :filter="searchAthlete"
       />
     </q-card>
@@ -33,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref } from "vue";
+import { ref, PropType } from "vue";
 import { AthleteUser } from "@/helpers/users/user";
 import TableManagedAthletes from "../tables/TableManagedAthletes.vue";
 
@@ -47,12 +49,17 @@ defineProps({
     type: Array as PropType<AthleteUser[]>,
     required: true,
   },
+  selected: {
+    type: AthleteUser,
+    required: false,
+  },
 });
 
 // Define emits
 const emits = defineEmits<{
   "update:modelValue": [value: Boolean];
   selection: [evt: Event, row: Object, index: Number];
+  "update:selected": [value?: AthleteUser];
 }>();
 
 // Set ref

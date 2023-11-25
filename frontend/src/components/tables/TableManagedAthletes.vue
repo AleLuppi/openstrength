@@ -10,11 +10,12 @@
       (...params: [Event, Object, Number]) => emits('selection', ...params)
     "
     selection="single"
+    v-model:selected="selectedRows"
   ></os-table>
 </template>
 
 <script setup lang="ts">
-import { computed, PropType } from "vue";
+import { ref, computed, watch, PropType } from "vue";
 import { AthleteUser } from "@/helpers/users/user";
 
 // Define props
@@ -23,11 +24,16 @@ const props = defineProps({
     type: Array as PropType<AthleteUser[]>,
     required: true,
   },
+  selected: {
+    type: AthleteUser,
+    required: false,
+  },
 });
 
 // Define emits
 const emits = defineEmits<{
   selection: [evt: Event, row: Object, index: Number];
+  "update:selected": [value?: AthleteUser];
 }>();
 
 // Set table columns
@@ -85,6 +91,31 @@ const rows = computed(() => {
     },
   }));
 });
+
+// Set ref
+const selectedRows = ref<typeof rows.value>();
+
+// Update selected rows upon selected athlete change
+watch(
+  () => props.selected,
+  (selectedAthlete) => {
+    const selectedRow = rows.value.find(
+      (row) => row.uid == selectedAthlete?.uid,
+    );
+    if (selectedRow) selectedRows.value = [selectedRow];
+  },
+  { immediate: true },
+);
+
+// Update selected athlete upon selected row change
+watch(selectedRows, (value) =>
+  emits(
+    "update:selected",
+    props.athletes.find((athlete) =>
+      value && value.length > 0 ? athlete.uid === value[0].uid : undefined,
+    ),
+  ),
+);
 </script>
 
 <style scoped lang="scss">
