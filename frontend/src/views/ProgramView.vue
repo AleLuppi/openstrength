@@ -10,7 +10,7 @@
       <template v-slot:before>
         <!-- Program management card -->
         <!-- TODO i18n on whole below div -->
-        <div class="q-mx-md q-pa-sm os-top-card shadow-5">
+        <div class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest">
           <!-- Save button -->
           <div class="row justify-between">
             <q-btn
@@ -62,55 +62,57 @@
 
           <!-- Filter by week, day, exercise -->
           <q-slide-transition>
-            <div v-show="visible" class="row items-end justify-evenly">
-              <h6>{{ "Filter by..." }}</h6>
-              <os-select
-                v-model="filterWeek"
-                :options="
-                  arrayUniqueValues(
-                    selectedProgram?.programExercises?.map((exercise) =>
-                      exercise.scheduleWeek?.toString(),
-                    ) || [],
-                  )
-                "
-                label="week"
-                multiple
-                hide-bottom-space
-                class="col-3"
-              ></os-select>
-              <os-select
-                v-model="filterDay"
-                :options="
-                  arrayUniqueValues(
-                    selectedProgram?.programExercises?.map((exercise) =>
-                      exercise.scheduleDay?.toString(),
-                    ) || [],
-                  )
-                "
-                label="Day"
-                multiple
-                hide-bottom-space
-                class="col-3"
-              ></os-select>
-              <os-select
-                v-model="filterExercise"
-                :options="
-                  arrayUniqueValues(
-                    selectedProgram?.programExercises?.map(
-                      (exercise) => exercise.exercise?.name,
-                    ) || [],
-                  )
-                "
-                label="Exercise"
-                multiple
-                hide-bottom-space
-                class="col-3"
-              ></os-select>
+            <div v-show="expandedTopCard">
+              <div class="row items-end justify-evenly q-pt-md">
+                <h6>{{ "Filter by..." }}</h6>
+                <os-select
+                  v-model="filterWeek"
+                  :options="
+                    arrayUniqueValues(
+                      selectedProgram?.programExercises?.map((exercise) =>
+                        exercise.scheduleWeek?.toString(),
+                      ) || [],
+                    )
+                  "
+                  label="week"
+                  multiple
+                  hide-bottom-space
+                  class="col-3"
+                ></os-select>
+                <os-select
+                  v-model="filterDay"
+                  :options="
+                    arrayUniqueValues(
+                      selectedProgram?.programExercises?.map((exercise) =>
+                        exercise.scheduleDay?.toString(),
+                      ) || [],
+                    )
+                  "
+                  label="Day"
+                  multiple
+                  hide-bottom-space
+                  class="col-3"
+                ></os-select>
+                <os-select
+                  v-model="filterExercise"
+                  :options="
+                    arrayUniqueValues(
+                      selectedProgram?.programExercises?.map(
+                        (exercise) => exercise.exercise?.name,
+                      ) || [],
+                    )
+                  "
+                  label="Exercise"
+                  multiple
+                  hide-bottom-space
+                  class="col-3"
+                ></os-select>
+              </div>
             </div>
           </q-slide-transition>
           <q-btn
-            :icon="visible ? 'expand_less' : 'expand_more'"
-            @click="visible = !visible"
+            :icon="expandedTopCard ? 'expand_less' : 'expand_more'"
+            @click="expandedTopCard = !expandedTopCard"
             flat
             dense
             color="secondary"
@@ -315,7 +317,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import {
   Program,
@@ -353,6 +355,7 @@ const filterWeek = ref<string[]>();
 const filterDay = ref<string[]>();
 const filterExercise = ref<string[]>();
 const showAthleteAssigningDialog = ref(false);
+const expandedTopCard = ref(false);
 
 // Get complete program filter
 const programFilter = computed(() => ({
@@ -361,8 +364,12 @@ const programFilter = computed(() => ({
   exercise: filterExercise.value || [],
 }));
 
+// Define what to do on component mount
+onMounted(() => {
+  if ($q.screen.gt.sm) expandedTopCard.value = true;
+});
+
 // ----- TODO CHECK EVERYTHING BELOW -----
-const visible = ref(false);
 
 // TODO
 // eslint-disable-next-line
@@ -645,6 +652,8 @@ function handleDrawerClick(clickParam: any) {
 
 <style scoped lang="scss">
 .os-top-card {
+  position: sticky;
+  top: 0;
   z-index: 1;
   border-radius: 0 0 20px 20px;
 }
