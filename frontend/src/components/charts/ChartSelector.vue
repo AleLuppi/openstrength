@@ -65,7 +65,7 @@
     </div>
 
     <!-- CHARTS RENDERING -->
-    <q-scroll-area dark class="rounded-borders" style="height: 70vh">
+    <div>
       <div class="q-px-xs q-py-sm">
         <!-- VOLUME CHART -->
         <div v-if="selectionVolume.includes('total')" class="q-ma-xs">
@@ -145,7 +145,7 @@
           />
         </div>
       </div>
-    </q-scroll-area>
+    </div>
   </div>
 </template>
 

@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { colors } from "quasar";
 import {
   Chart,
@@ -96,7 +96,7 @@ const props = defineProps({
 const chartCanvas = ref(null);
 
 /**
- *
+ * Render the Chart
  */
 function renderChart() {
   // Ensure canvas reference exists
@@ -105,22 +105,30 @@ function renderChart() {
     return;
   }
 
-  // Add background color to datasets
-  props.data.datasets.forEach((el, idx) => {
-    let currColor = getPaletteColor("chart-color" + (idx + 1));
-    el.borderColor = currColor;
-    el.backgroundColor = lighten(currColor, 25);
-  });
+  try {
+    // Add background color to datasets
+    props.data.datasets.forEach((el, idx) => {
+      let currColor = getPaletteColor("chart-color" + (idx + 1));
+      el.borderColor = currColor;
+      el.backgroundColor = lighten(currColor, 25);
+    });
 
-  // Fill canvas
-  const ctx = chartCanvas.value.getContext("2d");
-  new Chart(ctx, {
-    type: props.type,
-    data: props.data,
-    options: props.options,
-  });
+    // Fill canvas
+    const ctx = chartCanvas.value.getContext("2d");
+    new Chart(ctx, {
+      type: props.type,
+      data: props.data,
+      options: props.options,
+    });
+  } catch (error) {
+    console.error("Error rendering chart:", error);
+  }
 }
 
+// Watch for changes in data and re-render the chart
+watch(() => props.data, renderChart, { deep: true });
+
+// Render the chart on component mount
 onMounted(() => {
   renderChart();
 });

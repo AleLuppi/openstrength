@@ -21,6 +21,8 @@
               flat
             ></q-btn>
 
+            <q-btn @click="computeTotalRepsWeek(program)">Get Chart Data</q-btn>
+
             <!-- Display and update assigned user -->
             <q-btn
               @click="showAthleteAssigningDialog = true"
@@ -125,7 +127,15 @@
           <!-- CHART SELECTOR SECTION -->
           <div v-if="showingUtils == UtilsOptions.charts">
             <h6 class="text-margin-xs">Charts Section</h6>
-            <ChartSelector></ChartSelector>
+            <!-- <ChartSelector></ChartSelector> -->
+
+            <chart-component
+              v-if="chartData"
+              title="Total Volume"
+              description="Andamento del volume per le diverse alzate principali."
+              :data="chartData.datasets"
+              :options="optionChart"
+            />
           </div>
 
           <!-- MAX LIFT SECTION -->
@@ -315,7 +325,7 @@ import {
   ProgramLine,
 } from "@/helpers/programs/program";
 import { useCoachInfoStore } from "@/stores/coachInfo";
-import ChartSelector from "@/components/charts/ChartSelector.vue";
+//import ChartSelector from "@/components/charts/ChartSelector.vue";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import { useUserStore } from "@/stores/user";
@@ -325,6 +335,8 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { arrayUniqueValues } from "@/helpers/array";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
+import { calculateTotalRepsForExerciseByWeek } from "@/helpers/charts/chartDataFormatter";
+import ChartComponent from "@/components/charts/ChartComponent.vue";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -513,16 +525,16 @@ const program = ref(
         scheduleOrder: 5,
         lines: [
           new ProgramLine({
-            setsBaseValue: "sets",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
+            setsBaseValue: "5",
+            repsBaseValue: "5",
+            loadBaseValue: "5",
+            rpeBaseValue: "5",
           }),
           new ProgramLine({
-            setsBaseValue: "sets",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
+            setsBaseValue: "5",
+            repsBaseValue: "5",
+            loadBaseValue: "5",
+            rpeBaseValue: "5",
             requestFeedbackText: true,
           }),
         ],
@@ -536,32 +548,33 @@ const program = ref(
         lines: [
           new ProgramLine({
             setsBaseValue: "2",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
+            repsBaseValue: "5",
+            loadBaseValue: "5",
+            rpeBaseValue: "6",
             requestFeedbackText: true,
             lineOrder: 2,
           }),
           new ProgramLine({
             setsBaseValue: "4",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
+            repsBaseValue: "6",
+            loadBaseValue: "6",
+            rpeBaseValue: "6",
             requestFeedbackText: true,
             lineOrder: 4,
           }),
           new ProgramLine({
             setsBaseValue: "1",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
+            repsBaseValue: "6",
+            loadBaseValue: "6",
+            rpeBaseValue: "6",
             requestFeedbackText: true,
             lineOrder: 1,
           }),
         ],
       }),
       new ProgramExercise({
-        exercise: coachInfo.exercises?.[2],
+        exercise: coachInfo.exercises?.[1],
+        exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
         scheduleWeek: "B",
         scheduleDay: 4,
         scheduleOrder: 1,
@@ -594,16 +607,48 @@ const program = ref(
       }),
       new ProgramExercise({
         exercise: coachInfo.exercises?.[2],
-        exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
+        exerciseVariant: coachInfo.exercises?.[2].variants?.[2],
         scheduleWeek: "B",
-        scheduleDay: "1",
+        scheduleDay: 1,
         scheduleOrder: 1,
         lines: [
           new ProgramLine({
-            setsBaseValue: "sets",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
+            setsBaseValue: "8",
+            repsBaseValue: "2",
+            loadBaseValue: "30 kg",
             rpeBaseValue: "rpe",
+            requestFeedbackText: true,
+          }),
+        ],
+      }),
+      new ProgramExercise({
+        exercise: coachInfo.exercises?.[2],
+        exerciseVariant: coachInfo.exercises?.[2].variants?.[2],
+        scheduleWeek: "C",
+        scheduleDay: 1,
+        scheduleOrder: 1,
+        lines: [
+          new ProgramLine({
+            setsBaseValue: "6",
+            repsBaseValue: "2",
+            loadBaseValue: "40 kg",
+            rpeBaseValue: "7",
+            requestFeedbackText: true,
+          }),
+        ],
+      }),
+      new ProgramExercise({
+        exercise: coachInfo.exercises?.[2],
+        exerciseVariant: coachInfo.exercises?.[2].variants?.[2],
+        scheduleWeek: "D",
+        scheduleDay: 1,
+        scheduleOrder: 1,
+        lines: [
+          new ProgramLine({
+            setsBaseValue: "5",
+            repsBaseValue: "5",
+            loadBaseValue: "50 kg",
+            rpeBaseValue: "8",
             requestFeedbackText: true,
           }),
         ],
@@ -612,6 +657,47 @@ const program = ref(
   }),
 );
 watch(program, () => console.log("from parent"));
+
+const chartData = ref<any>(null); // Adjust 'any' based on the actual type if possible
+
+// Compute chart data
+function computeTotalRepsWeek(program: Program) {
+  const exerciseName = coachInfo.exercises?.[2].name;
+  const exerciseVariantName = coachInfo.exercises?.[2].variants?.[2].name;
+  const currentExerciseFullName =
+    `${exerciseName} - ${exerciseVariantName}`.trim();
+
+  const result = calculateTotalRepsForExerciseByWeek(
+    program,
+    currentExerciseFullName,
+  );
+  chartData.value = result;
+
+  console.log("final data", result);
+}
+
+const optionChart = {
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    x: {
+      display: true,
+      title: {
+        display: true,
+        text: "Date",
+      },
+    },
+    y: {
+      type: "linear",
+      display: true,
+      position: "left",
+      title: {
+        display: true,
+        text: "Total Reps",
+      },
+    },
+  },
+};
 
 /**
  * Handle custom right drawer click.
