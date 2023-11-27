@@ -1,29 +1,35 @@
-import {
-  Program,
-  ProgramExercise,
-  ProgramLine,
-} from "@/helpers/programs/program";
+import { Program, ProgramLine } from "@/helpers/programs/program";
+import { ChartData } from "chart.js";
+import { colors } from "quasar";
+import { calculateTotalReps } from "./chartDatasetComputations";
+const { getPaletteColor, lighten } = colors;
 
-// Correspond to Y-coordinate of a dataset for a chart.js entry (one exercise)
-interface ChartDataset {
-  label?: string; // Exercise name
-  data: number[]; // actual series
-  borderColor?: string; //"rgba(0, 123, 255, 1)"
-  backgroundColor?: string; //"rgba(0, 123, 255, 0.2)",
-  fill?: boolean; //false,
-  cubicInterpolationMode?: string; // "monotone",
-  tension?: number; // 0.1,
-  yAxisID?: string; // "y",
+// TODO: find a way to compute all the charts, now only total reps is computed
+
+/**
+ * Defines how data should be organized for charts (key is X, value is Y)
+ */
+interface ExerciseChartData {
+  key: string;
+  value: number;
 }
 
-// Correspond to X-coordinate of the dataset
-interface ChartLabels {
-  labels?: string[];
+/**
+ * Defines how each dataset should be organizedfor chart (corresponds to a timeseries)
+ */
+interface ExerciseChartDataset {
+  backgroundColor: string;
+  borderColor: string;
+  data: { key: string; value: number }[];
+  parsing: {
+    xAxisKey: string;
+    yAxisKey: string;
+  };
+  label: string; // Add a label property
 }
 
 /**
  * TODO: remove this method and import from excelconverter or put in a generic service
- * OK, TESTED. TODO: improve to handle both string and number, "1" and 1 are taken as different values
  * Determines unique day and week names of the program
  */
 export function getUniqueDayAndWeekNames(program: Program): {
@@ -129,75 +135,22 @@ export function getProgramLines(
   return filteredLines;
 }
 
-/*********** VOLUME CALCULATIONS *************/
-//TODO: substitute BaseValue with ComputedValue
 /**
- * Calculates total sets on the provided program lines
+ * Computes the total reps for a single exercise in a program
+ * @param program program instance passed
+ * @param currentExerciseFullName full exercise name defined as "exerciseName - variantName"
+ * @returns
  */
-export function calculateTotalSets(programLines: ProgramLine[]): number {
-  return programLines.reduce((totalSets, line) => {
-    // Convert to integer or default to 0 if NaN
-    const setsBaseValue = parseInt(line.setsBaseValue ?? "0", 10);
-
-    totalSets += setsBaseValue;
-
-    return totalSets;
-  }, 0);
-}
-
-/**
- * Calculates total reps on the provided program lines
- */
-export function calculateTotalReps(programLines: ProgramLine[]): number {
-  return programLines.reduce((totalReps, line) => {
-    // Convert to integer or default to 0 if NaN
-
-    const repsBaseValue = parseInt(line.repsBaseValue ?? "0", 10);
-    const setsBaseValue = parseInt(line.setsBaseValue ?? "0", 10);
-
-    totalReps += repsBaseValue * setsBaseValue;
-
-    return totalReps;
-  }, 0);
-}
-
-/**
- * Calculates total volume on the provided program lines
- * Note: it only accepts loads with "kg" units, not %.
- */
-export function calculateTotalVolume(programLines: ProgramLine[]): number {
-  return programLines.reduce((totalVolume, line) => {
-    const repsBaseValue = parseInt(line.repsBaseValue ?? "0", 10);
-    const setsBaseValue = parseInt(line.setsBaseValue ?? "0", 10);
-    const loadBaseValue = parseFloat(
-      (line.loadBaseValue || "0").replace(/[^0-9.]/g, ""),
-    );
-
-    totalVolume += repsBaseValue * setsBaseValue * loadBaseValue;
-
-    return totalVolume;
-  }, 0);
-}
-
-/**
- * Compute total reps for a single exercise along multiple weeks
- */
-import { ChartData } from "chart.js";
-
-export function calculateTotalRepsForExerciseByWeek(
+export function computeTotalRepsForExercise(
   program: Program,
   currentExerciseFullName: string,
-): ChartData<"line", { key: string; value: number }[]> {
-  const datasets: ChartData<"line", { key: string; value: number }[]> = {
-    datasets: [],
-  };
-
+): ExerciseChartData[] {
   const { weeks, days } = getUniqueWeeksAndDaysForExercise(
     program,
     currentExerciseFullName,
   );
 
-  const data: { key: string; value: number }[] = [];
+  const data: ExerciseChartData[] = [];
 
   weeks.forEach((week) => {
     let totalRepsForWeek = 0;
@@ -212,16 +165,79 @@ export function calculateTotalRepsForExerciseByWeek(
       totalRepsForWeek += calculateTotalReps(lines);
     });
 
-    data.push({ key: `Week ${week}`, value: totalRepsForWeek });
+    const label = `Week ${week}`;
+    data.push({ key: label, value: totalRepsForWeek });
   });
 
-  datasets.datasets.push({
-    data: data,
-    parsing: {
-      xAxisKey: "key",
-      yAxisKey: "value",
-    },
+  return data;
+}
+
+/**
+ * Computes the data for the chart for an array of exercises
+ * @param program program instance
+ * @param exerciseNames array of currentExerciseFullName
+ * @returns
+ */
+export function computeChartDataForExercises(
+  program: Program,
+  exerciseNames: string[],
+): ExerciseChartDataset[] {
+  const datasets: ExerciseChartDataset[] = [];
+
+  exerciseNames.forEach((exerciseName) => {
+    const data = computeTotalRepsForExercise(program, exerciseName);
+
+    datasets.push({
+      backgroundColor: "", //TODO: clean up, colors are overwritten later
+      borderColor: "",
+      data: data,
+      parsing: {
+        xAxisKey: "key",
+        yAxisKey: "value",
+      },
+      label: exerciseName,
+    });
   });
 
   return datasets;
+}
+
+/**
+ * Format data as required by chart.js
+ * @param datasets
+ * @returns
+ */
+export function formatChartDataForChart(
+  datasets?: ExerciseChartDataset[],
+): ChartData<"line", ExerciseChartData[]> | undefined {
+  if (!datasets || datasets.length === 0) {
+    console.error("Invalid datasets structure.");
+    return undefined;
+  }
+
+  // Extract unique labels from datasets
+  const uniqueLabels = Array.from(
+    new Set(
+      datasets.flatMap((dataset) => dataset.data.map((item) => item.key)),
+    ),
+  );
+
+  const chartData: ChartData<"line", ExerciseChartData[]> = {
+    labels: uniqueLabels,
+    datasets: datasets.map((dataset, index) => {
+      const color = getPaletteColor("chart-color" + (index + 1));
+      if (!color) {
+        throw new Error("Unable to generate color."); // Enhance error handling
+      }
+
+      return {
+        ...dataset,
+        backgroundColor: color,
+        borderColor: lighten(color, 25),
+        data: dataset.data,
+      };
+    }),
+  };
+
+  return chartData;
 }

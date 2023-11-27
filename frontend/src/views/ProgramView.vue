@@ -133,7 +133,7 @@
               v-if="chartData"
               title="Total Volume"
               description="Andamento del volume per le diverse alzate principali."
-              :data="chartData.datasets"
+              :data="chartData"
               :options="optionChart"
             />
           </div>
@@ -335,7 +335,10 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { arrayUniqueValues } from "@/helpers/array";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
-import { calculateTotalRepsForExerciseByWeek } from "@/helpers/charts/chartDataFormatter";
+import {
+  computeChartDataForExercises,
+  formatChartDataForChart,
+} from "@/helpers/charts/chartDataFormatter";
 import ChartComponent from "@/components/charts/ChartComponent.vue";
 
 // Set expose
@@ -400,6 +403,9 @@ const maxliftType = ref<MaxLiftType>(); // TODO check
 const availableMaxLiftTypes: string[] = Object.values(MaxLiftType);
 const maxliftValue = ref(""); // TODO check
 const maxliftDate = ref<Date>(); // TODO check
+
+// Charts declaration
+const chartData = ref<any>(null);
 
 // Get exercises to display
 const exercises = computed<Exercise[]>(() => {
@@ -541,7 +547,7 @@ const program = ref(
       }),
       new ProgramExercise({
         exercise: coachInfo.exercises?.[1],
-        exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
+        exerciseVariant: coachInfo.exercises?.[1].variants?.[1],
         scheduleWeek: "B",
         scheduleDay: 4,
         scheduleOrder: 2,
@@ -574,32 +580,32 @@ const program = ref(
       }),
       new ProgramExercise({
         exercise: coachInfo.exercises?.[1],
-        exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
-        scheduleWeek: "B",
+        exerciseVariant: coachInfo.exercises?.[1].variants?.[1],
+        scheduleWeek: "D",
         scheduleDay: 4,
         scheduleOrder: 1,
         lines: [
           new ProgramLine({
-            setsBaseValue: "2222222222222222222",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
+            setsBaseValue: "4",
+            repsBaseValue: "8",
+            loadBaseValue: "20kg",
+            rpeBaseValue: "8",
             requestFeedbackText: true,
             lineOrder: 2,
           }),
           new ProgramLine({
             setsBaseValue: "4",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
+            repsBaseValue: "3",
+            loadBaseValue: "30kg",
+            rpeBaseValue: "8",
             requestFeedbackText: true,
             lineOrder: 4,
           }),
           new ProgramLine({
             setsBaseValue: "1",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
+            repsBaseValue: "5",
+            loadBaseValue: "32kg",
+            rpeBaseValue: "5",
             requestFeedbackText: true,
             lineOrder: 1,
           }),
@@ -653,12 +659,26 @@ const program = ref(
           }),
         ],
       }),
+      new ProgramExercise({
+        exercise: coachInfo.exercises?.[1],
+        exerciseVariant: coachInfo.exercises?.[1].variants?.[1],
+        scheduleWeek: "E",
+        scheduleDay: 1,
+        scheduleOrder: 1,
+        lines: [
+          new ProgramLine({
+            setsBaseValue: "5",
+            repsBaseValue: "5",
+            loadBaseValue: "50 kg",
+            rpeBaseValue: "8",
+            requestFeedbackText: true,
+          }),
+        ],
+      }),
     ],
   }),
 );
 watch(program, () => console.log("from parent"));
-
-const chartData = ref<any>(null); // Adjust 'any' based on the actual type if possible
 
 // Compute chart data
 function computeTotalRepsWeek(program: Program) {
@@ -667,13 +687,19 @@ function computeTotalRepsWeek(program: Program) {
   const currentExerciseFullName =
     `${exerciseName} - ${exerciseVariantName}`.trim();
 
-  const result = calculateTotalRepsForExerciseByWeek(
-    program,
-    currentExerciseFullName,
-  );
-  chartData.value = result;
+  const exerciseName2 = coachInfo.exercises?.[1].name;
+  const exerciseVariantName2 = coachInfo.exercises?.[1].variants?.[1].name;
+  const currentExerciseFullName2 =
+    `${exerciseName2} - ${exerciseVariantName2}`.trim();
 
-  console.log("final data", result);
+  // Compute chart data for an array of exercises
+  const datasets = computeChartDataForExercises(program, [
+    currentExerciseFullName,
+    currentExerciseFullName2,
+  ]);
+
+  const formattedData = formatChartDataForChart(datasets);
+  chartData.value = formattedData;
 }
 
 const optionChart = {
