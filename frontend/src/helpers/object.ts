@@ -1,4 +1,14 @@
 /**
+ * Check if an object has no key-value pairs.
+ *
+ * @param obj object whose emptiness should be checked.
+ * @returns true if object is empty, false otherwise.
+ */
+export function objectIsEmpty(obj: Object) {
+  return Object.keys(obj).length === 0;
+}
+
+/**
  * Get a copy of an object where undefined keys are filtered out.
  *
  * @param obj object that shall be filtered.

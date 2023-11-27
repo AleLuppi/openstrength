@@ -9,10 +9,11 @@
     >
       <template v-slot:before>
         <!-- Program management card -->
-        <!-- TODO i18n on whole below div -->
         <div class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest">
-          <!-- Save button -->
+          <!-- Utility buttons -->
+          <!-- TODO i18n -->
           <div class="row justify-between">
+            <!-- Save button -->
             <q-btn
               icon="save"
               :label="programSaved ? 'Saved!' : 'changes not saved...'"
@@ -64,7 +65,7 @@
           <q-slide-transition>
             <div v-show="expandedTopCard">
               <div class="row items-end justify-evenly q-pt-md">
-                <h6>{{ "Filter by..." }}</h6>
+                <h6>{{ $t("coach.program_management.filter.title") }}</h6>
                 <os-select
                   v-model="filterWeek"
                   :options="
@@ -74,7 +75,7 @@
                       ) || [],
                     )
                   "
-                  label="week"
+                  :label="$t('coach.program_management.filter.filter_week')"
                   multiple
                   hide-bottom-space
                   class="col-3"
@@ -88,7 +89,7 @@
                       ) || [],
                     )
                   "
-                  label="Day"
+                  :label="$t('coach.program_management.filter.filter_day')"
                   multiple
                   hide-bottom-space
                   class="col-3"
@@ -102,7 +103,7 @@
                       ) || [],
                     )
                   "
-                  label="Exercise"
+                  :label="$t('coach.program_management.filter.filter_exercise')"
                   multiple
                   hide-bottom-space
                   class="col-3"
@@ -128,7 +129,19 @@
           :filter="programFilter"
           v-model:saved="programSaved"
           class="q-pa-sm"
-        ></TableProgramBuilder>
+        >
+          <template v-slot:empty-filtered>
+            <h6>
+              {{ $t("coach.program_management.filter.all_filtered_out") }}
+            </h6>
+            <q-btn
+              @click="programFilter = { week: [], day: [], exercise: [] }"
+              :label="$t('coach.program_management.filter.clear_filters')"
+              rounded
+              outline
+            />
+          </template>
+        </TableProgramBuilder>
       </template>
 
       <template v-slot:after>
@@ -358,11 +371,20 @@ const showAthleteAssigningDialog = ref(false);
 const expandedTopCard = ref(false);
 
 // Get complete program filter
-const programFilter = computed(() => ({
-  week: filterWeek.value || [],
-  day: filterDay.value || [],
-  exercise: filterExercise.value || [],
-}));
+const programFilter = computed({
+  get() {
+    return {
+      week: filterWeek.value || [],
+      day: filterDay.value || [],
+      exercise: filterExercise.value || [],
+    };
+  },
+  set(newValue) {
+    filterWeek.value = newValue.week;
+    filterDay.value = newValue.day;
+    filterExercise.value = newValue.exercise;
+  },
+});
 
 // Define what to do on component mount
 onMounted(() => {
