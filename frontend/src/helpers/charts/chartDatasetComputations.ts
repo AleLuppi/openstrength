@@ -1,3 +1,4 @@
+import { MaxLift, MaxLiftType } from "../maxlifts/maxlift";
 import { ProgramLine } from "../programs/program";
 
 /**
@@ -95,28 +96,40 @@ export function calculateTotalVolume(programLines: ProgramLine[]): number {
 /*********** INTENSITY CALCULATIONS *************/
 /**
  * Computes the maximum intensity as the maximum load of the passed lines.
- * TODO: implement calculations with load/1RM
+ * Overloaded method: if a maxlift is passed computes the max intensity as load/1RM
  * @param programLines
  * @returns
  */
-export function calculateMaxIntensity(programLines: ProgramLine[]): number {
+export function calculateMaxIntensity(programLines: ProgramLine[]): number;
+export function calculateMaxIntensity(
+  programLines: ProgramLine[],
+  maxLift: MaxLift,
+): number;
+export function calculateMaxIntensity(
+  programLines: ProgramLine[],
+  maxLift?: MaxLift,
+): number {
   if (programLines.length === 0) {
     return 0;
   }
-  const maxIntensity = programLines.reduce((max, line) => {
-    //TODO: improve checking if 1RM exist
+
+  // Find the maximum loadBaseValue among the lines
+  const maxLoadBaseValue = programLines.reduce((max, line) => {
     const loadBaseValue = parseFloat(
       (line.loadBaseValue || "0").replace(/[^0-9.]/g, ""),
     );
 
-    if (!isNaN(loadBaseValue)) {
-      return Math.max(max, loadBaseValue);
-    } else {
-      return max;
-    }
+    return isNaN(loadBaseValue) ? max : Math.max(max, loadBaseValue);
   }, 0);
 
-  return maxIntensity;
+  if (maxLift && maxLift.type === MaxLiftType._1RM) {
+    // If maxLift is of type 1RM, compute Intensity = maxLoadBaseValue / maxLift.value
+    const maxLiftValue = parseFloat(maxLift.value || "0");
+    return maxLiftValue !== 0 ? maxLoadBaseValue / maxLiftValue : 0;
+  } else {
+    // If no maxLift return the load
+    return maxLoadBaseValue;
+  }
 }
 
 /**
