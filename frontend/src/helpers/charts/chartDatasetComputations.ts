@@ -1,8 +1,49 @@
 import { ProgramLine } from "../programs/program";
 
-/*********** VOLUME CALCULATIONS *************/
+/**
+ * Define RPE-reps table.
+ * Each value is a percentage of 1RM
+ * Column index define the reps, row index define the rpe
+ */
+const rpeRepsTable: number[][] = [
+  //1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  reps
+  [100, 96, 92, 89, 86, 84, 81, 79, 76, 74, 71, 69, 66, 64, 61], // 10
+  [98, 94, 91, 88, 85, 82, 80, 77, 75, 72, 70, 67, 65, 62, 60], // 9.5
+  [96, 92, 89, 86, 84, 81, 79, 76, 74, 71, 69, 66, 64, 61, 59], // 9
+  [94, 91, 88, 85, 82, 80, 77, 75, 72, 69, 66, 63, 60, 57, 54], // 8.5
+  [92, 89, 86, 84, 81, 79, 76, 74, 71, 68, 65, 62, 59, 56, 53], // 8
+  [91, 88, 85, 82, 80, 77, 75, 72, 69, 67, 64, 62, 59, 57, 54], // 7.5
+  [89, 86, 84, 81, 79, 76, 74, 71, 68, 65, 62, 59, 56, 53, 50], // 7
+  [88, 85, 82, 80, 77, 75, 72, 69, 67, 64, 62, 59, 57, 54, 52], // 6.5 rpe
+];
+
+/**
+ * Method to compute the percentage of 1RM [%] from the rpe-reps table
+ * @param reps repetition number from 1 to 15
+ * @param rpe rep from 6.5 to 10 at 0.5 increments
+ * @param rpeTable actual instance of rpe table (2D array)
+ * @returns Given a reps number and an rpe, returns the % of the 1RM as a number from 1 to 100
+ */
+export function calculatePercentage1RM(
+  reps: number,
+  rpe: number,
+  rpeTable: number[][],
+): number | undefined {
+  if (reps < 1 || reps > 15 || rpe < 6.5 || rpe > 10 || !rpeTable) {
+    console.error("Invalid reps, RPE values, or RPE table.");
+    return undefined;
+  }
+
+  const rpeIndex = Math.round((rpe - 6.5) * 2);
+  const repsIndex = reps - 1;
+  const percentage1RM = rpeTable[rpeIndex][repsIndex];
+
+  return percentage1RM;
+}
+
 //TODO: substitute BaseValue with ComputedValue
 
+/*********** VOLUME CALCULATIONS *************/
 /**
  * Calculates total sets on the provided program lines
  */
@@ -51,6 +92,7 @@ export function calculateTotalVolume(programLines: ProgramLine[]): number {
   }, 0);
 }
 
+/*********** INTENSITY CALCULATIONS *************/
 /**
  * Computes the maximum intensity as the maximum load of the passed lines.
  * TODO: implement calculations with load/1RM
