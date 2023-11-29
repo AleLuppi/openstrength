@@ -45,6 +45,7 @@ export function calculatePercentage1RM(
 //TODO: substitute BaseValue with ComputedValue
 
 /*********** VOLUME CALCULATIONS *************/
+
 //TODO: tutti i calcoli devono essere fatti in questa forma: metodo(line.repsBaseValue)
 
 /**

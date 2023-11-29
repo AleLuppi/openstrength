@@ -385,11 +385,6 @@ export class ProgramLine {
   requestFeedbackText?: boolean;
   requestFeedbackVideo?: boolean;
 
-  //TODO setsRequire?: boolean;
-
-  setsRangeMin?: number;
-  setsRangeMax?: number;
-
   // TODO computed properties
   // TODO continue from here!!!!!!!!!!!!!!!!!!!
   public get setsValue(): number | undefined {
@@ -397,18 +392,6 @@ export class ProgramLine {
       return parseInt(this.setsBaseValue);
     } else {
       return this.setsComputedValue;
-    }
-  }
-
-  get setsOperation(): string | undefined {
-    if (
-      this.setsBaseValue !== undefined &&
-      /^.[+-]\d*$/.test(this.setsBaseValue)
-    ) {
-      const [, operationPart] = this.setsBaseValue.match(/[+-]\d*$/) || [];
-      return operationPart || undefined;
-    } else {
-      return undefined;
     }
   }
 
@@ -429,6 +412,18 @@ export class ProgramLine {
     }
   }
 
+  get setsOperation(): string | undefined {
+    if (
+      this.setsBaseValue !== undefined &&
+      /^.[+-]\d*$/.test(this.setsBaseValue)
+    ) {
+      const [, operationPart] = this.setsBaseValue.match(/[+-]\d*$/) || [];
+      return operationPart || undefined;
+    } else {
+      return undefined;
+    }
+  }
+
   get setsSupposedValue(): number | undefined {
     if (
       this.setsBaseValue !== undefined &&
@@ -443,6 +438,41 @@ export class ProgramLine {
       /^\(\d*\)$/.test(this.setsBaseValue)
     ) {
       return parseInt(this.setsBaseValue.slice(1, -1));
+    } else {
+      return undefined;
+    }
+  }
+
+  get requireSets(): boolean {
+    if (
+      this.setsBaseValue !== undefined &&
+      /^\\?|\\(\d*\\)|\d*\/\d*$/.test(this.setsBaseValue)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  get setsRangeMin(): number | undefined {
+    if (
+      this.setsBaseValue !== undefined &&
+      /^\d*\/\d*$/.test(this.setsBaseValue)
+    ) {
+      const [, minPart] = this.setsBaseValue.match(/^\d*/) || [];
+      return minPart ? parseInt(minPart) : undefined;
+    } else {
+      return undefined;
+    }
+  }
+
+  get setsRangeMax(): number | undefined {
+    if (
+      this.setsBaseValue !== undefined &&
+      /^\d*\/\d*$/.test(this.setsBaseValue)
+    ) {
+      const [, maxPart] = this.setsBaseValue.match(/\/(\d*)$/) || [];
+      return maxPart ? parseInt(maxPart) : undefined;
     } else {
       return undefined;
     }
