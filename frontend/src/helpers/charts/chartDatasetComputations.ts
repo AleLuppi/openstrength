@@ -35,7 +35,7 @@ export function calculatePercentage1RM(
     return undefined;
   }
 
-  const rpeIndex = Math.round((rpe - 6.5) * 2);
+  const rpeIndex = 7 - Math.round((rpe - 6.5) * 2);
   const repsIndex = reps - 1;
   const percentage1RM = rpeTable[rpeIndex][repsIndex];
 
