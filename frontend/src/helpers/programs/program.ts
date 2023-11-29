@@ -95,6 +95,7 @@ export type ProgramLineProps = {
   setsValue?: number;
   setsSupposedValue?: number;
   setsComputedValue?: number;
+
   repsRequire?: boolean;
   repsOperation?: string;
   repsRangeMin?: number;
@@ -102,6 +103,7 @@ export type ProgramLineProps = {
   repsValue?: number;
   repsSupposedValue?: number;
   repsComputedValue?: number;
+
   loadRequire?: boolean;
   loadOperation?: string;
   loadRangeMin?: number;
@@ -109,6 +111,7 @@ export type ProgramLineProps = {
   loadValue?: number;
   loadSupposedValue?: number;
   loadComputedValue?: number;
+
   rpeRequire?: boolean;
   rpeOperation?: string;
   rpeRangeMin?: number;
@@ -382,7 +385,68 @@ export class ProgramLine {
   requestFeedbackText?: boolean;
   requestFeedbackVideo?: boolean;
 
+  //TODO setsRequire?: boolean;
+
+  setsRangeMin?: number;
+  setsRangeMax?: number;
+
   // TODO computed properties
+  // TODO continue from here!!!!!!!!!!!!!!!!!!!
+  public get setsValue(): number | undefined {
+    if (this.setsBaseValue !== undefined && /^\d*$/.test(this.setsBaseValue)) {
+      return parseInt(this.setsBaseValue);
+    } else {
+      return this.setsComputedValue;
+    }
+  }
+
+  get setsOperation(): string | undefined {
+    if (
+      this.setsBaseValue !== undefined &&
+      /^.[+-]\d*$/.test(this.setsBaseValue)
+    ) {
+      const [, operationPart] = this.setsBaseValue.match(/[+-]\d*$/) || [];
+      return operationPart || undefined;
+    } else {
+      return undefined;
+    }
+  }
+
+  get setsComputedValue(): number | undefined {
+    if (
+      this.setsReference !== null &&
+      this.setsReference?.setsValue !== undefined
+    ) {
+      if (
+        this.setsOperation !== undefined &&
+        /^[+-]\d*$/.test(this.setsOperation)
+      ) {
+        const operationValue = parseInt(this.setsOperation);
+        return this.setsReference.setsValue + operationValue;
+      }
+    } else {
+      return this.setsSupposedValue;
+    }
+  }
+
+  get setsSupposedValue(): number | undefined {
+    if (
+      this.setsBaseValue !== undefined &&
+      /^\d*\/\d*$/.test(this.setsBaseValue)
+    ) {
+      const [secondNumber, firstNumber] = this.setsBaseValue
+        .split("/")
+        .map(Number);
+      return Math.round((secondNumber + firstNumber) / 2);
+    } else if (
+      this.setsBaseValue !== undefined &&
+      /^\(\d*\)$/.test(this.setsBaseValue)
+    ) {
+      return parseInt(this.setsBaseValue.slice(1, -1));
+    } else {
+      return undefined;
+    }
+  }
 
   constructor({
     uid,

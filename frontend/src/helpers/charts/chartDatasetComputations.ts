@@ -45,6 +45,8 @@ export function calculatePercentage1RM(
 //TODO: substitute BaseValue with ComputedValue
 
 /*********** VOLUME CALCULATIONS *************/
+//TODO: tutti i calcoli devono essere fatti in questa forma: metodo(line.repsBaseValue)
+
 /**
  * Calculates total sets on the provided program lines
  */
@@ -66,8 +68,8 @@ export function calculateTotalReps(programLines: ProgramLine[]): number {
   return programLines.reduce((totalReps, line) => {
     // Convert to integer or default to 0 if NaN
 
-    const repsBaseValue = parseInt(line.repsBaseValue ?? "0", 10);
-    const setsBaseValue = parseInt(line.setsBaseValue ?? "0", 10);
+    const repsBaseValue = parseInt(line.repsBaseValue ?? "0");
+    const setsBaseValue = parseInt(line.setsBaseValue ?? "0");
 
     totalReps += repsBaseValue * setsBaseValue;
 
@@ -79,19 +81,19 @@ export function calculateTotalReps(programLines: ProgramLine[]): number {
  * Calculates total volume on the provided program lines
  * Note: it only accepts loads with "kg" units, not %.
  */
-export function calculateTotalVolume(programLines: ProgramLine[]): number {
+/* export function calculateTotalVolume(programLines: ProgramLine[]): number {
   return programLines.reduce((totalVolume, line) => {
-    const repsBaseValue = parseInt(line.repsBaseValue ?? "0", 10);
-    const setsBaseValue = parseInt(line.setsBaseValue ?? "0", 10);
-    const loadBaseValue = parseFloat(
-      (line.loadBaseValue || "0").replace(/[^0-9.]/g, ""),
+    const repsValue = parseInt(line.repsValue ?? "0");
+    const setsValue = parseInt(line.setsValue ?? "0");
+    const loadValue = parseFloat(
+      (line.loadValue || "0").replace(/[^0-9.]/g, ""),
     );
 
-    totalVolume += repsBaseValue * setsBaseValue * loadBaseValue;
+    totalVolume += repsValue * setsValue * loadValue;
 
     return totalVolume;
   }, 0);
-}
+} */
 
 /*********** INTENSITY CALCULATIONS *************/
 /**

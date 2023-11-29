@@ -104,6 +104,7 @@ export function getUniqueExerciseNames(program: Program): {
 /**
  * Method to extract program line for a given exercise on a specific day and week.
  * If no day is passed, returns the program lines for the whole week
+ * TODO: week can be null, also exercise can be null
  */
 export function getProgramLines(
   program: Program,
