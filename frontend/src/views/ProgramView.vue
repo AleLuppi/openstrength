@@ -9,73 +9,139 @@
     >
       <template v-slot:before>
         <!-- Program management card -->
-        <!-- TODO i18n -->
-        <div class="q-mx-md q-py-sm os-top-card shadow-5">
-          <!-- Save button -->
-          <q-btn
-            icon="save"
-            :label="programSaved ? 'Saved!' : 'changes not saved...'"
-            :disable="programSaved"
-            @click="programSaved = true"
-            flat
-          ></q-btn>
+        <div class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest">
+          <!-- Utility buttons -->
+          <!-- TODO i18n -->
+          <div class="row justify-between">
+            <!-- Save button -->
+            <q-btn
+              icon="save"
+              :label="programSaved ? 'Saved!' : 'changes not saved...'"
+              :disable="programSaved"
+              @click="programSaved = true"
+              flat
+            ></q-btn>
+
+            <!-- Display and update assigned user -->
+            <q-btn
+              @click="showAthleteAssigningDialog = true"
+              :label="selectedProgram.athlete ? undefined : 'Assign to athlete'"
+              :color="selectedProgram.athlete ? 'secondary' : 'primary'"
+              outline
+              :dense="Boolean(selectedProgram.athlete)"
+            >
+              <q-item
+                v-if="selectedProgram.athlete"
+                dense
+                class="q-py-none q-px-md"
+              >
+                <q-item-section
+                  avatar
+                  v-if="$q.screen.gt.xs && selectedProgram.athlete.photoUrl"
+                >
+                  <q-avatar size="md">
+                    <img :src="selectedProgram.athlete.photoUrl" />
+                  </q-avatar>
+                </q-item-section>
+                <q-item-section>{{
+                  selectedProgram.athlete.referenceName
+                }}</q-item-section>
+                <q-item-section thumbnail>
+                  <q-btn
+                    icon="clear"
+                    @click.stop="selectedProgram.athlete = undefined"
+                    round
+                    unelevated
+                    size="0.5em"
+                    color="red"
+                    class="q-mr-sm"
+                  />
+                </q-item-section>
+              </q-item>
+            </q-btn>
+          </div>
 
           <!-- Filter by week, day, exercise -->
-          <div class="row items-end justify-evenly">
-            <h6>{{ "Filter by..." }}</h6>
-            <os-select
-              v-model="filterWeek"
-              :options="
-                arrayUniqueValues(
-                  selectedProgram?.programExercises?.map((exercise) =>
-                    exercise.scheduleWeek?.toString(),
-                  ) || [],
-                )
-              "
-              label="week"
-              multiple
-              hide-bottom-space
-              class="col-3"
-            ></os-select>
-            <os-select
-              v-model="filterDay"
-              :options="
-                arrayUniqueValues(
-                  selectedProgram?.programExercises?.map((exercise) =>
-                    exercise.scheduleDay?.toString(),
-                  ) || [],
-                )
-              "
-              label="Day"
-              multiple
-              hide-bottom-space
-              class="col-3"
-            ></os-select>
-            <os-select
-              v-model="filterExercise"
-              :options="
-                arrayUniqueValues(
-                  selectedProgram?.programExercises?.map(
-                    (exercise) => exercise.exercise?.name,
-                  ) || [],
-                )
-              "
-              label="Exercise"
-              multiple
-              hide-bottom-space
-              class="col-3"
-            ></os-select>
-          </div>
+          <q-slide-transition>
+            <div v-show="expandedTopCard">
+              <div class="row items-end justify-evenly q-pt-md">
+                <h6>{{ $t("coach.program_management.filter.title") }}</h6>
+                <os-select
+                  v-model="filterWeek"
+                  :options="
+                    arrayUniqueValues(
+                      selectedProgram?.programExercises?.map((exercise) =>
+                        exercise.scheduleWeek?.toString(),
+                      ) || [],
+                    )
+                  "
+                  :label="$t('coach.program_management.filter.filter_week')"
+                  multiple
+                  hide-bottom-space
+                  class="col-3"
+                ></os-select>
+                <os-select
+                  v-model="filterDay"
+                  :options="
+                    arrayUniqueValues(
+                      selectedProgram?.programExercises?.map((exercise) =>
+                        exercise.scheduleDay?.toString(),
+                      ) || [],
+                    )
+                  "
+                  :label="$t('coach.program_management.filter.filter_day')"
+                  multiple
+                  hide-bottom-space
+                  class="col-3"
+                ></os-select>
+                <os-select
+                  v-model="filterExercise"
+                  :options="
+                    arrayUniqueValues(
+                      selectedProgram?.programExercises?.map(
+                        (exercise) => exercise.exercise?.name,
+                      ) || [],
+                    )
+                  "
+                  :label="$t('coach.program_management.filter.filter_exercise')"
+                  multiple
+                  hide-bottom-space
+                  class="col-3"
+                ></os-select>
+              </div>
+            </div>
+          </q-slide-transition>
+          <q-btn
+            :icon="expandedTopCard ? 'expand_less' : 'expand_more'"
+            @click="expandedTopCard = !expandedTopCard"
+            flat
+            dense
+            color="secondary"
+            class="full-width q-mx-lg"
+            :ripple="false"
+          ></q-btn>
         </div>
 
         <!-- Show table to build program on the left -->
         <TableProgramBuilder
-          :program="program"
+          v-model:program="program"
           :exercises="coachInfo.exercises"
           :filter="programFilter"
           v-model:saved="programSaved"
           class="q-pa-sm"
-        ></TableProgramBuilder>
+        >
+          <template v-slot:empty-filtered>
+            <h6>
+              {{ $t("coach.program_management.filter.all_filtered_out") }}
+            </h6>
+            <q-btn
+              @click="programFilter = { week: [], day: [], exercise: [] }"
+              :label="$t('coach.program_management.filter.clear_filters')"
+              rounded
+              outline
+            />
+          </template>
+        </TableProgramBuilder>
       </template>
 
       <template v-slot:after>
@@ -252,11 +318,19 @@
         />
       </template>
     </q-splitter>
+
+    <!-- Dialog to assign program to athlete -->
+    <DialogProgramAssignAthlete
+      v-model="showAthleteAssigningDialog"
+      :athletes="coachInfo.athletes ?? []"
+      v-model:selected="selectedProgram.athlete"
+    >
+    </DialogProgramAssignAthlete>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import {
   Program,
@@ -273,6 +347,7 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { arrayUniqueValues } from "@/helpers/array";
+import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -292,11 +367,29 @@ const selectedProgram = //ref<Program>();
 const filterWeek = ref<string[]>();
 const filterDay = ref<string[]>();
 const filterExercise = ref<string[]>();
-const programFilter = computed(() => ({
-  week: filterWeek.value || [],
-  day: filterDay.value || [],
-  exercise: filterExercise.value || [],
-}));
+const showAthleteAssigningDialog = ref(false);
+const expandedTopCard = ref(false);
+
+// Get complete program filter
+const programFilter = computed({
+  get() {
+    return {
+      week: filterWeek.value || [],
+      day: filterDay.value || [],
+      exercise: filterExercise.value || [],
+    };
+  },
+  set(newValue) {
+    filterWeek.value = newValue.week;
+    filterDay.value = newValue.day;
+    filterExercise.value = newValue.exercise;
+  },
+});
+
+// Define what to do on component mount
+onMounted(() => {
+  if ($q.screen.gt.sm) expandedTopCard.value = true;
+});
 
 // ----- TODO CHECK EVERYTHING BELOW -----
 
@@ -439,114 +532,116 @@ function onUpdateMaxLift(maxlift: MaxLift) {
 // PROGRAMS
 
 // TODO load programs
-const program = new Program({
-  uid: "prova",
-  name: "Program name",
-  programExercises: [
-    new ProgramExercise({
-      exercise: coachInfo.exercises?.[0],
-      scheduleWeek: "A",
-      scheduleDay: 1,
-      scheduleOrder: 5,
-      lines: [
-        new ProgramLine({
-          setsBaseValue: "sets",
-          repsBaseValue: "reps",
-          loadBaseValue: "load",
-          rpeBaseValue: "rpe",
-        }),
-        new ProgramLine({
-          setsBaseValue: "sets",
-          repsBaseValue: "reps",
-          loadBaseValue: "load",
-          rpeBaseValue: "rpe",
-          requestFeedbackText: true,
-        }),
-      ],
-    }),
-    new ProgramExercise({
-      exercise: coachInfo.exercises?.[1],
-      exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
-      scheduleWeek: "B",
-      scheduleDay: 4,
-      scheduleOrder: 2,
-      lines: [
-        new ProgramLine({
-          setsBaseValue: "2",
-          repsBaseValue: "reps",
-          loadBaseValue: "load",
-          rpeBaseValue: "rpe",
-          requestFeedbackText: true,
-          lineOrder: 2,
-        }),
-        new ProgramLine({
-          setsBaseValue: "4",
-          repsBaseValue: "reps",
-          loadBaseValue: "load",
-          rpeBaseValue: "rpe",
-          requestFeedbackText: true,
-          lineOrder: 4,
-        }),
-        new ProgramLine({
-          setsBaseValue: "1",
-          repsBaseValue: "reps",
-          loadBaseValue: "load",
-          rpeBaseValue: "rpe",
-          requestFeedbackText: true,
-          lineOrder: 1,
-        }),
-      ],
-    }),
-    new ProgramExercise({
-      exercise: coachInfo.exercises?.[2],
-      scheduleWeek: "B",
-      scheduleDay: 4,
-      scheduleOrder: 1,
-      lines: [
-        new ProgramLine({
-          setsBaseValue: "2222222222222222222",
-          repsBaseValue: "reps",
-          loadBaseValue: "load",
-          rpeBaseValue: "rpe",
-          requestFeedbackText: true,
-          lineOrder: 2,
-        }),
-        new ProgramLine({
-          setsBaseValue: "4",
-          repsBaseValue: "reps",
-          loadBaseValue: "load",
-          rpeBaseValue: "rpe",
-          requestFeedbackText: true,
-          lineOrder: 4,
-        }),
-        new ProgramLine({
-          setsBaseValue: "1",
-          repsBaseValue: "reps",
-          loadBaseValue: "load",
-          rpeBaseValue: "rpe",
-          requestFeedbackText: true,
-          lineOrder: 1,
-        }),
-      ],
-    }),
-    new ProgramExercise({
-      exercise: coachInfo.exercises?.[2],
-      exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
-      scheduleWeek: "B",
-      scheduleDay: "1",
-      scheduleOrder: 1,
-      lines: [
-        new ProgramLine({
-          setsBaseValue: "sets",
-          repsBaseValue: "reps",
-          loadBaseValue: "load",
-          rpeBaseValue: "rpe",
-          requestFeedbackText: true,
-        }),
-      ],
-    }),
-  ],
-});
+const program = ref(
+  new Program({
+    uid: "prova",
+    name: "Program name",
+    programExercises: [
+      new ProgramExercise({
+        exercise: coachInfo.exercises?.[0],
+        scheduleWeek: "A",
+        scheduleDay: 1,
+        scheduleOrder: 5,
+        lines: [
+          new ProgramLine({
+            setsBaseValue: "sets",
+            repsBaseValue: "reps",
+            loadBaseValue: "load",
+            rpeBaseValue: "rpe",
+          }),
+          new ProgramLine({
+            setsBaseValue: "sets",
+            repsBaseValue: "reps",
+            loadBaseValue: "load",
+            rpeBaseValue: "rpe",
+            requestFeedbackText: true,
+          }),
+        ],
+      }),
+      new ProgramExercise({
+        exercise: coachInfo.exercises?.[1],
+        exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
+        scheduleWeek: "B",
+        scheduleDay: 4,
+        scheduleOrder: 2,
+        lines: [
+          new ProgramLine({
+            setsBaseValue: "2",
+            repsBaseValue: "reps",
+            loadBaseValue: "load",
+            rpeBaseValue: "rpe",
+            requestFeedbackText: true,
+            lineOrder: 2,
+          }),
+          new ProgramLine({
+            setsBaseValue: "4",
+            repsBaseValue: "reps",
+            loadBaseValue: "load",
+            rpeBaseValue: "rpe",
+            requestFeedbackText: true,
+            lineOrder: 4,
+          }),
+          new ProgramLine({
+            setsBaseValue: "1",
+            repsBaseValue: "reps",
+            loadBaseValue: "load",
+            rpeBaseValue: "rpe",
+            requestFeedbackText: true,
+            lineOrder: 1,
+          }),
+        ],
+      }),
+      new ProgramExercise({
+        exercise: coachInfo.exercises?.[2],
+        scheduleWeek: "B",
+        scheduleDay: 4,
+        scheduleOrder: 1,
+        lines: [
+          new ProgramLine({
+            setsBaseValue: "2222222222222222222",
+            repsBaseValue: "reps",
+            loadBaseValue: "load",
+            rpeBaseValue: "rpe",
+            requestFeedbackText: true,
+            lineOrder: 2,
+          }),
+          new ProgramLine({
+            setsBaseValue: "4",
+            repsBaseValue: "reps",
+            loadBaseValue: "load",
+            rpeBaseValue: "rpe",
+            requestFeedbackText: true,
+            lineOrder: 4,
+          }),
+          new ProgramLine({
+            setsBaseValue: "1",
+            repsBaseValue: "reps",
+            loadBaseValue: "load",
+            rpeBaseValue: "rpe",
+            requestFeedbackText: true,
+            lineOrder: 1,
+          }),
+        ],
+      }),
+      new ProgramExercise({
+        exercise: coachInfo.exercises?.[2],
+        exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
+        scheduleWeek: "B",
+        scheduleDay: "1",
+        scheduleOrder: 1,
+        lines: [
+          new ProgramLine({
+            setsBaseValue: "sets",
+            repsBaseValue: "reps",
+            loadBaseValue: "load",
+            rpeBaseValue: "rpe",
+            requestFeedbackText: true,
+          }),
+        ],
+      }),
+    ],
+  }),
+);
 watch(program, () => console.log("from parent"));
 
 /**
@@ -579,6 +674,8 @@ function handleDrawerClick(clickParam: any) {
 
 <style scoped lang="scss">
 .os-top-card {
+  position: sticky;
+  top: 0;
   z-index: 1;
   border-radius: 0 0 20px 20px;
 }

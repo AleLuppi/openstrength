@@ -1,16 +1,5 @@
 <template>
   <q-list>
-    <!-- Greet with user -->
-    <router-link :to="{ name: 'profile' }"
-      ><q-item-label header>{{
-        user.isSignedIn
-          ? user.displayName
-            ? $t("layout.drawer.welcome_logged_in", { name: user.displayName })
-            : $t("layout.drawer.welcome_logged_in_noname")
-          : $t("layout.drawer.welcome_logged_out")
-      }}</q-item-label></router-link
-    >
-
     <!-- Display each page title as a separate item -->
     <q-item
       v-for="page in drawerPages"
@@ -18,7 +7,7 @@
       clickable
       tag="a"
       :to="{ name: page.route }"
-      active-class="os-child-bg-primary"
+      active-class="os-child-highlight-primary"
       class="link-child os-text-unselected"
     >
       <!-- Icon near text on expanded drawer -->
@@ -43,7 +32,7 @@
       clickable
       tag="a"
       :to="{ name: user.isSignedIn ? 'profile' : 'login' }"
-      active-class="os-child-bg-primary"
+      active-class="os-child-highlight-primary"
       class="link-child os-text-unselected"
     >
       <!-- Icon near text on expanded drawer -->
@@ -132,9 +121,15 @@ const drawerPages = computed(() =>
 </script>
 
 <style scoped lang="scss">
-.os-child-bg-primary > .q-card {
-  background: $primary;
-  color: $lightest;
+.os-child-highlight-primary {
+  & > .q-card {
+    background: $primary;
+    color: $lightest;
+  }
+
+  & > .q-item__section {
+    border-bottom: solid 3px $primary;
+  }
 }
 
 .os-text-unselected {

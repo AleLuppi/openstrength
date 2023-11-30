@@ -9,7 +9,7 @@
       <!-- Show week and day and allow navigation -->
       <div
         v-if="firstTablesInDay.includes(idScheduleInfo.toString())"
-        class="row items-center"
+        class="row items-center q-gutter-x-sm"
         :class="{
           'q-mt-lg': firstTablesInDay.indexOf(idScheduleInfo.toString()) > 0,
         }"
@@ -88,19 +88,46 @@
             </q-menu>
           </span>
         </h6>
+
+        <q-btn
+          @click="
+            editWeekDayName = splitScheduleInfoNames(idScheduleInfo.toString())
+          "
+          icon="edit"
+          size="sm"
+          color="light"
+          flat
+          round
+          :ripple="false"
+        >
+          <FormProgramNewWeekDay
+            v-model="editWeekDayName"
+            @save="renameWeekDay"
+            :cover="false"
+            anchor="center right"
+            self="center right"
+            :offset="[15, 0]"
+          >
+          </FormProgramNewWeekDay>
+        </q-btn>
+
         <q-separator inset size="1px" class="col" />
       </div>
 
       <!-- Exercise element -->
       <div class="row items-start justify-evenly q-mb-md">
         <!-- Reordering arrows -->
-        <div class="col-1 self-center column justify-center">
+        <div class="self-center column justify-center">
           <q-btn
             @click="reorderTableRelative(idScheduleInfo.toString(), -1)"
             icon="arrow_drop_up"
             flat
             dense
-            color="secondary"
+            :color="
+              firstTablesInDay.includes(idScheduleInfo.toString())
+                ? 'grey-5'
+                : 'secondary'
+            "
             :disable="firstTablesInDay.includes(idScheduleInfo.toString())"
           />
           <q-btn
@@ -108,7 +135,11 @@
             icon="arrow_drop_down"
             flat
             dense
-            color="secondary"
+            :color="
+              lastTablesInDay.includes(idScheduleInfo.toString())
+                ? 'grey-5'
+                : 'secondary'
+            "
             :disable="lastTablesInDay.includes(idScheduleInfo.toString())"
           />
         </div>
@@ -185,20 +216,40 @@
       >
         <q-btn
           icon="add"
-          label="Exercise"
+          :label="$t('coach.program_management.builder.new_exercise')"
           @click="addTable(idScheduleInfo.toString())"
           rounded
           unelevated
         />
-        <!-- TODO @click add day -->
         <q-btn
           icon="add"
-          label="Day"
-          @click="addTable(idScheduleInfo.toString())"
+          :label="$t('coach.program_management.builder.new_day')"
+          @click="editWeekDayName = ['', '']"
           rounded
           unelevated
-        />
+        >
+          <FormProgramNewWeekDay
+            v-model="editWeekDayName"
+            @save="renameWeekDay"
+            :cover="false"
+            anchor="bottom middle"
+            self="top middle"
+            :offset="[0, 5]"
+          >
+          </FormProgramNewWeekDay>
+        </q-btn>
       </div>
+    </div>
+
+    <!-- Show something when filters remove any exercise -->
+    <div
+      v-if="
+        !objectIsEmpty(exercisesValues) &&
+        objectIsEmpty(filteredExercisesValues)
+      "
+      class="text-center"
+    >
+      <slot name="empty-filtered"></slot>
     </div>
   </div>
 </template>
@@ -207,6 +258,7 @@
 import { ref, computed, PropType, watch } from "vue";
 import { debounce, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
+import FormProgramNewWeekDay from "@/components/forms/FormProgramNewWeekDay.vue";
 import { scrollToElement } from "@/helpers/scroller";
 import { arrayCompare, arrayUniqueValues } from "@/helpers/array";
 import {
@@ -217,6 +269,7 @@ import {
 import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import {
+  objectIsEmpty,
   objectDeepCopy,
   objectMapKeys,
   objectMapValues,
@@ -273,6 +326,7 @@ const exercisesValues = ref<{
   };
 }>({});
 const programCurrentValue = ref<Program>();
+const editWeekDayName = ref<string[]>();
 
 // Get a subset of tables to show according to filters
 const filteredExercisesValues = computed(() => {
@@ -327,7 +381,7 @@ const sortedProgramExercises = computed(() =>
 
 // Get id of first and last table element for each day
 const firstTablesInDay = computed(() =>
-  Object.keys(exercisesValues.value).reduce((out: string[], key) => {
+  Object.keys(filteredExercisesValues.value).reduce((out: string[], key) => {
     const keySplit = splitScheduleInfoNames(key).slice(0, 2);
     if (
       !out.some((firstInDay) =>
@@ -339,7 +393,7 @@ const firstTablesInDay = computed(() =>
   }, []),
 );
 const lastTablesInDay = computed(() =>
-  Object.keys(exercisesValues.value)
+  Object.keys(filteredExercisesValues.value)
     .reverse()
     .reduce((out: string[], key) => {
       const keySplit = splitScheduleInfoNames(key).slice(0, 2);
@@ -603,6 +657,72 @@ function addTable(idScheduleInfo: string) {
       note: undefined,
     },
   };
+}
+
+/**
+ * Move one week and day pair from table to a new name.
+ *
+ * @param toSchedule destination week and day name.
+ * @param fromSchedule source week and day name.
+ * @param createIfEmpty if true, create a new table at destination week and day if source is empty.
+ */
+function renameWeekDay(
+  toSchedule: string[],
+  fromSchedule: string[],
+  createIfEmpty: boolean = true,
+) {
+  // Check and parse input
+  if (toSchedule.length < 2 || fromSchedule.length < 2) {
+    $q.notify({
+      type: "negative",
+      message: i18n.t("coach.program_management.builder.new_day_error"),
+      position: "bottom",
+    });
+    return;
+  }
+  const [toWeekId, toDayId] = toSchedule;
+  const [fromWeekId, fromDayId] = fromSchedule;
+
+  // Check if new naming can be used
+  console.log(fromSchedule, toSchedule);
+  if (!toWeekId || !toDayId) return;
+  if (
+    Object.keys(exercisesValues.value).some((key) =>
+      arrayCompare(
+        splitScheduleInfoNames(key).slice(0, 2),
+        toSchedule.slice(0, 2),
+      ),
+    )
+  ) {
+    $q.notify({
+      type: "negative",
+      message: i18n.t(
+        "coach.program_management.builder.new_day_already_exists",
+      ),
+      position: "bottom",
+    });
+    return;
+  }
+
+  // Check if source is empty while renaming
+  let isSourceEmpty = true;
+
+  // Perform renaming
+  exercisesValues.value = Object.entries(exercisesValues.value).reduce(
+    (out: typeof exercisesValues.value, [key, value]) => {
+      const scheduleInfo = splitScheduleInfoNames(key);
+      if (scheduleInfo[0] == fromWeekId && scheduleInfo[1] == fromDayId) {
+        out[mergeScheduleInfoNames(toWeekId, toDayId, scheduleInfo[2])] = value;
+        isSourceEmpty = false;
+      } else out[key] = value;
+      return out;
+    },
+    {},
+  );
+
+  // Optionally add a table is source is empty
+  if (createIfEmpty && isSourceEmpty)
+    addTable(mergeScheduleInfoNames(toWeekId, toDayId, 1));
 }
 
 /**
