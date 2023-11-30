@@ -324,6 +324,7 @@ import { Program } from "@/helpers/programs/program";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import { Exercise } from "@/helpers/exercises/exercise";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
+import { event } from "vue-gtag";
 
 // Init plugin
 const $q = useQuasar();
@@ -445,6 +446,13 @@ function createMaxLift() {
       if (isNew)
         (coachInfo.maxlifts = coachInfo.maxlifts || []).push(newMaxLift);
       maxliftFormElement.value?.reset();
+
+      // Register GA4 event
+      event("athleteview_maxlift_created", {
+        event_category: "documentation",
+        event_label: "New MaxLift Created in AthleteView",
+        value: 1,
+      });
     },
     onError: () =>
       $q.notify({
@@ -506,6 +514,13 @@ function createAthlete() {
     onSuccess: () => {
       (coachInfo.athletes = coachInfo.athletes || []).push(newAthlete);
       clearAthlete();
+
+      // Register GA4 event
+      event("new_athlete_created", {
+        event_category: "documentation",
+        event_label: "New Athlete added to Athlete library",
+        value: 1,
+      });
     },
     onError: () =>
       $q.notify({
