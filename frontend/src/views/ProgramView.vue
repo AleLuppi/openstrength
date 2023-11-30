@@ -725,6 +725,32 @@ const optionChart = {
   },
 };
 
+// Test line translation
+const lineTest = new ProgramLine({
+  setsBaseValue: "W1-3",
+  repsBaseValue: "5",
+  loadBaseValue: "50 kg",
+  rpeBaseValue: "8",
+  requestFeedbackText: true,
+  setsReference: new ProgramLine({
+    setsBaseValue: "8",
+    repsBaseValue: "5",
+    loadBaseValue: "50 kg",
+    rpeBaseValue: "8",
+    requestFeedbackText: true,
+  }),
+});
+
+console.log("------------------------------------");
+console.log("setsValue", lineTest.setsValue);
+console.log("setsBaseValue", lineTest.setsBaseValue);
+console.log("setsComputedValue", lineTest.setsComputedValue);
+console.log("setsSupposedValue", lineTest.setsSupposedValue);
+console.log("setsRangeMin", lineTest.setsRangeMin);
+console.log("setsRangeMax", lineTest.setsRangeMax);
+console.log("setsOperation", lineTest.setsOperation);
+console.log("setsReference", lineTest.setsReference);
+
 /**
  * Handle custom right drawer click.
  *

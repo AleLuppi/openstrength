@@ -412,13 +412,12 @@ export class ProgramLine {
     }
   }
 
+  //TODO: modify regex in drive document
   get setsOperation(): string | undefined {
-    if (
-      this.setsBaseValue !== undefined &&
-      /^.[+-]\d*$/.test(this.setsBaseValue)
-    ) {
-      const [, operationPart] = this.setsBaseValue.match(/[+-]\d*$/) || [];
-      return operationPart || undefined;
+    if (this.setsBaseValue !== undefined) {
+      const [, operationPart] =
+        this.setsBaseValue.match(/(?:[^\d\s+-]+)?([+-]\d+)$/) || [];
+      return operationPart ? operationPart : undefined;
     } else {
       return undefined;
     }
@@ -459,7 +458,7 @@ export class ProgramLine {
       this.setsBaseValue !== undefined &&
       /^\d*\/\d*$/.test(this.setsBaseValue)
     ) {
-      const [, minPart] = this.setsBaseValue.match(/^\d*/) || [];
+      const [minPart] = this.setsBaseValue.match(/^\d*/) || [];
       return minPart ? parseInt(minPart) : undefined;
     } else {
       return undefined;
