@@ -53,10 +53,9 @@ export function calculatePercentage1RM(
  */
 export function calculateTotalSets(programLines: ProgramLine[]): number {
   return programLines.reduce((totalSets, line) => {
-    // Convert to integer or default to 0 if NaN
-    const setsBaseValue = parseInt(line.setsBaseValue ?? "0", 10);
+    const setsValue = line.setsValue ?? 0;
 
-    totalSets += setsBaseValue;
+    totalSets += setsValue;
 
     return totalSets;
   }, 0);
@@ -67,12 +66,10 @@ export function calculateTotalSets(programLines: ProgramLine[]): number {
  */
 export function calculateTotalReps(programLines: ProgramLine[]): number {
   return programLines.reduce((totalReps, line) => {
-    // Convert to integer or default to 0 if NaN
+    const repsValue = line.repsValue ?? 0;
+    const setsValue = line.setsValue ?? 0;
 
-    const repsBaseValue = parseInt(line.repsBaseValue ?? "0");
-    const setsBaseValue = parseInt(line.setsBaseValue ?? "0");
-
-    totalReps += repsBaseValue * setsBaseValue;
+    totalReps += repsValue * setsValue;
 
     return totalReps;
   }, 0);

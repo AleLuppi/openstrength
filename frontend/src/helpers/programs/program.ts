@@ -394,6 +394,13 @@ export class ProgramLine {
       return this.setsComputedValue;
     }
   }
+  public get repsValue(): number | undefined {
+    if (this.repsBaseValue !== undefined && /^\d*$/.test(this.repsBaseValue)) {
+      return parseInt(this.repsBaseValue);
+    } else {
+      return this.repsComputedValue;
+    }
+  }
 
   get setsComputedValue(): number | undefined {
     if (
@@ -412,11 +419,38 @@ export class ProgramLine {
     }
   }
 
+  //TODO: add case from rpe table (load and rpe present)
+  get repsComputedValue(): number | undefined {
+    if (
+      this.repsReference !== null &&
+      this.repsReference?.repsValue !== undefined
+    ) {
+      if (
+        this.repsOperation !== undefined &&
+        /^[+-]\d*$/.test(this.repsOperation)
+      ) {
+        const operationValue = parseInt(this.repsOperation);
+        return this.repsReference.repsValue + operationValue;
+      }
+    } else {
+      return this.setsSupposedValue;
+    }
+  }
+
   //TODO: modify regex in drive document
   get setsOperation(): string | undefined {
     if (this.setsBaseValue !== undefined) {
       const [, operationPart] =
         this.setsBaseValue.match(/(?:[^\d\s+-]+)?([+-]\d+)$/) || [];
+      return operationPart ? operationPart : undefined;
+    } else {
+      return undefined;
+    }
+  }
+  get repsOperation(): string | undefined {
+    if (this.repsBaseValue !== undefined) {
+      const [, operationPart] =
+        this.repsBaseValue.match(/(?:[^\d\s+-]+)?([+-]\d+)$/) || [];
       return operationPart ? operationPart : undefined;
     } else {
       return undefined;
@@ -441,11 +475,39 @@ export class ProgramLine {
       return undefined;
     }
   }
+  get repsSupposedValue(): number | undefined {
+    if (
+      this.repsBaseValue !== undefined &&
+      /^\d*\/\d*$/.test(this.repsBaseValue)
+    ) {
+      const [secondNumber, firstNumber] = this.repsBaseValue
+        .split("/")
+        .map(Number);
+      return Math.round((secondNumber + firstNumber) / 2);
+    } else if (
+      this.repsBaseValue !== undefined &&
+      /^\(\d*\)$/.test(this.repsBaseValue)
+    ) {
+      return parseInt(this.repsBaseValue.slice(1, -1));
+    } else {
+      return undefined;
+    }
+  }
 
   get requireSets(): boolean {
     if (
       this.setsBaseValue !== undefined &&
       /^\\?|\\(\d*\\)|\d*\/\d*$/.test(this.setsBaseValue)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  get requireReps(): boolean {
+    if (
+      this.repsBaseValue !== undefined &&
+      /^\\?|\\(\d*\\)|\d*\/\d*$/.test(this.repsBaseValue)
     ) {
       return true;
     } else {
@@ -464,6 +526,17 @@ export class ProgramLine {
       return undefined;
     }
   }
+  get repsRangeMin(): number | undefined {
+    if (
+      this.repsBaseValue !== undefined &&
+      /^\d*\/\d*$/.test(this.repsBaseValue)
+    ) {
+      const [minPart] = this.repsBaseValue.match(/^\d*/) || [];
+      return minPart ? parseInt(minPart) : undefined;
+    } else {
+      return undefined;
+    }
+  }
 
   get setsRangeMax(): number | undefined {
     if (
@@ -471,6 +544,17 @@ export class ProgramLine {
       /^\d*\/\d*$/.test(this.setsBaseValue)
     ) {
       const [, maxPart] = this.setsBaseValue.match(/\/(\d*)$/) || [];
+      return maxPart ? parseInt(maxPart) : undefined;
+    } else {
+      return undefined;
+    }
+  }
+  get repsRangeMax(): number | undefined {
+    if (
+      this.repsBaseValue !== undefined &&
+      /^\d*\/\d*$/.test(this.repsBaseValue)
+    ) {
+      const [, maxPart] = this.repsBaseValue.match(/\/(\d*)$/) || [];
       return maxPart ? parseInt(maxPart) : undefined;
     } else {
       return undefined;

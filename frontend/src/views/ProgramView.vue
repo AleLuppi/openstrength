@@ -728,7 +728,7 @@ const optionChart = {
 // Test line translation
 const lineTest = new ProgramLine({
   setsBaseValue: "W1-3",
-  repsBaseValue: "5",
+  repsBaseValue: "5/8",
   loadBaseValue: "50 kg",
   rpeBaseValue: "8",
   requestFeedbackText: true,
@@ -739,9 +739,17 @@ const lineTest = new ProgramLine({
     rpeBaseValue: "8",
     requestFeedbackText: true,
   }),
+  repsReference: new ProgramLine({
+    setsBaseValue: "8",
+    repsBaseValue: "5",
+    loadBaseValue: "50 kg",
+    rpeBaseValue: "8",
+    requestFeedbackText: true,
+  }),
 });
 
-console.log("------------------------------------");
+console.log("-----------START---------------");
+console.log("-----------SETS---------------");
 console.log("setsValue", lineTest.setsValue);
 console.log("setsBaseValue", lineTest.setsBaseValue);
 console.log("setsComputedValue", lineTest.setsComputedValue);
@@ -750,6 +758,17 @@ console.log("setsRangeMin", lineTest.setsRangeMin);
 console.log("setsRangeMax", lineTest.setsRangeMax);
 console.log("setsOperation", lineTest.setsOperation);
 console.log("setsReference", lineTest.setsReference);
+console.log("requireSets", lineTest.requireSets);
+console.log("-----------REPS---------------");
+console.log("repsValue", lineTest.repsValue);
+console.log("repsBaseValue", lineTest.repsBaseValue);
+console.log("repsComputedValue", lineTest.repsComputedValue);
+console.log("repsSupposedValue", lineTest.repsSupposedValue);
+console.log("repsRangeMin", lineTest.repsRangeMin);
+console.log("repsRangeMax", lineTest.repsRangeMax);
+console.log("repsOperation", lineTest.repsOperation);
+console.log("repsReference", lineTest.repsReference);
+console.log("requireReps", lineTest.requireReps);
 
 /**
  * Handle custom right drawer click.
