@@ -278,7 +278,8 @@
                         ref="maxliftFormElement"
                         :maxlift="maxlift"
                         :exercises="exercises"
-                        :on-submit="createMaxLift"
+                        @submit="saveMaxlift"
+                        @reset="showMaxLiftAddDialog = false"
                       ></FormMaxLift>
                     </q-card>
                   </q-dialog>
@@ -426,10 +427,10 @@ function onTabChange(tab: string) {
   selectedTab.value = tab;
 }
 
-/** TODO check
+/**
  * Create a new maxlift and assign to a coach
  */
-function createMaxLift() {
+function saveMaxlift() {
   // Get current maxlift and check if already instanciated on db
   const newMaxLift = maxlift.value;
   const isNew = !newMaxLift.uid;

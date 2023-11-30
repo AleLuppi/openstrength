@@ -347,6 +347,7 @@ import { Program } from "@/helpers/programs/program";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { arrayUniqueValues } from "@/helpers/array";
 import { event } from "vue-gtag";
+
 // Use plugins
 const $q = useQuasar();
 const i18n = useI18n();
