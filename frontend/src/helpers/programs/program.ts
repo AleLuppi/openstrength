@@ -3,6 +3,7 @@ import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
 import { programsCollection } from "@/helpers/database/collections";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { AthleteUser, CoachUser } from "@/helpers/users/user";
+import { MaxLift } from "../maxlifts/maxlift";
 
 /**
  * Training program properties.
@@ -79,6 +80,7 @@ export type ProgramLineProps = {
   repsReference?: ProgramLine;
   loadBaseValue?: string;
   loadReference?: ProgramLine;
+  maxliftReference?: MaxLift;
   rpeBaseValue?: string;
   rpeReference?: ProgramLine;
 
@@ -377,6 +379,7 @@ export class ProgramLine {
   repsReference?: ProgramLine;
   loadBaseValue?: string;
   loadReference?: ProgramLine;
+  maxliftReference?: MaxLift;
   rpeBaseValue?: string;
   rpeReference?: ProgramLine;
 
@@ -571,6 +574,7 @@ export class ProgramLine {
     repsReference,
     loadBaseValue,
     loadReference,
+    maxliftReference,
     rpeBaseValue,
     rpeReference,
     note,
@@ -586,6 +590,7 @@ export class ProgramLine {
     this.repsReference = repsReference;
     this.loadBaseValue = loadBaseValue;
     this.loadReference = loadReference;
+    this.maxliftReference = maxliftReference;
     this.rpeBaseValue = rpeBaseValue;
     this.rpeReference = rpeReference;
     this.note = note;
