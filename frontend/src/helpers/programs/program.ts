@@ -3,7 +3,7 @@ import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
 import { programsCollection } from "@/helpers/database/collections";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { AthleteUser, CoachUser } from "@/helpers/users/user";
-import { MaxLift } from "../maxlifts/maxlift";
+import { MaxLift, MaxLiftType } from "../maxlifts/maxlift";
 
 /**
  * Training program properties.
@@ -421,7 +421,6 @@ export class ProgramLine {
       return this.setsSupposedValue;
     }
   }
-
   //TODO: add case from rpe table (load and rpe present)
   get repsComputedValue(): number | undefined {
     if (
@@ -455,6 +454,18 @@ export class ProgramLine {
       const [, operationPart] =
         this.repsBaseValue.match(/(?:[^\d\s+-]+)?([+-]\d+)$/) || [];
       return operationPart ? operationPart : undefined;
+    } else {
+      return undefined;
+    }
+  }
+  get loadOperation(): string | undefined {
+    if (
+      this.loadBaseValue !== undefined &&
+      /^.[+-]\d*kg|[+-]\d*%|\d*%$/.test(this.loadBaseValue)
+    ) {
+      const [, operationPart] =
+        this.loadBaseValue.match(/[+-]\d*kg|[+-]\d*%|\d*%$/) || [];
+      return operationPart || undefined;
     } else {
       return undefined;
     }
@@ -517,6 +528,18 @@ export class ProgramLine {
       return false;
     }
   }
+  get requireLoad(): boolean {
+    if (
+      this.loadBaseValue !== undefined &&
+      /^\\?|\\(\d*kg\\)|\d*kg\/\d*kg|\\(\d*%\\)|\d*%\/\d*%$/.test(
+        this.loadBaseValue,
+      )
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   get setsRangeMin(): number | undefined {
     if (
@@ -539,6 +562,36 @@ export class ProgramLine {
     } else {
       return undefined;
     }
+  }
+  //TODO check
+  get loadRangeMin(): number | undefined {
+    if (
+      this.loadBaseValue !== undefined &&
+      /^\d*kg\/\d*kg$/.test(this.loadBaseValue)
+    ) {
+      const [, min] = this.loadBaseValue.match(/^\d*/) || [];
+      return min !== undefined ? Number(min) : undefined;
+    } else if (
+      this.loadBaseValue !== undefined &&
+      /^\d*%\/\d*%$/.test(this.loadBaseValue)
+    ) {
+      if (
+        this.maxliftReference !== undefined &&
+        this.maxliftReference.type === MaxLiftType._1RM &&
+        this.maxliftReference.exercise === this.programExercise?.exercise &&
+        this.maxliftReference.value !== undefined
+      ) {
+        const [, minPercent] = this.loadBaseValue.match(/^\d*%/) || [];
+        if (minPercent !== undefined) {
+          const parsedMinPercent = parseFloat(minPercent);
+          return isNaN(parsedMinPercent)
+            ? undefined
+            : parsedMinPercent * parseFloat(this.maxliftReference.value);
+        }
+      }
+    }
+
+    return undefined;
   }
 
   get setsRangeMax(): number | undefined {
