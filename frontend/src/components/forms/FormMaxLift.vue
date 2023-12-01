@@ -70,6 +70,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, PropType } from "vue";
 import { QForm } from "quasar";
+import { dateGetWithoutTimezone } from "@/helpers/scalar";
 import { Exercise } from "@/helpers/exercises/exercise";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 
@@ -152,7 +153,7 @@ function onSubmit() {
   maxlift.type = maxliftType.value as MaxLiftType;
   maxlift.value = maxliftValue.value;
   maxlift.performedOn = maxliftDate.value
-    ? new Date(maxliftDate.value)
+    ? dateGetWithoutTimezone(maxliftDate.value)
     : undefined;
 
   emits("submit", maxlift);
