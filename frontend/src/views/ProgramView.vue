@@ -682,7 +682,7 @@ watch(program, () => console.log("from parent"));
 
 // Compute chart data
 function computeTotalRepsWeek(program: Program) {
-  const exerciseName = coachInfo.exercises?.[2].name;
+  /*   const exerciseName = coachInfo.exercises?.[2].name;
   const exerciseVariantName = coachInfo.exercises?.[2].variants?.[2].name;
   const currentExerciseFullName =
     `${exerciseName} - ${exerciseVariantName}`.trim();
@@ -691,12 +691,16 @@ function computeTotalRepsWeek(program: Program) {
   const exerciseVariantName2 = coachInfo.exercises?.[1].variants?.[1].name;
   const currentExerciseFullName2 =
     `${exerciseName2} - ${exerciseVariantName2}`.trim();
-
+ */
   // Compute chart data for an array of exercises
-  const datasets = computeChartDataForExercises(program, [
-    currentExerciseFullName,
-    currentExerciseFullName2,
-  ]);
+
+  const datasets = computeChartDataForExercises(
+    program,
+    undefined,
+    new Set(["A", "B", "C", "D"]),
+    undefined,
+    "week",
+  );
 
   const formattedData = formatChartDataForChart(datasets);
   chartData.value = formattedData;

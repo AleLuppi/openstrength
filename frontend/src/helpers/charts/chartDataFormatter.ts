@@ -83,9 +83,7 @@ export function getUniqueWeeksAndDaysForExercise(
 /**
  * Method to get unique exercise names from the program (name considers base exercise and variant)
  */
-export function getUniqueExerciseNames(program: Program): {
-  uniqueExerciseNames: Set<string>;
-} {
+export function getUniqueExerciseNames(program: Program): Set<string> {
   const uniqueExerciseNames: Set<string> = new Set();
 
   program.programExercises?.forEach((exercise) => {
@@ -98,21 +96,27 @@ export function getUniqueExerciseNames(program: Program): {
     }
   });
 
-  return { uniqueExerciseNames };
+  return uniqueExerciseNames;
 }
 
 /**
- * Method to extract program line for a given exercise on a specific day and week.
- * If no day is passed, returns the program lines for the whole week
- * TODO: week can be null, also exercise can be null
+ * Method to extract program line for given exercises on specific days and weeks.
+ * If no days are passed, returns the program lines for the whole week
  */
 export function getProgramLines(
   program: Program,
-  exerciseFullName: string,
-  week: string | number,
-  day?: string | number,
+  exerciseFullNames?: string | string[],
+  weeks?: string | string[],
+  days?: string | string[],
 ): ProgramLine[] {
   const filteredLines: ProgramLine[] = [];
+
+  // Convert single elements to arrays
+  const exerciseNamesArray = Array.isArray(exerciseFullNames)
+    ? exerciseFullNames
+    : [exerciseFullNames];
+  const weeksArray = Array.isArray(weeks) ? weeks : [weeks];
+  const daysArray = Array.isArray(days) ? days : [days];
 
   program.programExercises?.forEach((exercise) => {
     const exerciseName = exercise.exercise?.name || "";
@@ -121,9 +125,10 @@ export function getProgramLines(
       `${exerciseName} - ${exerciseVariantName}`.trim();
 
     if (
-      currentExerciseFullName === exerciseFullName &&
-      String(exercise.scheduleWeek) === String(week) &&
-      (day === undefined || String(exercise.scheduleDay) === String(day))
+      (!exerciseFullNames ||
+        exerciseNamesArray.includes(currentExerciseFullName)) &&
+      (!weeks || weeksArray.includes(String(exercise.scheduleWeek))) &&
+      (!days || daysArray.includes(String(exercise.scheduleDay)))
     ) {
       const lines = exercise.lines?.slice();
 
@@ -140,35 +145,68 @@ export function getProgramLines(
  * Computes the total reps for a single exercise in a program
  * @param program program instance passed
  * @param currentExerciseFullName full exercise name defined as "exerciseName - variantName"
+ * @param weeks
+ * @param days
+ * @param labelType
  * @returns
  */
 export function computeTotalRepsForExercise(
   program: Program,
   currentExerciseFullName: string,
+  weeks?: Set<string>,
+  days?: Set<string>,
+  labelType?: "day" | "week",
 ): ExerciseChartData[] {
-  const { weeks, days } = getUniqueWeeksAndDaysForExercise(
-    program,
-    currentExerciseFullName,
-  );
+  if (!weeks || !days) {
+    const { weeks: computedUniqueWeeks, days: computedUniqueDays } =
+      getUniqueWeeksAndDaysForExercise(program, currentExerciseFullName);
+
+    if (!weeks) {
+      weeks = computedUniqueWeeks;
+    }
+
+    if (!days) {
+      days = computedUniqueDays;
+    }
+  }
 
   const data: ExerciseChartData[] = [];
 
-  weeks.forEach((week) => {
-    let totalRepsForWeek = 0;
-    days.forEach((day) => {
-      const lines = getProgramLines(
-        program,
-        currentExerciseFullName,
-        String(week),
-        String(day),
-      );
+  if (labelType === "week") {
+    weeks.forEach((week) => {
+      let totalRepsForWeek = 0;
+      days?.forEach((day) => {
+        const lines = getProgramLines(
+          program,
+          currentExerciseFullName,
+          String(week),
+          String(day),
+        );
 
-      totalRepsForWeek += calculateTotalReps(lines);
+        totalRepsForWeek += calculateTotalReps(lines);
+      });
+
+      const label = `Week ${week}`;
+      data.push({ key: label, value: totalRepsForWeek });
     });
+  } else if (labelType === "day") {
+    days?.forEach((day) => {
+      let totalRepsForDay = 0;
+      weeks?.forEach((week) => {
+        const lines = getProgramLines(
+          program,
+          currentExerciseFullName,
+          String(week),
+          String(day),
+        );
 
-    const label = `Week ${week}`;
-    data.push({ key: label, value: totalRepsForWeek });
-  });
+        totalRepsForDay += calculateTotalReps(lines);
+      });
+
+      const label = `Day ${day}`;
+      data.push({ key: label, value: totalRepsForDay });
+    });
+  }
 
   return data;
 }
@@ -181,12 +219,28 @@ export function computeTotalRepsForExercise(
  */
 export function computeChartDataForExercises(
   program: Program,
-  exerciseNames: string[],
+  exerciseNames?: Set<string>,
+  weeks?: Set<string>,
+  days?: Set<string>,
+  labelType?: "day" | "week",
 ): ExerciseChartDataset[] {
   const datasets: ExerciseChartDataset[] = [];
 
-  exerciseNames.forEach((exerciseName) => {
-    const data = computeTotalRepsForExercise(program, exerciseName);
+  if (labelType === undefined) {
+    labelType = "week";
+  }
+  if (exerciseNames === undefined) {
+    exerciseNames = getUniqueExerciseNames(program);
+  }
+
+  exerciseNames?.forEach((exerciseName) => {
+    const data = computeTotalRepsForExercise(
+      program,
+      exerciseName,
+      weeks,
+      days,
+      labelType,
+    );
 
     datasets.push({
       backgroundColor: "", //TODO: clean up, colors are overwritten later
