@@ -1,8 +1,17 @@
 import { Program, ProgramLine } from "@/helpers/programs/program";
 import { ChartData } from "chart.js";
 import { colors } from "quasar";
-import { calculateTotalReps } from "./chartDatasetComputations";
-import { OSAvailableXType, OSChartDataRequest } from "./chartTypes";
+import {
+  calculateTotalReps,
+  calculateTotalSets,
+} from "./chartDatasetComputations";
+import {
+  OSAvailableXType,
+  OSChartDataRequest,
+  OSChartDescriptor,
+  OSChartType,
+  OSChartVersion,
+} from "./chartTypes";
 const { getPaletteColor, lighten } = colors;
 
 // TODO: find a way to compute all the charts, now only total reps is computed
@@ -142,21 +151,33 @@ export function getProgramLines(
   return filteredLines;
 }
 
-/**
- * Computes the total reps for a single exercise in a program
- * @param program program instance passed
- * @param currentExerciseFullName full exercise name defined as "exerciseName - variantName"
- * @param weeks
- * @param days
- * @param labelType
- * @returns
- */
-export function computeTotalRepsForExercise(
+export function getCalculationFunction(
+  chartInfo: OSChartDescriptor,
+): (lines: ProgramLine[]) => number {
+  if (
+    chartInfo.chartVersion === OSChartVersion.TotalReps &&
+    chartInfo.chartType == OSChartType.Volume
+  ) {
+    return calculateTotalReps;
+  } else if (
+    chartInfo.chartVersion === OSChartVersion.TotalSets &&
+    chartInfo.chartType == OSChartType.Volume
+  ) {
+    return calculateTotalSets;
+  }
+
+  //TODO add other charts
+
+  //TODO add a default method
+  return calculateTotalReps;
+}
+
+export function computeDataForExercise(
   program: Program,
   currentExerciseFullName: string,
   weeks?: Set<string>,
   days?: Set<string>,
-  labelType?: OSAvailableXType,
+  chartInfo?: OSChartDescriptor,
 ): ExerciseChartData[] {
   if (!weeks || !days) {
     const { weeks: computedUniqueWeeks, days: computedUniqueDays } =
@@ -173,9 +194,14 @@ export function computeTotalRepsForExercise(
 
   const data: ExerciseChartData[] = [];
 
-  if (labelType === OSAvailableXType.Weeks) {
+  //TODO: substitute calculateTotalReps with a default "fallback" method
+  const calculationFunction = chartInfo
+    ? getCalculationFunction(chartInfo)
+    : calculateTotalReps;
+
+  if (chartInfo?.xAxisType === OSAvailableXType.Weeks) {
     weeks.forEach((week) => {
-      let totalRepsForWeek = 0;
+      let totalValueForWeek = 0;
       days?.forEach((day) => {
         const lines = getProgramLines(
           program,
@@ -184,15 +210,15 @@ export function computeTotalRepsForExercise(
           String(day),
         );
 
-        totalRepsForWeek += calculateTotalReps(lines);
+        totalValueForWeek += calculationFunction(lines);
       });
 
       const label = `Week ${week}`;
-      data.push({ key: label, value: totalRepsForWeek });
+      data.push({ key: label, value: totalValueForWeek });
     });
-  } else if (labelType === OSAvailableXType.Days) {
+  } else if (chartInfo?.xAxisType === OSAvailableXType.Days) {
     days?.forEach((day) => {
-      let totalRepsForDay = 0;
+      let totalValueForDay = 0;
       weeks?.forEach((week) => {
         const lines = getProgramLines(
           program,
@@ -201,41 +227,38 @@ export function computeTotalRepsForExercise(
           String(day),
         );
 
-        totalRepsForDay += calculateTotalReps(lines);
+        totalValueForDay += calculationFunction(lines);
       });
 
       const label = `Day ${day}`;
-      data.push({ key: label, value: totalRepsForDay });
+      data.push({ key: label, value: totalValueForDay });
     });
   }
 
   return data;
 }
 
-/**
- * Computes the data for the chart for an array of exercises.
- */
 export function computeChartData(
   chartRequest: OSChartDataRequest,
 ): ExerciseChartDataset[] {
   const datasets: ExerciseChartDataset[] = [];
 
-  if (chartRequest.chartInfo.xAxisType === undefined) {
+  if (!chartRequest.chartInfo.xAxisType) {
     chartRequest.chartInfo.xAxisType = OSAvailableXType.Weeks;
   }
-  if (chartRequest.selectedExercises === undefined) {
+  if (!chartRequest.selectedExercises) {
     chartRequest.selectedExercises = getUniqueExerciseNames(
       chartRequest.program,
     );
   }
 
   chartRequest.selectedExercises?.forEach((exerciseName) => {
-    const data = computeTotalRepsForExercise(
+    const data = computeDataForExercise(
       chartRequest.program,
       exerciseName,
       chartRequest.selectedWeeks,
       chartRequest.selectedDays,
-      chartRequest.chartInfo.xAxisType,
+      chartRequest.chartInfo,
     );
 
     datasets.push({
