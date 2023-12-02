@@ -21,9 +21,7 @@
               flat
             ></q-btn>
 
-            <q-btn @click="updateCharts(chartDataRequest)"
-              >Get Chart Data</q-btn
-            >
+            <q-btn @click="updateCharts()">Get Chart Data</q-btn>
 
             <!-- Display and update assigned user -->
             <q-btn
@@ -131,13 +129,20 @@
             <h6 class="text-margin-xs">Charts Section</h6>
             <!-- <ChartSelector></ChartSelector> -->
 
-            <chart-component
-              v-if="chartData"
-              :title="chartTitle"
-              :description="chartDescription"
-              :data="chartData"
-              :options="chartOptions"
-            />
+            <div v-if="charts">
+              <template
+                v-for="(chartDataRequest, index) in chartDataRequests"
+                :key="index"
+              >
+                <chart-component
+                  :v-if="getChartData(chartDataRequest)"
+                  :title="getChartTitle(chartDataRequest)"
+                  :description="getChartDescription(chartDataRequest)"
+                  :data="getChartData(chartDataRequest)"
+                  :options="getChartOptions(chartDataRequest)"
+                />
+              </template>
+            </div>
           </div>
 
           <!-- MAX LIFT SECTION -->
@@ -413,12 +418,6 @@ const availableMaxLiftTypes: string[] = Object.values(MaxLiftType);
 const maxliftValue = ref(""); // TODO check
 const maxliftDate = ref<Date>(); // TODO check
 
-// Charts declaration
-const chartData = ref<any>(null);
-const chartOptions = ref<any>(null);
-const chartTitle = ref<string>();
-const chartDescription = ref<string>();
-
 // Get exercises to display
 const exercises = computed<Exercise[]>(() => {
   coachInfo.loadExercises(user.uid, true);
@@ -692,33 +691,56 @@ const program = ref<Program>(
 );
 watch(program, () => console.log("from parent"));
 
-const chartDataRequest: OSChartDataRequest = {
-  chartInfo: {
-    chartType: OSChartType.Volume,
-    chartVersion: OSChartVersion.TotalReps,
-    xAxisType: OSAvailableXType.Weeks,
-    chartTitle: "Total Reps varying weeks",
-    chartDescription: "Total reps varying weeks computed as reps x sets",
+const chartDataRequests: OSChartDataRequest[] = [
+  {
+    chartInfo: {
+      chartType: OSChartType.Volume,
+      chartVersion: OSChartVersion.TotalReps,
+      xAxisType: OSAvailableXType.Weeks,
+      chartTitle: "Total Reps varying weeks",
+      chartDescription: "Total reps varying weeks computed as reps x sets",
+    },
+    program: program.value,
+    selectedExercises: undefined,
+    selectedDays: undefined,
+    selectedWeeks: new Set(["A", "B", "C", "D"]),
   },
-  program: program.value,
-  selectedExercises: undefined,
-  selectedDays: undefined,
-  selectedWeeks: new Set(["A", "B", "C", "D"]),
-};
+  {
+    chartInfo: {
+      chartType: OSChartType.Volume,
+      chartVersion: OSChartVersion.TotalSets,
+      xAxisType: OSAvailableXType.Weeks,
+      chartTitle: "Total Sets varying weeks",
+      chartDescription:
+        "Total sets varying weeks computed as the sum of the sets",
+    },
+    program: program.value,
+    selectedExercises: undefined,
+    selectedDays: undefined,
+    selectedWeeks: new Set(["A", "B", "C", "D"]),
+  },
+];
 
+function getChartData(chartDataRequest: OSChartDataRequest): any {
+  return formatChartData(computeChartData(chartDataRequest));
+}
+
+function getChartOptions(chartDataRequest: OSChartDataRequest): any {
+  return createChartOptions(undefined, chartDataRequest.chartInfo.chartVersion);
+}
+
+function getChartTitle(chartDataRequest: OSChartDataRequest): string {
+  return chartDataRequest.chartInfo.chartTitle || "";
+}
+
+function getChartDescription(chartDataRequest: OSChartDataRequest): string {
+  return chartDataRequest.chartInfo.chartDescription || "";
+}
+
+const charts = ref<boolean>(false);
 // Compute chart data
-function updateCharts(chartDataRequest: OSChartDataRequest) {
-  // Compute datasets based on the chart request
-  const datasets = computeChartData(chartDataRequest);
-
-  // Assign data to chart component
-  chartData.value = formatChartData(datasets);
-  chartOptions.value = createChartOptions(
-    undefined,
-    chartDataRequest.chartInfo.chartVersion,
-  );
-  chartTitle.value = chartDataRequest.chartInfo.chartTitle;
-  chartDescription.value = chartDataRequest.chartInfo.chartDescription;
+function updateCharts() {
+  charts.value = true;
 }
 
 // Test line translation
