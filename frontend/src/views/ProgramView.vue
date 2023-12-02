@@ -21,7 +21,9 @@
               flat
             ></q-btn>
 
-            <q-btn @click="computeTotalRepsWeek(program)">Get Chart Data</q-btn>
+            <q-btn @click="updateCharts(chartDataRequest)"
+              >Get Chart Data</q-btn
+            >
 
             <!-- Display and update assigned user -->
             <q-btn
@@ -131,8 +133,8 @@
 
             <chart-component
               v-if="chartData"
-              title="Total Volume"
-              description="Andamento del volume per le diverse alzate principali."
+              :title="chartTitle"
+              :description="chartDescription"
               :data="chartData"
               :options="chartOptions"
             />
@@ -336,11 +338,17 @@ import { useRoute } from "vue-router";
 import { arrayUniqueValues } from "@/helpers/array";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 import {
-  computeChartDataForExercises,
+  computeChartData,
   createChartOptions,
-  formatChartDataForChart,
+  formatChartData,
 } from "@/helpers/charts/chartDataFormatter";
 import ChartComponent from "@/components/charts/ChartComponent.vue";
+import {
+  OSAvailableXType,
+  OSChartDataRequest,
+  OSChartType,
+  OSChartVersion,
+} from "@/helpers/charts/chartTypes";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -408,6 +416,8 @@ const maxliftDate = ref<Date>(); // TODO check
 // Charts declaration
 const chartData = ref<any>(null);
 const chartOptions = ref<any>(null);
+const chartTitle = ref<string>();
+const chartDescription = ref<string>();
 
 // Get exercises to display
 const exercises = computed<Exercise[]>(() => {
@@ -521,7 +531,7 @@ function onUpdateMaxLift(maxlift: MaxLift) {
 // PROGRAMS
 
 // TODO load programs
-const program = ref(
+const program = ref<Program>(
   new Program({
     uid: "prova",
     name: "Program name",
@@ -682,34 +692,33 @@ const program = ref(
 );
 watch(program, () => console.log("from parent"));
 
+const chartDataRequest: OSChartDataRequest = {
+  chartInfo: {
+    chartType: OSChartType.Volume,
+    chartVersion: OSChartVersion.TotalReps,
+    xAxisType: OSAvailableXType.Weeks,
+    chartTitle: "Total Reps varying weeks",
+    chartDescription: "Total reps varying weeks computed as reps x sets",
+  },
+  program: program.value,
+  selectedExercises: undefined,
+  selectedDays: undefined,
+  selectedWeeks: new Set(["A", "B", "C", "D"]),
+};
+
 // Compute chart data
-function computeTotalRepsWeek(program: Program) {
-  /*   const exerciseName = coachInfo.exercises?.[2].name;
-  const exerciseVariantName = coachInfo.exercises?.[2].variants?.[2].name;
-  const currentExerciseFullName =
-    `${exerciseName} - ${exerciseVariantName}`.trim();
+function updateCharts(chartDataRequest: OSChartDataRequest) {
+  // Compute datasets based on the chart request
+  const datasets = computeChartData(chartDataRequest);
 
-  const exerciseName2 = coachInfo.exercises?.[1].name;
-  const exerciseVariantName2 = coachInfo.exercises?.[1].variants?.[1].name;
-  const currentExerciseFullName2 =
-    `${exerciseName2} - ${exerciseVariantName2}`.trim();
- */
-  // Compute chart data for an array of exercises
-
-  const datasets = computeChartDataForExercises(
-    program,
+  // Assign data to chart component
+  chartData.value = formatChartData(datasets);
+  chartOptions.value = createChartOptions(
     undefined,
-    new Set(["A", "B", "C", "D"]),
-    undefined,
-    "week",
+    chartDataRequest.chartInfo.chartVersion,
   );
-
-  const formattedData = formatChartDataForChart(datasets);
-  chartData.value = formattedData;
-  console.log("chartdata", chartData);
-
-  const optionChart = createChartOptions(undefined, "Total Reps");
-  chartOptions.value = optionChart;
+  chartTitle.value = chartDataRequest.chartInfo.chartTitle;
+  chartDescription.value = chartDataRequest.chartInfo.chartDescription;
 }
 
 // Test line translation

@@ -2,6 +2,7 @@ import { Program, ProgramLine } from "@/helpers/programs/program";
 import { ChartData } from "chart.js";
 import { colors } from "quasar";
 import { calculateTotalReps } from "./chartDatasetComputations";
+import { OSAvailableXType, OSChartDataRequest } from "./chartTypes";
 const { getPaletteColor, lighten } = colors;
 
 // TODO: find a way to compute all the charts, now only total reps is computed
@@ -155,7 +156,7 @@ export function computeTotalRepsForExercise(
   currentExerciseFullName: string,
   weeks?: Set<string>,
   days?: Set<string>,
-  labelType?: "day" | "week",
+  labelType?: OSAvailableXType,
 ): ExerciseChartData[] {
   if (!weeks || !days) {
     const { weeks: computedUniqueWeeks, days: computedUniqueDays } =
@@ -172,7 +173,7 @@ export function computeTotalRepsForExercise(
 
   const data: ExerciseChartData[] = [];
 
-  if (labelType === "week") {
+  if (labelType === OSAvailableXType.Weeks) {
     weeks.forEach((week) => {
       let totalRepsForWeek = 0;
       days?.forEach((day) => {
@@ -189,7 +190,7 @@ export function computeTotalRepsForExercise(
       const label = `Week ${week}`;
       data.push({ key: label, value: totalRepsForWeek });
     });
-  } else if (labelType === "day") {
+  } else if (labelType === OSAvailableXType.Days) {
     days?.forEach((day) => {
       let totalRepsForDay = 0;
       weeks?.forEach((week) => {
@@ -213,34 +214,28 @@ export function computeTotalRepsForExercise(
 
 /**
  * Computes the data for the chart for an array of exercises.
- * If no exercise passed it consider all the exercises in the program
- * @param program program instance
- * @param exerciseNames array of currentExerciseFullName
- * @returns
  */
-export function computeChartDataForExercises(
-  program: Program,
-  exerciseNames?: Set<string>,
-  weeks?: Set<string>,
-  days?: Set<string>,
-  labelType?: "day" | "week",
+export function computeChartData(
+  chartRequest: OSChartDataRequest,
 ): ExerciseChartDataset[] {
   const datasets: ExerciseChartDataset[] = [];
 
-  if (labelType === undefined) {
-    labelType = "week";
+  if (chartRequest.chartInfo.xAxisType === undefined) {
+    chartRequest.chartInfo.xAxisType = OSAvailableXType.Weeks;
   }
-  if (exerciseNames === undefined) {
-    exerciseNames = getUniqueExerciseNames(program);
+  if (chartRequest.selectedExercises === undefined) {
+    chartRequest.selectedExercises = getUniqueExerciseNames(
+      chartRequest.program,
+    );
   }
 
-  exerciseNames?.forEach((exerciseName) => {
+  chartRequest.selectedExercises?.forEach((exerciseName) => {
     const data = computeTotalRepsForExercise(
-      program,
+      chartRequest.program,
       exerciseName,
-      weeks,
-      days,
-      labelType,
+      chartRequest.selectedWeeks,
+      chartRequest.selectedDays,
+      chartRequest.chartInfo.xAxisType,
     );
 
     datasets.push({
@@ -263,7 +258,7 @@ export function computeChartDataForExercises(
  * @param datasets
  * @returns
  */
-export function formatChartDataForChart(
+export function formatChartData(
   datasets?: ExerciseChartDataset[],
 ): ChartData<"line", ExerciseChartData[]> | undefined {
   if (!datasets || datasets.length === 0) {
