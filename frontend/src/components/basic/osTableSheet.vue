@@ -15,6 +15,7 @@
     @mouseleave="onSelectionEnd"
     @copy.prevent="onCopy"
     @paste.prevent="onPaste"
+    @keydown.delete="onSelectionDelete"
   >
     <!-- Set header style -->
     <template v-slot:header="props">
@@ -243,6 +244,17 @@ function onModelValueUpdate(
   // Update with new value
   if (newValue != null && rowId < outValue.length) {
     outValue[rowId][colId] = String(newValue);
+
+    // Remove trailing empty lines if necessary
+    let checkLastLine = true;
+    while (checkLastLine) {
+      if (
+        outValue.length > 0 &&
+        Object.values(outValue.at(-1)!).every((value) => !value)
+      )
+        outValue.pop();
+      else checkLastLine = false;
+    }
     emit("update:modelValue", outValue);
   }
 }
@@ -306,6 +318,30 @@ function onSelectionContinue(rowNum: string | number, colNum: string | number) {
  */
 function onSelectionEnd() {
   isSelecting.value = false;
+}
+
+/**
+ * Clear the selected cells.
+ */
+function onSelectionDelete() {
+  // Ensure some data are selected
+  if (!selected.value) return;
+
+  // Get starting and ending values in order
+  const rowStart = Math.min(selected.value?.rowFrom, selected.value?.rowTo),
+    rowEnd = Math.max(selected.value?.rowFrom, selected.value?.rowTo),
+    colStart = Math.min(selected.value?.colFrom, selected.value?.colTo),
+    colEnd = Math.max(selected.value?.colFrom, selected.value?.colTo);
+
+  // Ignore deletion if only one cell is selected
+  if (rowStart == rowEnd && colStart == colEnd) return;
+
+  // Clear values in cells
+  for (let row = rowStart; row <= rowEnd; row++) {
+    for (let col = colStart; col <= colEnd; col++) {
+      onModelValueUpdate(row, getHeaderName(col), "");
+    }
+  }
 }
 
 /**
