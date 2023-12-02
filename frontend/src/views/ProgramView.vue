@@ -134,7 +134,7 @@
               title="Total Volume"
               description="Andamento del volume per le diverse alzate principali."
               :data="chartData"
-              :options="optionChart"
+              :options="chartOptions"
             />
           </div>
 
@@ -337,6 +337,7 @@ import { arrayUniqueValues } from "@/helpers/array";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 import {
   computeChartDataForExercises,
+  createChartOptions,
   formatChartDataForChart,
 } from "@/helpers/charts/chartDataFormatter";
 import ChartComponent from "@/components/charts/ChartComponent.vue";
@@ -406,6 +407,7 @@ const maxliftDate = ref<Date>(); // TODO check
 
 // Charts declaration
 const chartData = ref<any>(null);
+const chartOptions = ref<any>(null);
 
 // Get exercises to display
 const exercises = computed<Exercise[]>(() => {
@@ -704,30 +706,11 @@ function computeTotalRepsWeek(program: Program) {
 
   const formattedData = formatChartDataForChart(datasets);
   chartData.value = formattedData;
-}
+  console.log("chartdata", chartData);
 
-const optionChart = {
-  responsive: true,
-  maintainAspectRatio: false,
-  scales: {
-    x: {
-      display: true,
-      title: {
-        display: true,
-        text: "Date",
-      },
-    },
-    y: {
-      type: "linear",
-      display: true,
-      position: "left",
-      title: {
-        display: true,
-        text: "Total Reps",
-      },
-    },
-  },
-};
+  const optionChart = createChartOptions(undefined, "Total Reps");
+  chartOptions.value = optionChart;
+}
 
 // Test line translation
 const lineTest = new ProgramLine({

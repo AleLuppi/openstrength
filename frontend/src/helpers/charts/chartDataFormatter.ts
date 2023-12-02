@@ -25,7 +25,7 @@ interface ExerciseChartDataset {
     xAxisKey: string;
     yAxisKey: string;
   };
-  label: string; // Add a label property
+  label: string;
 }
 
 /**
@@ -212,7 +212,8 @@ export function computeTotalRepsForExercise(
 }
 
 /**
- * Computes the data for the chart for an array of exercises
+ * Computes the data for the chart for an array of exercises.
+ * If no exercise passed it consider all the exercises in the program
  * @param program program instance
  * @param exerciseNames array of currentExerciseFullName
  * @returns
@@ -295,4 +296,40 @@ export function formatChartDataForChart(
   };
 
   return chartData;
+}
+
+/**
+ * Creates the chart options to be passed to the chart component
+ * @param xAxisName
+ * @param yAxisName
+ * @returns
+ */
+export function createChartOptions(xAxisName?: string, yAxisName?: string) {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        display: true,
+        title: {
+          display: xAxisName ? true : false,
+          text: xAxisName,
+        },
+      },
+      y: {
+        type: "linear",
+        display: true,
+        position: "left",
+        title: {
+          display: yAxisName ? true : false,
+          text: yAxisName,
+        },
+      },
+    },
+    elements: {
+      line: {
+        tension: 0.4,
+      },
+    },
+  };
 }

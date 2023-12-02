@@ -42,12 +42,9 @@ export function calculatePercentage1RM(
   return percentage1RM;
 }
 
-//TODO: substitute BaseValue with ComputedValue
+//TODO: substitute BaseValue with Value
 
 /*********** VOLUME CALCULATIONS *************/
-
-//TODO: tutti i calcoli devono essere fatti in questa forma: metodo(line.repsBaseValue)
-
 /**
  * Calculates total sets on the provided program lines
  */
