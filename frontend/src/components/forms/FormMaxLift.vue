@@ -87,7 +87,7 @@ const props = defineProps({
 });
 
 // Set emits
-const emits = defineEmits<{
+const emit = defineEmits<{
   submit: [value: MaxLift];
   reset: [];
 }>();
@@ -156,7 +156,7 @@ function onSubmit() {
     ? dateGetWithoutTimezone(maxliftDate.value)
     : undefined;
 
-  emits("submit", maxlift);
+  emit("submit", maxlift);
 }
 
 /**
@@ -168,6 +168,6 @@ function onReset() {
   maxliftValue.value = undefined;
   maxliftDate.value = undefined;
 
-  emits("reset");
+  emit("reset");
 }
 </script>

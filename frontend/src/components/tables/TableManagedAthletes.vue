@@ -7,7 +7,7 @@
     hide-pagination
     class="os-table-max-height"
     @row-click="
-      (...params: [Event, Object, Number]) => emits('selection', ...params)
+      (...params: [Event, Object, Number]) => emit('selection', ...params)
     "
     selection="single"
     v-model:selected="selectedRows"
@@ -31,7 +31,7 @@ const props = defineProps({
 });
 
 // Define emits
-const emits = defineEmits<{
+const emit = defineEmits<{
   selection: [evt: Event, row: Object, index: Number];
   "update:selected": [value?: AthleteUser];
 }>();
@@ -109,7 +109,7 @@ watch(
 
 // Update selected athlete upon selected row change
 watch(selectedRows, (value) =>
-  emits(
+  emit(
     "update:selected",
     props.athletes.find((athlete) =>
       value && value.length > 0 ? athlete.uid === value[0].uid : undefined,

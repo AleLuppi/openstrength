@@ -1,7 +1,7 @@
 <template>
   <q-dialog
     :model-value="modelValue"
-    @update:model-value="(value) => emits('update:modelValue', value)"
+    @update:model-value="(value) => emit('update:modelValue', value)"
   >
     <q-card>
       <q-card-section>
@@ -27,7 +27,7 @@
         :athletes="athletes"
         @selection="onAthleteSelection"
         :selected="selected"
-        @update:selected="(val) => emits('update:selected', val)"
+        @update:selected="(val) => emit('update:selected', val)"
         :filter="searchAthlete"
       />
     </q-card>
@@ -56,7 +56,7 @@ defineProps({
 });
 
 // Define emits
-const emits = defineEmits<{
+const emit = defineEmits<{
   "update:modelValue": [value: Boolean];
   selection: [evt: Event, row: Object, index: Number];
   "update:selected": [value?: AthleteUser];
@@ -68,7 +68,7 @@ const searchAthlete = ref<string>();
 // Set what to do on athlete selection
 function onAthleteSelection(...params: [Event, Object, Number]) {
   searchAthlete.value = "";
-  emits("update:modelValue", false);
-  emits("selection", ...params);
+  emit("update:modelValue", false);
+  emit("selection", ...params);
 }
 </script>

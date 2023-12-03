@@ -425,7 +425,7 @@ const props = defineProps({
 });
 
 // Define emits
-const emits = defineEmits(["update:program", "update:saved"]);
+const emit = defineEmits(["update:program", "update:saved"]);
 
 // Set useful values
 const sepWekDay = ".";
@@ -988,7 +988,7 @@ function storeChanges(key: string, changeData: any) {
     }, 1000);
   storeChangesMethods[key](changeData);
   savedValue = false;
-  emits("update:saved", savedValue);
+  emit("update:saved", savedValue);
 }
 
 /**
@@ -1038,8 +1038,8 @@ function save() {
       // Inform parent of update
       programCurrentValue.value = program;
       savedValue = true;
-      emits("update:program", program);
-      emits("update:saved", savedValue);
+      emit("update:program", program);
+      emit("update:saved", savedValue);
     },
     onError: () => {
       $q.notify({
@@ -1048,7 +1048,7 @@ function save() {
         position: "bottom",
       });
       savedValue = false;
-      emits("update:saved", savedValue);
+      emit("update:saved", savedValue);
     },
   });
 }

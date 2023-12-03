@@ -5,7 +5,7 @@
       :key="drawerItem.id"
       clickable
       class="q-px-none q-py-sm link-child justify-center"
-      @click="emits('drawerClick', drawerIndex)"
+      @click="emit('drawerClick', drawerIndex)"
     >
       <q-card flat class="bg-inherit">
         <q-tooltip anchor="center left" self="center right" :offset="[10, 10]">
@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-const emits = defineEmits(["drawerClick"]);
+const emit = defineEmits(["drawerClick"]);
 
 // Set items in drawer
 const drawerItems = [
