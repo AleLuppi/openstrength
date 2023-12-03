@@ -21,8 +21,6 @@
               flat
             ></q-btn>
 
-            <q-btn @click="updateCharts()">Get Chart Data</q-btn>
-
             <!-- Display and update assigned user -->
             <q-btn
               @click="showAthleteAssigningDialog = true"
@@ -126,23 +124,9 @@
           <!-- TODO i18n -->
           <!-- CHART SELECTOR SECTION -->
           <div v-if="showingUtils == UtilsOptions.charts">
-            <h6 class="text-margin-xs">Charts Section</h6>
-            <!-- <ChartSelector></ChartSelector> -->
-
-            <div v-if="charts">
-              <template
-                v-for="(chartDataRequest, index) in chartDataRequests"
-                :key="index"
-              >
-                <chart-component
-                  :v-if="getChartData(chartDataRequest)"
-                  :title="getChartTitle(chartDataRequest)"
-                  :description="getChartDescription(chartDataRequest)"
-                  :data="getChartData(chartDataRequest)"
-                  :options="getChartOptions(chartDataRequest)"
-                />
-              </template>
-            </div>
+            <ChartSelector
+              :chartDataRequests="chartDataRequests"
+            ></ChartSelector>
           </div>
 
           <!-- MAX LIFT SECTION -->
@@ -332,7 +316,7 @@ import {
   ProgramLine,
 } from "@/helpers/programs/program";
 import { useCoachInfoStore } from "@/stores/coachInfo";
-//import ChartSelector from "@/components/charts/ChartSelector.vue";
+import ChartSelector from "@/components/charts/ChartSelector.vue";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import { useUserStore } from "@/stores/user";
@@ -342,12 +326,6 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { arrayUniqueValues } from "@/helpers/array";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
-import {
-  computeChartData,
-  createChartOptions,
-  formatChartData,
-} from "@/helpers/charts/chartDataFormatter";
-import ChartComponent from "@/components/charts/ChartComponent.vue";
 import {
   OSAvailableXType,
   OSChartDataRequest,
@@ -720,28 +698,6 @@ const chartDataRequests: OSChartDataRequest[] = [
     selectedWeeks: new Set(["A", "B", "C", "D"]),
   },
 ];
-
-function getChartData(chartDataRequest: OSChartDataRequest): any {
-  return formatChartData(computeChartData(chartDataRequest));
-}
-
-function getChartOptions(chartDataRequest: OSChartDataRequest): any {
-  return createChartOptions(undefined, chartDataRequest.chartInfo.chartVersion);
-}
-
-function getChartTitle(chartDataRequest: OSChartDataRequest): string {
-  return chartDataRequest.chartInfo.chartTitle || "";
-}
-
-function getChartDescription(chartDataRequest: OSChartDataRequest): string {
-  return chartDataRequest.chartInfo.chartDescription || "";
-}
-
-const charts = ref<boolean>(false);
-// Compute chart data
-function updateCharts() {
-  charts.value = true;
-}
 
 // Test line translation
 const lineTest = new ProgramLine({
