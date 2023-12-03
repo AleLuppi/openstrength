@@ -190,9 +190,10 @@
             <q-separator />
 
             <TableMaxLifts
-              :maxlifts="maxlifts"
-              :on-update="onUpdateMaxLift"
+              :maxlifts="athleteMaxlifts ?? []"
+              @update="onUpdateMaxLift"
               :filter="searchMaxLift"
+              :no-data-label="$t('coach.maxlift_management.list.no_athlete')"
             />
 
             <!-- Dialog to add a new max lift -->
@@ -396,12 +397,6 @@ const maxliftDate = ref<Date>(); // TODO check
 const exercises = computed<Exercise[]>(() => {
   coachInfo.loadExercises(user.uid, true);
   return coachInfo.exercises || [];
-});
-
-// Get maxlifts for a coach to display
-const maxlifts = computed(() => {
-  coachInfo.loadMaxLifts(user.uid, true);
-  return coachInfo.maxlifts || [];
 });
 
 /** TODO check

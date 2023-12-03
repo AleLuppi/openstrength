@@ -23,11 +23,12 @@ const props = defineProps({
     type: Array as PropType<MaxLift[]>,
     required: true,
   },
-  onUpdate: {
-    type: Function,
-    required: false,
-  },
 });
+
+// Define emits
+const emit = defineEmits<{
+  update: [maxlift: MaxLift];
+}>();
 
 // Set table columns
 const columns = [
@@ -74,7 +75,7 @@ const rows = computed(() => {
     date: maxlift.performedOn ? i18n.d(maxlift.performedOn) : "",
     update: {
       element: "button",
-      on: { click: () => props.onUpdate?.(maxlift) },
+      on: { click: () => emit("update", maxlift) },
       label: "",
       icon: "update",
       rounded: true,

@@ -293,7 +293,8 @@
         "add_error": "Could not save max lift, please retry",
         "update": "Insert max lift info",
         "update_proceed": "Update max lift",
-        "update_error": "Could not update max lift, please retry"
+        "update_error": "Could not update max lift, please retry",
+        "no_athlete": "Select an athlete to see related data"
       },
       "fields": {
         "exercise": "Exercise name",

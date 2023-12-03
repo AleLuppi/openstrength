@@ -244,7 +244,7 @@
 
                   <TableMaxLifts
                     :maxlifts="athleteMaxlifts"
-                    :on-update="onUpdateMaxLift"
+                    @update="onUpdateMaxLift"
                     :filter="searchMaxLift"
                   />
 
@@ -414,9 +414,7 @@ const athleteFormProgram = computed(
 // Get maxlifts for the selected athlete
 const athleteMaxlifts = computed(() =>
   maxlifts.value.filter(
-    (maxlift: MaxLift) =>
-      maxlift.athleteId === selectedAthlete.value?.uid &&
-      maxlift.coachId === selectedAthlete.value?.coachId,
+    (maxlift) => maxlift.athleteId === selectedAthlete.value?.uid,
   ),
 );
 
