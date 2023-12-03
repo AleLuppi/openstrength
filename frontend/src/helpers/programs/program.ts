@@ -1,8 +1,9 @@
 import { DocumentReference } from "firebase/firestore";
 import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
 import { programsCollection } from "@/helpers/database/collections";
-import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { AthleteUser, CoachUser } from "@/helpers/users/user";
+import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 
 /**
  * Training program properties.
@@ -74,13 +75,13 @@ export type ProgramLineProps = {
 
   // Line-specific info
   setsBaseValue?: string;
-  setsReference?: ProgramLine;
+  setsReference?: ProgramLine | MaxLift;
   repsBaseValue?: string;
-  repsReference?: ProgramLine;
+  repsReference?: ProgramLine | MaxLift;
   loadBaseValue?: string;
-  loadReference?: ProgramLine;
+  loadReference?: ProgramLine | MaxLift;
   rpeBaseValue?: string;
-  rpeReference?: ProgramLine;
+  rpeReference?: ProgramLine | MaxLift;
 
   // Additional line info
   note?: string;
@@ -282,6 +283,21 @@ export class Program {
       }),
     });
   }
+
+  /**
+   * Get all lines of a program.
+   *
+   * @returns list of all lines in a program.
+   */
+  getLines() {
+    return this.programExercises?.reduce(
+      (allLines: ProgramLine[], programExercise) =>
+        programExercise.lines
+          ? [...allLines, ...programExercise.lines]
+          : allLines,
+      [],
+    );
+  }
 }
 
 /**
@@ -369,13 +385,13 @@ export class ProgramLine {
 
   // Line-specific info
   setsBaseValue?: string;
-  setsReference?: ProgramLine;
+  setsReference?: ProgramLine | MaxLift;
   repsBaseValue?: string;
-  repsReference?: ProgramLine;
+  repsReference?: ProgramLine | MaxLift;
   loadBaseValue?: string;
-  loadReference?: ProgramLine;
+  loadReference?: ProgramLine | MaxLift;
   rpeBaseValue?: string;
-  rpeReference?: ProgramLine;
+  rpeReference?: ProgramLine | MaxLift;
 
   // Additional line info
   note?: string;

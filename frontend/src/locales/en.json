@@ -270,6 +270,9 @@
         "new_exercise": "Exercise",
         "new_day_error": "Could not create day with selected name, please retry",
         "new_day_already_exists": "A day with this name already exists",
+        "reference_select_line": "Select a line",
+        "reference_select_line_help": "Select a line as reference",
+        "reference_remove": "Unlink",
         "show_charts_tooltip": "Charts",
         "show_maxlifts_tooltip": "Reference Table"
       },

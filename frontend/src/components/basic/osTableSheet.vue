@@ -18,7 +18,7 @@
     @keydown.delete="onSelectionDelete"
   >
     <!-- Set header style -->
-    <template v-slot:header="props">
+    <template #header="props">
       <q-tr :props="props" class="bg-table-header">
         <q-th
           v-for="col in props.cols"
@@ -32,13 +32,10 @@
     </template>
 
     <!-- Set custom rows -->
-    <template v-slot:body="props">
+    <template #body="props">
       <q-tr
         :props="props"
         @click="($attrs.onRowClick as Function)?.(undefined, props.row)"
-        :class="{
-          'cursor-pointer': $attrs.onRowClick || props.row.expanded,
-        }"
         class="os-tr-selected"
       >
         <q-td
@@ -78,7 +75,18 @@
             borderless
             autogrow
             :dense="dense"
-          ></q-input>
+          >
+            <template #after>
+              <slot
+                name="item"
+                v-bind="{
+                  row: props.row,
+                  col: col,
+                  value: (modelValue[props.rowIndex] ?? newRow)[col.name],
+                }"
+              ></slot>
+            </template>
+          </q-input>
         </q-td>
       </q-tr>
     </template>

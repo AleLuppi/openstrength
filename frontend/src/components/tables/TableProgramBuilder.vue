@@ -203,9 +203,102 @@
             requestVideo: 'checkbox',
           }"
           :showNewLine="true"
+          @row-click="
+            (_: any, row: any) =>
+              selectingReferenceLine ? onReferenceClick(row.uid) : undefined
+          "
           dense
           class="col os-light-border"
         >
+          <template #item="itemProps">
+            <q-btn
+              v-if="itemProps.value && String(itemProps.value).endsWith('%')"
+              icon="fa-solid fa-link"
+              color="secondary"
+              size="0.4em"
+              :flat="
+                exerciseModelValue.data[itemProps.row.id][
+                  (itemProps.col.field + 'Ref') as
+                    | 'loadRef'
+                    | 'repsRef'
+                    | 'setsRef'
+                    | 'rpeRef'
+                ] == undefined
+              "
+              round
+              :ripple="false"
+            >
+              <!-- Show list of options to select as reference -->
+              <q-menu anchor="center right" self="center left">
+                <q-list style="min-width: 100px">
+                  <q-item
+                    v-for="[maxliftType, maxlift] in Object.entries(
+                      maxliftsPerExercise[exerciseModelValue.exercise ?? ''] ??
+                        {},
+                    )"
+                    :key="maxliftType"
+                    @click="
+                      onReferenceClick(maxlift, 'maxlift', {
+                        schedule: idScheduleInfo.toString(),
+                        lineNum: itemProps.row.id,
+                        field: itemProps.col.field,
+                      })
+                    "
+                    clickable
+                    v-close-popup
+                    dense
+                  >
+                    <q-item-section>{{ maxliftType }}</q-item-section>
+                  </q-item>
+                  <q-separator />
+                  <q-item
+                    clickable
+                    @click="
+                      selectingReferenceLine = {
+                        schedule: idScheduleInfo.toString(),
+                        lineNum: itemProps.row.id,
+                        field: itemProps.col.field,
+                      }
+                    "
+                    v-close-popup
+                    dense
+                  >
+                    <q-item-section>{{
+                      $t(
+                        "coach.program_management.builder.reference_select_line",
+                      )
+                    }}</q-item-section>
+                  </q-item>
+                  <q-separator />
+                  <q-item
+                    v-if="
+                      exerciseModelValue.data[itemProps.row.id][
+                        (itemProps.col.field + 'Ref') as
+                          | 'loadRef'
+                          | 'repsRef'
+                          | 'setsRef'
+                          | 'rpeRef'
+                      ] != undefined
+                    "
+                    clickable
+                    @click="
+                      onReferenceClick('', 'line', {
+                        schedule: idScheduleInfo.toString(),
+                        lineNum: itemProps.row.id,
+                        field: itemProps.col.field,
+                      })
+                    "
+                    v-close-popup
+                    dense
+                  >
+                    <q-item-section>{{
+                      $t("coach.program_management.builder.reference_remove")
+                    }}</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
+          </template>
         </osTableSheet>
       </div>
 
@@ -251,12 +344,34 @@
     >
       <slot name="empty-filtered"></slot>
     </div>
+
+    <!-- Show dialog to stop reference line selection -->
+    <q-dialog
+      :model-value="Boolean(selectingReferenceLine)"
+      @update:model-value="selectingReferenceLine = undefined"
+      seamless
+      position="bottom"
+    >
+      <q-card class="bg-lighter" style="width: 350px">
+        <q-card-section class="row items-center no-wrap">
+          <p class="text-bold">
+            {{
+              $t("coach.program_management.builder.reference_select_line_help")
+            }}
+          </p>
+
+          <q-space />
+
+          <q-btn icon="close" label="Cancel" color="negative" v-close-popup />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, PropType, watch } from "vue";
-import { debounce, useQuasar } from "quasar";
+import { uid, debounce, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import FormProgramNewWeekDay from "@/components/forms/FormProgramNewWeekDay.vue";
 import { scrollToElement } from "@/helpers/scroller";
@@ -274,6 +389,8 @@ import {
   objectMapKeys,
   objectMapValues,
 } from "@/helpers/object";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
 
 // Init plugin
 const $q = useQuasar();
@@ -287,6 +404,10 @@ const props = defineProps({
   },
   exercises: {
     type: Array as PropType<Exercise[]>,
+    default: () => [],
+  },
+  maxlifts: {
+    type: Array as PropType<MaxLift[]>,
     default: () => [],
   },
   filter: {
@@ -319,7 +440,20 @@ const tableElements = ref<{
 }>({});
 const exercisesValues = ref<{
   [key: string]: {
-    data: { [key: string]: any }[];
+    data: {
+      uid: string;
+      load: string | undefined;
+      loadRef: ProgramLine | MaxLift | undefined;
+      reps: string | undefined;
+      repsRef: ProgramLine | MaxLift | undefined;
+      sets: string | undefined;
+      setsRef: ProgramLine | MaxLift | undefined;
+      rpe: string | undefined;
+      rpeRef: ProgramLine | MaxLift | undefined;
+      note: string | undefined;
+      requestText: boolean | undefined;
+      requestVideo: boolean | undefined;
+    }[];
     exercise: string | undefined;
     variant: string | undefined;
     note: string | undefined;
@@ -327,6 +461,11 @@ const exercisesValues = ref<{
 }>({});
 const programCurrentValue = ref<Program>();
 const editWeekDayName = ref<string[]>();
+const selectingReferenceLine = ref<{
+  schedule: string;
+  lineNum: string;
+  field: string;
+}>();
 
 // Get a subset of tables to show according to filters
 const filteredExercisesValues = computed(() => {
@@ -377,6 +516,11 @@ const sortedProgramExercises = computed(() =>
         mergeScheduleInfoNames,
       )
     : {},
+);
+
+// Get maxlifts separated per exercise name and type
+const maxliftsPerExercise = computed(() =>
+  separateMaxliftPerExerciseAndType(props.maxlifts),
 );
 
 // Get id of first and last table element for each day
@@ -483,15 +627,23 @@ function resetTableData() {
 
       // Prepare data-related values
       exercisesValues.value[idScheduleInfo].data =
-        programExercise.lines?.map((line) => ({
-          load: line.loadBaseValue,
-          reps: line.repsBaseValue,
-          sets: line.setsBaseValue,
-          rpe: line.rpeBaseValue,
-          note: line.note,
-          requestText: line.requestFeedbackText,
-          requestVideo: line.requestFeedbackVideo,
-        })) ?? [];
+        programExercise.lines?.map((line) => {
+          if (!line.uid) line.uid = "OS-" + uid();
+          return {
+            uid: line.uid,
+            load: line.loadBaseValue,
+            loadRef: line.loadReference,
+            reps: line.repsBaseValue,
+            repsRef: line.repsReference,
+            sets: line.setsBaseValue,
+            setsRef: line.setsReference,
+            rpe: line.rpeBaseValue,
+            rpeRef: line.rpeReference,
+            note: line.note,
+            requestText: line.requestFeedbackText,
+            requestVideo: line.requestFeedbackVideo,
+          };
+        }) ?? [];
     },
   );
 }
@@ -509,6 +661,45 @@ function updateSelectedExercise(idScheduleInfo: string, newName?: string) {
 
   // Update name
   exercisesValues.value[idScheduleInfo].exercise = newName;
+}
+
+/**
+ * Perform operations on reference selection.
+ *
+ * @param reference line or maxlift identifier or instance.
+ * @param type specify whether reference is line or maxlift.
+ */
+function onReferenceClick(
+  reference: string | ProgramLine | MaxLift,
+  type: "line" | "maxlift" = "line",
+  referenceLine?: typeof selectingReferenceLine.value,
+) {
+  // Clear selection info
+  const lineInfo = referenceLine ?? selectingReferenceLine.value;
+  selectingReferenceLine.value = undefined;
+
+  // Ignore update if line selection is not enabled
+  if (!lineInfo) return;
+
+  // Update line reference
+  const refField = lineInfo.field + "Ref";
+  if (
+    refField != "loadRef" &&
+    refField != "repsRef" &&
+    refField != "setsRef" &&
+    refField != "rpeRef"
+  )
+    return;
+  exercisesValues.value[lineInfo.schedule].data[Number(lineInfo.lineNum)][
+    refField
+  ] =
+    reference instanceof ProgramLine || reference instanceof MaxLift
+      ? reference
+      : type == "line"
+      ? props.program.getLines()?.find((line) => line.uid == reference)
+      : type == "maxlift"
+      ? props.maxlifts.find((maxlift) => (maxlift.uid = reference))
+      : undefined;
 }
 
 /**
@@ -684,7 +875,6 @@ function renameWeekDay(
   const [fromWeekId, fromDayId] = fromSchedule;
 
   // Check if new naming can be used
-  console.log(fromSchedule, toSchedule);
   if (!toWeekId || !toDayId) return;
   if (
     Object.keys(exercisesValues.value).some((key) =>
@@ -829,7 +1019,7 @@ function save() {
                 repsBaseValue: lineInfo.reps,
                 repsReference: undefined, // TODO
                 loadBaseValue: lineInfo.load,
-                loadReference: undefined, // TODO
+                loadReference: lineInfo.loadRef,
                 rpeBaseValue: lineInfo.rpe,
                 rpeReference: undefined, // TODO
                 note: lineInfo.note,

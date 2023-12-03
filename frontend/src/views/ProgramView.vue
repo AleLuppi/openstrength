@@ -127,6 +127,7 @@
           v-model:program="program"
           :exercises="coachInfo.exercises"
           :filter="programFilter"
+          :maxlifts="athleteMaxlifts"
           v-model:saved="programSaved"
           class="q-pa-sm"
         >
@@ -317,6 +318,14 @@ const programFilter = computed({
     filterExercise.value = newValue.exercise;
   },
 });
+
+// Get max lifts for selected athlete
+const athleteMaxlifts = computed(
+  () =>
+    coachInfo.maxlifts?.filter(
+      (maxlift) => maxlift.athleteId == selectedProgram.value.athleteId,
+    ),
+);
 
 /**
  * Create a new maxlift and assign to a coach
