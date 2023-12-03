@@ -404,6 +404,23 @@ export class ProgramLine {
       return this.repsComputedValue;
     }
   }
+  public get loadValue(): number | undefined {
+    if (this.loadBaseValue !== undefined && /\d*kg/.test(this.loadBaseValue)) {
+      return parseInt(this.loadBaseValue);
+    }
+
+    if (
+      this.loadBaseValue === "\\d*%" &&
+      this.maxliftReference?.type === MaxLiftType._1RM
+    ) {
+      const percentage =
+        parseFloat(this.loadBaseValue.match(/\d*/)?.[0] ?? "0") / 100;
+      const maxlift1RM = parseFloat(this.maxliftReference?.value ?? "0");
+      return percentage * maxlift1RM;
+    }
+
+    return undefined;
+  }
 
   get setsComputedValue(): number | undefined {
     if (
@@ -563,13 +580,13 @@ export class ProgramLine {
       return undefined;
     }
   }
-  //TODO check
+  //TODO substitute check on maxreference from line data to a global method (or within the class?)
   get loadRangeMin(): number | undefined {
     if (
       this.loadBaseValue !== undefined &&
       /^\d*kg\/\d*kg$/.test(this.loadBaseValue)
     ) {
-      const [, min] = this.loadBaseValue.match(/^\d*/) || [];
+      const [, min] = this.loadBaseValue.match(/^(\d*)kg\/\d*kg$/) || [];
       return min !== undefined ? Number(min) : undefined;
     } else if (
       this.loadBaseValue !== undefined &&
@@ -581,12 +598,13 @@ export class ProgramLine {
         this.maxliftReference.exercise === this.programExercise?.exercise &&
         this.maxliftReference.value !== undefined
       ) {
-        const [, minPercent] = this.loadBaseValue.match(/^\d*%/) || [];
+        const [, minPercent] = this.loadBaseValue.match(/^(\d*)%\//) || [];
         if (minPercent !== undefined) {
           const parsedMinPercent = parseFloat(minPercent);
           return isNaN(parsedMinPercent)
             ? undefined
-            : parsedMinPercent * parseFloat(this.maxliftReference.value);
+            : (parsedMinPercent / 100) *
+                parseFloat(this.maxliftReference.value);
         }
       }
     }
@@ -615,6 +633,36 @@ export class ProgramLine {
     } else {
       return undefined;
     }
+  }
+  get loadRangeMax(): number | undefined {
+    if (
+      this.loadBaseValue !== undefined &&
+      /^\d*kg\/\d*kg$/.test(this.loadBaseValue)
+    ) {
+      const [, max] = this.loadBaseValue.match(/^\d*kg\/(\d*)kg$/) || [];
+      return max !== undefined ? Number(max) : undefined;
+    } else if (
+      this.loadBaseValue !== undefined &&
+      /^\d*%\/\d*%$/.test(this.loadBaseValue)
+    ) {
+      if (
+        this.maxliftReference !== undefined &&
+        this.maxliftReference.type === MaxLiftType._1RM &&
+        this.maxliftReference.exercise === this.programExercise?.exercise &&
+        this.maxliftReference.value !== undefined
+      ) {
+        const [, maxPercent] = this.loadBaseValue.match(/^\d*%\/(\d*)%$/) || [];
+        if (maxPercent !== undefined) {
+          const parsedMaxPercent = parseFloat(maxPercent);
+          return isNaN(parsedMaxPercent)
+            ? undefined
+            : (parsedMaxPercent / 100) *
+                parseFloat(this.maxliftReference.value);
+        }
+      }
+    }
+
+    return undefined;
   }
 
   constructor({

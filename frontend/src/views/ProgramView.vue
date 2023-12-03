@@ -703,7 +703,7 @@ const chartDataRequests: OSChartDataRequest[] = [
 const lineTest = new ProgramLine({
   setsBaseValue: "W1-3",
   repsBaseValue: "5/8",
-  loadBaseValue: "50 kg",
+  loadBaseValue: "50kg/70kg",
   rpeBaseValue: "8",
   requestFeedbackText: true,
   setsReference: new ProgramLine({
@@ -719,6 +719,18 @@ const lineTest = new ProgramLine({
     loadBaseValue: "50 kg",
     rpeBaseValue: "8",
     requestFeedbackText: true,
+  }),
+  loadReference: new ProgramLine({
+    setsBaseValue: "8",
+    repsBaseValue: "5",
+    loadBaseValue: "50 kg",
+    rpeBaseValue: "8",
+    requestFeedbackText: true,
+    maxliftReference: new MaxLift({
+      type: MaxLiftType._1RM,
+      exercise: coachInfo.exercises?.[1],
+      value: "40",
+    }),
   }),
 });
 
@@ -743,6 +755,16 @@ console.log("repsRangeMax", lineTest.repsRangeMax);
 console.log("repsOperation", lineTest.repsOperation);
 console.log("repsReference", lineTest.repsReference);
 console.log("requireReps", lineTest.requireReps);
+console.log("-----------LOAD---------------");
+console.log("loadValue", lineTest.loadValue);
+console.log("loadBaseValue", lineTest.loadBaseValue);
+//console.log("loadComputedValue", lineTest.loadComputedValue);
+//console.log("loadSupposedValue", lineTest.loadSupposedValue);
+console.log("loadRangeMin", lineTest.loadRangeMin);
+console.log("loadRangeMax", lineTest.loadRangeMax);
+console.log("loadOperation", lineTest.loadOperation);
+console.log("loadReference", lineTest.loadReference);
+console.log("requireLoad", lineTest.requireLoad);
 
 /**
  * Handle custom right drawer click.
