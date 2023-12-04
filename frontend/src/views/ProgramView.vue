@@ -704,7 +704,7 @@ const lineTest = new ProgramLine({
   setsBaseValue: "W1-3",
   repsBaseValue: "5/8",
   loadBaseValue: "50kg/70kg",
-  rpeBaseValue: "8",
+  rpeBaseValue: "5",
   requestFeedbackText: true,
   setsReference: new ProgramLine({
     setsBaseValue: "8",
@@ -758,13 +758,23 @@ console.log("requireReps", lineTest.requireReps);
 console.log("-----------LOAD---------------");
 console.log("loadValue", lineTest.loadValue);
 console.log("loadBaseValue", lineTest.loadBaseValue);
-//console.log("loadComputedValue", lineTest.loadComputedValue);
-//console.log("loadSupposedValue", lineTest.loadSupposedValue);
+console.log("loadComputedValue", lineTest.loadComputedValue);
+console.log("loadSupposedValue", lineTest.loadSupposedValue);
 console.log("loadRangeMin", lineTest.loadRangeMin);
 console.log("loadRangeMax", lineTest.loadRangeMax);
 console.log("loadOperation", lineTest.loadOperation);
 console.log("loadReference", lineTest.loadReference);
 console.log("requireLoad", lineTest.requireLoad);
+console.log("-----------RPE---------------");
+console.log("rpeValue", lineTest.rpeValue);
+console.log("rpeBaseValue", lineTest.rpeBaseValue);
+console.log("rpeComputedValue", lineTest.rpeComputedValue);
+console.log("rpeSupposedValue", lineTest.rpeSupposedValue);
+console.log("rpeRangeMin", lineTest.rpeRangeMin);
+console.log("rpeRangeMax", lineTest.rpeRangeMax);
+console.log("rpeOperation", lineTest.rpeOperation);
+console.log("rpeReference", lineTest.rpeReference);
+console.log("requireRpe", lineTest.requireRpe);
 
 /**
  * Handle custom right drawer click.

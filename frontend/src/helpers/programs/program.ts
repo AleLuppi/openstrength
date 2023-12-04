@@ -421,6 +421,14 @@ export class ProgramLine {
 
     return undefined;
   }
+  public get rpeValue(): number | undefined {
+    if (this.rpeBaseValue !== undefined && /^\d*$/.test(this.rpeBaseValue)) {
+      const parsedRPE = parseInt(this.rpeBaseValue);
+      return parsedRPE >= 0 && parsedRPE <= 10 ? parsedRPE : undefined;
+    } else {
+      return this.rpeComputedValue;
+    }
+  }
 
   get setsComputedValue(): number | undefined {
     if (
@@ -455,8 +463,49 @@ export class ProgramLine {
       return this.setsSupposedValue;
     }
   }
+  get loadComputedValue(): number | undefined {
+    if (
+      this.loadReference !== undefined &&
+      this.maxliftReference?.type !== MaxLiftType._1RM &&
+      this.loadReference.loadComputedValue !== undefined
+    ) {
+      const loadOperationRegex = /^[+-]\d*kg|[+-]\d*%$/;
 
-  //TODO: modify regex in drive document
+      if (
+        this.loadOperation !== undefined &&
+        loadOperationRegex.test(this.loadOperation)
+      ) {
+        const operationResult =
+          this.loadReference.loadComputedValue + parseInt(this.loadOperation) ||
+          (parseFloat(this.loadOperation) / 100) *
+            parseFloat(this.maxliftReference?.value ?? "0");
+
+        return operationResult;
+      }
+    }
+
+    return undefined;
+  }
+  get rpeComputedValue(): number | undefined {
+    if (
+      this.rpeReference !== null &&
+      this.rpeReference?.rpeValue !== undefined
+    ) {
+      if (
+        this.rpeOperation !== undefined &&
+        /^[+-]\d*$/.test(this.rpeOperation)
+      ) {
+        const operationValue = parseInt(this.rpeOperation);
+        const computedValue = this.rpeReference.rpeValue + operationValue;
+
+        // Ensure the computed value is between 0 and 10
+        return Math.max(0, Math.min(10, computedValue));
+      }
+    } else {
+      return this.rpeSupposedValue;
+    }
+  }
+
   get setsOperation(): string | undefined {
     if (this.setsBaseValue !== undefined) {
       const [, operationPart] =
@@ -483,6 +532,15 @@ export class ProgramLine {
       const [, operationPart] =
         this.loadBaseValue.match(/[+-]\d*kg|[+-]\d*%|\d*%$/) || [];
       return operationPart || undefined;
+    } else {
+      return undefined;
+    }
+  }
+  get rpeOperation(): string | undefined {
+    if (this.rpeBaseValue !== undefined) {
+      const [, operationPart] =
+        this.rpeBaseValue.match(/(?:[^\d\s+-]+)?([+-]\d+)$/) || [];
+      return operationPart ? operationPart : undefined;
     } else {
       return undefined;
     }
@@ -524,6 +582,87 @@ export class ProgramLine {
       return undefined;
     }
   }
+  get loadSupposedValue(): number | undefined {
+    const kgRangeRegex = /^\d*kg\/\d*kg$/;
+    const kgValueRegex = /^\(\d*kg\)$/;
+    const percentRangeRegex = /^\d*%\/\d*%$/;
+    const percentValueRegex = /^\(\d*%\)$/;
+
+    if (
+      this.loadBaseValue !== undefined &&
+      kgRangeRegex.test(this.loadBaseValue)
+    ) {
+      const [, first, second] =
+        this.loadBaseValue.match(/^(\d*)kg\/(\d*)kg$/) || [];
+      return (parseInt(second) + parseInt(first)) / 2;
+    }
+
+    if (
+      this.loadBaseValue !== undefined &&
+      kgValueRegex.test(this.loadBaseValue)
+    ) {
+      const [, content] = this.loadBaseValue.match(/^\((\d*kg)\)$/) || [];
+      return parseInt(content);
+    }
+
+    if (
+      this.loadBaseValue !== undefined &&
+      percentRangeRegex.test(this.loadBaseValue)
+    ) {
+      if (
+        this.maxliftReference !== undefined &&
+        this.maxliftReference.type === MaxLiftType._1RM &&
+        this.maxliftReference.exercise === this.programExercise?.exercise &&
+        this.maxliftReference.value !== undefined
+      ) {
+        const [, firstPercent, secondPercent] =
+          this.loadBaseValue.match(/^(\d*)%\/(\d*)%$/) || [];
+        return (
+          (parseFloat(secondPercent) * parseFloat(this.maxliftReference.value) +
+            parseFloat(firstPercent) *
+              parseFloat(this.maxliftReference.value)) /
+          2
+        );
+      }
+    }
+
+    if (
+      this.loadBaseValue !== undefined &&
+      percentValueRegex.test(this.loadBaseValue)
+    ) {
+      if (
+        this.maxliftReference !== undefined &&
+        this.maxliftReference.type === MaxLiftType._1RM &&
+        this.maxliftReference.exercise === this.programExercise?.exercise &&
+        this.maxliftReference.value !== undefined
+      ) {
+        const [, content] = this.loadBaseValue.match(/^\((\d*%)\)$/) || [];
+        return (
+          (parseFloat(content) / 100) * parseFloat(this.maxliftReference.value)
+        );
+      }
+    }
+
+    return undefined;
+  }
+  get rpeSupposedValue(): number | undefined {
+    if (
+      this.rpeBaseValue !== undefined &&
+      /^\d*\/\d*$/.test(this.rpeBaseValue)
+    ) {
+      const [secondNumber, firstNumber] = this.rpeBaseValue
+        .split("/")
+        .map(Number);
+      return Math.round((secondNumber + firstNumber) / 2);
+    } else if (
+      this.rpeBaseValue !== undefined &&
+      /^\(\d*\)$/.test(this.rpeBaseValue)
+    ) {
+      return parseInt(this.rpeBaseValue.slice(1, -1));
+    } else {
+      return undefined;
+    }
+  }
 
   get requireSets(): boolean {
     if (
@@ -551,6 +690,16 @@ export class ProgramLine {
       /^\\?|\\(\d*kg\\)|\d*kg\/\d*kg|\\(\d*%\\)|\d*%\/\d*%$/.test(
         this.loadBaseValue,
       )
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  get requireRpe(): boolean {
+    if (
+      this.rpeBaseValue !== undefined &&
+      /^\\?|\\(\d*\\)|\d*\/\d*$/.test(this.rpeBaseValue)
     ) {
       return true;
     } else {
@@ -611,6 +760,17 @@ export class ProgramLine {
 
     return undefined;
   }
+  get rpeRangeMin(): number | undefined {
+    if (
+      this.rpeBaseValue !== undefined &&
+      /^\d*\/\d*$/.test(this.rpeBaseValue)
+    ) {
+      const [minPart] = this.rpeBaseValue.match(/^\d*/) || [];
+      return minPart ? parseInt(minPart) : undefined;
+    } else {
+      return undefined;
+    }
+  }
 
   get setsRangeMax(): number | undefined {
     if (
@@ -663,6 +823,17 @@ export class ProgramLine {
     }
 
     return undefined;
+  }
+  get rpeRangeMax(): number | undefined {
+    if (
+      this.rpeBaseValue !== undefined &&
+      /^\d*\/\d*$/.test(this.rpeBaseValue)
+    ) {
+      const [, maxPart] = this.rpeBaseValue.match(/\/(\d*)$/) || [];
+      return maxPart ? parseInt(maxPart) : undefined;
+    } else {
+      return undefined;
+    }
   }
 
   constructor({
