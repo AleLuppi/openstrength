@@ -25,13 +25,22 @@
     <q-separator spaced="none" size="2px" />
 
     <q-card-section>
-      <canvas ref="chartCanvas"></canvas>
+      <!-- Check if data is defined and not empty -->
+      <template v-if="dataIsInvalid">
+        <div class="text-h6 text-center text-weight-bold text-negative">
+          Check your data and try refreshing the chart
+        </div>
+      </template>
+      <!-- Render chart canvas only if data is valid -->
+      <template v-else>
+        <canvas ref="chartCanvas"></canvas>
+      </template>
     </q-card-section>
   </q-card>
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
 import { colors } from "quasar";
 import {
   Chart,
@@ -94,6 +103,15 @@ const props = defineProps({
 
 // Define refs
 const chartCanvas = ref(null);
+
+// Computed property to check if data is invalid
+const dataIsInvalid = computed(() => {
+  return (
+    props.data === undefined ||
+    props.data === null ||
+    (Array.isArray(props.data) && props.data.length === 0)
+  );
+});
 
 /**
  * Render the Chart

@@ -44,6 +44,15 @@ export function calculatePercentage1RM(
 
 //TODO: substitute BaseValue with Value
 
+/**
+ * Fallback method when no available computational methods are present
+ */
+export function computeUndefined(
+  programLines: ProgramLine[],
+): number | undefined {
+  return undefined;
+}
+
 /*********** VOLUME CALCULATIONS *************/
 /**
  * Calculates total sets on the provided program lines

@@ -16,11 +16,11 @@
 
     <!-- CHARTS RENDERING -->
 
-    <template
-      v-for="(chartDataRequest, index) in props.chartDataRequests"
-      :key="index"
-    >
-      <div v-if="charts">
+    <div v-if="charts">
+      <template
+        v-for="(chartDataRequest, index) in props.chartDataRequests"
+        :key="index"
+      >
         <chart-component
           class="q-mb-sm"
           :v-if="getChartData(chartDataRequest)"
@@ -29,8 +29,9 @@
           :data="getChartData(chartDataRequest)"
           :options="getChartOptions(chartDataRequest)"
         />
-      </div>
-    </template>
+      </template>
+    </div>
+    <div v-else>Click the refresh button to show available charts</div>
   </div>
 </template>
 

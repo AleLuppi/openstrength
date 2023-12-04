@@ -4,6 +4,7 @@ import { colors } from "quasar";
 import {
   calculateTotalReps,
   calculateTotalSets,
+  computeUndefined,
 } from "./chartDatasetComputations";
 import {
   OSAvailableXType,
@@ -153,7 +154,7 @@ export function getProgramLines(
 
 export function getCalculationFunction(
   chartInfo: OSChartDescriptor,
-): (lines: ProgramLine[]) => number {
+): (lines: ProgramLine[]) => number | undefined {
   if (
     chartInfo.chartVersion === OSChartVersion.TotalReps &&
     chartInfo.chartType == OSChartType.Volume
@@ -169,7 +170,7 @@ export function getCalculationFunction(
   //TODO add other charts
 
   //TODO add a default method
-  return calculateTotalReps;
+  return computeUndefined;
 }
 
 export function computeDataForExercise(
@@ -210,7 +211,7 @@ export function computeDataForExercise(
           String(day),
         );
 
-        totalValueForWeek += calculationFunction(lines);
+        totalValueForWeek += calculationFunction(lines) ?? 0;
       });
 
       const label = `Week ${week}`;
@@ -227,7 +228,7 @@ export function computeDataForExercise(
           String(day),
         );
 
-        totalValueForDay += calculationFunction(lines);
+        totalValueForDay += calculationFunction(lines) ?? 0;
       });
 
       const label = `Day ${day}`;

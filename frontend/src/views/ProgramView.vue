@@ -697,6 +697,20 @@ const chartDataRequests: OSChartDataRequest[] = [
     selectedDays: undefined,
     selectedWeeks: new Set(["A", "B", "C", "D"]),
   },
+  {
+    chartInfo: {
+      chartType: OSChartType.Volume,
+      chartVersion: OSChartVersion.TotalVolume,
+      xAxisType: OSAvailableXType.Weeks,
+      chartTitle: "Total Volume varying weeks",
+      chartDescription:
+        "Total volume varying weeks computed as the sum of the sets*reps*load",
+    },
+    program: program.value,
+    selectedExercises: undefined,
+    selectedDays: undefined,
+    selectedWeeks: new Set(["A", "B", "C", "D"]),
+  },
 ];
 
 // Test line translation
