@@ -9,7 +9,10 @@
     >
       <template v-slot:before>
         <!-- Program management card -->
-        <div class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest">
+        <div
+          ref="programManagerElement"
+          class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest"
+        >
           <!-- Utility buttons -->
           <!-- TODO i18n -->
           <div class="row justify-between">
@@ -62,8 +65,11 @@
           </div>
 
           <!-- Filter by week, day, exercise -->
-          <q-slide-transition>
-            <div v-show="expandedTopCard">
+          <q-slide-transition
+            @show="updateProgramManagerHeight"
+            @hide="updateProgramManagerHeight"
+          >
+            <div v-show="programManagerExpanded">
               <div class="row items-end justify-evenly q-pt-md">
                 <h6>{{ $t("coach.program_management.filter.title") }}</h6>
                 <os-select
@@ -112,8 +118,8 @@
             </div>
           </q-slide-transition>
           <q-btn
-            :icon="expandedTopCard ? 'expand_less' : 'expand_more'"
-            @click="expandedTopCard = !expandedTopCard"
+            :icon="programManagerExpanded ? 'expand_less' : 'expand_more'"
+            @click="programManagerExpanded = !programManagerExpanded"
             flat
             dense
             color="secondary"
@@ -128,6 +134,7 @@
           :exercises="coachInfo.exercises"
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
+          :scroll-offset="programManagerHeight + 15"
           v-model:saved="programSaved"
           class="q-pa-sm"
         >
@@ -258,6 +265,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
+import { dom } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import {
   Program,
@@ -284,19 +292,22 @@ defineExpose({ handleDrawerClick });
 const $q = useQuasar();
 const i18n = useI18n();
 const route = useRoute();
+const { height } = dom;
 
 // Get store
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
 // Set ref related to program
+const programManagerElement = ref<HTMLElement>();
 const selectedProgram = // TODO ref<Program>();
   computed(() => program.value);
 const filterWeek = ref<string[]>();
 const filterDay = ref<string[]>();
 const filterExercise = ref<string[]>();
 const showAthleteAssigningDialog = ref(false);
-const expandedTopCard = ref(false);
+const programManagerExpanded = ref(false);
+const programManagerHeight = ref(0);
 
 // Set ref related to maxlift
 const updatingMaxlift = ref<MaxLift>();
@@ -362,9 +373,18 @@ function saveMaxlift() {
   showMaxliftAddDialog.value = false;
 }
 
+/**
+ * Update program manager element height value.
+ */
+function updateProgramManagerHeight() {
+  programManagerHeight.value = programManagerElement.value
+    ? height(programManagerElement.value)
+    : 0;
+}
+
 // Define what to do on component mount
 onMounted(() => {
-  if ($q.screen.gt.sm) expandedTopCard.value = true;
+  if ($q.screen.gt.sm) programManagerExpanded.value = true;
 });
 
 // ----- TODO CHECK EVERYTHING BELOW -----

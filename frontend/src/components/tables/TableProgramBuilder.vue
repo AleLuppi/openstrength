@@ -30,7 +30,7 @@
                 <q-item
                   clickable
                   @click="
-                    scrollToElement(
+                    scrollToElementInParent(
                       tableElements[
                         mergeScheduleInfoNames(
                           week,
@@ -43,6 +43,7 @@
                             (key) => splitScheduleInfoNames(key)[0] == week,
                           ) ?? 'undefined'
                         ],
+                      scrollOffset,
                     )
                   "
                 >
@@ -71,7 +72,7 @@
                 <q-item
                   clickable
                   @click="
-                    scrollToElement(
+                    scrollToElementInParent(
                       tableElements[
                         mergeScheduleInfoNames(
                           splitScheduleInfoNames(idScheduleInfo.toString())[0],
@@ -79,6 +80,7 @@
                           splitScheduleInfoNames(idScheduleInfo.toString())[2],
                         )
                       ],
+                      scrollOffset,
                     )
                   "
                 >
@@ -374,7 +376,7 @@ import { ref, computed, PropType, watch } from "vue";
 import { uid, debounce, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import FormProgramNewWeekDay from "@/components/forms/FormProgramNewWeekDay.vue";
-import { scrollToElement } from "@/helpers/scroller";
+import { scrollToElementInParent } from "@/helpers/scroller";
 import { arrayCompare, arrayUniqueValues } from "@/helpers/array";
 import {
   Program,
@@ -417,6 +419,10 @@ const props = defineProps({
       exercise: string[];
     }>,
     default: () => ({}),
+  },
+  scrollOffset: {
+    type: Number,
+    default: 0,
   },
   saved: {
     type: Boolean,
