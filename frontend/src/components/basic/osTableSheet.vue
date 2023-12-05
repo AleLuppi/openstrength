@@ -60,7 +60,10 @@
             :ref="
               (el) => (childElements[getCellName(props.row.id, col.id)] = el)
             "
-            v-model="(modelValue[props.rowIndex] ?? newRow)[col.name]"
+            :model-value="(modelValue[props.rowIndex] ?? newRow)[col.name]"
+            @update:model-value="
+              (value) => onModelValueUpdate(props.rowIndex, col.name, value)
+            "
           ></q-checkbox>
 
           <q-input
@@ -111,6 +114,10 @@ const props = defineProps({
     required: false,
   },
   showNewLine: {
+    type: Boolean,
+    default: false,
+  },
+  deleteEmptyLine: {
     type: Boolean,
     default: false,
   },
@@ -239,7 +246,7 @@ const newRow = computed(() =>
 function onModelValueUpdate(
   rowId: number,
   colId: string,
-  newValue: string | number | null,
+  newValue: string | number | boolean | null,
 ) {
   // Get a copy of current data
   const outValue = props.modelValue;
@@ -251,14 +258,15 @@ function onModelValueUpdate(
 
   // Update with new value
   if (newValue != null && rowId < outValue.length) {
-    outValue[rowId][colId] = String(newValue);
+    outValue[rowId][colId] = newValue;
 
     // Remove trailing empty lines if necessary
     let checkLastLine = true;
     while (checkLastLine) {
       if (
+        props.deleteEmptyLine &&
         outValue.length > 0 &&
-        Object.values(outValue.at(-1)!).every((value) => !value)
+        Object.keys(headers.value).every((key) => !outValue.at(-1)![key])
       )
         outValue.pop();
       else checkLastLine = false;

@@ -205,6 +205,7 @@
             requestVideo: 'checkbox',
           }"
           :showNewLine="true"
+          :deleteEmptyLine="true"
           @row-click="
             (_: any, row: any) =>
               selectingReferenceLine ? onReferenceClick(row.uid) : undefined
