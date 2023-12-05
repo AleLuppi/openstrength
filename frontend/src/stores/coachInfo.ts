@@ -119,7 +119,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     }
 
     // Abort if there is no need to check
-    if (!coachId || (quiet && athletes.value)) return;
+    if (!coachId || (quiet && _athletes.value)) return;
 
     // Get documents
     doGetDocs(
@@ -166,7 +166,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     }
 
     // Abort if there is no need to check
-    if (!coachId || (quiet && exercises.value)) return;
+    if (!coachId || (quiet && _exercises.value)) return;
 
     // Get documents
     doGetDocs(exercisesCollection, [["userId", "==", coachId]], {
@@ -207,7 +207,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     }
 
     // Abort if there is no need to check
-    if (!coachId || (quiet && programs.value)) return;
+    if (!coachId || (quiet && _programs.value)) return;
 
     // TODO check documents format
     // Get documents
@@ -248,7 +248,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     }
 
     // Abort if there is no need to check
-    if (!coachId || (quiet && maxlifts.value)) return;
+    if (!coachId || (quiet && _maxlifts.value)) return;
 
     // Get documents
     doGetDocs(maxliftsCollection, [["coachId", "==", coachId]], {
@@ -285,6 +285,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
    * Reset values in user storage.
    */
   function $reset() {
+    coachId.value = undefined;
     athletes.value = undefined;
     exercises.value = undefined;
     programs.value = undefined;
