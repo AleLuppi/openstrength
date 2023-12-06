@@ -346,15 +346,45 @@
       </div>
     </div>
 
+    <!-- Show something when program is empty -->
+    <div v-if="objectIsEmpty(exercisesValues)" class="text-center">
+      <slot name="empty-program">
+        <h6>
+          {{ $t("coach.program_management.builder.empty") }}
+        </h6>
+      </slot>
+      <q-btn
+        icon="add"
+        :label="$t('coach.program_management.builder.new_day')"
+        @click="editWeekDayName = ['', '']"
+        rounded
+        unelevated
+      >
+        <FormProgramNewWeekDay
+          v-model="editWeekDayName"
+          @save="renameWeekDay"
+          :cover="false"
+          anchor="bottom middle"
+          self="top middle"
+          :offset="[0, 5]"
+        >
+        </FormProgramNewWeekDay>
+      </q-btn>
+    </div>
+
     <!-- Show something when filters remove any exercise -->
     <div
-      v-if="
+      v-else-if="
         !objectIsEmpty(exercisesValues) &&
         objectIsEmpty(filteredExercisesValues)
       "
       class="text-center"
     >
-      <slot name="empty-filtered"></slot>
+      <slot name="empty-filtered">
+        <h6>
+          {{ $t("coach.program_management.filter.all_filtered_out") }}
+        </h6>
+      </slot>
     </div>
 
     <!-- Show dialog to stop reference line selection -->

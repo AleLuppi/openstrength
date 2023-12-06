@@ -2,12 +2,8 @@
   <q-popup-edit
     v-bind="$props"
     :validate="(val) => val.length > 0"
-    :cover="false"
-    anchor="bottom middle"
-    self="top middle"
-    :offset="[0, 5]"
     v-slot="scope"
-    class="row"
+    class="row items-center"
   >
     <q-input
       autofocus
