@@ -333,6 +333,7 @@ import {
   OSChartVersion,
 } from "@/helpers/charts/chartTypes";
 import { testAllRepCases } from "@/helpers/programs/lineRepsTest";
+import { testAllSetsCases } from "@/helpers/programs/lineSetsTest";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -716,6 +717,7 @@ const chartDataRequests: OSChartDataRequest[] = [
 
 // Test Reps
 testAllRepCases();
+testAllSetsCases();
 
 /* console.log("-----------SETS---------------");
 console.log("setsValue", lineTest.setsValue);

@@ -443,7 +443,7 @@ export class ProgramLine {
         return this.setsReference.setsValue + operationValue;
       }
     } else {
-      return this.setsSupposedValue;
+      return undefined;
     }
   }
   //TODO: add case from rpe table (load and rpe present)
@@ -460,7 +460,7 @@ export class ProgramLine {
         return this.repsReference.repsValue + operationValue;
       }
     } else {
-      return this.setsSupposedValue;
+      return undefined;
     }
   }
   get loadComputedValue(): number | undefined {
@@ -554,12 +554,24 @@ export class ProgramLine {
       const [secondNumber, firstNumber] = this.setsBaseValue
         .split("/")
         .map(Number);
-      return Math.round((secondNumber + firstNumber) / 2);
+      return (secondNumber + firstNumber) / 2;
     } else if (
       this.setsBaseValue !== undefined &&
       /^\(\d*\)$/.test(this.setsBaseValue)
     ) {
       return parseInt(this.setsBaseValue.slice(1, -1));
+    } else if (this.setsOperation !== undefined) {
+      const referenceValue =
+        this.setsReference?.setsComputedValue ??
+        this.setsReference?.setsSupposedValue;
+      if (referenceValue !== undefined) {
+        return referenceValue + parseInt(this.setsOperation);
+      } else {
+        const referenceSupposedValue = this.setsReference?.setsSupposedValue;
+        return referenceSupposedValue !== undefined
+          ? referenceSupposedValue + parseInt(this.setsOperation)
+          : undefined;
+      }
     } else {
       return undefined;
     }
@@ -680,7 +692,7 @@ export class ProgramLine {
   get requireSets(): boolean {
     if (
       this.setsBaseValue !== undefined &&
-      /^\\?|\\(\d*\\)|\d*\/\d*$/.test(this.setsBaseValue)
+      /^(\\?|\(\d*\)|\d*\/\d*|\?)$/.test(this.setsBaseValue)
     ) {
       return true;
     } else {
