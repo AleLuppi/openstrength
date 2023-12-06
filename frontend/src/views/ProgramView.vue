@@ -332,6 +332,7 @@ import {
   OSChartType,
   OSChartVersion,
 } from "@/helpers/charts/chartTypes";
+import { testAllRepCases } from "@/helpers/programs/lineRepsTest";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -713,43 +714,10 @@ const chartDataRequests: OSChartDataRequest[] = [
   },
 ];
 
-// Test line translation
-const lineTest = new ProgramLine({
-  setsBaseValue: "W1-3",
-  repsBaseValue: "5/8",
-  loadBaseValue: "50kg/70kg",
-  rpeBaseValue: "5",
-  requestFeedbackText: true,
-  setsReference: new ProgramLine({
-    setsBaseValue: "8",
-    repsBaseValue: "5",
-    loadBaseValue: "50 kg",
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  }),
-  repsReference: new ProgramLine({
-    setsBaseValue: "8",
-    repsBaseValue: "5",
-    loadBaseValue: "50 kg",
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  }),
-  loadReference: new ProgramLine({
-    setsBaseValue: "8",
-    repsBaseValue: "5",
-    loadBaseValue: "50 kg",
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-    maxliftReference: new MaxLift({
-      type: MaxLiftType._1RM,
-      exercise: coachInfo.exercises?.[1],
-      value: "40",
-    }),
-  }),
-});
+// Test Reps
+testAllRepCases();
 
-console.log("-----------START---------------");
-console.log("-----------SETS---------------");
+/* console.log("-----------SETS---------------");
 console.log("setsValue", lineTest.setsValue);
 console.log("setsBaseValue", lineTest.setsBaseValue);
 console.log("setsComputedValue", lineTest.setsComputedValue);
@@ -759,16 +727,7 @@ console.log("setsRangeMax", lineTest.setsRangeMax);
 console.log("setsOperation", lineTest.setsOperation);
 console.log("setsReference", lineTest.setsReference);
 console.log("requireSets", lineTest.requireSets);
-console.log("-----------REPS---------------");
-console.log("repsValue", lineTest.repsValue);
-console.log("repsBaseValue", lineTest.repsBaseValue);
-console.log("repsComputedValue", lineTest.repsComputedValue);
-console.log("repsSupposedValue", lineTest.repsSupposedValue);
-console.log("repsRangeMin", lineTest.repsRangeMin);
-console.log("repsRangeMax", lineTest.repsRangeMax);
-console.log("repsOperation", lineTest.repsOperation);
-console.log("repsReference", lineTest.repsReference);
-console.log("requireReps", lineTest.requireReps);
+
 console.log("-----------LOAD---------------");
 console.log("loadValue", lineTest.loadValue);
 console.log("loadBaseValue", lineTest.loadBaseValue);
@@ -788,7 +747,7 @@ console.log("rpeRangeMin", lineTest.rpeRangeMin);
 console.log("rpeRangeMax", lineTest.rpeRangeMax);
 console.log("rpeOperation", lineTest.rpeOperation);
 console.log("rpeReference", lineTest.rpeReference);
-console.log("requireRpe", lineTest.requireRpe);
+console.log("requireRpe", lineTest.requireRpe); */
 
 /**
  * Handle custom right drawer click.

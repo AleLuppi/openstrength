@@ -379,7 +379,7 @@ export class ProgramLine {
   repsReference?: ProgramLine;
   loadBaseValue?: string;
   loadReference?: ProgramLine;
-  maxliftReference?: MaxLift;
+  maxliftReference?: MaxLift; //TODO: remove
   rpeBaseValue?: string;
   rpeReference?: ProgramLine;
 
@@ -517,13 +517,13 @@ export class ProgramLine {
   }
   get repsOperation(): string | undefined {
     if (this.repsBaseValue !== undefined) {
-      const [, operationPart] =
-        this.repsBaseValue.match(/(?:[^\d\s+-]+)?([+-]\d+)$/) || [];
+      const [, operationPart] = this.repsBaseValue.match(/([+-]\d+).*?$/) || [];
       return operationPart ? operationPart : undefined;
     } else {
       return undefined;
     }
   }
+
   get loadOperation(): string | undefined {
     if (
       this.loadBaseValue !== undefined &&
@@ -572,16 +572,29 @@ export class ProgramLine {
       const [secondNumber, firstNumber] = this.repsBaseValue
         .split("/")
         .map(Number);
-      return Math.round((secondNumber + firstNumber) / 2);
+      return (secondNumber + firstNumber) / 2;
     } else if (
       this.repsBaseValue !== undefined &&
       /^\(\d*\)$/.test(this.repsBaseValue)
     ) {
       return parseInt(this.repsBaseValue.slice(1, -1));
+    } else if (this.repsOperation !== undefined) {
+      const referenceValue =
+        this.repsReference?.repsComputedValue ??
+        this.repsReference?.repsSupposedValue;
+      if (referenceValue !== undefined) {
+        return referenceValue + parseInt(this.repsOperation);
+      } else {
+        const referenceSupposedValue = this.repsReference?.repsSupposedValue;
+        return referenceSupposedValue !== undefined
+          ? referenceSupposedValue + parseInt(this.repsOperation)
+          : undefined;
+      }
     } else {
       return undefined;
     }
   }
+
   get loadSupposedValue(): number | undefined {
     const kgRangeRegex = /^\d*kg\/\d*kg$/;
     const kgValueRegex = /^\(\d*kg\)$/;
@@ -677,13 +690,14 @@ export class ProgramLine {
   get requireReps(): boolean {
     if (
       this.repsBaseValue !== undefined &&
-      /^\\?|\\(\d*\\)|\d*\/\d*$/.test(this.repsBaseValue)
+      /^(\\?|\(\d*\)|\d*\/\d*|\?)$/.test(this.repsBaseValue)
     ) {
       return true;
     } else {
       return false;
     }
   }
+
   get requireLoad(): boolean {
     if (
       this.loadBaseValue !== undefined &&
