@@ -64,6 +64,8 @@
             @update:model-value="
               (value) => onModelValueUpdate(props.rowIndex, col.name, value)
             "
+            @focus="selectSingleCell(props.row.id, col.id)"
+            dense
           ></q-checkbox>
 
           <q-input
@@ -75,6 +77,7 @@
             @update:model-value="
               (value) => onModelValueUpdate(props.rowIndex, col.name, value)
             "
+            @focus="selectSingleCell(props.row.id, col.id)"
             borderless
             autogrow
             :dense="dense"
@@ -329,12 +332,7 @@ function getHeaderName(colNum: number) {
  */
 function onSelectionStart(rowNum: string | number, colNum: string | number) {
   isSelecting.value = true;
-  selected.value = {
-    rowFrom: Number(rowNum),
-    rowTo: Number(rowNum),
-    colFrom: Number(colNum),
-    colTo: Number(colNum),
-  };
+  selectSingleCell(rowNum, colNum);
 }
 
 /**
@@ -356,6 +354,21 @@ function onSelectionContinue(rowNum: string | number, colNum: string | number) {
  */
 function onSelectionEnd() {
   isSelecting.value = false;
+}
+
+/**
+ * Select a single cell by its location.
+ *
+ * @param rowNum row number of cell that must be selected.
+ * @param colNum column number of cell that must be selected.
+ */
+function selectSingleCell(rowNum: string | number, colNum: string | number) {
+  selected.value = {
+    rowFrom: Number(rowNum),
+    rowTo: Number(rowNum),
+    colFrom: Number(colNum),
+    colTo: Number(colNum),
+  };
 }
 
 /**
