@@ -70,9 +70,7 @@ export function getUniqueWeeksAndDaysForExercise(
 
   program.programExercises?.forEach((exercise) => {
     const exerciseName = exercise.exercise?.name || "";
-    const exerciseVariantName = exercise.exerciseVariant?.name || "";
-    const currentExerciseFullName =
-      `${exerciseName} - ${exerciseVariantName}`.trim();
+    const currentExerciseFullName = `${exerciseName}`.trim();
 
     if (currentExerciseFullName === exerciseFullName) {
       const week = String(exercise.scheduleWeek);
@@ -99,8 +97,7 @@ export function getUniqueExerciseNames(program: Program): Set<string> {
 
   program.programExercises?.forEach((exercise) => {
     const exerciseName = exercise.exercise?.name || "";
-    const exerciseVariantName = exercise.exerciseVariant?.name || "";
-    const uniqueName = `${exerciseName} - ${exerciseVariantName}`.trim();
+    const uniqueName = `${exerciseName}`.trim();
 
     if (uniqueName) {
       uniqueExerciseNames.add(uniqueName as string);
@@ -131,9 +128,7 @@ export function getProgramLines(
 
   program.programExercises?.forEach((exercise) => {
     const exerciseName = exercise.exercise?.name || "";
-    const exerciseVariantName = exercise.exerciseVariant?.name || "";
-    const currentExerciseFullName =
-      `${exerciseName} - ${exerciseVariantName}`.trim();
+    const currentExerciseFullName = `${exerciseName}`.trim();
 
     if (
       (!exerciseFullNames ||
