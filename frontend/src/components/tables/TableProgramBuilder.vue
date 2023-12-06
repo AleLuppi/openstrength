@@ -656,8 +656,8 @@ function resetTableData() {
             rpe: line.rpeBaseValue,
             rpeRef: line.rpeReference,
             note: line.note,
-            requestText: line.requestFeedbackText,
-            requestVideo: line.requestFeedbackVideo,
+            requestText: line.requestFeedbackText ?? false,
+            requestVideo: line.requestFeedbackVideo ?? false,
           };
         }) ?? [];
     },
