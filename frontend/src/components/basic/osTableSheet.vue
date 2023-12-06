@@ -97,6 +97,7 @@
 </template>
 
 <script setup lang="ts">
+import { objectMapValues } from "@/helpers/object";
 import { ref, computed, PropType } from "vue";
 
 // Define props
@@ -110,6 +111,10 @@ const props = defineProps({
     required: false,
   },
   types: {
+    type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
+    required: false,
+  },
+  widths: {
     type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
     required: false,
   },
@@ -212,6 +217,22 @@ const types = computed(() => {
   }
 });
 
+// Get widths map
+const widths = computed(() => {
+  if (props.widths) {
+    // Handle case of fixed widths
+    const propsWidths = props.widths;
+    const vals = objectMapValues(headers.value, (_, key, idx) =>
+      propsWidths instanceof Array ? propsWidths[idx] : propsWidths[key],
+    );
+    console.log(vals);
+    return vals;
+  } else {
+    // Handle case with unknown type
+    return objectMapValues(headers.value, () => "0%");
+  }
+});
+
 // Set rows and columns
 const columns = computed(() =>
   Object.entries(headers.value).map(([key, val], index) => ({
@@ -220,6 +241,7 @@ const columns = computed(() =>
     field: key,
     label: val,
     align: "center" as "center",
+    style: widths.value[key] ? "width: " + widths.value[key] : "",
   })),
 );
 const rows = computed(() =>
@@ -440,6 +462,13 @@ function onPaste(clipboardEvent: ClipboardEvent) {
 </script>
 
 <style scoped lang="scss">
+.q-table--dense .q-table {
+  & th,
+  td {
+    padding: 2px;
+  }
+}
+
 .os-tr-selected {
   & > .os-td-selected {
     background: rgba($primary, 0.1);

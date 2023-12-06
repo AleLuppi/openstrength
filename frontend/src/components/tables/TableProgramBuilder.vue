@@ -204,6 +204,15 @@
             requestText: 'checkbox',
             requestVideo: 'checkbox',
           }"
+          :widths="{
+            load: '9%',
+            reps: '9%',
+            sets: '9%',
+            rpe: '9%',
+            note: '50%',
+            requestText: '7%',
+            requestVideo: '7%',
+          }"
           :showNewLine="true"
           :deleteEmptyLine="true"
           @row-click="
