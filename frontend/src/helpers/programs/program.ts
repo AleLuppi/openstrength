@@ -405,22 +405,22 @@ export class ProgramLine {
     }
   }
   public get loadValue(): number | undefined {
-    if (this.loadBaseValue !== undefined && /\d*kg/.test(this.loadBaseValue)) {
-      return parseInt(this.loadBaseValue);
+    if (this.loadBaseValue !== undefined && /\d+kg$/.test(this.loadBaseValue)) {
+      return parseFloat(this.loadBaseValue);
     }
 
     if (
-      this.loadBaseValue === "\\d*%" &&
-      this.maxliftReference?.type === MaxLiftType._1RM
+      this.loadBaseValue !== undefined &&
+      /^\d+%$/.test(this.loadBaseValue) &&
+      this.loadReference?.loadValue !== undefined
     ) {
-      const percentage =
-        parseFloat(this.loadBaseValue.match(/\d*/)?.[0] ?? "0") / 100;
-      const maxlift1RM = parseFloat(this.maxliftReference?.value ?? "0");
-      return percentage * maxlift1RM;
+      const percentage = parseFloat(this.loadBaseValue) / 100;
+      return percentage * this.loadReference.loadValue;
     }
 
     return undefined;
   }
+
   public get rpeValue(): number | undefined {
     if (this.rpeBaseValue !== undefined && /^\d*$/.test(this.rpeBaseValue)) {
       const parsedRPE = parseInt(this.rpeBaseValue);
@@ -713,7 +713,7 @@ export class ProgramLine {
   get requireLoad(): boolean {
     if (
       this.loadBaseValue !== undefined &&
-      /^\\?|\\(\d*kg\\)|\d*kg\/\d*kg|\\(\d*%\\)|\d*%\/\d*%$/.test(
+      /^(?:\?|(?:\d+kg\/\d+kg)|(?:\d+%\/\d+%)|(?:\(\d+kg\))|(?:\(\d+%\)))$/.test(
         this.loadBaseValue,
       )
     ) {
@@ -722,6 +722,7 @@ export class ProgramLine {
       return false;
     }
   }
+
   get requireRpe(): boolean {
     if (
       this.rpeBaseValue !== undefined &&

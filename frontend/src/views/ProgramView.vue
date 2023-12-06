@@ -334,6 +334,7 @@ import {
 } from "@/helpers/charts/chartTypes";
 import { testAllRepCases } from "@/helpers/programs/lineRepsTest";
 import { testAllSetsCases } from "@/helpers/programs/lineSetsTest";
+import { testAllLoadCases } from "@/helpers/programs/lineLoadTest";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -715,9 +716,11 @@ const chartDataRequests: OSChartDataRequest[] = [
   },
 ];
 
-// Test Reps
+// Test line computed props
+// TODO: remove from here
 testAllRepCases();
 testAllSetsCases();
+testAllLoadCases();
 
 /* console.log("-----------SETS---------------");
 console.log("setsValue", lineTest.setsValue);
