@@ -129,9 +129,6 @@ function updateCharts() {
  * @param chartDataRequest
  */
 function getChartData(chartDataRequest: OSChartDataRequest): any {
-  console.log("inside chselector, days", chartDataRequest.selectedDays);
-  console.log("inside chselector, weeks", chartDataRequest.selectedWeeks);
-  console.log("inside chselector, exerc", chartDataRequest.selectedExercises);
   return formatChartData(computeChartData(chartDataRequest));
 }
 

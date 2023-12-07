@@ -331,10 +331,10 @@ import { arrayUniqueValues } from "@/helpers/array";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 import { getUniqueDayAndWeekNames } from "@/helpers/charts/chartDataFormatter";
 
-/* import { testAllRepCases } from "@/helpers/programs/lineRepsTest";
+import { testAllRepCases } from "@/helpers/programs/lineRepsTest";
 import { testAllSetsCases } from "@/helpers/programs/lineSetsTest";
 import { testAllLoadCases } from "@/helpers/programs/lineLoadTest";
- */
+
 // Set expose
 defineExpose({ handleDrawerClick });
 
@@ -701,9 +701,9 @@ const programFilter = computed(() => ({
 }));
 // Test line computed props
 // TODO: remove from here
-/* testAllRepCases();
+testAllRepCases();
 testAllSetsCases();
-testAllLoadCases(); */
+testAllLoadCases();
 
 /**
  * Handle custom right drawer click.

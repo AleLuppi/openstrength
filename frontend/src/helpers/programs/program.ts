@@ -55,9 +55,16 @@ export type ProgramExerciseProps = {
   exercise?: Exercise;
   exerciseVariant?: ExerciseVariant;
   exerciseNote?: string;
+  exercise1RM?: string;
+  exerciseMaxReps?: string;
+  exerciseMaxHold?: string;
 
   // Lines composing exercise
   lines?: ProgramLine[];
+
+  // Computed properties
+  exerciseMaxlift1RM?: MaxLift;
+  exerciseMaxliftMaxReps?: MaxLift;
 };
 
 /**
@@ -80,7 +87,6 @@ export type ProgramLineProps = {
   repsReference?: ProgramLine;
   loadBaseValue?: string;
   loadReference?: ProgramLine;
-  maxliftReference?: MaxLift;
   rpeBaseValue?: string;
   rpeReference?: ProgramLine;
 
@@ -310,6 +316,9 @@ export class ProgramExercise {
   exercise?: Exercise;
   exerciseVariant?: ExerciseVariant;
   exerciseNote?: string;
+  exercise1RM?: string;
+  exerciseMaxReps?: string;
+  exerciseMaxHold?: string;
 
   // Lines composing exercise
   lines?: ProgramLine[];
@@ -323,6 +332,9 @@ export class ProgramExercise {
     exercise,
     exerciseVariant,
     exerciseNote,
+    exercise1RM,
+    exerciseMaxReps,
+    exerciseMaxHold,
     lines,
   }: ProgramExerciseProps = {}) {
     this.uid = uid;
@@ -333,6 +345,9 @@ export class ProgramExercise {
     this.exercise = exercise;
     this.exerciseVariant = exerciseVariant;
     this.exerciseNote = exerciseNote;
+    this.exercise1RM = exercise1RM;
+    this.exerciseMaxReps = exerciseMaxReps;
+    this.exerciseMaxHold = exerciseMaxHold;
     lines?.forEach((line) => {
       if (!line.programExercise) line.programExercise = this;
     });
@@ -379,7 +394,6 @@ export class ProgramLine {
   repsReference?: ProgramLine;
   loadBaseValue?: string;
   loadReference?: ProgramLine;
-  maxliftReference?: MaxLift; //TODO: remove
   rpeBaseValue?: string;
   rpeReference?: ProgramLine;
 
@@ -466,7 +480,6 @@ export class ProgramLine {
   get loadComputedValue(): number | undefined {
     if (
       this.loadReference !== undefined &&
-      this.maxliftReference?.type !== MaxLiftType._1RM &&
       this.loadReference.loadComputedValue !== undefined
     ) {
       const loadOperationRegex = /^[+-]\d*kg|[+-]\d*%$/;
@@ -478,7 +491,7 @@ export class ProgramLine {
         const operationResult =
           this.loadReference.loadComputedValue + parseInt(this.loadOperation) ||
           (parseFloat(this.loadOperation) / 100) *
-            parseFloat(this.maxliftReference?.value ?? "0");
+            (this.loadReference?.loadValue ?? 0);
 
         return operationResult;
       }
@@ -635,18 +648,14 @@ export class ProgramLine {
       percentRangeRegex.test(this.loadBaseValue)
     ) {
       if (
-        this.maxliftReference !== undefined &&
-        this.maxliftReference.type === MaxLiftType._1RM &&
-        this.maxliftReference.exercise === this.programExercise?.exercise &&
-        this.maxliftReference.value !== undefined
+        this.loadReference !== undefined &&
+        this.loadReference.loadValue !== undefined
       ) {
         const [, firstPercent, secondPercent] =
           this.loadBaseValue.match(/^(\d*)%\/(\d*)%$/) || [];
         return (
-          (parseFloat(secondPercent) * parseFloat(this.maxliftReference.value) +
-            parseFloat(firstPercent) *
-              parseFloat(this.maxliftReference.value)) /
-          2
+          parseFloat(secondPercent) * this.loadReference?.loadValue +
+          (parseFloat(firstPercent) * this.loadReference?.loadValue) / 2
         );
       }
     }
@@ -656,15 +665,11 @@ export class ProgramLine {
       percentValueRegex.test(this.loadBaseValue)
     ) {
       if (
-        this.maxliftReference !== undefined &&
-        this.maxliftReference.type === MaxLiftType._1RM &&
-        this.maxliftReference.exercise === this.programExercise?.exercise &&
-        this.maxliftReference.value !== undefined
+        this.loadReference !== undefined &&
+        this.loadReference.loadValue !== undefined
       ) {
         const [, content] = this.loadBaseValue.match(/^\((\d*%)\)$/) || [];
-        return (
-          (parseFloat(content) / 100) * parseFloat(this.maxliftReference.value)
-        );
+        return (parseFloat(content) / 100) * this.loadReference.loadValue;
       }
     }
 
@@ -769,18 +774,15 @@ export class ProgramLine {
       /^\d*%\/\d*%$/.test(this.loadBaseValue)
     ) {
       if (
-        this.maxliftReference !== undefined &&
-        this.maxliftReference.type === MaxLiftType._1RM &&
-        this.maxliftReference.exercise === this.programExercise?.exercise &&
-        this.maxliftReference.value !== undefined
+        this.loadReference !== undefined &&
+        this.loadReference.loadValue !== undefined
       ) {
         const [, minPercent] = this.loadBaseValue.match(/^(\d*)%\//) || [];
         if (minPercent !== undefined) {
           const parsedMinPercent = parseFloat(minPercent);
           return isNaN(parsedMinPercent)
             ? undefined
-            : (parsedMinPercent / 100) *
-                parseFloat(this.maxliftReference.value);
+            : (parsedMinPercent / 100) * this.loadReference.loadValue;
         }
       }
     }
@@ -833,18 +835,15 @@ export class ProgramLine {
       /^\d*%\/\d*%$/.test(this.loadBaseValue)
     ) {
       if (
-        this.maxliftReference !== undefined &&
-        this.maxliftReference.type === MaxLiftType._1RM &&
-        this.maxliftReference.exercise === this.programExercise?.exercise &&
-        this.maxliftReference.value !== undefined
+        this.loadReference !== undefined &&
+        this.loadReference.loadValue !== undefined
       ) {
         const [, maxPercent] = this.loadBaseValue.match(/^\d*%\/(\d*)%$/) || [];
         if (maxPercent !== undefined) {
           const parsedMaxPercent = parseFloat(maxPercent);
           return isNaN(parsedMaxPercent)
             ? undefined
-            : (parsedMaxPercent / 100) *
-                parseFloat(this.maxliftReference.value);
+            : (parsedMaxPercent / 100) * this.loadReference.loadValue;
         }
       }
     }
@@ -873,7 +872,6 @@ export class ProgramLine {
     repsReference,
     loadBaseValue,
     loadReference,
-    maxliftReference,
     rpeBaseValue,
     rpeReference,
     note,
@@ -889,7 +887,6 @@ export class ProgramLine {
     this.repsReference = repsReference;
     this.loadBaseValue = loadBaseValue;
     this.loadReference = loadReference;
-    this.maxliftReference = maxliftReference;
     this.rpeBaseValue = rpeBaseValue;
     this.rpeReference = rpeReference;
     this.note = note;
