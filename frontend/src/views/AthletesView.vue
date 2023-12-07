@@ -326,6 +326,10 @@ import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import { Exercise } from "@/helpers/exercises/exercise";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
 import { event } from "vue-gtag";
+import {
+  getAllAssignedPrograms,
+  getAssignedProgram,
+} from "@/helpers/programs/athleteAssignment";
 
 // Init plugin
 const $q = useQuasar();
@@ -397,13 +401,17 @@ watch(selectedAthlete, (athlete) =>
 );
 
 // Get all programs for the selected athlete
-const athletePrograms = computed(
-  () => selectedAthlete.value?.getAllAssignedPrograms(programs.value),
+const athletePrograms = computed(() =>
+  selectedAthlete.value
+    ? getAllAssignedPrograms(selectedAthlete.value, programs.value)
+    : [],
 );
 
 // Get active current program for the selected athlete
-const athleteCurrentProgram = computed(
-  () => selectedAthlete.value?.getAssignedProgram(programs.value),
+const athleteCurrentProgram = computed(() =>
+  selectedAthlete.value
+    ? getAssignedProgram(selectedAthlete.value, programs.value)
+    : undefined,
 );
 
 // Get a program to initialize form
@@ -506,6 +514,7 @@ function createAthlete() {
     coaches: user.uid ? [user.uid] : [],
     coachesFrom: [new Date()],
     coachesTo: [null],
+    assignedPrograms: [],
     createdOn: new Date(),
     createdBy: user.uid,
   });

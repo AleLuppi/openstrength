@@ -85,13 +85,15 @@ export type AthleteUserProps = UserProps & {
   coaches?: string[];
   coachesFrom?: (Date | null)[];
   coachesTo?: (Date | null)[];
+  assignedProgramId?: string;
+  assignedPrograms?: string[];
 
   // Workout-related info
   height?: string;
   weight?: string;
 
   // Computed info
-  getAssignedProgram?: boolean;
+  hasProgramAssigned?: boolean;
 };
 
 /**
@@ -239,43 +241,16 @@ export class AthleteUser extends User {
   coaches?: string[];
   coachesFrom?: (Date | null)[];
   coachesTo?: (Date | null)[];
+  assignedProgramId?: string;
+  assignedPrograms?: string[];
 
   // Workout-related info
   height?: string;
   weight?: string;
 
-  // Computed property
-  // Retrieve all programs ever assigned to athlete
-  public getAllAssignedPrograms(programs: Program[]) {
-    return programs.filter(
-      (program) =>
-        program.coachId === this.coachId && program.athleteId === this.uid,
-    );
-  }
-
-  // Retrieve most recent program assigned to athlete
-  public getAssignedProgram(programs: Program[]) {
-    const allPrograms = this.getAllAssignedPrograms(programs);
-
-    // Check for ongoing program
-    const ongoingProgram = allPrograms.find((program) => program.isOngoing);
-    if (ongoingProgram) return ongoingProgram;
-
-    // If no ongoing program, get most recent program
-    return allPrograms
-      .sort((programA, programB) => {
-        if (programA.startedOn === undefined)
-          if (programB.startedOn === undefined) return 0;
-          else return 1;
-        if (
-          programB.startedOn === undefined ||
-          programA.startedOn > programB.startedOn
-        )
-          return -1;
-        if (programA.startedOn < programB.startedOn) return 1;
-        return 0;
-      })
-      .at(0);
+  // Check if athlete has any assigned program
+  public get hasProgramAssigned() {
+    return Boolean(this.assignedProgramId);
   }
 
   constructor({
@@ -284,6 +259,8 @@ export class AthleteUser extends User {
     coaches,
     coachesFrom,
     coachesTo,
+    assignedProgramId,
+    assignedPrograms,
     height,
     weight,
     ...props
@@ -298,6 +275,8 @@ export class AthleteUser extends User {
     this.coaches = coaches;
     this.coachesFrom = coachesFrom;
     this.coachesTo = coachesTo;
+    this.assignedProgramId = assignedProgramId;
+    this.assignedPrograms = assignedPrograms;
     this.height = height;
     this.weight = weight;
   }
