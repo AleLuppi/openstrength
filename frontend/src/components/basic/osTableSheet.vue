@@ -189,11 +189,13 @@ const types = computed(() => {
     const propsTypes = props.types;
     return props.modelValue.map(() =>
       Object.keys(headers.value).reduce(
-        (out: { [key: string]: string }, key, idx) => (
-          (out[key] =
-            propsTypes instanceof Array ? propsTypes[idx] : propsTypes[key]),
-          out
-        ),
+        (out: { [key: string]: string }, key, idx) => {
+          out[key] =
+            propsTypes instanceof Array ? propsTypes[idx] : propsTypes[key];
+          if (!Object.values(typesAvailable).includes(out[key]))
+            out[key] = typesAvailable.input;
+          return out;
+        },
         {},
       ),
     );
@@ -256,7 +258,7 @@ const rows = computed(() =>
 
 // Set an empty new line
 const newRow = computed(() =>
-  columns.value.reduce((out, col) => ({ ...out, [col.name]: "" }), {}),
+  columns.value.reduce((out, col) => ({ ...out, [col.name]: undefined }), {}),
 );
 
 /**
@@ -276,7 +278,7 @@ function onModelValueUpdate(
 
   // Add a new line if necessary
   if (rowId == outValue.length && String(newValue).trim()) {
-    outValue[rowId] = {};
+    outValue[rowId] = newRow.value;
   }
 
   // Update with new value

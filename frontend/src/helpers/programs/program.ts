@@ -1,5 +1,9 @@
 import { DocumentReference } from "firebase/firestore";
-import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
+import {
+  doAddDoc,
+  doUpdateDoc,
+  doDeleteDoc,
+} from "@/helpers/database/readwrite";
 import { programsCollection } from "@/helpers/database/collections";
 import { AthleteUser, CoachUser } from "@/helpers/users/user";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
@@ -285,6 +289,36 @@ export class Program {
   }
 
   /**
+   * Remove the program from database.
+   *
+   * @param program element that shall be removed.
+   * @param onSuccess function to execute when operation is successful.
+   * @param onError function to execute when operation fails.
+   */
+  remove({
+    program,
+    onSuccess,
+    onError,
+  }: {
+    program?: Program;
+    onSuccess?: Function;
+    onError?: Function;
+  } = {}) {
+    // Ensure program is mapped onto a database document
+    const programToDelete = program || this;
+    if (!programToDelete.uid) {
+      onError?.();
+      return;
+    }
+
+    // Delete the program
+    doDeleteDoc(programsCollection, programToDelete.uid, {
+      onSuccess: onSuccess,
+      onError: onError,
+    });
+  }
+
+  /**
    * Get all lines of a program.
    *
    * @returns list of all lines in a program.
@@ -507,7 +541,7 @@ function flattenProgram(program: Program) {
     athleteId: program.athlete?.uid,
     lines: program.programExercises?.reduce(
       (out: object[], exerciseToSpread) => {
-        const { program, exerciseVariant, lines, ...exerciseObj } =
+        const { uid, program, exerciseVariant, lines, ...exerciseObj } =
           exerciseToSpread;
         const flatExercise = {
           ...exerciseObj,
@@ -516,8 +550,36 @@ function flattenProgram(program: Program) {
         return [
           ...out,
           ...(exerciseToSpread.lines?.map((lineToSpread) => {
-            const { uid, programExercise, ...lineObj } = lineToSpread;
-            return { ...flatExercise, ...lineObj };
+            const { programExercise, ...lineObj } = lineToSpread;
+            const referenceAndType = (
+              [
+                "setsReference",
+                "repsReference",
+                "loadReference",
+                "rpeReference",
+              ] as (
+                | "setsReference"
+                | "repsReference"
+                | "loadReference"
+                | "rpeReference"
+              )[]
+            ).reduce(
+              (out: { [key: string]: any }, key) => ({
+                ...out,
+                [key]: lineToSpread[key]?.uid,
+                [key + "Type"]: lineToSpread[key]
+                  ? lineToSpread[key] instanceof MaxLift
+                    ? "maxlift"
+                    : "line"
+                  : undefined,
+              }),
+              {},
+            );
+            return {
+              ...flatExercise,
+              ...lineObj,
+              ...referenceAndType,
+            };
           }) || []),
         ];
       },

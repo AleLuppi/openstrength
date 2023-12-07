@@ -220,7 +220,7 @@
           :model-value="exerciseModelValue.data"
           @update:model-value="
             (val?: typeof exerciseModelValue.data) => {
-              exerciseModelValue.data = val;
+              updateTableData(idScheduleInfo.toString(), val);
               updateProgramExercise(idScheduleInfo.toString());
             }
           "
@@ -654,6 +654,15 @@ watch(exercisesValues, () => sortExerciseValues());
 watch(programCurrentValue, (program) => emit("update:modelValue", program));
 
 /**
+ * Get a random uid.
+ *
+ * @returns a random uid.
+ */
+function getRandomUid() {
+  return "OS-" + uid();
+}
+
+/**
  * Update table data according to input data.
  */
 function resetTableData() {
@@ -689,7 +698,7 @@ function resetTableData() {
       // Prepare data-related values
       exercisesValues.value[idScheduleInfo].data =
         programExercise.lines?.map((line) => {
-          if (!line.uid) line.uid = "OS-" + uid();
+          if (!line.uid) line.uid = getRandomUid();
           return {
             uid: line.uid,
             load: line.loadBaseValue,
@@ -725,6 +734,22 @@ function updateSelectedExercise(idScheduleInfo: string, newName?: string) {
 }
 
 /**
+ * Update table data for an exercise in program.
+ *
+ * @param idScheduleInfo schedule info id whose exercise shall be updated.
+ * @param data table data that shall be saved.
+ */
+function updateTableData(
+  idScheduleInfo: string,
+  data: (typeof exercisesValues.value)[string]["data"],
+) {
+  data.forEach((line) => {
+    if (!Object.keys(line).includes("uid")) line.uid = getRandomUid();
+  });
+  exercisesValues.value[idScheduleInfo].data = data;
+}
+
+/**
  * Perform operations on reference selection.
  *
  * @param reference line or maxlift identifier or instance.
@@ -751,9 +776,7 @@ function onReferenceClick(
     refField != "rpeRef"
   )
     return;
-  exercisesValues.value[lineInfo.schedule].data[Number(lineInfo.lineNum)][
-    refField
-  ] =
+  const parsedReference =
     reference instanceof ProgramLine || reference instanceof MaxLift
       ? reference
       : type == "line"
@@ -761,6 +784,9 @@ function onReferenceClick(
       : type == "maxlift"
       ? props.maxlifts.find((maxlift) => (maxlift.uid = reference))
       : undefined;
+  exercisesValues.value[lineInfo.schedule].data[Number(lineInfo.lineNum)][
+    refField
+  ] = parsedReference;
 
   // Update program
   updateProgramExercise(lineInfo.schedule);
@@ -1079,6 +1105,7 @@ function updateProgramWhole() {
             (lineInfo, idx) =>
               new ProgramLine({
                 lineOrder: idx,
+                uid: lineInfo.uid,
                 setsBaseValue: lineInfo.sets,
                 setsReference: lineInfo.setsRef,
                 repsBaseValue: lineInfo.reps,
@@ -1120,24 +1147,25 @@ function updateProgramExercise(idScheduleInfo: string) {
   programExercise.exercise = selectedExercises.value[idScheduleInfo];
   programExercise.exerciseVariant =
     selectedExerciseVariants.value[idScheduleInfo];
-  (programExercise.exerciseNote = exercisesValues.value[idScheduleInfo].note),
-    (programExercise.lines = exercisesValues.value[idScheduleInfo].data.map(
-      (lineInfo, idx) =>
-        new ProgramLine({
-          lineOrder: idx,
-          setsBaseValue: lineInfo.sets,
-          setsReference: lineInfo.setsRef,
-          repsBaseValue: lineInfo.reps,
-          repsReference: lineInfo.repsRef,
-          loadBaseValue: lineInfo.load,
-          loadReference: lineInfo.loadRef,
-          rpeBaseValue: lineInfo.rpe,
-          rpeReference: lineInfo.rpeRef,
-          note: lineInfo.note,
-          requestFeedbackText: lineInfo.requestText,
-          requestFeedbackVideo: lineInfo.requestVideo,
-        }),
-    ));
+  programExercise.exerciseNote = exercisesValues.value[idScheduleInfo].note;
+  programExercise.lines = exercisesValues.value[idScheduleInfo].data.map(
+    (lineInfo, idx) =>
+      new ProgramLine({
+        lineOrder: idx,
+        uid: lineInfo.uid,
+        setsBaseValue: lineInfo.sets,
+        setsReference: lineInfo.setsRef,
+        repsBaseValue: lineInfo.reps,
+        repsReference: lineInfo.repsRef,
+        loadBaseValue: lineInfo.load,
+        loadReference: lineInfo.loadRef,
+        rpeBaseValue: lineInfo.rpe,
+        rpeReference: lineInfo.rpeRef,
+        note: lineInfo.note,
+        requestFeedbackText: lineInfo.requestText,
+        requestFeedbackVideo: lineInfo.requestVideo,
+      }),
+  );
 
   // Inform parent of update
   programCurrentValue.value = props.modelValue.duplicate();
