@@ -18,12 +18,12 @@
 
     <div v-if="charts">
       <template
-        v-for="(chartDataRequest, index) in props.chartDataRequests"
+        v-for="(chartDataRequest, index) in chartDataRequests"
         :key="index"
       >
         <chart-component
           class="q-mb-sm"
-          :v-if="getChartData(chartDataRequest)"
+          v-if="getChartData(chartDataRequest)"
           :title="getChartTitle(chartDataRequest)"
           :description="getChartDescription(chartDataRequest)"
           :data="getChartData(chartDataRequest)"
@@ -36,27 +36,102 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType } from "vue";
+import { ref, watch } from "vue";
 import ChartComponent from "@/components/charts/ChartComponent.vue";
 import {
   computeChartData,
   createChartOptions,
   formatChartData,
 } from "@/helpers/charts/chartDataFormatter";
-import { OSChartDataRequest } from "@/helpers/charts/chartTypes";
+import {
+  OSAvailableXType,
+  OSChartDataRequest,
+  OSChartDescriptor,
+  OSChartType,
+  OSChartVersion,
+} from "@/helpers/charts/chartTypes";
+import { Program } from "@/helpers/programs/program";
 
 const props = defineProps({
-  chartDataRequests: {
-    type: Array as PropType<OSChartDataRequest[]>,
+  program: {
+    type: Program,
     required: true,
   },
+  filterExercise: {
+    type: Set,
+    default: undefined,
+    required: false,
+  },
+  filterDay: {
+    type: Set,
+    default: undefined,
+    required: false,
+  },
+  filterWeek: {
+    type: Set,
+    default: undefined,
+    required: false,
+  },
 });
+
+const charts = ref<boolean>(false);
+
+const chartDescriptions: OSChartDescriptor[] = [
+  {
+    chartType: OSChartType.Volume,
+    chartVersion: OSChartVersion.TotalReps,
+    xAxisType: OSAvailableXType.Weeks,
+    chartTitle: "Total Reps varying weeks",
+    chartDescription: "Total reps varying weeks computed as reps x sets",
+  },
+  {
+    chartType: OSChartType.Volume,
+    chartVersion: OSChartVersion.TotalSets,
+    xAxisType: OSAvailableXType.Weeks,
+    chartTitle: "Total Sets varying weeks",
+    chartDescription:
+      "Total sets varying weeks computed as the sum of the sets",
+  },
+
+  {
+    chartType: OSChartType.Volume,
+    chartVersion: OSChartVersion.TotalVolume,
+    xAxisType: OSAvailableXType.Weeks,
+    chartTitle: "Total Volume varying weeks",
+    chartDescription:
+      "Total volume varying weeks computed as the sum of the sets*reps*load",
+  },
+];
+
+const chartDataRequests: OSChartDataRequest[] = chartDescriptions.map(
+  (chartDescriptor) => {
+    return {
+      chartInfo: chartDescriptor,
+      program: props.program,
+      selectedExercises: props.filterExercise as Set<string> | undefined,
+      selectedDays: props.filterDay as Set<string> | undefined,
+      selectedWeeks: props.filterWeek as Set<string> | undefined,
+    };
+  },
+);
+
+watch([props.filterExercise, props.filterDay, props.filterWeek], () => {
+  updateCharts();
+});
+
+// Compute chart data
+function updateCharts() {
+  charts.value = true;
+}
 
 /**
  * Computes data
  * @param chartDataRequest
  */
 function getChartData(chartDataRequest: OSChartDataRequest): any {
+  console.log("inside chselector, days", chartDataRequest.selectedDays);
+  console.log("inside chselector, weeks", chartDataRequest.selectedWeeks);
+  console.log("inside chselector, exerc", chartDataRequest.selectedExercises);
   return formatChartData(computeChartData(chartDataRequest));
 }
 
@@ -77,11 +152,5 @@ function getChartTitle(chartDataRequest: OSChartDataRequest): string {
 
 function getChartDescription(chartDataRequest: OSChartDataRequest): string {
   return chartDataRequest.chartInfo.chartDescription || "";
-}
-
-const charts = ref<boolean>(false);
-// Compute chart data
-function updateCharts() {
-  charts.value = true;
 }
 </script>

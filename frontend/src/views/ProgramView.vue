@@ -125,7 +125,10 @@
           <!-- CHART SELECTOR SECTION -->
           <div v-if="showingUtils == UtilsOptions.charts">
             <ChartSelector
-              :chartDataRequests="chartDataRequests"
+              :program="selectedProgram"
+              :filter-exercise="filterExerciseSet"
+              :filter-day="filterDaySet"
+              :filter-week="filterWeekSet"
             ></ChartSelector>
           </div>
 
@@ -326,16 +329,12 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { arrayUniqueValues } from "@/helpers/array";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
-import {
-  OSAvailableXType,
-  OSChartDataRequest,
-  OSChartType,
-  OSChartVersion,
-} from "@/helpers/charts/chartTypes";
-import { testAllRepCases } from "@/helpers/programs/lineRepsTest";
+import { getUniqueDayAndWeekNames } from "@/helpers/charts/chartDataFormatter";
+
+/* import { testAllRepCases } from "@/helpers/programs/lineRepsTest";
 import { testAllSetsCases } from "@/helpers/programs/lineSetsTest";
 import { testAllLoadCases } from "@/helpers/programs/lineLoadTest";
-
+ */
 // Set expose
 defineExpose({ handleDrawerClick });
 
@@ -348,20 +347,7 @@ const route = useRoute();
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
-// Set ref
-const selectedProgram = //ref<Program>();
-  computed(() => program.value);
-const filterWeek = ref<string[]>();
-const filterDay = ref<string[]>();
-const filterExercise = ref<string[]>();
 const showAthleteAssigningDialog = ref(false);
-
-// Get complete program filter
-const programFilter = computed(() => ({
-  week: filterWeek.value || [],
-  day: filterDay.value || [],
-  exercise: filterExercise.value || [],
-}));
 
 function assignAthleteToProgram(uid?: string) {
   const athlete = coachInfo.athletes?.find((athlete) => athlete.uid === uid);
@@ -672,87 +658,52 @@ const program = ref<Program>(
 );
 watch(program, () => console.log("from parent"));
 
-const chartDataRequests: OSChartDataRequest[] = [
-  {
-    chartInfo: {
-      chartType: OSChartType.Volume,
-      chartVersion: OSChartVersion.TotalReps,
-      xAxisType: OSAvailableXType.Weeks,
-      chartTitle: "Total Reps varying weeks",
-      chartDescription: "Total reps varying weeks computed as reps x sets",
-    },
-    program: program.value,
-    selectedExercises: undefined,
-    selectedDays: undefined,
-    selectedWeeks: new Set(["A", "B", "C", "D"]),
-  },
-  {
-    chartInfo: {
-      chartType: OSChartType.Volume,
-      chartVersion: OSChartVersion.TotalSets,
-      xAxisType: OSAvailableXType.Weeks,
-      chartTitle: "Total Sets varying weeks",
-      chartDescription:
-        "Total sets varying weeks computed as the sum of the sets",
-    },
-    program: program.value,
-    selectedExercises: undefined,
-    selectedDays: undefined,
-    selectedWeeks: new Set(["A", "B", "C", "D"]),
-  },
-  {
-    chartInfo: {
-      chartType: OSChartType.Volume,
-      chartVersion: OSChartVersion.TotalVolume,
-      xAxisType: OSAvailableXType.Weeks,
-      chartTitle: "Total Volume varying weeks",
-      chartDescription:
-        "Total volume varying weeks computed as the sum of the sets*reps*load",
-    },
-    program: program.value,
-    selectedExercises: undefined,
-    selectedDays: undefined,
-    selectedWeeks: new Set(["A", "B", "C", "D"]),
-  },
-];
+// Set ref
+const selectedProgram = //ref<Program>();
+  computed(() => program.value);
 
+const { days: programDays, weeks: programWeeks } = getUniqueDayAndWeekNames(
+  program.value,
+);
+
+// Filter Week
+const filterWeek = ref<string[]>([]);
+const filterWeekSet = computed(() => {
+  if (filterWeek.value.length === 0) {
+    return programWeeks;
+  } else {
+    return new Set([...filterWeek.value].sort());
+  }
+});
+
+// Filter Day
+const filterDay = ref<string[]>([]);
+const filterDaySet = computed(() => {
+  if (filterDay.value.length === 0) {
+    return programDays;
+  } else {
+    return new Set([...filterDay.value].sort());
+  }
+});
+
+const filterExercise = ref<string[]>([]);
+const filterExerciseSet = computed(() => {
+  return filterExercise.value.length > 0
+    ? new Set(filterExercise.value)
+    : undefined;
+});
+
+// Get complete program filter
+const programFilter = computed(() => ({
+  week: filterWeek.value || [],
+  day: filterDay.value || [],
+  exercise: filterExercise.value || [],
+}));
 // Test line computed props
 // TODO: remove from here
-testAllRepCases();
+/* testAllRepCases();
 testAllSetsCases();
-testAllLoadCases();
-
-/* console.log("-----------SETS---------------");
-console.log("setsValue", lineTest.setsValue);
-console.log("setsBaseValue", lineTest.setsBaseValue);
-console.log("setsComputedValue", lineTest.setsComputedValue);
-console.log("setsSupposedValue", lineTest.setsSupposedValue);
-console.log("setsRangeMin", lineTest.setsRangeMin);
-console.log("setsRangeMax", lineTest.setsRangeMax);
-console.log("setsOperation", lineTest.setsOperation);
-console.log("setsReference", lineTest.setsReference);
-console.log("requireSets", lineTest.requireSets);
-
-console.log("-----------LOAD---------------");
-console.log("loadValue", lineTest.loadValue);
-console.log("loadBaseValue", lineTest.loadBaseValue);
-console.log("loadComputedValue", lineTest.loadComputedValue);
-console.log("loadSupposedValue", lineTest.loadSupposedValue);
-console.log("loadRangeMin", lineTest.loadRangeMin);
-console.log("loadRangeMax", lineTest.loadRangeMax);
-console.log("loadOperation", lineTest.loadOperation);
-console.log("loadReference", lineTest.loadReference);
-console.log("requireLoad", lineTest.requireLoad);
-console.log("-----------RPE---------------");
-console.log("rpeValue", lineTest.rpeValue);
-console.log("rpeBaseValue", lineTest.rpeBaseValue);
-console.log("rpeComputedValue", lineTest.rpeComputedValue);
-console.log("rpeSupposedValue", lineTest.rpeSupposedValue);
-console.log("rpeRangeMin", lineTest.rpeRangeMin);
-console.log("rpeRangeMax", lineTest.rpeRangeMax);
-console.log("rpeOperation", lineTest.rpeOperation);
-console.log("rpeReference", lineTest.rpeReference);
-console.log("requireRpe", lineTest.requireRpe); */
+testAllLoadCases(); */
 
 /**
  * Handle custom right drawer click.

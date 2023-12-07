@@ -47,9 +47,9 @@ export type OSAxisTitles = {
 export type OSChartDataRequest = {
   chartInfo: OSChartDescriptor;
   program: Program;
-  selectedExercises?: Set<string>;
-  selectedDays?: Set<string>;
-  selectedWeeks?: Set<string>;
+  selectedExercises?: Set<string> | undefined;
+  selectedDays?: Set<string> | undefined;
+  selectedWeeks?: Set<string> | undefined;
 };
 
 /**

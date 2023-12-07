@@ -55,7 +55,11 @@ export function getUniqueDayAndWeekNames(program: Program): {
     weeks.add(exercise.scheduleWeek as string);
   });
 
-  return { days, weeks };
+  // Convert Sets to sorted arrays
+  const sortedDays = Array.from(days).sort();
+  const sortedWeeks = Array.from(weeks).sort();
+
+  return { days: new Set(sortedDays), weeks: new Set(sortedWeeks) };
 }
 
 /**
