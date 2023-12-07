@@ -21,7 +21,7 @@
               icon="save"
               :label="programSaved ? 'Saved!' : 'changes not saved...'"
               :disable="programSaved"
-              @click="programSaved = true"
+              @click="saveProgram"
               flat
             ></q-btn>
 
@@ -130,7 +130,7 @@
 
         <!-- Show table to build program on the left -->
         <TableProgramBuilder
-          v-model:program="program"
+          v-model="selectedProgram"
           :exercises="coachInfo.exercises"
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
@@ -267,11 +267,7 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { dom } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
-import {
-  Program,
-  ProgramExercise,
-  ProgramLine,
-} from "@/helpers/programs/program";
+import { Program } from "@/helpers/programs/program";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import ChartSelector from "@/components/charts/ChartSelector.vue";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
@@ -300,8 +296,7 @@ const coachInfo = useCoachInfoStore();
 
 // Set ref related to program
 const programManagerElement = ref<HTMLElement>();
-const selectedProgram = // TODO ref<Program>();
-  computed(() => program.value);
+const selectedProgram = ref<Program>(new Program());
 const filterWeek = ref<string[]>();
 const filterDay = ref<string[]>();
 const filterExercise = ref<string[]>();
@@ -338,6 +333,29 @@ const athleteMaxlifts = computed(
       (maxlift) => maxlift.athleteId == selectedProgram.value.athleteId,
     ),
 );
+
+// Inform user that program is not saved upon changes.
+watch(selectedProgram, () => (programSaved.value = false));
+
+/**
+ * Save current program instance.
+ */
+function saveProgram() {
+  // Save current program instance
+  selectedProgram.value.save({
+    onSuccess: () => {
+      programSaved.value = true;
+    },
+    onError: () => {
+      $q.notify({
+        type: "negative",
+        message: i18n.t("coach.program_management.builder.save_error"),
+        position: "bottom",
+      });
+      programSaved.value = false;
+    },
+  });
+}
 
 /**
  * Create a new maxlift and assign to a coach
@@ -432,121 +450,6 @@ function onUpdateMaxLift(maxlift: MaxLift) {
   maxliftValue.value = maxlift.value ?? "";
   maxliftDate.value = maxlift.lastUpdated ?? undefined;
 }
-
-// PROGRAMS
-
-// TODO load programs
-const program = ref(
-  new Program({
-    uid: "prova",
-    name: "Program name",
-    programExercises: [
-      new ProgramExercise({
-        exercise: coachInfo.exercises?.[0],
-        scheduleWeek: "A",
-        scheduleDay: 1,
-        scheduleOrder: 5,
-        lines: [
-          new ProgramLine({
-            setsBaseValue: "sets",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
-          }),
-          new ProgramLine({
-            setsBaseValue: "sets",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
-            requestFeedbackText: true,
-          }),
-        ],
-      }),
-      new ProgramExercise({
-        exercise: coachInfo.exercises?.[1],
-        exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
-        scheduleWeek: "B",
-        scheduleDay: 4,
-        scheduleOrder: 2,
-        lines: [
-          new ProgramLine({
-            setsBaseValue: "2",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
-            requestFeedbackText: true,
-            lineOrder: 2,
-          }),
-          new ProgramLine({
-            setsBaseValue: "4",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
-            requestFeedbackText: true,
-            lineOrder: 4,
-          }),
-          new ProgramLine({
-            setsBaseValue: "1",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
-            requestFeedbackText: true,
-            lineOrder: 1,
-          }),
-        ],
-      }),
-      new ProgramExercise({
-        exercise: coachInfo.exercises?.[2],
-        scheduleWeek: "B",
-        scheduleDay: 4,
-        scheduleOrder: 1,
-        lines: [
-          new ProgramLine({
-            setsBaseValue: "2222222222222222222",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
-            requestFeedbackText: true,
-            lineOrder: 2,
-          }),
-          new ProgramLine({
-            setsBaseValue: "4",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
-            requestFeedbackText: true,
-            lineOrder: 4,
-          }),
-          new ProgramLine({
-            setsBaseValue: "1",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
-            requestFeedbackText: true,
-            lineOrder: 1,
-          }),
-        ],
-      }),
-      new ProgramExercise({
-        exercise: coachInfo.exercises?.[2],
-        exerciseVariant: coachInfo.exercises?.[1].variants?.[0],
-        scheduleWeek: "B",
-        scheduleDay: "1",
-        scheduleOrder: 1,
-        lines: [
-          new ProgramLine({
-            setsBaseValue: "sets",
-            repsBaseValue: "reps",
-            loadBaseValue: "load",
-            rpeBaseValue: "rpe",
-            requestFeedbackText: true,
-          }),
-        ],
-      }),
-    ],
-  }),
-);
-watch(program, () => console.log("from parent"));
 
 /**
  * Handle custom right drawer click.

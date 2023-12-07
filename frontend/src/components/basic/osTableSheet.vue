@@ -225,11 +225,9 @@ const widths = computed(() => {
   if (props.widths) {
     // Handle case of fixed widths
     const propsWidths = props.widths;
-    const vals = objectMapValues(headers.value, (_, key, idx) =>
+    return objectMapValues(headers.value, (_, key, idx) =>
       propsWidths instanceof Array ? propsWidths[idx] : propsWidths[key],
     );
-    console.log(vals);
-    return vals;
   } else {
     // Handle case with unknown type
     return objectMapValues(headers.value, () => "0%");

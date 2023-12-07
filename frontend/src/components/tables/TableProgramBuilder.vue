@@ -152,16 +152,24 @@
           style="position: relative"
         >
           <osSelect
-            :modelValue="exerciseModelValue.exercise"
+            :model-value="exerciseModelValue.exercise"
             @update:model-value="
-              (val?: string) =>
-                updateSelectedExercise(idScheduleInfo.toString(), val)
+              (val: typeof exerciseModelValue.exercise) => {
+                updateSelectedExercise(idScheduleInfo.toString(), val);
+                updateProgramExercise(idScheduleInfo.toString());
+              }
             "
             :options="exercises.map((exercise) => exercise.name)"
           >
           </osSelect>
           <osSelect
-            v-model="exerciseModelValue.variant"
+            :model-value="exerciseModelValue.variant"
+            @update:model-value="
+              (val: typeof exerciseModelValue.variant) => {
+                exerciseModelValue.variant = val;
+                updateProgramExercise(idScheduleInfo.toString());
+              }
+            "
             :options="
               selectedExercises[idScheduleInfo]?.variants?.map((variant) => ({
                 label: variant.isDefault
@@ -174,7 +182,17 @@
             emit-value
           >
           </osSelect>
-          <osInput v-model="exerciseModelValue.note" type="textarea"> </osInput>
+          <osInput
+            :model-value="exerciseModelValue.note"
+            @update:model-value="
+              (val: typeof exerciseModelValue.note) => {
+                exerciseModelValue.note = val;
+                updateProgramExercise(idScheduleInfo.toString());
+              }
+            "
+            type="textarea"
+          >
+          </osInput>
 
           <!-- Delete buttons -->
           <q-btn
@@ -190,7 +208,6 @@
 
         <!-- Data table -->
         <osTableSheet
-          v-model="exerciseModelValue.data"
           :headers="[
             'load',
             'reps',
@@ -200,6 +217,13 @@
             'requestText',
             'requestVideo',
           ]"
+          :model-value="exerciseModelValue.data"
+          @update:model-value="
+            (val?: typeof exerciseModelValue.data) => {
+              exerciseModelValue.data = val;
+              updateProgramExercise(idScheduleInfo.toString());
+            }
+          "
           :types="{
             requestText: 'checkbox',
             requestVideo: 'checkbox',
@@ -440,7 +464,7 @@ const i18n = useI18n();
 
 // Define props
 const props = defineProps({
-  program: {
+  modelValue: {
     type: Program,
     required: true,
   },
@@ -464,14 +488,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
-  saved: {
-    type: Boolean,
-    default: true,
-  },
 });
 
 // Define emits
-const emit = defineEmits(["update:program", "update:saved"]);
+const emit = defineEmits(["update:modelValue"]);
 
 // Set useful values
 const sepWekDay = ".";
@@ -556,9 +576,9 @@ const selectedExerciseVariants = computed<{
 
 // Get all program lines for each week and day
 const sortedProgramExercises = computed(() =>
-  props.program.programExercises
+  props.modelValue.programExercises
     ? orderProgramExercises(
-        props.program.programExercises,
+        props.modelValue.programExercises,
         mergeScheduleInfoNames,
       )
     : {},
@@ -620,9 +640,9 @@ const allDays = computed(() => {
 
 // Update data table on input change
 watch(
-  () => props.program,
+  () => props.modelValue,
   () => {
-    if (programCurrentValue.value != props.program) resetTableData();
+    if (programCurrentValue.value != props.modelValue) resetTableData();
   },
   { immediate: true },
 );
@@ -630,21 +650,16 @@ watch(
 // Reorder exercises upon update
 watch(exercisesValues, () => sortExerciseValues());
 
-// Ensure program gets saved if requested from outside
-let savedValue = true;
-watch(
-  () => props.saved,
-  (val) => {
-    if (val && !savedValue) save();
-    savedValue = val;
-  },
-  { immediate: true },
-);
+// Inform parent of program update
+watch(programCurrentValue, (program) => emit("update:modelValue", program));
 
 /**
  * Update table data according to input data.
  */
 function resetTableData() {
+  // Set current value to be equal to input one
+  programCurrentValue.value = props.modelValue;
+
   // Epmty changes
   changes.value.length = 0;
 
@@ -742,10 +757,13 @@ function onReferenceClick(
     reference instanceof ProgramLine || reference instanceof MaxLift
       ? reference
       : type == "line"
-      ? props.program.getLines()?.find((line) => line.uid == reference)
+      ? props.modelValue.getLines()?.find((line) => line.uid == reference)
       : type == "maxlift"
       ? props.maxlifts.find((maxlift) => (maxlift.uid = reference))
       : undefined;
+
+  // Update program
+  updateProgramExercise(lineInfo.schedule);
 }
 
 /**
@@ -959,6 +977,9 @@ function renameWeekDay(
   // Optionally add a table is source is empty
   if (createIfEmpty && isSourceEmpty)
     addTable(mergeScheduleInfoNames(toWeekId, toDayId, 1));
+
+  // Update program with new naming
+  updateProgramWhole();
 }
 
 /**
@@ -1033,16 +1054,14 @@ function storeChanges(key: string, changeData: any) {
       changes.value.push({ value: objectDeepCopy(newValue) });
     }, 1000);
   storeChangesMethods[key](changeData);
-  savedValue = false;
-  emit("update:saved", savedValue);
 }
 
 /**
- * Save all changes to program.
+ * Rebuild the whole program based on the current table values.
  */
-function save() {
+function updateProgramWhole() {
   // Update program
-  const program = props.program.duplicate();
+  const program = props.modelValue.duplicate();
   program.programExercises = [];
   Object.entries(exercisesValues.value).forEach(
     ([scheduleId, exerciseInfo]) => {
@@ -1061,13 +1080,13 @@ function save() {
               new ProgramLine({
                 lineOrder: idx,
                 setsBaseValue: lineInfo.sets,
-                setsReference: undefined, // TODO
+                setsReference: lineInfo.setsRef,
                 repsBaseValue: lineInfo.reps,
-                repsReference: undefined, // TODO
+                repsReference: lineInfo.repsRef,
                 loadBaseValue: lineInfo.load,
                 loadReference: lineInfo.loadRef,
                 rpeBaseValue: lineInfo.rpe,
-                rpeReference: undefined, // TODO
+                rpeReference: lineInfo.rpeRef,
                 note: lineInfo.note,
                 requestFeedbackText: lineInfo.requestText,
                 requestFeedbackVideo: lineInfo.requestVideo,
@@ -1078,25 +1097,50 @@ function save() {
     },
   );
 
-  // Save current instance
-  program.save({
-    onSuccess: () => {
-      // Inform parent of update
-      programCurrentValue.value = program;
-      savedValue = true;
-      emit("update:program", program);
-      emit("update:saved", savedValue);
-    },
-    onError: () => {
-      $q.notify({
-        type: "negative",
-        message: i18n.t("coach.program_management.builder.save_error"),
-        position: "bottom",
-      });
-      savedValue = false;
-      emit("update:saved", savedValue);
-    },
-  });
+  // Inform parent of update
+  programCurrentValue.value = program;
+}
+
+/**
+ * Rebuild the whole program based on the current table values.
+ */
+function updateProgramExercise(idScheduleInfo: string) {
+  // Get interesting program exercise
+  const [exerciseWeek, exerciseDay, exerciseOrder] =
+    splitScheduleInfoNames(idScheduleInfo);
+  const programExercise = props.modelValue.programExercises?.find(
+    (exercise) =>
+      String(exercise.scheduleWeek) == exerciseWeek &&
+      String(exercise.scheduleDay) == exerciseDay &&
+      String(exercise.scheduleOrder) == exerciseOrder,
+  );
+  if (!programExercise) return;
+
+  // Update interesting program exercise
+  programExercise.exercise = selectedExercises.value[idScheduleInfo];
+  programExercise.exerciseVariant =
+    selectedExerciseVariants.value[idScheduleInfo];
+  (programExercise.exerciseNote = exercisesValues.value[idScheduleInfo].note),
+    (programExercise.lines = exercisesValues.value[idScheduleInfo].data.map(
+      (lineInfo, idx) =>
+        new ProgramLine({
+          lineOrder: idx,
+          setsBaseValue: lineInfo.sets,
+          setsReference: lineInfo.setsRef,
+          repsBaseValue: lineInfo.reps,
+          repsReference: lineInfo.repsRef,
+          loadBaseValue: lineInfo.load,
+          loadReference: lineInfo.loadRef,
+          rpeBaseValue: lineInfo.rpe,
+          rpeReference: lineInfo.rpeRef,
+          note: lineInfo.note,
+          requestFeedbackText: lineInfo.requestText,
+          requestFeedbackVideo: lineInfo.requestVideo,
+        }),
+    ));
+
+  // Inform parent of update
+  programCurrentValue.value = props.modelValue.duplicate();
 }
 </script>
 
