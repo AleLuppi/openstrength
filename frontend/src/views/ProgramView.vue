@@ -334,6 +334,7 @@ import { getUniqueDayAndWeekNames } from "@/helpers/charts/chartDataFormatter";
 import { testAllRepCases } from "@/helpers/programs/lineRepsTest";
 import { testAllSetsCases } from "@/helpers/programs/lineSetsTest";
 import { testAllLoadCases } from "@/helpers/programs/lineLoadTest";
+import { testAllRpeCases } from "@/helpers/programs/lineRpeTest";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -703,6 +704,7 @@ const programFilter = computed(() => ({
 // TODO: remove from here
 testAllRepCases();
 testAllSetsCases();
+testAllRpeCases();
 testAllLoadCases();
 
 /**

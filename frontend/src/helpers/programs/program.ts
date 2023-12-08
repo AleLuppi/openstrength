@@ -515,7 +515,7 @@ export class ProgramLine {
         return Math.max(0, Math.min(10, computedValue));
       }
     } else {
-      return this.rpeSupposedValue;
+      return undefined;
     }
   }
 
@@ -536,7 +536,6 @@ export class ProgramLine {
       return undefined;
     }
   }
-
   get loadOperation(): string | undefined {
     if (
       this.loadBaseValue !== undefined &&
@@ -619,7 +618,6 @@ export class ProgramLine {
       return undefined;
     }
   }
-
   get loadSupposedValue(): number | undefined {
     const kgRangeRegex = /^\d*kg\/\d*kg$/;
     const kgValueRegex = /^\(\d*kg\)$/;
@@ -683,12 +681,24 @@ export class ProgramLine {
       const [secondNumber, firstNumber] = this.rpeBaseValue
         .split("/")
         .map(Number);
-      return Math.round((secondNumber + firstNumber) / 2);
+      return (secondNumber + firstNumber) / 2;
     } else if (
       this.rpeBaseValue !== undefined &&
       /^\(\d*\)$/.test(this.rpeBaseValue)
     ) {
       return parseInt(this.rpeBaseValue.slice(1, -1));
+    } else if (this.rpeOperation !== undefined) {
+      const referenceValue =
+        this.rpeReference?.rpeComputedValue ??
+        this.rpeReference?.rpeSupposedValue;
+      if (referenceValue !== undefined) {
+        return referenceValue + parseInt(this.rpeOperation);
+      } else {
+        const referenceSupposedValue = this.rpeReference?.rpeSupposedValue;
+        return referenceSupposedValue !== undefined
+          ? referenceSupposedValue + parseInt(this.rpeOperation)
+          : undefined;
+      }
     } else {
       return undefined;
     }
@@ -714,7 +724,6 @@ export class ProgramLine {
       return false;
     }
   }
-
   get requireLoad(): boolean {
     if (
       this.loadBaseValue !== undefined &&
@@ -727,11 +736,10 @@ export class ProgramLine {
       return false;
     }
   }
-
   get requireRpe(): boolean {
     if (
       this.rpeBaseValue !== undefined &&
-      /^\\?|\\(\d*\\)|\d*\/\d*$/.test(this.rpeBaseValue)
+      /^(\\?|\(\d*\)|\d*\/\d*|\?)$/.test(this.rpeBaseValue)
     ) {
       return true;
     } else {
@@ -800,7 +808,6 @@ export class ProgramLine {
       return undefined;
     }
   }
-
   get setsRangeMax(): number | undefined {
     if (
       this.setsBaseValue !== undefined &&
