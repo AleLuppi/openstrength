@@ -288,7 +288,7 @@ import { getUniqueDayAndWeekNames } from "@/helpers/charts/chartDataFormatter";
 
 import { testAllRepCases } from "@/helpers/programs/lineRepsTest";
 import { testAllSetsCases } from "@/helpers/programs/lineSetsTest";
-import { testAllRpeCases } from "@/helpers/programs/lineRpeTest"; 
+import { testAllRpeCases } from "@/helpers/programs/lineRpeTest";
 import { testAllLoadCases } from "@/helpers/programs/lineLoadTest";
 
 // Set expose
@@ -307,9 +307,10 @@ const coachInfo = useCoachInfoStore();
 // Set ref related to program
 const programManagerElement = ref<HTMLElement>();
 const selectedProgram = ref<Program>(new Program());
-const filterWeek = ref<string[]>();
-const filterDay = ref<string[]>();
-const filterExercise = ref<string[]>();
+
+const filterWeek = ref<string[]>([]);
+const filterDay = ref<string[]>([]);
+const filterExercise = ref<string[]>([]);
 const showAthleteAssigningDialog = ref(false);
 const programManagerExpanded = ref(false);
 const programManagerHeight = ref(0);
@@ -345,7 +346,9 @@ const athleteMaxlifts = computed(
 );
 
 // Inform user that program is not saved upon changes.
-watch(selectedProgram, () => (programSaved.value = false));
+watch(selectedProgram, () => {
+  programSaved.value = false;
+});
 
 /**
  * Save current program instance.
@@ -463,215 +466,40 @@ function onUpdateMaxLift(maxlift: MaxLift) {
 
 // PROGRAMS
 
-// TODO load programs
-const program = ref<Program>(
-  new Program({
-    uid: "prova",
-    name: "Program name",
-    programExercises: [
-      new ProgramExercise({
-        exercise: coachInfo.exercises?.[0],
-        scheduleWeek: "A",
-        scheduleDay: 1,
-        scheduleOrder: 5,
-        lines: [
-          new ProgramLine({
-            setsBaseValue: "5",
-            repsBaseValue: "5",
-            loadBaseValue: "5kg",
-            rpeBaseValue: "5",
-          }),
-          new ProgramLine({
-            setsBaseValue: "5",
-            repsBaseValue: "5",
-            loadBaseValue: "5kg",
-            rpeBaseValue: "5",
-            requestFeedbackText: true,
-          }),
-        ],
-      }),
-      new ProgramExercise({
-        exercise: coachInfo.exercises?.[1],
-        exerciseVariant: coachInfo.exercises?.[1].variants?.[1],
-        scheduleWeek: "B",
-        scheduleDay: 4,
-        scheduleOrder: 2,
-        lines: [
-          new ProgramLine({
-            setsBaseValue: "2",
-            repsBaseValue: "5",
-            loadBaseValue: "5kg",
-            rpeBaseValue: "6",
-            requestFeedbackText: true,
-            lineOrder: 2,
-          }),
-          new ProgramLine({
-            setsBaseValue: "4",
-            repsBaseValue: "6",
-            loadBaseValue: "6kg",
-            rpeBaseValue: "6",
-            requestFeedbackText: true,
-            lineOrder: 4,
-          }),
-          new ProgramLine({
-            setsBaseValue: "1",
-            repsBaseValue: "6",
-            loadBaseValue: "6kg",
-            rpeBaseValue: "6",
-            requestFeedbackText: true,
-            lineOrder: 1,
-          }),
-        ],
-      }),
-      new ProgramExercise({
-        exercise: coachInfo.exercises?.[1],
-        exerciseVariant: coachInfo.exercises?.[1].variants?.[1],
-        scheduleWeek: "D",
-        scheduleDay: 4,
-        scheduleOrder: 1,
-        lines: [
-          new ProgramLine({
-            setsBaseValue: "4",
-            repsBaseValue: "8",
-            loadBaseValue: "20kg",
-            rpeBaseValue: "8",
-            requestFeedbackText: true,
-            lineOrder: 2,
-          }),
-          new ProgramLine({
-            setsBaseValue: "4",
-            repsBaseValue: "3",
-            loadBaseValue: "30kg",
-            rpeBaseValue: "8",
-            requestFeedbackText: true,
-            lineOrder: 4,
-          }),
-          new ProgramLine({
-            setsBaseValue: "1",
-            repsBaseValue: "5",
-            loadBaseValue: "32kg",
-            rpeBaseValue: "5",
-            requestFeedbackText: true,
-            lineOrder: 1,
-          }),
-        ],
-      }),
-      new ProgramExercise({
-        exercise: coachInfo.exercises?.[2],
-        exerciseVariant: coachInfo.exercises?.[2].variants?.[2],
-        scheduleWeek: "B",
-        scheduleDay: 1,
-        scheduleOrder: 1,
-        lines: [
-          new ProgramLine({
-            setsBaseValue: "8",
-            repsBaseValue: "2",
-            loadBaseValue: "30kg",
-            rpeBaseValue: "rpe",
-            requestFeedbackText: true,
-          }),
-        ],
-      }),
-      new ProgramExercise({
-        exercise: coachInfo.exercises?.[2],
-        exerciseVariant: coachInfo.exercises?.[2].variants?.[2],
-        scheduleWeek: "C",
-        scheduleDay: 1,
-        scheduleOrder: 1,
-        lines: [
-          new ProgramLine({
-            setsBaseValue: "6",
-            repsBaseValue: "2",
-            loadBaseValue: "40kg",
-            rpeBaseValue: "7",
-            requestFeedbackText: true,
-          }),
-        ],
-      }),
-      new ProgramExercise({
-        exercise: coachInfo.exercises?.[2],
-        exerciseVariant: coachInfo.exercises?.[2].variants?.[2],
-        scheduleWeek: "D",
-        scheduleDay: 1,
-        scheduleOrder: 1,
-        lines: [
-          new ProgramLine({
-            setsBaseValue: "5",
-            repsBaseValue: "5",
-            loadBaseValue: "50kg",
-            rpeBaseValue: "8",
-            requestFeedbackText: true,
-          }),
-        ],
-      }),
-      new ProgramExercise({
-        exercise: coachInfo.exercises?.[1],
-        exerciseVariant: coachInfo.exercises?.[1].variants?.[1],
-        scheduleWeek: "E",
-        scheduleDay: 1,
-        scheduleOrder: 1,
-        lines: [
-          new ProgramLine({
-            setsBaseValue: "5",
-            repsBaseValue: "5",
-            loadBaseValue: "50kg",
-            rpeBaseValue: "8",
-            requestFeedbackText: true,
-          }),
-        ],
-      }),
-    ],
-  }),
-);
-watch(program, () => console.log("from parent"));
+//watch(program, () => console.log("from parent"));
 
 // Set ref
-const selectedProgram = //ref<Program>();
-  computed(() => program.value);
 
-const { days: programDays, weeks: programWeeks } = getUniqueDayAndWeekNames(
-  program.value,
-);
+// Filter Week Sets
 
-// Filter Week
-const filterWeek = ref<string[]>([]);
 const filterWeekSet = computed(() => {
   if (filterWeek.value.length === 0) {
-    return programWeeks;
+    return getUniqueDayAndWeekNames(selectedProgram.value).weeks;
   } else {
     return new Set([...filterWeek.value].sort());
   }
 });
 
-// Filter Day
-const filterDay = ref<string[]>([]);
 const filterDaySet = computed(() => {
   if (filterDay.value.length === 0) {
-    return programDays;
+    return getUniqueDayAndWeekNames(selectedProgram.value).days;
   } else {
     return new Set([...filterDay.value].sort());
   }
 });
 
-const filterExercise = ref<string[]>([]);
 const filterExerciseSet = computed(() => {
   return filterExercise.value.length > 0
     ? new Set(filterExercise.value)
     : undefined;
 });
 
-// Get complete program filter
-const programFilter = computed(() => ({
-  week: filterWeek.value || [],
-  day: filterDay.value || [],
-  exercise: filterExercise.value || [],
-}));
 // Test line computed props
 // TODO: remove from here
-/* testAllRepCases();
+testAllRepCases();
 testAllSetsCases();
-testAllRpeCases(); 
-testAllLoadCases();*/
+testAllRpeCases();
+testAllLoadCases();
 
 /**
  * Handle custom right drawer click.

@@ -219,7 +219,7 @@ export function testAllLoadCases() {
     false,
     undefined,
     undefined,
-    80,
+    "80",
     undefined,
     undefined,
     "*0.8",

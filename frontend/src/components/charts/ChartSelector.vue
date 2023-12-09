@@ -17,26 +17,22 @@
     <!-- CHARTS RENDERING -->
 
     <div v-if="charts">
-      <template
+      <chart-component
         v-for="(chartDataRequest, index) in chartDataRequests"
-        :key="index"
-      >
-        <chart-component
-          class="q-mb-sm"
-          v-if="getChartData(chartDataRequest)"
-          :title="getChartTitle(chartDataRequest)"
-          :description="getChartDescription(chartDataRequest)"
-          :data="getChartData(chartDataRequest)"
-          :options="getChartOptions(chartDataRequest)"
-        />
-      </template>
+        :key="myBeautifulKey + index"
+        class="q-mb-sm"
+        :title="getChartTitle(chartDataRequest)"
+        :description="getChartDescription(chartDataRequest)"
+        :data="chartData[index]"
+        :options="getChartOptions(chartDataRequest)"
+      />
     </div>
     <div v-else>Click the refresh button to show available charts</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import ChartComponent from "@/components/charts/ChartComponent.vue";
 import {
   computeChartData,
@@ -75,6 +71,7 @@ const props = defineProps({
 });
 
 const charts = ref<boolean>(false);
+const myBeautifulKey = ref<string>("");
 
 const chartDescriptions: OSChartDescriptor[] = [
   {
@@ -115,8 +112,8 @@ const chartDescriptions: OSChartDescriptor[] = [
   }, */
 ];
 
-const chartDataRequests: OSChartDataRequest[] = chartDescriptions.map(
-  (chartDescriptor) => {
+const chartDataRequests = computed(() =>
+  chartDescriptions.map((chartDescriptor) => {
     return {
       chartInfo: chartDescriptor,
       program: props.program,
@@ -124,25 +121,39 @@ const chartDataRequests: OSChartDataRequest[] = chartDescriptions.map(
       selectedDays: props.filterDay as Set<string> | undefined,
       selectedWeeks: props.filterWeek as Set<string> | undefined,
     };
-  },
+  }),
 );
 
-watch([props.filterExercise, props.filterDay, props.filterWeek], () => {
-  updateCharts();
-});
+watch(
+  () => [
+    props.program,
+    props.filterExercise,
+    props.filterDay,
+    props.filterWeek,
+  ],
+  () => {
+    updateCharts();
+  },
+  { deep: true },
+);
 
 // Compute chart data
 function updateCharts() {
   charts.value = true;
+  myBeautifulKey.value += "a";
 }
 
 /**
  * Computes data
  * @param chartDataRequest
  */
-function getChartData(chartDataRequest: OSChartDataRequest): any {
-  return formatChartData(computeChartData(chartDataRequest));
-}
+const chartData = computed(() =>
+  chartDataRequests.value.map((val) => formatChartData(computeChartData(val))),
+);
+watch(chartData, (val) => console.log(val));
+// function getChartData(chartDataRequest: OSChartDataRequest): any {
+//   return formatChartData(computeChartData(chartDataRequest));
+// }
 
 /**
  * Builds chart options
