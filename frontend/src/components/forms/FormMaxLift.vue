@@ -33,6 +33,7 @@
       <os-input
         v-model="maxliftDate"
         :label="$t('coach.maxlift_management.fields.date')"
+        placeholder="yyyy/mm/dd"
         outlined
         dense
         mask="date"
@@ -67,8 +68,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType } from "vue";
+import { ref, computed, watch, PropType } from "vue";
 import { QForm } from "quasar";
+import { dateGetWithoutTimezone } from "@/helpers/scalar";
 import { Exercise } from "@/helpers/exercises/exercise";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 
@@ -82,10 +84,13 @@ const props = defineProps({
     type: Array as PropType<Exercise[]>,
     default: () => [],
   },
-  onSubmit: {
-    type: Function,
-  },
 });
+
+// Set emits
+const emit = defineEmits<{
+  submit: [value: MaxLift];
+  reset: [];
+}>();
 
 // Set expose
 defineExpose({
@@ -103,6 +108,20 @@ const maxliftExercise = ref<string>();
 const maxliftType = ref<string>();
 const maxliftValue = ref<string>();
 const maxliftDate = ref<string>();
+
+// Setup variables according to selected maxlift
+watch(
+  () => props.maxlift,
+  () => {
+    maxliftExercise.value = props.maxlift.exercise?.name;
+    maxliftType.value = props.maxlift.type;
+    maxliftValue.value = props.maxlift.value;
+    maxliftDate.value = props.maxlift.performedOn
+      ? props.maxlift.performedOn.toISOString().split("T")[0] // TODO set it regardless of timezone offset
+      : undefined;
+  },
+  { immediate: true },
+);
 
 // Gather correct suffix for current selection
 const maxliftValueSuffix = computed(() => {
@@ -134,10 +153,10 @@ function onSubmit() {
   maxlift.type = maxliftType.value as MaxLiftType;
   maxlift.value = maxliftValue.value;
   maxlift.performedOn = maxliftDate.value
-    ? new Date(maxliftDate.value)
+    ? dateGetWithoutTimezone(maxliftDate.value)
     : undefined;
 
-  props.onSubmit?.(maxlift);
+  emit("submit", maxlift);
 }
 
 /**
@@ -148,5 +167,7 @@ function onReset() {
   maxliftType.value = undefined;
   maxliftValue.value = undefined;
   maxliftDate.value = undefined;
+
+  emit("reset");
 }
 </script>

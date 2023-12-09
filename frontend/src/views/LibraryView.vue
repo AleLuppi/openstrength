@@ -346,6 +346,7 @@ import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { Program } from "@/helpers/programs/program";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { arrayUniqueValues } from "@/helpers/array";
+import { event } from "vue-gtag";
 
 // Use plugins
 const $q = useQuasar();
@@ -465,6 +466,13 @@ function onExerciseAdd(exerciseName: string) {
         position: "bottom",
       });
       selectedExercise.value = newExercise;
+
+      // Register GA4 event
+      event("new_exercise_added", {
+        event_category: "documentation",
+        event_label: "New Exercise Added to Library",
+        value: 1,
+      });
     },
     onError: () => {
       // Inform user about error while saving exercise
@@ -557,6 +565,13 @@ function onVariantSubmit(variant: ExerciseVariant) {
           }),
           position: "bottom",
         });
+
+        // Register GA4 event
+        event("variant_updated", {
+          event_category: "documentation",
+          event_label: "Variant Added or Updated in Library",
+          value: 1,
+        });
       },
       onError: () =>
         $q.notify({
@@ -606,6 +621,13 @@ function deleteExercise(exercise: Exercise) {
         (coachExercise) => coachExercise != exercise,
       );
       clearExercise();
+
+      // Register GA4 event
+      event("exercise_deleted", {
+        event_category: "documentation",
+        event_label: "Exercise Deleted from Library",
+        value: 1,
+      });
     },
   });
 }
@@ -634,6 +656,13 @@ function deleteVariant(variant: ExerciseVariant) {
           coachExercise.variants && coachExercise.variants.length > 0,
       );
       clearVariant();
+
+      // Register GA4 event
+      event("variant_deleted", {
+        event_category: "documentation",
+        event_label: "Variant Deleted from Library",
+        value: 1,
+      });
     },
   });
 }

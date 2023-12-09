@@ -244,7 +244,7 @@
 
                   <TableMaxLifts
                     :maxlifts="athleteMaxlifts"
-                    :on-update="onUpdateMaxLift"
+                    @update="onUpdateMaxLift"
                     :filter="searchMaxLift"
                   />
 
@@ -278,7 +278,8 @@
                         ref="maxliftFormElement"
                         :maxlift="maxlift"
                         :exercises="exercises"
-                        :on-submit="createMaxLift"
+                        @submit="saveMaxlift"
+                        @reset="showMaxLiftAddDialog = false"
                       ></FormMaxLift>
                     </q-card>
                   </q-dialog>
@@ -324,6 +325,11 @@ import { Program } from "@/helpers/programs/program";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import { Exercise } from "@/helpers/exercises/exercise";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
+import { event } from "vue-gtag";
+import {
+  getAllAssignedPrograms,
+  getAssignedProgram,
+} from "@/helpers/programs/athleteAssignment";
 
 // Init plugin
 const $q = useQuasar();
@@ -395,13 +401,17 @@ watch(selectedAthlete, (athlete) =>
 );
 
 // Get all programs for the selected athlete
-const athletePrograms = computed(
-  () => selectedAthlete.value?.getAllAssignedPrograms(programs.value),
+const athletePrograms = computed(() =>
+  selectedAthlete.value
+    ? getAllAssignedPrograms(selectedAthlete.value, programs.value)
+    : [],
 );
 
 // Get active current program for the selected athlete
-const athleteCurrentProgram = computed(
-  () => selectedAthlete.value?.getAssignedProgram(programs.value),
+const athleteCurrentProgram = computed(() =>
+  selectedAthlete.value
+    ? getAssignedProgram(selectedAthlete.value, programs.value)
+    : undefined,
 );
 
 // Get a program to initialize form
@@ -412,9 +422,7 @@ const athleteFormProgram = computed(
 // Get maxlifts for the selected athlete
 const athleteMaxlifts = computed(() =>
   maxlifts.value.filter(
-    (maxlift: MaxLift) =>
-      maxlift.athleteId === selectedAthlete.value?.uid &&
-      maxlift.coachId === selectedAthlete.value?.coachId,
+    (maxlift) => maxlift.athleteId === selectedAthlete.value?.uid,
   ),
 );
 
@@ -425,10 +433,10 @@ function onTabChange(tab: string) {
   selectedTab.value = tab;
 }
 
-/** TODO check
+/**
  * Create a new maxlift and assign to a coach
  */
-function createMaxLift() {
+function saveMaxlift() {
   // Get current maxlift and check if already instanciated on db
   const newMaxLift = maxlift.value;
   const isNew = !newMaxLift.uid;
@@ -445,6 +453,13 @@ function createMaxLift() {
       if (isNew)
         (coachInfo.maxlifts = coachInfo.maxlifts || []).push(newMaxLift);
       maxliftFormElement.value?.reset();
+
+      // Register GA4 event
+      event("athleteview_maxlift_created", {
+        event_category: "documentation",
+        event_label: "New MaxLift Created in AthleteView",
+        value: 1,
+      });
     },
     onError: () =>
       $q.notify({
@@ -499,6 +514,7 @@ function createAthlete() {
     coaches: user.uid ? [user.uid] : [],
     coachesFrom: [new Date()],
     coachesTo: [null],
+    assignedPrograms: [],
     createdOn: new Date(),
     createdBy: user.uid,
   });
@@ -506,6 +522,13 @@ function createAthlete() {
     onSuccess: () => {
       (coachInfo.athletes = coachInfo.athletes || []).push(newAthlete);
       clearAthlete();
+
+      // Register GA4 event
+      event("new_athlete_created", {
+        event_category: "documentation",
+        event_label: "New Athlete added to Athlete library",
+        value: 1,
+      });
     },
     onError: () =>
       $q.notify({

@@ -266,8 +266,24 @@
         "save_error": "Could not save program, please retry",
         "week_name": "Week { week }",
         "day_name": "Day { day }",
+        "new_day": "Day",
+        "new_exercise": "Exercise",
+        "new_day_error": "Could not create day with selected name, please retry",
+        "new_day_already_exists": "A day with this name already exists",
+        "empty": "Create your program now by adding your first exercise!",
+        "reference_select_line": "Select a line",
+        "reference_select_line_help": "Select a line as reference",
+        "reference_remove": "Unlink",
         "show_charts_tooltip": "Charts",
         "show_maxlifts_tooltip": "Reference Table"
+      },
+      "filter": {
+        "title": "Filter by...",
+        "filter_week": "week",
+        "filter_day": "day",
+        "filter_exercise": "exercise",
+        "clear_filters": "Clear filters",
+        "all_filtered_out": "Nothing to show"
       }
     },
     "maxlift_management": {
@@ -278,7 +294,8 @@
         "add_error": "Could not save max lift, please retry",
         "update": "Insert max lift info",
         "update_proceed": "Update max lift",
-        "update_error": "Could not update max lift, please retry"
+        "update_error": "Could not update max lift, please retry",
+        "no_athlete": "Select an athlete to see related data"
       },
       "fields": {
         "exercise": "Exercise name",

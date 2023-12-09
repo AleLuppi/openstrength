@@ -15,9 +15,10 @@
     @mouseleave="onSelectionEnd"
     @copy.prevent="onCopy"
     @paste.prevent="onPaste"
+    @keydown.delete="onSelectionDelete"
   >
     <!-- Set header style -->
-    <template v-slot:header="props">
+    <template #header="props">
       <q-tr :props="props" class="bg-table-header">
         <q-th
           v-for="col in props.cols"
@@ -31,13 +32,10 @@
     </template>
 
     <!-- Set custom rows -->
-    <template v-slot:body="props">
+    <template #body="props">
       <q-tr
         :props="props"
         @click="($attrs.onRowClick as Function)?.(undefined, props.row)"
-        :class="{
-          'cursor-pointer': $attrs.onRowClick || props.row.expanded,
-        }"
         class="os-tr-selected"
       >
         <q-td
@@ -62,7 +60,12 @@
             :ref="
               (el) => (childElements[getCellName(props.row.id, col.id)] = el)
             "
-            v-model="(modelValue[props.rowIndex] ?? newRow)[col.name]"
+            :model-value="(modelValue[props.rowIndex] ?? newRow)[col.name]"
+            @update:model-value="
+              (value) => onModelValueUpdate(props.rowIndex, col.name, value)
+            "
+            @focus="selectSingleCell(props.row.id, col.id)"
+            dense
           ></q-checkbox>
 
           <q-input
@@ -74,10 +77,22 @@
             @update:model-value="
               (value) => onModelValueUpdate(props.rowIndex, col.name, value)
             "
+            @focus="selectSingleCell(props.row.id, col.id)"
             borderless
             autogrow
             :dense="dense"
-          ></q-input>
+          >
+            <template #after>
+              <slot
+                name="item"
+                v-bind="{
+                  row: props.row,
+                  col: col,
+                  value: (modelValue[props.rowIndex] ?? newRow)[col.name],
+                }"
+              ></slot>
+            </template>
+          </q-input>
         </q-td>
       </q-tr>
     </template>
@@ -85,6 +100,7 @@
 </template>
 
 <script setup lang="ts">
+import { objectMapValues } from "@/helpers/object";
 import { ref, computed, PropType } from "vue";
 
 // Define props
@@ -101,7 +117,15 @@ const props = defineProps({
     type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
     required: false,
   },
+  widths: {
+    type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
+    required: false,
+  },
   showNewLine: {
+    type: Boolean,
+    default: false,
+  },
+  deleteEmptyLine: {
     type: Boolean,
     default: false,
   },
@@ -165,11 +189,13 @@ const types = computed(() => {
     const propsTypes = props.types;
     return props.modelValue.map(() =>
       Object.keys(headers.value).reduce(
-        (out: { [key: string]: string }, key, idx) => (
-          (out[key] =
-            propsTypes instanceof Array ? propsTypes[idx] : propsTypes[key]),
-          out
-        ),
+        (out: { [key: string]: string }, key, idx) => {
+          out[key] =
+            propsTypes instanceof Array ? propsTypes[idx] : propsTypes[key];
+          if (!Object.values(typesAvailable).includes(out[key]))
+            out[key] = typesAvailable.input;
+          return out;
+        },
         {},
       ),
     );
@@ -196,6 +222,20 @@ const types = computed(() => {
   }
 });
 
+// Get widths map
+const widths = computed(() => {
+  if (props.widths) {
+    // Handle case of fixed widths
+    const propsWidths = props.widths;
+    return objectMapValues(headers.value, (_, key, idx) =>
+      propsWidths instanceof Array ? propsWidths[idx] : propsWidths[key],
+    );
+  } else {
+    // Handle case with unknown type
+    return objectMapValues(headers.value, () => "0%");
+  }
+});
+
 // Set rows and columns
 const columns = computed(() =>
   Object.entries(headers.value).map(([key, val], index) => ({
@@ -204,6 +244,7 @@ const columns = computed(() =>
     field: key,
     label: val,
     align: "center" as "center",
+    style: widths.value[key] ? "width: " + widths.value[key] : "",
   })),
 );
 const rows = computed(() =>
@@ -217,7 +258,7 @@ const rows = computed(() =>
 
 // Set an empty new line
 const newRow = computed(() =>
-  columns.value.reduce((out, col) => ({ ...out, [col.name]: "" }), {}),
+  columns.value.reduce((out, col) => ({ ...out, [col.name]: undefined }), {}),
 );
 
 /**
@@ -230,19 +271,31 @@ const newRow = computed(() =>
 function onModelValueUpdate(
   rowId: number,
   colId: string,
-  newValue: string | number | null,
+  newValue: string | number | boolean | null,
 ) {
   // Get a copy of current data
   const outValue = props.modelValue;
 
   // Add a new line if necessary
   if (rowId == outValue.length && String(newValue).trim()) {
-    outValue[rowId] = {};
+    outValue[rowId] = newRow.value;
   }
 
   // Update with new value
   if (newValue != null && rowId < outValue.length) {
-    outValue[rowId][colId] = String(newValue);
+    outValue[rowId][colId] = newValue;
+
+    // Remove trailing empty lines if necessary
+    let checkLastLine = true;
+    while (checkLastLine) {
+      if (
+        props.deleteEmptyLine &&
+        outValue.length > 0 &&
+        Object.keys(headers.value).every((key) => !outValue.at(-1)![key])
+      )
+        outValue.pop();
+      else checkLastLine = false;
+    }
     emit("update:modelValue", outValue);
   }
 }
@@ -279,12 +332,7 @@ function getHeaderName(colNum: number) {
  */
 function onSelectionStart(rowNum: string | number, colNum: string | number) {
   isSelecting.value = true;
-  selected.value = {
-    rowFrom: Number(rowNum),
-    rowTo: Number(rowNum),
-    colFrom: Number(colNum),
-    colTo: Number(colNum),
-  };
+  selectSingleCell(rowNum, colNum);
 }
 
 /**
@@ -306,6 +354,45 @@ function onSelectionContinue(rowNum: string | number, colNum: string | number) {
  */
 function onSelectionEnd() {
   isSelecting.value = false;
+}
+
+/**
+ * Select a single cell by its location.
+ *
+ * @param rowNum row number of cell that must be selected.
+ * @param colNum column number of cell that must be selected.
+ */
+function selectSingleCell(rowNum: string | number, colNum: string | number) {
+  selected.value = {
+    rowFrom: Number(rowNum),
+    rowTo: Number(rowNum),
+    colFrom: Number(colNum),
+    colTo: Number(colNum),
+  };
+}
+
+/**
+ * Clear the selected cells.
+ */
+function onSelectionDelete() {
+  // Ensure some data are selected
+  if (!selected.value) return;
+
+  // Get starting and ending values in order
+  const rowStart = Math.min(selected.value?.rowFrom, selected.value?.rowTo),
+    rowEnd = Math.max(selected.value?.rowFrom, selected.value?.rowTo),
+    colStart = Math.min(selected.value?.colFrom, selected.value?.colTo),
+    colEnd = Math.max(selected.value?.colFrom, selected.value?.colTo);
+
+  // Ignore deletion if only one cell is selected
+  if (rowStart == rowEnd && colStart == colEnd) return;
+
+  // Clear values in cells
+  for (let row = rowStart; row <= rowEnd; row++) {
+    for (let col = colStart; col <= colEnd; col++) {
+      onModelValueUpdate(row, getHeaderName(col), "");
+    }
+  }
 }
 
 /**
@@ -388,6 +475,13 @@ function onPaste(clipboardEvent: ClipboardEvent) {
 </script>
 
 <style scoped lang="scss">
+.q-table--dense .q-table {
+  & th,
+  td {
+    padding: 2px;
+  }
+}
+
 .os-tr-selected {
   & > .os-td-selected {
     background: rgba($primary, 0.1);

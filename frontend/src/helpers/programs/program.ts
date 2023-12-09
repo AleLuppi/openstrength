@@ -1,9 +1,13 @@
 import { DocumentReference } from "firebase/firestore";
-import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
+import {
+  doAddDoc,
+  doUpdateDoc,
+  doDeleteDoc,
+} from "@/helpers/database/readwrite";
 import { programsCollection } from "@/helpers/database/collections";
-import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { AthleteUser, CoachUser } from "@/helpers/users/user";
-import { MaxLift, MaxLiftType } from "../maxlifts/maxlift";
+import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 
 /**
  * Training program properties.
@@ -84,9 +88,9 @@ export type ProgramLineProps = {
   setsBaseValue?: string;
   setsReference?: ProgramLine;
   repsBaseValue?: string;
-  repsReference?: ProgramLine;
+  repsReference?: ProgramLine | MaxLift;
   loadBaseValue?: string;
-  loadReference?: ProgramLine;
+  loadReference?: ProgramLine | MaxLift;
   rpeBaseValue?: string;
   rpeReference?: ProgramLine;
 
@@ -293,6 +297,51 @@ export class Program {
       }),
     });
   }
+
+  /**
+   * Remove the program from database.
+   *
+   * @param program element that shall be removed.
+   * @param onSuccess function to execute when operation is successful.
+   * @param onError function to execute when operation fails.
+   */
+  remove({
+    program,
+    onSuccess,
+    onError,
+  }: {
+    program?: Program;
+    onSuccess?: Function;
+    onError?: Function;
+  } = {}) {
+    // Ensure program is mapped onto a database document
+    const programToDelete = program || this;
+    if (!programToDelete.uid) {
+      onError?.();
+      return;
+    }
+
+    // Delete the program
+    doDeleteDoc(programsCollection, programToDelete.uid, {
+      onSuccess: onSuccess,
+      onError: onError,
+    });
+  }
+
+  /**
+   * Get all lines of a program.
+   *
+   * @returns list of all lines in a program.
+   */
+  getLines() {
+    return this.programExercises?.reduce(
+      (allLines: ProgramLine[], programExercise) =>
+        programExercise.lines
+          ? [...allLines, ...programExercise.lines]
+          : allLines,
+      [],
+    );
+  }
 }
 
 /**
@@ -391,9 +440,9 @@ export class ProgramLine {
   setsBaseValue?: string;
   setsReference?: ProgramLine;
   repsBaseValue?: string;
-  repsReference?: ProgramLine;
+  repsReference?: ProgramLine | MaxLift;
   loadBaseValue?: string;
-  loadReference?: ProgramLine;
+  loadReference?: ProgramLine | MaxLift;
   rpeBaseValue?: string;
   rpeReference?: ProgramLine;
 
@@ -402,8 +451,22 @@ export class ProgramLine {
   requestFeedbackText?: boolean;
   requestFeedbackVideo?: boolean;
 
-  // TODO computed properties
-  // TODO continue from here!!!!!!!!!!!!!!!!!!!
+  public get refLoadValue() {
+    return this.loadReference instanceof ProgramLine
+      ? this.loadReference.loadValue ??
+          this.loadReference.loadComputedValue ??
+          this.loadReference.loadSupposedValue
+      : Number(this.loadReference?.value);
+  }
+
+  public get refRepsValue() {
+    return this.repsReference instanceof ProgramLine
+      ? this.repsReference.repsValue ??
+          this.repsReference.repsComputedValue ??
+          this.repsReference.repsSupposedValue
+      : Number(this.repsReference?.value);
+  }
+
   public get setsValue(): number | undefined {
     if (this.setsBaseValue !== undefined && /^\d*$/.test(this.setsBaseValue)) {
       return parseInt(this.setsBaseValue);
@@ -471,41 +534,32 @@ export class ProgramLine {
   }
   //TODO: add case from rpe table (load and rpe present)
   get repsComputedValue(): number | undefined {
-    if (
-      this.repsReference !== null &&
-      this.repsReference?.repsValue !== undefined
-    ) {
+    if (this.repsReference !== null && this.refRepsValue !== undefined) {
       if (
         this.repsOperation !== undefined &&
         /^[+-]\d*$/.test(this.repsOperation)
       ) {
         const operationValue = parseInt(this.repsOperation);
-        return this.repsReference.repsValue + operationValue;
+        return this.refRepsValue + operationValue;
       }
     } else {
       return undefined;
     }
   }
   get loadComputedValue(): number | undefined {
-    if (
-      this.loadReference !== undefined &&
-      this.loadReference.loadValue !== undefined
-    ) {
+    if (this.loadReference !== undefined && this.refLoadValue !== undefined) {
       if (
         this.loadOperation !== undefined &&
         this.loadBaseValue !== undefined &&
         /^(\d*)%\/(\d*)%$/.test(this.loadBaseValue) === false
       ) {
         if (this.loadOperation.startsWith("*")) {
-          return (
-            this.loadReference.loadValue *
-            parseFloat(this.loadOperation.slice(1))
-          );
+          return this.refLoadValue * parseFloat(this.loadOperation.slice(1));
         } else if (
           this.loadOperation.startsWith("+") ||
           this.loadOperation.startsWith("-")
         ) {
-          return this.loadReference.loadValue + parseFloat(this.loadOperation);
+          return this.refLoadValue + parseFloat(this.loadOperation);
         }
       } else {
         return undefined;
@@ -664,17 +718,10 @@ export class ProgramLine {
     ) {
       return parseInt(this.repsBaseValue.slice(1, -1));
     } else if (this.repsOperation !== undefined) {
-      const referenceValue =
-        this.repsReference?.repsComputedValue ??
-        this.repsReference?.repsSupposedValue;
-      if (referenceValue !== undefined) {
-        return referenceValue + parseInt(this.repsOperation);
-      } else {
-        const referenceSupposedValue = this.repsReference?.repsSupposedValue;
-        return referenceSupposedValue !== undefined
-          ? referenceSupposedValue + parseInt(this.repsOperation)
-          : undefined;
-      }
+      const referenceValue = this.refRepsValue;
+      return referenceValue
+        ? referenceValue + parseInt(this.repsOperation)
+        : undefined;
     } else {
       return undefined;
     }
@@ -712,67 +759,53 @@ export class ProgramLine {
       return parseInt(content);
     }
 
-    if (matchKgSimple && this.loadReference?.loadSupposedValue !== undefined) {
+    if (matchKgSimple && this.refLoadValue !== undefined) {
       if (
         this.loadOperation !== undefined &&
         (this.loadOperation.startsWith("+") ||
           this.loadOperation.startsWith("-"))
       ) {
-        return (
-          this.loadReference.loadSupposedValue + parseFloat(this.loadOperation)
-        );
+        return this.refLoadValue + parseFloat(this.loadOperation);
       } else {
         return undefined;
       }
     }
 
-    if (
-      matchPercentageSimple &&
-      this.loadReference?.loadSupposedValue !== undefined
-    ) {
+    if (matchPercentageSimple && this.refLoadValue !== undefined) {
       if (
         this.loadOperation !== undefined &&
         this.loadOperation.startsWith("*")
       ) {
-        return (
-          this.loadReference.loadSupposedValue *
-          parseFloat(this.loadOperation.slice(1))
-        );
+        return this.refLoadValue * parseFloat(this.loadOperation.slice(1));
       } else {
         return undefined;
       }
     }
 
-    if (matchPercentRange && this.loadReference?.loadValue !== undefined) {
+    if (matchPercentRange && this.refLoadValue !== undefined) {
       const [, firstPercent, secondPercent] = matchPercentRange;
       return (
-        ((parseFloat(secondPercent) / 100) * this.loadReference.loadValue +
-          (parseFloat(firstPercent) / 100) * this.loadReference.loadValue) /
+        ((parseFloat(secondPercent) / 100) * this.refLoadValue +
+          (parseFloat(firstPercent) / 100) * this.refLoadValue) /
         2
       );
     }
 
-    if (
-      matchPercentValueSupposed &&
-      this.loadReference?.loadValue !== undefined
-    ) {
+    if (matchPercentValueSupposed && this.refLoadValue !== undefined) {
       const [, content] = matchPercentValueSupposed;
-      return (parseFloat(content) / 100) * this.loadReference.loadValue;
+      return (parseFloat(content) / 100) * this.refLoadValue;
     }
 
-    if (
-      matchTrailingOperation &&
-      this.loadReference?.loadSupposedValue !== undefined
-    ) {
+    if (matchTrailingOperation && this.refLoadValue !== undefined) {
       const operationValue = matchTrailingOperation[1];
       if (operationValue.endsWith("kg")) {
         const result: number = parseFloat(operationValue);
-        return this.loadReference.loadSupposedValue + result;
+        return this.refLoadValue + result;
       } else if (operationValue.endsWith("%")) {
         const result: number = parseFloat(operationValue) / 100;
 
         if (operationValue[0] === "-" || operationValue[0] === "+") {
-          return (1 + result) * this.loadReference.loadSupposedValue;
+          return (1 + result) * this.refLoadValue;
         }
       }
     }
@@ -888,16 +921,13 @@ export class ProgramLine {
       this.loadBaseValue !== undefined &&
       /^\d*%\/\d*%$/.test(this.loadBaseValue)
     ) {
-      if (
-        this.loadReference !== undefined &&
-        this.loadReference.loadValue !== undefined
-      ) {
+      if (this.loadReference !== undefined && this.refLoadValue !== undefined) {
         const [, minPercent] = this.loadBaseValue.match(/^(\d*)%\//) || [];
         if (minPercent !== undefined) {
           const parsedMinPercent = parseFloat(minPercent);
           return isNaN(parsedMinPercent)
             ? undefined
-            : (parsedMinPercent / 100) * this.loadReference.loadValue;
+            : (parsedMinPercent / 100) * this.refLoadValue;
         }
       }
     }
@@ -948,16 +978,13 @@ export class ProgramLine {
       this.loadBaseValue !== undefined &&
       /^\d*%\/\d*%$/.test(this.loadBaseValue)
     ) {
-      if (
-        this.loadReference !== undefined &&
-        this.loadReference.loadValue !== undefined
-      ) {
+      if (this.loadReference !== undefined && this.refLoadValue !== undefined) {
         const [, maxPercent] = this.loadBaseValue.match(/^\d*%\/(\d*)%$/) || [];
         if (maxPercent !== undefined) {
           const parsedMaxPercent = parseFloat(maxPercent);
           return isNaN(parsedMaxPercent)
             ? undefined
-            : (parsedMaxPercent / 100) * this.loadReference.loadValue;
+            : (parsedMaxPercent / 100) * this.refLoadValue;
         }
       }
     }
@@ -1083,7 +1110,7 @@ function flattenProgram(program: Program) {
     athleteId: program.athlete?.uid,
     lines: program.programExercises?.reduce(
       (out: object[], exerciseToSpread) => {
-        const { program, exerciseVariant, lines, ...exerciseObj } =
+        const { uid, program, exerciseVariant, lines, ...exerciseObj } =
           exerciseToSpread;
         const flatExercise = {
           ...exerciseObj,
@@ -1092,8 +1119,36 @@ function flattenProgram(program: Program) {
         return [
           ...out,
           ...(exerciseToSpread.lines?.map((lineToSpread) => {
-            const { uid, programExercise, ...lineObj } = lineToSpread;
-            return { ...flatExercise, ...lineObj };
+            const { programExercise, ...lineObj } = lineToSpread;
+            const referenceAndType = (
+              [
+                "setsReference",
+                "repsReference",
+                "loadReference",
+                "rpeReference",
+              ] as (
+                | "setsReference"
+                | "repsReference"
+                | "loadReference"
+                | "rpeReference"
+              )[]
+            ).reduce(
+              (out: { [key: string]: any }, key) => ({
+                ...out,
+                [key]: lineToSpread[key]?.uid,
+                [key + "Type"]: lineToSpread[key]
+                  ? lineToSpread[key] instanceof MaxLift
+                    ? "maxlift"
+                    : "line"
+                  : undefined,
+              }),
+              {},
+            );
+            return {
+              ...flatExercise,
+              ...lineObj,
+              ...referenceAndType,
+            };
           }) || []),
         ];
       },

@@ -7,15 +7,17 @@
     hide-pagination
     class="os-table-max-height"
     @row-click="
-      (...params: [Event, Object, Number]) => emits('selection', ...params)
+      (...params: [Event, Object, Number]) => emit('selection', ...params)
     "
     selection="single"
+    v-model:selected="selectedRows"
   ></os-table>
 </template>
 
 <script setup lang="ts">
-import { computed, PropType } from "vue";
+import { ref, computed, watch, PropType } from "vue";
 import { AthleteUser } from "@/helpers/users/user";
+import { getAssignedProgram } from "@/helpers/programs/athleteAssignment";
 
 // Define props
 const props = defineProps({
@@ -23,11 +25,16 @@ const props = defineProps({
     type: Array as PropType<AthleteUser[]>,
     required: true,
   },
+  selected: {
+    type: AthleteUser,
+    required: false,
+  },
 });
 
 // Define emits
-const emits = defineEmits<{
+const emit = defineEmits<{
   selection: [evt: Event, row: Object, index: Number];
+  "update:selected": [value?: AthleteUser];
 }>();
 
 // Set table columns
@@ -76,15 +83,40 @@ const rows = computed(() => {
     displayName: athlete.displayName,
     program: {
       element: "chip",
-      label: athlete.getAssignedProgram([])?.isOngoing // TODO
+      label: getAssignedProgram(athlete, [])?.isOngoing // TODO
         ? "Ongoing"
         : "Unassigned", // TODO i18n
-      color: athlete.getAssignedProgram([])?.isOngoing // TODO
+      color: getAssignedProgram(athlete, [])?.isOngoing // TODO
         ? "positive"
         : "negative",
     },
   }));
 });
+
+// Set ref
+const selectedRows = ref<typeof rows.value>();
+
+// Update selected rows upon selected athlete change
+watch(
+  () => props.selected,
+  (selectedAthlete) => {
+    const selectedRow = rows.value.find(
+      (row) => row.uid == selectedAthlete?.uid,
+    );
+    if (selectedRow) selectedRows.value = [selectedRow];
+  },
+  { immediate: true },
+);
+
+// Update selected athlete upon selected row change
+watch(selectedRows, (value) =>
+  emit(
+    "update:selected",
+    props.athletes.find((athlete) =>
+      value && value.length > 0 ? athlete.uid === value[0].uid : undefined,
+    ),
+  ),
+);
 </script>
 
 <style scoped lang="scss">

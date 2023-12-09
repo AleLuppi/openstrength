@@ -9,7 +9,7 @@
       <!-- Show week and day and allow navigation -->
       <div
         v-if="firstTablesInDay.includes(idScheduleInfo.toString())"
-        class="row items-center"
+        class="row items-center q-gutter-x-sm"
         :class="{
           'q-mt-lg': firstTablesInDay.indexOf(idScheduleInfo.toString()) > 0,
         }"
@@ -30,7 +30,7 @@
                 <q-item
                   clickable
                   @click="
-                    scrollToElement(
+                    scrollToElementInParent(
                       tableElements[
                         mergeScheduleInfoNames(
                           week,
@@ -43,6 +43,7 @@
                             (key) => splitScheduleInfoNames(key)[0] == week,
                           ) ?? 'undefined'
                         ],
+                      scrollOffset,
                     )
                   "
                 >
@@ -71,7 +72,7 @@
                 <q-item
                   clickable
                   @click="
-                    scrollToElement(
+                    scrollToElementInParent(
                       tableElements[
                         mergeScheduleInfoNames(
                           splitScheduleInfoNames(idScheduleInfo.toString())[0],
@@ -79,6 +80,7 @@
                           splitScheduleInfoNames(idScheduleInfo.toString())[2],
                         )
                       ],
+                      scrollOffset,
                     )
                   "
                 >
@@ -88,19 +90,46 @@
             </q-menu>
           </span>
         </h6>
+
+        <q-btn
+          @click="
+            editWeekDayName = splitScheduleInfoNames(idScheduleInfo.toString())
+          "
+          icon="edit"
+          size="sm"
+          color="light"
+          flat
+          round
+          :ripple="false"
+        >
+          <FormProgramNewWeekDay
+            v-model="editWeekDayName"
+            @save="renameWeekDay"
+            :cover="false"
+            anchor="center right"
+            self="center right"
+            :offset="[15, 0]"
+          >
+          </FormProgramNewWeekDay>
+        </q-btn>
+
         <q-separator inset size="1px" class="col" />
       </div>
 
       <!-- Exercise element -->
       <div class="row items-start justify-evenly q-mb-md">
         <!-- Reordering arrows -->
-        <div class="col-1 self-center column justify-center">
+        <div class="self-center column justify-center">
           <q-btn
             @click="reorderTableRelative(idScheduleInfo.toString(), -1)"
             icon="arrow_drop_up"
             flat
             dense
-            color="secondary"
+            :color="
+              firstTablesInDay.includes(idScheduleInfo.toString())
+                ? 'grey-5'
+                : 'secondary'
+            "
             :disable="firstTablesInDay.includes(idScheduleInfo.toString())"
           />
           <q-btn
@@ -108,7 +137,11 @@
             icon="arrow_drop_down"
             flat
             dense
-            color="secondary"
+            :color="
+              lastTablesInDay.includes(idScheduleInfo.toString())
+                ? 'grey-5'
+                : 'secondary'
+            "
             :disable="lastTablesInDay.includes(idScheduleInfo.toString())"
           />
         </div>
@@ -119,16 +152,24 @@
           style="position: relative"
         >
           <osSelect
-            :modelValue="exerciseModelValue.exercise"
+            :model-value="exerciseModelValue.exercise"
             @update:model-value="
-              (val?: string) =>
-                updateSelectedExercise(idScheduleInfo.toString(), val)
+              (val: typeof exerciseModelValue.exercise) => {
+                updateSelectedExercise(idScheduleInfo.toString(), val);
+                updateProgramExercise(idScheduleInfo.toString());
+              }
             "
             :options="exercises.map((exercise) => exercise.name)"
           >
           </osSelect>
           <osSelect
-            v-model="exerciseModelValue.variant"
+            :model-value="exerciseModelValue.variant"
+            @update:model-value="
+              (val: typeof exerciseModelValue.variant) => {
+                exerciseModelValue.variant = val;
+                updateProgramExercise(idScheduleInfo.toString());
+              }
+            "
             :options="
               selectedExercises[idScheduleInfo]?.variants?.map((variant) => ({
                 label: variant.isDefault
@@ -141,7 +182,17 @@
             emit-value
           >
           </osSelect>
-          <osInput v-model="exerciseModelValue.note" type="textarea"> </osInput>
+          <osInput
+            :model-value="exerciseModelValue.note"
+            @update:model-value="
+              (val: typeof exerciseModelValue.note) => {
+                exerciseModelValue.note = val;
+                updateProgramExercise(idScheduleInfo.toString());
+              }
+            "
+            type="textarea"
+          >
+          </osInput>
 
           <!-- Delete buttons -->
           <q-btn
@@ -157,7 +208,6 @@
 
         <!-- Data table -->
         <osTableSheet
-          v-model="exerciseModelValue.data"
           :headers="[
             'load',
             'reps',
@@ -167,14 +217,124 @@
             'requestText',
             'requestVideo',
           ]"
+          :model-value="exerciseModelValue.data"
+          @update:model-value="
+            (val?: typeof exerciseModelValue.data) => {
+              updateTableData(idScheduleInfo.toString(), val);
+              updateProgramExercise(idScheduleInfo.toString());
+            }
+          "
           :types="{
             requestText: 'checkbox',
             requestVideo: 'checkbox',
           }"
+          :widths="{
+            load: '9%',
+            reps: '9%',
+            sets: '9%',
+            rpe: '9%',
+            note: '50%',
+            requestText: '7%',
+            requestVideo: '7%',
+          }"
           :showNewLine="true"
+          :deleteEmptyLine="true"
+          @row-click="
+            (_: any, row: any) =>
+              selectingReferenceLine ? onReferenceClick(row.uid) : undefined
+          "
           dense
           class="col os-light-border"
         >
+          <template #item="itemProps">
+            <q-btn
+              v-if="itemProps.value && String(itemProps.value).endsWith('%')"
+              icon="fa-solid fa-link"
+              color="secondary"
+              size="0.4em"
+              :flat="
+                exerciseModelValue.data[itemProps.row.id][
+                  (itemProps.col.field + 'Ref') as
+                    | 'loadRef'
+                    | 'repsRef'
+                    | 'setsRef'
+                    | 'rpeRef'
+                ] == undefined
+              "
+              round
+              :ripple="false"
+            >
+              <!-- Show list of options to select as reference -->
+              <q-menu anchor="center right" self="center left">
+                <q-list style="min-width: 100px">
+                  <q-item
+                    v-for="[maxliftType, maxlift] in Object.entries(
+                      maxliftsPerExercise[exerciseModelValue.exercise ?? ''] ??
+                        {},
+                    )"
+                    :key="maxliftType"
+                    @click="
+                      onReferenceClick(maxlift, 'maxlift', {
+                        schedule: idScheduleInfo.toString(),
+                        lineNum: itemProps.row.id,
+                        field: itemProps.col.field,
+                      })
+                    "
+                    clickable
+                    v-close-popup
+                    dense
+                  >
+                    <q-item-section>{{ maxliftType }}</q-item-section>
+                  </q-item>
+                  <q-separator />
+                  <q-item
+                    clickable
+                    @click="
+                      selectingReferenceLine = {
+                        schedule: idScheduleInfo.toString(),
+                        lineNum: itemProps.row.id,
+                        field: itemProps.col.field,
+                      }
+                    "
+                    v-close-popup
+                    dense
+                  >
+                    <q-item-section>{{
+                      $t(
+                        "coach.program_management.builder.reference_select_line",
+                      )
+                    }}</q-item-section>
+                  </q-item>
+                  <q-separator />
+                  <q-item
+                    v-if="
+                      exerciseModelValue.data[itemProps.row.id][
+                        (itemProps.col.field + 'Ref') as
+                          | 'loadRef'
+                          | 'repsRef'
+                          | 'setsRef'
+                          | 'rpeRef'
+                      ] != undefined
+                    "
+                    clickable
+                    @click="
+                      onReferenceClick('', 'line', {
+                        schedule: idScheduleInfo.toString(),
+                        lineNum: itemProps.row.id,
+                        field: itemProps.col.field,
+                      })
+                    "
+                    v-close-popup
+                    dense
+                  >
+                    <q-item-section>{{
+                      $t("coach.program_management.builder.reference_remove")
+                    }}</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
+          </template>
         </osTableSheet>
       </div>
 
@@ -185,29 +345,102 @@
       >
         <q-btn
           icon="add"
-          label="Exercise"
+          :label="$t('coach.program_management.builder.new_exercise')"
           @click="addTable(idScheduleInfo.toString())"
           rounded
           unelevated
         />
-        <!-- TODO @click add day -->
         <q-btn
           icon="add"
-          label="Day"
-          @click="addTable(idScheduleInfo.toString())"
+          :label="$t('coach.program_management.builder.new_day')"
+          @click="editWeekDayName = ['', '']"
           rounded
           unelevated
-        />
+        >
+          <FormProgramNewWeekDay
+            v-model="editWeekDayName"
+            @save="renameWeekDay"
+            :cover="false"
+            anchor="bottom middle"
+            self="top middle"
+            :offset="[0, 5]"
+          >
+          </FormProgramNewWeekDay>
+        </q-btn>
       </div>
     </div>
+
+    <!-- Show something when program is empty -->
+    <div v-if="objectIsEmpty(exercisesValues)" class="text-center">
+      <slot name="empty-program">
+        <h6>
+          {{ $t("coach.program_management.builder.empty") }}
+        </h6>
+      </slot>
+      <q-btn
+        icon="add"
+        :label="$t('coach.program_management.builder.new_day')"
+        @click="editWeekDayName = ['', '']"
+        rounded
+        unelevated
+      >
+        <FormProgramNewWeekDay
+          v-model="editWeekDayName"
+          @save="renameWeekDay"
+          :cover="false"
+          anchor="bottom middle"
+          self="top middle"
+          :offset="[0, 5]"
+        >
+        </FormProgramNewWeekDay>
+      </q-btn>
+    </div>
+
+    <!-- Show something when filters remove any exercise -->
+    <div
+      v-else-if="
+        !objectIsEmpty(exercisesValues) &&
+        objectIsEmpty(filteredExercisesValues)
+      "
+      class="text-center"
+    >
+      <slot name="empty-filtered">
+        <h6>
+          {{ $t("coach.program_management.filter.all_filtered_out") }}
+        </h6>
+      </slot>
+    </div>
+
+    <!-- Show dialog to stop reference line selection -->
+    <q-dialog
+      :model-value="Boolean(selectingReferenceLine)"
+      @update:model-value="selectingReferenceLine = undefined"
+      seamless
+      position="bottom"
+    >
+      <q-card class="bg-lighter" style="width: 350px">
+        <q-card-section class="row items-center no-wrap">
+          <p class="text-bold">
+            {{
+              $t("coach.program_management.builder.reference_select_line_help")
+            }}
+          </p>
+
+          <q-space />
+
+          <q-btn icon="close" label="Cancel" color="negative" v-close-popup />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, PropType, watch } from "vue";
-import { debounce, useQuasar } from "quasar";
+import { uid, debounce, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
-import { scrollToElement } from "@/helpers/scroller";
+import FormProgramNewWeekDay from "@/components/forms/FormProgramNewWeekDay.vue";
+import { scrollToElementInParent } from "@/helpers/scroller";
 import { arrayCompare, arrayUniqueValues } from "@/helpers/array";
 import {
   Program,
@@ -217,10 +450,13 @@ import {
 import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import {
+  objectIsEmpty,
   objectDeepCopy,
   objectMapKeys,
   objectMapValues,
 } from "@/helpers/object";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
 
 // Init plugin
 const $q = useQuasar();
@@ -228,12 +464,16 @@ const i18n = useI18n();
 
 // Define props
 const props = defineProps({
-  program: {
+  modelValue: {
     type: Program,
     required: true,
   },
   exercises: {
     type: Array as PropType<Exercise[]>,
+    default: () => [],
+  },
+  maxlifts: {
+    type: Array as PropType<MaxLift[]>,
     default: () => [],
   },
   filter: {
@@ -244,14 +484,14 @@ const props = defineProps({
     }>,
     default: () => ({}),
   },
-  saved: {
-    type: Boolean,
-    default: true,
+  scrollOffset: {
+    type: Number,
+    default: 0,
   },
 });
 
 // Define emits
-const emits = defineEmits(["update:program", "update:saved"]);
+const emit = defineEmits(["update:modelValue"]);
 
 // Set useful values
 const sepWekDay = ".";
@@ -266,13 +506,32 @@ const tableElements = ref<{
 }>({});
 const exercisesValues = ref<{
   [key: string]: {
-    data: { [key: string]: any }[];
+    data: {
+      uid: string;
+      load: string | undefined;
+      loadRef: ProgramLine | MaxLift | undefined;
+      reps: string | undefined;
+      repsRef: ProgramLine | MaxLift | undefined;
+      sets: string | undefined;
+      setsRef: ProgramLine | MaxLift | undefined;
+      rpe: string | undefined;
+      rpeRef: ProgramLine | MaxLift | undefined;
+      note: string | undefined;
+      requestText: boolean | undefined;
+      requestVideo: boolean | undefined;
+    }[];
     exercise: string | undefined;
     variant: string | undefined;
     note: string | undefined;
   };
 }>({});
 const programCurrentValue = ref<Program>();
+const editWeekDayName = ref<string[]>();
+const selectingReferenceLine = ref<{
+  schedule: string;
+  lineNum: string;
+  field: string;
+}>();
 
 // Get a subset of tables to show according to filters
 const filteredExercisesValues = computed(() => {
@@ -317,17 +576,22 @@ const selectedExerciseVariants = computed<{
 
 // Get all program lines for each week and day
 const sortedProgramExercises = computed(() =>
-  props.program.programExercises
+  props.modelValue.programExercises
     ? orderProgramExercises(
-        props.program.programExercises,
+        props.modelValue.programExercises,
         mergeScheduleInfoNames,
       )
     : {},
 );
 
+// Get maxlifts separated per exercise name and type
+const maxliftsPerExercise = computed(() =>
+  separateMaxliftPerExerciseAndType(props.maxlifts),
+);
+
 // Get id of first and last table element for each day
 const firstTablesInDay = computed(() =>
-  Object.keys(exercisesValues.value).reduce((out: string[], key) => {
+  Object.keys(filteredExercisesValues.value).reduce((out: string[], key) => {
     const keySplit = splitScheduleInfoNames(key).slice(0, 2);
     if (
       !out.some((firstInDay) =>
@@ -339,7 +603,7 @@ const firstTablesInDay = computed(() =>
   }, []),
 );
 const lastTablesInDay = computed(() =>
-  Object.keys(exercisesValues.value)
+  Object.keys(filteredExercisesValues.value)
     .reverse()
     .reduce((out: string[], key) => {
       const keySplit = splitScheduleInfoNames(key).slice(0, 2);
@@ -376,9 +640,9 @@ const allDays = computed(() => {
 
 // Update data table on input change
 watch(
-  () => props.program,
+  () => props.modelValue,
   () => {
-    if (programCurrentValue.value != props.program) resetTableData();
+    if (programCurrentValue.value != props.modelValue) resetTableData();
   },
   { immediate: true },
 );
@@ -386,21 +650,25 @@ watch(
 // Reorder exercises upon update
 watch(exercisesValues, () => sortExerciseValues());
 
-// Ensure program gets saved if requested from outside
-let savedValue = true;
-watch(
-  () => props.saved,
-  (val) => {
-    if (val && !savedValue) save();
-    savedValue = val;
-  },
-  { immediate: true },
-);
+// Inform parent of program update
+watch(programCurrentValue, (program) => emit("update:modelValue", program));
+
+/**
+ * Get a random uid.
+ *
+ * @returns a random uid.
+ */
+function getRandomUid() {
+  return "OS-" + uid();
+}
 
 /**
  * Update table data according to input data.
  */
 function resetTableData() {
+  // Set current value to be equal to input one
+  programCurrentValue.value = props.modelValue;
+
   // Epmty changes
   changes.value.length = 0;
 
@@ -429,15 +697,23 @@ function resetTableData() {
 
       // Prepare data-related values
       exercisesValues.value[idScheduleInfo].data =
-        programExercise.lines?.map((line) => ({
-          load: line.loadBaseValue,
-          reps: line.repsBaseValue,
-          sets: line.setsBaseValue,
-          rpe: line.rpeBaseValue,
-          note: line.note,
-          requestText: line.requestFeedbackText,
-          requestVideo: line.requestFeedbackVideo,
-        })) ?? [];
+        programExercise.lines?.map((line) => {
+          if (!line.uid) line.uid = getRandomUid();
+          return {
+            uid: line.uid,
+            load: line.loadBaseValue,
+            loadRef: line.loadReference,
+            reps: line.repsBaseValue,
+            repsRef: line.repsReference,
+            sets: line.setsBaseValue,
+            setsRef: line.setsReference,
+            rpe: line.rpeBaseValue,
+            rpeRef: line.rpeReference,
+            note: line.note,
+            requestText: line.requestFeedbackText ?? false,
+            requestVideo: line.requestFeedbackVideo ?? false,
+          };
+        }) ?? [];
     },
   );
 }
@@ -455,6 +731,65 @@ function updateSelectedExercise(idScheduleInfo: string, newName?: string) {
 
   // Update name
   exercisesValues.value[idScheduleInfo].exercise = newName;
+}
+
+/**
+ * Update table data for an exercise in program.
+ *
+ * @param idScheduleInfo schedule info id whose exercise shall be updated.
+ * @param data table data that shall be saved.
+ */
+function updateTableData(
+  idScheduleInfo: string,
+  data: (typeof exercisesValues.value)[string]["data"],
+) {
+  data.forEach((line) => {
+    if (!Object.keys(line).includes("uid")) line.uid = getRandomUid();
+  });
+  exercisesValues.value[idScheduleInfo].data = data;
+}
+
+/**
+ * Perform operations on reference selection.
+ *
+ * @param reference line or maxlift identifier or instance.
+ * @param type specify whether reference is line or maxlift.
+ */
+function onReferenceClick(
+  reference: string | ProgramLine | MaxLift,
+  type: "line" | "maxlift" = "line",
+  referenceLine?: typeof selectingReferenceLine.value,
+) {
+  // Clear selection info
+  const lineInfo = referenceLine ?? selectingReferenceLine.value;
+  selectingReferenceLine.value = undefined;
+
+  // Ignore update if line selection is not enabled
+  if (!lineInfo) return;
+
+  // Update line reference
+  const refField = lineInfo.field + "Ref";
+  if (
+    refField != "loadRef" &&
+    refField != "repsRef" &&
+    refField != "setsRef" &&
+    refField != "rpeRef"
+  )
+    return;
+  const parsedReference =
+    reference instanceof ProgramLine || reference instanceof MaxLift
+      ? reference
+      : type == "line"
+      ? props.modelValue.getLines()?.find((line) => line.uid == reference)
+      : type == "maxlift"
+      ? props.maxlifts.find((maxlift) => (maxlift.uid = reference))
+      : undefined;
+  exercisesValues.value[lineInfo.schedule].data[Number(lineInfo.lineNum)][
+    refField
+  ] = parsedReference;
+
+  // Update program
+  updateProgramExercise(lineInfo.schedule);
 }
 
 /**
@@ -606,6 +941,74 @@ function addTable(idScheduleInfo: string) {
 }
 
 /**
+ * Move one week and day pair from table to a new name.
+ *
+ * @param toSchedule destination week and day name.
+ * @param fromSchedule source week and day name.
+ * @param createIfEmpty if true, create a new table at destination week and day if source is empty.
+ */
+function renameWeekDay(
+  toSchedule: string[],
+  fromSchedule: string[],
+  createIfEmpty: boolean = true,
+) {
+  // Check and parse input
+  if (toSchedule.length < 2 || fromSchedule.length < 2) {
+    $q.notify({
+      type: "negative",
+      message: i18n.t("coach.program_management.builder.new_day_error"),
+      position: "bottom",
+    });
+    return;
+  }
+  const [toWeekId, toDayId] = toSchedule;
+  const [fromWeekId, fromDayId] = fromSchedule;
+
+  // Check if new naming can be used
+  if (!toWeekId || !toDayId) return;
+  if (
+    Object.keys(exercisesValues.value).some((key) =>
+      arrayCompare(
+        splitScheduleInfoNames(key).slice(0, 2),
+        toSchedule.slice(0, 2),
+      ),
+    )
+  ) {
+    $q.notify({
+      type: "negative",
+      message: i18n.t(
+        "coach.program_management.builder.new_day_already_exists",
+      ),
+      position: "bottom",
+    });
+    return;
+  }
+
+  // Check if source is empty while renaming
+  let isSourceEmpty = true;
+
+  // Perform renaming
+  exercisesValues.value = Object.entries(exercisesValues.value).reduce(
+    (out: typeof exercisesValues.value, [key, value]) => {
+      const scheduleInfo = splitScheduleInfoNames(key);
+      if (scheduleInfo[0] == fromWeekId && scheduleInfo[1] == fromDayId) {
+        out[mergeScheduleInfoNames(toWeekId, toDayId, scheduleInfo[2])] = value;
+        isSourceEmpty = false;
+      } else out[key] = value;
+      return out;
+    },
+    {},
+  );
+
+  // Optionally add a table is source is empty
+  if (createIfEmpty && isSourceEmpty)
+    addTable(mergeScheduleInfoNames(toWeekId, toDayId, 1));
+
+  // Update program with new naming
+  updateProgramWhole();
+}
+
+/**
  * Merge week, day, order values to a single string.
  *
  * @param weekId week name.
@@ -677,16 +1080,14 @@ function storeChanges(key: string, changeData: any) {
       changes.value.push({ value: objectDeepCopy(newValue) });
     }, 1000);
   storeChangesMethods[key](changeData);
-  savedValue = false;
-  emits("update:saved", savedValue);
 }
 
 /**
- * Save all changes to program.
+ * Rebuild the whole program based on the current table values.
  */
-function save() {
+function updateProgramWhole() {
   // Update program
-  const program = props.program.duplicate();
+  const program = props.modelValue.duplicate();
   program.programExercises = [];
   Object.entries(exercisesValues.value).forEach(
     ([scheduleId, exerciseInfo]) => {
@@ -704,14 +1105,15 @@ function save() {
             (lineInfo, idx) =>
               new ProgramLine({
                 lineOrder: idx,
+                uid: lineInfo.uid,
                 setsBaseValue: lineInfo.sets,
-                setsReference: undefined, // TODO
+                setsReference: lineInfo.setsRef,
                 repsBaseValue: lineInfo.reps,
-                repsReference: undefined, // TODO
+                repsReference: lineInfo.repsRef,
                 loadBaseValue: lineInfo.load,
-                loadReference: undefined, // TODO
+                loadReference: lineInfo.loadRef,
                 rpeBaseValue: lineInfo.rpe,
-                rpeReference: undefined, // TODO
+                rpeReference: lineInfo.rpeRef,
                 note: lineInfo.note,
                 requestFeedbackText: lineInfo.requestText,
                 requestFeedbackVideo: lineInfo.requestVideo,
@@ -722,25 +1124,51 @@ function save() {
     },
   );
 
-  // Save current instance
-  program.save({
-    onSuccess: () => {
-      // Inform parent of update
-      programCurrentValue.value = program;
-      savedValue = true;
-      emits("update:program", program);
-      emits("update:saved", savedValue);
-    },
-    onError: () => {
-      $q.notify({
-        type: "negative",
-        message: i18n.t("coach.program_management.builder.save_error"),
-        position: "bottom",
-      });
-      savedValue = false;
-      emits("update:saved", savedValue);
-    },
-  });
+  // Inform parent of update
+  programCurrentValue.value = program;
+}
+
+/**
+ * Rebuild the whole program based on the current table values.
+ */
+function updateProgramExercise(idScheduleInfo: string) {
+  // Get interesting program exercise
+  const [exerciseWeek, exerciseDay, exerciseOrder] =
+    splitScheduleInfoNames(idScheduleInfo);
+  const programExercise = props.modelValue.programExercises?.find(
+    (exercise) =>
+      String(exercise.scheduleWeek) == exerciseWeek &&
+      String(exercise.scheduleDay) == exerciseDay &&
+      String(exercise.scheduleOrder) == exerciseOrder,
+  );
+  if (!programExercise) return;
+
+  // Update interesting program exercise
+  programExercise.exercise = selectedExercises.value[idScheduleInfo];
+  programExercise.exerciseVariant =
+    selectedExerciseVariants.value[idScheduleInfo];
+  programExercise.exerciseNote = exercisesValues.value[idScheduleInfo].note;
+  programExercise.lines = exercisesValues.value[idScheduleInfo].data.map(
+    (lineInfo, idx) =>
+      new ProgramLine({
+        lineOrder: idx,
+        uid: lineInfo.uid,
+        setsBaseValue: lineInfo.sets,
+        setsReference: lineInfo.setsRef,
+        repsBaseValue: lineInfo.reps,
+        repsReference: lineInfo.repsRef,
+        loadBaseValue: lineInfo.load,
+        loadReference: lineInfo.loadRef,
+        rpeBaseValue: lineInfo.rpe,
+        rpeReference: lineInfo.rpeRef,
+        note: lineInfo.note,
+        requestFeedbackText: lineInfo.requestText,
+        requestFeedbackVideo: lineInfo.requestVideo,
+      }),
+  );
+
+  // Inform parent of update
+  programCurrentValue.value = props.modelValue.duplicate();
 }
 </script>
 
