@@ -79,28 +79,40 @@ const charts = ref<boolean>(false);
 const chartDescriptions: OSChartDescriptor[] = [
   {
     chartType: OSChartType.Volume,
+    chartVersion: OSChartVersion.TotalVolume,
+    xAxisType: OSAvailableXType.Weeks,
+    chartTitle: "Total Volume varying weeks",
+    chartDescription: "Total sets x reps x load(kg) over week",
+  },
+  {
+    chartType: OSChartType.Volume,
     chartVersion: OSChartVersion.TotalReps,
     xAxisType: OSAvailableXType.Weeks,
     chartTitle: "Total Reps varying weeks",
-    chartDescription: "Total reps varying weeks computed as reps x sets",
+    chartDescription: "Total sets x reps total over week",
   },
   {
     chartType: OSChartType.Volume,
     chartVersion: OSChartVersion.TotalSets,
     xAxisType: OSAvailableXType.Weeks,
     chartTitle: "Total Sets varying weeks",
-    chartDescription:
-      "Total sets varying weeks computed as the sum of the sets",
+    chartDescription: "Total sets over week",
   },
 
-  {
-    chartType: OSChartType.Volume,
-    chartVersion: OSChartVersion.TotalVolume,
+  /*  {
+    chartType: OSChartType.Intensity,
+    chartVersion: OSChartVersion.MaxIntensity,
     xAxisType: OSAvailableXType.Weeks,
     chartTitle: "Total Volume varying weeks",
-    chartDescription:
-      "Total volume varying weeks computed as the sum of the sets*reps*load",
+    chartDescription: "Maximum intensity in the week (computed as load/1RM)",
   },
+  {
+    chartType: OSChartType.Intensity,
+    chartVersion: OSChartVersion.MeanIntensity,
+    xAxisType: OSAvailableXType.Weeks,
+    chartTitle: "Total Volume varying weeks",
+    chartDescription: "Mean intensity over the week (computed as load/1RM)",
+  }, */
 ];
 
 const chartDataRequests: OSChartDataRequest[] = chartDescriptions.map(

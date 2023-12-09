@@ -59,7 +59,8 @@ export function computeUndefined(
  */
 export function calculateTotalSets(programLines: ProgramLine[]): number {
   return programLines.reduce((totalSets, line) => {
-    const setsValue = line.setsValue ?? 0;
+    const setsValue =
+      line.setsValue ?? line.setsComputedValue ?? line.setsSupposedValue ?? 0;
 
     totalSets += setsValue;
 
@@ -72,8 +73,10 @@ export function calculateTotalSets(programLines: ProgramLine[]): number {
  */
 export function calculateTotalReps(programLines: ProgramLine[]): number {
   return programLines.reduce((totalReps, line) => {
-    const repsValue = line.repsValue ?? 0;
-    const setsValue = line.setsValue ?? 0;
+    const repsValue =
+      line.repsValue ?? line.repsComputedValue ?? line.repsSupposedValue ?? 0;
+    const setsValue =
+      line.setsValue ?? line.setsComputedValue ?? line.setsSupposedValue ?? 0;
 
     totalReps += repsValue * setsValue;
 
@@ -85,19 +88,20 @@ export function calculateTotalReps(programLines: ProgramLine[]): number {
  * Calculates total volume on the provided program lines
  * Note: it only accepts loads with "kg" units, not %.
  */
-/* export function calculateTotalVolume(programLines: ProgramLine[]): number {
+export function calculateTotalVolume(programLines: ProgramLine[]): number {
   return programLines.reduce((totalVolume, line) => {
-    const repsValue = parseInt(line.repsValue ?? "0");
-    const setsValue = parseInt(line.setsValue ?? "0");
-    const loadValue = parseFloat(
-      (line.loadValue || "0").replace(/[^0-9.]/g, ""),
-    );
+    const repsValue =
+      line.repsValue ?? line.repsComputedValue ?? line.repsSupposedValue ?? 0;
+    const setsValue =
+      line.setsValue ?? line.setsComputedValue ?? line.setsSupposedValue ?? 0;
+    const loadValue =
+      line.loadValue ?? line.loadComputedValue ?? line.loadSupposedValue ?? 0;
 
     totalVolume += repsValue * setsValue * loadValue;
 
     return totalVolume;
   }, 0);
-} */
+}
 
 /*********** INTENSITY CALCULATIONS *************/
 /**

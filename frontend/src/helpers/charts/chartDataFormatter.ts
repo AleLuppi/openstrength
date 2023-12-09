@@ -4,6 +4,7 @@ import { colors } from "quasar";
 import {
   calculateTotalReps,
   calculateTotalSets,
+  calculateTotalVolume,
   computeUndefined,
 } from "./chartDatasetComputations";
 import {
@@ -164,6 +165,11 @@ export function getCalculationFunction(
     chartInfo.chartType == OSChartType.Volume
   ) {
     return calculateTotalSets;
+  } else if (
+    chartInfo.chartVersion === OSChartVersion.TotalVolume &&
+    chartInfo.chartType == OSChartType.Volume
+  ) {
+    return calculateTotalVolume;
   }
 
   //TODO add other charts
@@ -197,7 +203,7 @@ export function computeDataForExercise(
   //TODO: substitute calculateTotalReps with a default "fallback" method
   const calculationFunction = chartInfo
     ? getCalculationFunction(chartInfo)
-    : calculateTotalReps;
+    : computeUndefined;
 
   if (chartInfo?.xAxisType === OSAvailableXType.Weeks) {
     weeks.forEach((week) => {

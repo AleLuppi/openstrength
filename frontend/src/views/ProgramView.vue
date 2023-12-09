@@ -333,8 +333,8 @@ import { getUniqueDayAndWeekNames } from "@/helpers/charts/chartDataFormatter";
 
 /* import { testAllRepCases } from "@/helpers/programs/lineRepsTest";
 import { testAllSetsCases } from "@/helpers/programs/lineSetsTest";
-import { testAllRpeCases } from "@/helpers/programs/lineRpeTest"; */
-import { testAllLoadCases } from "@/helpers/programs/lineLoadTest";
+import { testAllRpeCases } from "@/helpers/programs/lineRpeTest"; 
+import { testAllLoadCases } from "@/helpers/programs/lineLoadTest";*/
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -512,13 +512,13 @@ const program = ref<Program>(
           new ProgramLine({
             setsBaseValue: "5",
             repsBaseValue: "5",
-            loadBaseValue: "5",
+            loadBaseValue: "5kg",
             rpeBaseValue: "5",
           }),
           new ProgramLine({
             setsBaseValue: "5",
             repsBaseValue: "5",
-            loadBaseValue: "5",
+            loadBaseValue: "5kg",
             rpeBaseValue: "5",
             requestFeedbackText: true,
           }),
@@ -534,7 +534,7 @@ const program = ref<Program>(
           new ProgramLine({
             setsBaseValue: "2",
             repsBaseValue: "5",
-            loadBaseValue: "5",
+            loadBaseValue: "5kg",
             rpeBaseValue: "6",
             requestFeedbackText: true,
             lineOrder: 2,
@@ -542,7 +542,7 @@ const program = ref<Program>(
           new ProgramLine({
             setsBaseValue: "4",
             repsBaseValue: "6",
-            loadBaseValue: "6",
+            loadBaseValue: "6kg",
             rpeBaseValue: "6",
             requestFeedbackText: true,
             lineOrder: 4,
@@ -550,7 +550,7 @@ const program = ref<Program>(
           new ProgramLine({
             setsBaseValue: "1",
             repsBaseValue: "6",
-            loadBaseValue: "6",
+            loadBaseValue: "6kg",
             rpeBaseValue: "6",
             requestFeedbackText: true,
             lineOrder: 1,
@@ -600,7 +600,7 @@ const program = ref<Program>(
           new ProgramLine({
             setsBaseValue: "8",
             repsBaseValue: "2",
-            loadBaseValue: "30 kg",
+            loadBaseValue: "30kg",
             rpeBaseValue: "rpe",
             requestFeedbackText: true,
           }),
@@ -616,7 +616,7 @@ const program = ref<Program>(
           new ProgramLine({
             setsBaseValue: "6",
             repsBaseValue: "2",
-            loadBaseValue: "40 kg",
+            loadBaseValue: "40kg",
             rpeBaseValue: "7",
             requestFeedbackText: true,
           }),
@@ -632,7 +632,7 @@ const program = ref<Program>(
           new ProgramLine({
             setsBaseValue: "5",
             repsBaseValue: "5",
-            loadBaseValue: "50 kg",
+            loadBaseValue: "50kg",
             rpeBaseValue: "8",
             requestFeedbackText: true,
           }),
@@ -648,7 +648,7 @@ const program = ref<Program>(
           new ProgramLine({
             setsBaseValue: "5",
             repsBaseValue: "5",
-            loadBaseValue: "50 kg",
+            loadBaseValue: "50kg",
             rpeBaseValue: "8",
             requestFeedbackText: true,
           }),
@@ -704,8 +704,8 @@ const programFilter = computed(() => ({
 // TODO: remove from here
 /* testAllRepCases();
 testAllSetsCases();
-testAllRpeCases(); */
-testAllLoadCases();
+testAllRpeCases(); 
+testAllLoadCases();*/
 
 /**
  * Handle custom right drawer click.
