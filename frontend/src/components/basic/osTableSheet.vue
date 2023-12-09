@@ -60,7 +60,7 @@
             :ref="
               (el) => (childElements[getCellName(props.row.id, col.id)] = el)
             "
-            :model-value="(modelValue[props.rowIndex] ?? newRow)[col.name]"
+            :model-value="props.row[col.name]"
             @update:model-value="
               (value) => onModelValueUpdate(props.rowIndex, col.name, value)
             "
@@ -73,7 +73,7 @@
             :ref="
               (el) => (childElements[getCellName(props.row.id, col.id)] = el)
             "
-            :model-value="(modelValue[props.rowIndex] ?? newRow)[col.name]"
+            :model-value="props.row[col.name]"
             @update:model-value="
               (value) => onModelValueUpdate(props.rowIndex, col.name, value)
             "
@@ -122,7 +122,9 @@ const props = defineProps({
     required: false,
   },
   showNewLine: {
-    type: Boolean,
+    type: [Boolean, Array, Object] as PropType<
+      boolean | any[] | { [key: string]: any }
+    >,
     default: false,
   },
   deleteEmptyLine: {
@@ -187,7 +189,7 @@ const types = computed(() => {
   if (props.types) {
     // Handle case of fixed types
     const propsTypes = props.types;
-    return props.modelValue.map(() =>
+    return rows.value.map(() =>
       Object.keys(headers.value).reduce(
         (out: { [key: string]: string }, key, idx) => {
           out[key] =
@@ -201,7 +203,7 @@ const types = computed(() => {
     );
   } else {
     // Handle case with unknown type
-    return props.modelValue.map((row) =>
+    return rows.value.map((row) =>
       Object.entries(row).reduce(
         (out: { [key: string]: string }, [key, value]) => {
           switch (typeof value) {
@@ -258,7 +260,18 @@ const rows = computed(() =>
 
 // Set an empty new line
 const newRow = computed(() =>
-  columns.value.reduce((out, col) => ({ ...out, [col.name]: undefined }), {}),
+  columns.value.reduce(
+    (out, col, idx) => ({
+      ...out,
+      [col.name]:
+        props.showNewLine instanceof Array
+          ? props.showNewLine[idx]
+          : props.showNewLine instanceof Object
+          ? props.showNewLine[col.name]
+          : undefined,
+    }),
+    {},
+  ),
 );
 
 /**

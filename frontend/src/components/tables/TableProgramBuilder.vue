@@ -208,6 +208,13 @@
 
         <!-- Data table -->
         <osTableSheet
+          :model-value="exerciseModelValue.data"
+          @update:model-value="
+            (val?: typeof exerciseModelValue.data) => {
+              updateTableData(idScheduleInfo.toString(), val);
+              updateProgramExercise(idScheduleInfo.toString());
+            }
+          "
           :headers="[
             'load',
             'reps',
@@ -217,13 +224,6 @@
             'requestText',
             'requestVideo',
           ]"
-          :model-value="exerciseModelValue.data"
-          @update:model-value="
-            (val?: typeof exerciseModelValue.data) => {
-              updateTableData(idScheduleInfo.toString(), val);
-              updateProgramExercise(idScheduleInfo.toString());
-            }
-          "
           :types="{
             requestText: 'checkbox',
             requestVideo: 'checkbox',
@@ -237,7 +237,15 @@
             requestText: '7%',
             requestVideo: '7%',
           }"
-          :showNewLine="true"
+          :showNewLine="{
+            load: '',
+            reps: '',
+            sets: '',
+            rpe: '',
+            note: '',
+            requestText: false,
+            requestVideo: false,
+          }"
           :deleteEmptyLine="true"
           @row-click="
             (_: any, row: any) =>
@@ -397,13 +405,7 @@
     </div>
 
     <!-- Show something when filters remove any exercise -->
-    <div
-      v-else-if="
-        !objectIsEmpty(exercisesValues) &&
-        objectIsEmpty(filteredExercisesValues)
-      "
-      class="text-center"
-    >
+    <div v-else-if="objectIsEmpty(filteredExercisesValues)" class="text-center">
       <slot name="empty-filtered">
         <h6>
           {{ $t("coach.program_management.filter.all_filtered_out") }}
