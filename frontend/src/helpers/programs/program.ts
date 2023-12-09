@@ -419,17 +419,26 @@ export class ProgramLine {
     }
   }
   public get loadValue(): number | undefined {
-    if (this.loadBaseValue !== undefined && /\d+kg$/.test(this.loadBaseValue)) {
-      return parseFloat(this.loadBaseValue);
-    }
-
     if (
       this.loadBaseValue !== undefined &&
-      /^\d+%$/.test(this.loadBaseValue) &&
-      this.loadReference?.loadValue !== undefined
+      /^\d+kg(?!\/)/.test(this.loadBaseValue)
     ) {
-      const percentage = parseFloat(this.loadBaseValue) / 100;
-      return percentage * this.loadReference.loadValue;
+      return parseFloat(this.loadBaseValue);
+    } else if (
+      this.loadBaseValue !== undefined &&
+      /^\d+%$/.test(this.loadBaseValue)
+    ) {
+      return this.loadComputedValue;
+    } else if (
+      this.loadBaseValue !== undefined &&
+      /^([+-]?\d*\.?\d+)kg$/.test(this.loadBaseValue)
+    ) {
+      return this.loadComputedValue;
+    } else if (
+      this.loadBaseValue !== undefined &&
+      /^([+-]?\d*\.?\d+)%$/.test(this.loadBaseValue)
+    ) {
+      return this.loadComputedValue;
     }
 
     return undefined;
@@ -480,25 +489,32 @@ export class ProgramLine {
   get loadComputedValue(): number | undefined {
     if (
       this.loadReference !== undefined &&
-      this.loadReference.loadComputedValue !== undefined
+      this.loadReference.loadValue !== undefined
     ) {
-      const loadOperationRegex = /^[+-]\d*kg|[+-]\d*%$/;
-
       if (
         this.loadOperation !== undefined &&
-        loadOperationRegex.test(this.loadOperation)
+        this.loadBaseValue !== undefined &&
+        /^(\d*)%\/(\d*)%$/.test(this.loadBaseValue) === false
       ) {
-        const operationResult =
-          this.loadReference.loadComputedValue + parseInt(this.loadOperation) ||
-          (parseFloat(this.loadOperation) / 100) *
-            (this.loadReference?.loadValue ?? 0);
-
-        return operationResult;
+        if (this.loadOperation.startsWith("*")) {
+          return (
+            this.loadReference.loadValue *
+            parseFloat(this.loadOperation.slice(1))
+          );
+        } else if (
+          this.loadOperation.startsWith("+") ||
+          this.loadOperation.startsWith("-")
+        ) {
+          return this.loadReference.loadValue + parseFloat(this.loadOperation);
+        }
+      } else {
+        return undefined;
       }
     }
 
     return undefined;
   }
+
   get rpeComputedValue(): number | undefined {
     if (
       this.rpeReference !== null &&
@@ -537,17 +553,62 @@ export class ProgramLine {
     }
   }
   get loadOperation(): string | undefined {
-    if (
-      this.loadBaseValue !== undefined &&
-      /^.[+-]\d*kg|[+-]\d*%|\d*%$/.test(this.loadBaseValue)
-    ) {
-      const [, operationPart] =
-        this.loadBaseValue.match(/[+-]\d*kg|[+-]\d*%|\d*%$/) || [];
-      return operationPart || undefined;
-    } else {
-      return undefined;
+    if (this.loadBaseValue !== undefined) {
+      const kgPattern = /^([+-]\d+\.?\d*)kg$/;
+      const percentagePattern = /^([+-]?\d*\.?\d*)%$/;
+      const percentageRangePattern = /^([+-]?\d*\.?\d*)%\/([+-]?\d*\.?\d*)%$/;
+      const trailingOperationPattern = /^.*([+-]\d*\.?\d*%|[+-]\d*\.?\d*kg)$/;
+
+      const kgMatch = this.loadBaseValue.match(kgPattern);
+      const percentageMatch = this.loadBaseValue.match(percentagePattern);
+      const percentageRangeMatch = this.loadBaseValue.match(
+        percentageRangePattern,
+      );
+      const trailingOperationMatch = this.loadBaseValue.match(
+        trailingOperationPattern,
+      );
+
+      if (kgMatch) {
+        // Case: Explicit kg value like "+10kg" or "-20kg"
+        return `${parseInt(kgMatch[1]) >= 0 ? "+" : ""}${kgMatch[1]}`;
+      } else if (percentageRangeMatch) {
+        // Case: Percentage range like "70%/73%"
+        const average =
+          (parseFloat(percentageRangeMatch[1]) +
+            parseFloat(percentageRangeMatch[2])) /
+          2 /
+          100;
+        return `*${average}`;
+      } else if (percentageMatch) {
+        // Case: Single percentage like "+20%" or "70%"
+        const result: number = parseFloat(percentageMatch[1]) / 100;
+        if (this.loadBaseValue[0] === "-" || this.loadBaseValue[0] === "+") {
+          return `*${1.0 + result}`;
+        } else {
+          return `*${result}`;
+        }
+      } else if (trailingOperationMatch) {
+        // Case: Trailing operation like "W2-30%" or "W1+24%"
+        const operationValue = trailingOperationMatch[1];
+        if (operationValue.endsWith("kg")) {
+          const result: number = parseFloat(operationValue);
+          return `${result}`;
+        } else if (operationValue.endsWith("%")) {
+          const result: number = parseFloat(operationValue) / 100;
+
+          if (operationValue[0] === "-" || operationValue[0] === "+") {
+            return `*${1.0 + result}`;
+          }
+        }
+      } else {
+        // Case: No specific pattern, return as is
+        return undefined;
+      }
     }
+
+    return undefined;
   }
+
   get rpeOperation(): string | undefined {
     if (this.rpeBaseValue !== undefined) {
       const [, operationPart] =
@@ -619,60 +680,106 @@ export class ProgramLine {
     }
   }
   get loadSupposedValue(): number | undefined {
-    const kgRangeRegex = /^\d*kg\/\d*kg$/;
-    const kgValueRegex = /^\(\d*kg\)$/;
-    const percentRangeRegex = /^\d*%\/\d*%$/;
-    const percentValueRegex = /^\(\d*%\)$/;
+    const kgRangeRegex = /^(\d*)kg\/(\d*)kg$/;
+    const kgValueRegex = /^\((\d*kg)\)$/;
+    const kgSimpleRegex = /^([+-]?\d*\.?\d+)kg$/; // e.g. +20kg
+    const percentRangeRegex = /^(\d*)%\/(\d*)%$/;
+    const percentValueSupposedRegex = /^\((\d*%)\)$/;
+    const percentageSimpleRegex = /^([+-]?\d*\.?\d+)%$/; // e.g. +20%
+    const trailingOperationPattern = /^.*([+-]\d*\.?\d*%|[+-]\d*\.?\d*kg)$/; //e.g. W1-20% or W1+5kg
 
-    if (
-      this.loadBaseValue !== undefined &&
-      kgRangeRegex.test(this.loadBaseValue)
-    ) {
-      const [, first, second] =
-        this.loadBaseValue.match(/^(\d*)kg\/(\d*)kg$/) || [];
+    const matchKgRange = this.loadBaseValue?.match(kgRangeRegex);
+    const matchKgValue = this.loadBaseValue?.match(kgValueRegex);
+    const matchKgSimple = this.loadBaseValue?.match(kgSimpleRegex);
+    const matchPercentRange = this.loadBaseValue?.match(percentRangeRegex);
+    const matchPercentValueSupposed = this.loadBaseValue?.match(
+      percentValueSupposedRegex,
+    );
+    const matchPercentageSimple = this.loadBaseValue?.match(
+      percentageSimpleRegex,
+    );
+    const matchTrailingOperation = this.loadBaseValue?.match(
+      trailingOperationPattern,
+    );
+
+    if (matchKgRange) {
+      const [, first, second] = matchKgRange;
       return (parseInt(second) + parseInt(first)) / 2;
     }
 
-    if (
-      this.loadBaseValue !== undefined &&
-      kgValueRegex.test(this.loadBaseValue)
-    ) {
-      const [, content] = this.loadBaseValue.match(/^\((\d*kg)\)$/) || [];
+    if (matchKgValue) {
+      const [, content] = matchKgValue;
       return parseInt(content);
     }
 
-    if (
-      this.loadBaseValue !== undefined &&
-      percentRangeRegex.test(this.loadBaseValue)
-    ) {
+    if (matchKgSimple && this.loadReference?.loadSupposedValue !== undefined) {
       if (
-        this.loadReference !== undefined &&
-        this.loadReference.loadValue !== undefined
+        this.loadOperation !== undefined &&
+        (this.loadOperation.startsWith("+") ||
+          this.loadOperation.startsWith("-"))
       ) {
-        const [, firstPercent, secondPercent] =
-          this.loadBaseValue.match(/^(\d*)%\/(\d*)%$/) || [];
         return (
-          parseFloat(secondPercent) * this.loadReference?.loadValue +
-          (parseFloat(firstPercent) * this.loadReference?.loadValue) / 2
+          this.loadReference.loadSupposedValue + parseFloat(this.loadOperation)
         );
+      } else {
+        return undefined;
       }
     }
 
     if (
-      this.loadBaseValue !== undefined &&
-      percentValueRegex.test(this.loadBaseValue)
+      matchPercentageSimple &&
+      this.loadReference?.loadSupposedValue !== undefined
     ) {
       if (
-        this.loadReference !== undefined &&
-        this.loadReference.loadValue !== undefined
+        this.loadOperation !== undefined &&
+        this.loadOperation.startsWith("*")
       ) {
-        const [, content] = this.loadBaseValue.match(/^\((\d*%)\)$/) || [];
-        return (parseFloat(content) / 100) * this.loadReference.loadValue;
+        return (
+          this.loadReference.loadSupposedValue *
+          parseFloat(this.loadOperation.slice(1))
+        );
+      } else {
+        return undefined;
+      }
+    }
+
+    if (matchPercentRange && this.loadReference?.loadValue !== undefined) {
+      const [, firstPercent, secondPercent] = matchPercentRange;
+      return (
+        ((parseFloat(secondPercent) / 100) * this.loadReference.loadValue +
+          (parseFloat(firstPercent) / 100) * this.loadReference.loadValue) /
+        2
+      );
+    }
+
+    if (
+      matchPercentValueSupposed &&
+      this.loadReference?.loadValue !== undefined
+    ) {
+      const [, content] = matchPercentValueSupposed;
+      return (parseFloat(content) / 100) * this.loadReference.loadValue;
+    }
+
+    if (
+      matchTrailingOperation &&
+      this.loadReference?.loadSupposedValue !== undefined
+    ) {
+      const operationValue = matchTrailingOperation[1];
+      if (operationValue.endsWith("kg")) {
+        const result: number = parseFloat(operationValue);
+        return this.loadReference.loadSupposedValue + result;
+      } else if (operationValue.endsWith("%")) {
+        const result: number = parseFloat(operationValue) / 100;
+
+        if (operationValue[0] === "-" || operationValue[0] === "+") {
+          return (1 + result) * this.loadReference.loadSupposedValue;
+        }
       }
     }
 
     return undefined;
   }
+
   get rpeSupposedValue(): number | undefined {
     if (
       this.rpeBaseValue !== undefined &&

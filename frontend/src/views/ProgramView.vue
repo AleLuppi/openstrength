@@ -331,10 +331,10 @@ import { arrayUniqueValues } from "@/helpers/array";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 import { getUniqueDayAndWeekNames } from "@/helpers/charts/chartDataFormatter";
 
-import { testAllRepCases } from "@/helpers/programs/lineRepsTest";
+/* import { testAllRepCases } from "@/helpers/programs/lineRepsTest";
 import { testAllSetsCases } from "@/helpers/programs/lineSetsTest";
+import { testAllRpeCases } from "@/helpers/programs/lineRpeTest"; */
 import { testAllLoadCases } from "@/helpers/programs/lineLoadTest";
-import { testAllRpeCases } from "@/helpers/programs/lineRpeTest";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -702,9 +702,9 @@ const programFilter = computed(() => ({
 }));
 // Test line computed props
 // TODO: remove from here
-testAllRepCases();
+/* testAllRepCases();
 testAllSetsCases();
-testAllRpeCases();
+testAllRpeCases(); */
 testAllLoadCases();
 
 /**

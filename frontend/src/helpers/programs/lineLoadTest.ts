@@ -25,7 +25,7 @@ export function testAllLoadCases() {
     loadReference: new ProgramLine({
       setsBaseValue: "8",
       repsBaseValue: "5",
-      loadBaseValue: "50 kg",
+
       rpeBaseValue: "8",
       requestFeedbackText: true,
     }),
@@ -61,11 +61,8 @@ export function testAllLoadCases() {
   lineTest.loadBaseValue = "70%";
   const valueToTest2 = lineTest.loadBaseValue;
   lineTest.loadReference = new ProgramLine({
-    setsBaseValue: "3",
-    repsBaseValue: "3",
+    loadBaseValue: "100kg",
     loadValue: 100,
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
   });
   const resultsExpected2 = [
     false,
@@ -74,7 +71,7 @@ export function testAllLoadCases() {
     undefined,
     undefined,
     undefined,
-    "*0.715",
+    "*0.7",
   ];
 
   testLoad(lineTest, valueToTest2, names, resultsExpected2);
@@ -111,16 +108,12 @@ export function testAllLoadCases() {
   testLoad(lineTest, valueToTest4, names, resultsExpected4);
 
   console.log("-----------LOAD TEST 6---------------");
-  lineTest.loadBaseValue = "70%/73%";
+  lineTest.loadBaseValue = "30%/50%";
   lineTest.loadReference = new ProgramLine({
-    setsBaseValue: "3",
-    repsBaseValue: "3",
-    loadValue: 100,
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
+    loadBaseValue: "120kg",
   });
   const valueToTest6 = lineTest.loadBaseValue;
-  const resultsExpected6 = [true, undefined, undefined, 71.5, 70, 73, "*0.715"];
+  const resultsExpected6 = [true, undefined, undefined, 48, 36, 60, "*0.4"];
 
   testLoad(lineTest, valueToTest6, names, resultsExpected6);
 
@@ -141,9 +134,9 @@ export function testAllLoadCases() {
   testLoad(lineTest, valueToTest7, names, resultsExpected7);
 
   console.log("-----------LOAD TEST 8---------------");
-  lineTest.loadBaseValue = "(70%)";
+  lineTest.loadBaseValue = "(50%)";
   lineTest.loadReference = new ProgramLine({
-    loadValue: 100,
+    loadBaseValue: "120kg",
     rpeBaseValue: "8",
     requestFeedbackText: true,
   });
@@ -152,7 +145,7 @@ export function testAllLoadCases() {
     true,
     undefined,
     undefined,
-    71.5,
+    60,
     undefined,
     undefined,
     undefined,
@@ -163,7 +156,7 @@ export function testAllLoadCases() {
   console.log("-----------LOAD TEST 9---------------");
   lineTest.loadBaseValue = "-10kg";
   lineTest.loadReference = new ProgramLine({
-    loadValue: 100,
+    loadBaseValue: "100kg",
     rpeBaseValue: "8",
     requestFeedbackText: true,
   });
@@ -183,9 +176,7 @@ export function testAllLoadCases() {
   console.log("-----------LOAD TEST 10---------------");
   lineTest.loadBaseValue = "-20%";
   lineTest.loadReference = new ProgramLine({
-    loadValue: 100,
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
+    loadBaseValue: "100kg",
   });
   const valueToTest10 = lineTest.loadBaseValue;
   const resultsExpected10 = [
@@ -203,11 +194,7 @@ export function testAllLoadCases() {
   console.log("-----------LOAD TEST 11---------------");
   lineTest.loadBaseValue = "-10kg";
   lineTest.loadReference = new ProgramLine({
-    loadValue: undefined,
-    loadComputedValue: undefined,
-    loadSupposedValue: 100,
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
+    loadBaseValue: "50kg/150kg",
   });
   const valueToTest11 = lineTest.loadBaseValue;
   const resultsExpected11 = [
@@ -225,11 +212,7 @@ export function testAllLoadCases() {
   console.log("-----------LOAD TEST 12---------------");
   lineTest.loadBaseValue = "-20%";
   lineTest.loadReference = new ProgramLine({
-    loadValue: undefined,
-    loadComputedValue: undefined,
-    loadSupposedValue: 100,
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
+    loadBaseValue: "50kg/150kg",
   });
   const valueToTest12 = lineTest.loadBaseValue;
   const resultsExpected12 = [
@@ -261,7 +244,7 @@ export function testAllLoadCases() {
     undefined,
     undefined,
     undefined,
-    -10,
+    "-10",
   ];
 
   testLoad(lineTest, valueToTest13, names, resultsExpected13);
@@ -291,11 +274,7 @@ export function testAllLoadCases() {
   console.log("-----------LOAD TEST 15---------------");
   lineTest.loadBaseValue = "W1-10kg";
   lineTest.loadReference = new ProgramLine({
-    loadValue: undefined,
-    loadComputedValue: undefined,
-    loadSupposedValue: 100,
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
+    loadBaseValue: "50kg/150kg",
   });
   const valueToTest15 = lineTest.loadBaseValue;
   const resultsExpected15 = [
@@ -331,6 +310,24 @@ export function testAllLoadCases() {
   ];
 
   testLoad(lineTest, valueToTest16, names, resultsExpected16);
+
+  console.log("-----------LOAD TEST 17---------------");
+  lineTest.loadBaseValue = "W1-10%";
+  lineTest.loadReference = new ProgramLine({
+    loadBaseValue: "50kg/150kg",
+  });
+  const valueToTest17 = lineTest.loadBaseValue;
+  const resultsExpected17 = [
+    false,
+    undefined,
+    undefined,
+    90,
+    undefined,
+    undefined,
+    "*0.9",
+  ];
+
+  testLoad(lineTest, valueToTest17, names, resultsExpected17);
 }
 
 export function testLoad(
