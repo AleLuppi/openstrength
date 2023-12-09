@@ -88,7 +88,7 @@
                 v-bind="{
                   row: props.row,
                   col: col,
-                  value: (modelValue[props.rowIndex] ?? newRow)[col.name],
+                  value: props.row[col.name],
                 }"
               ></slot>
             </template>
@@ -291,7 +291,7 @@ function onModelValueUpdate(
 
   // Add a new line if necessary
   if (rowId == outValue.length && String(newValue).trim()) {
-    outValue[rowId] = newRow.value;
+    outValue[rowId] = { ...newRow.value };
   }
 
   // Update with new value
