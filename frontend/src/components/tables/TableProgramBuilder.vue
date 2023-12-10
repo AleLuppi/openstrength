@@ -149,50 +149,98 @@
         <!-- Exercise info -->
         <div
           class="col-3 q-pa-sm bg-lighter os-exercise-form os-light-border"
+          :class="{
+            'cursor-pointer': !exercisesInfoShowExpanded[idScheduleInfo],
+          }"
+          @click="
+            exercisesInfoExpanded = objectMapValues(
+              exercisesInfoExpanded,
+              () => false,
+            );
+            exercisesInfoExpanded[idScheduleInfo] = true;
+          "
           style="position: relative"
         >
-          <osSelect
-            :model-value="exerciseModelValue.exercise"
-            @update:model-value="
-              (val: typeof exerciseModelValue.exercise) => {
-                updateSelectedExercise(idScheduleInfo.toString(), val);
-                updateProgramExercise(idScheduleInfo.toString());
-              }
-            "
-            :options="exercises.map((exercise) => exercise.name)"
-          >
-          </osSelect>
-          <osSelect
-            :model-value="exerciseModelValue.variant"
-            @update:model-value="
-              (val: typeof exerciseModelValue.variant) => {
-                exerciseModelValue.variant = val;
-                updateProgramExercise(idScheduleInfo.toString());
-              }
-            "
-            :options="
-              selectedExercises[idScheduleInfo]?.variants?.map((variant) => ({
-                label: variant.isDefault
-                  ? $t('coach.exercise_management.default_variant')
-                  : variant.name,
-                value: variant.isDefault ? '' : variant.name,
-              }))
-            "
-            map-options
-            emit-value
-          >
-          </osSelect>
-          <osInput
-            :model-value="exerciseModelValue.note"
-            @update:model-value="
-              (val: typeof exerciseModelValue.note) => {
-                exerciseModelValue.note = val;
-                updateProgramExercise(idScheduleInfo.toString());
-              }
-            "
-            type="textarea"
-          >
-          </osInput>
+          <q-slide-transition>
+            <div v-show="exercisesInfoShowExpanded[idScheduleInfo]">
+              <osSelect
+                :model-value="exerciseModelValue.exercise"
+                @update:model-value="
+                  (val: typeof exerciseModelValue.exercise) => {
+                    updateSelectedExercise(idScheduleInfo.toString(), val);
+                    updateProgramExercise(idScheduleInfo.toString());
+                  }
+                "
+                :options="exercises.map((exercise) => exercise.name)"
+                hide-bottom-space
+              >
+              </osSelect>
+              <q-separator color="inherit" spaced="xs" />
+              <osSelect
+                :model-value="exerciseModelValue.variant"
+                @update:model-value="
+                  (val: typeof exerciseModelValue.variant) => {
+                    exerciseModelValue.variant = val;
+                    updateProgramExercise(idScheduleInfo.toString());
+                  }
+                "
+                :options="
+                  selectedExercises[idScheduleInfo]?.variants?.map(
+                    (variant) => ({
+                      label: variant.isDefault
+                        ? $t('coach.exercise_management.default_variant')
+                        : variant.name,
+                      value: variant.isDefault ? '' : variant.name,
+                    }),
+                  )
+                "
+                map-options
+                emit-value
+                hide-bottom-space
+              >
+              </osSelect>
+              <q-separator color="inherit" spaced="xs" />
+              <osInput
+                :model-value="exerciseModelValue.note"
+                @update:model-value="
+                  (val: typeof exerciseModelValue.note) => {
+                    exerciseModelValue.note = val;
+                    updateProgramExercise(idScheduleInfo.toString());
+                  }
+                "
+                type="textarea"
+                hide-bottom-space
+              >
+              </osInput>
+              <q-btn
+                icon="expand_less"
+                @click.stop="exercisesInfoExpanded[idScheduleInfo] = false"
+                flat
+                dense
+                color="secondary"
+                class="full-width"
+                :ripple="false"
+              />
+            </div>
+          </q-slide-transition>
+          <q-slide-transition>
+            <div
+              v-show="!exercisesInfoShowExpanded[idScheduleInfo]"
+              class="text-ellipsis"
+            >
+              <p class="text-secondary text-bold">
+                {{ exerciseModelValue.exercise }}
+                {{
+                  exerciseModelValue.variant
+                    ? " - " + exerciseModelValue.variant
+                    : ""
+                }}
+              </p>
+              <p class="text-xs text-italic">
+                {{ exerciseModelValue.note }}
+              </p>
+            </div>
+          </q-slide-transition>
 
           <!-- Delete buttons -->
           <q-btn
@@ -201,7 +249,7 @@
             round
             unelevated
             size="0.5em"
-            color="red"
+            color="light"
             class="os-exercise-delete-btn"
           />
         </div>
@@ -549,6 +597,9 @@ const selectingReferenceLine = ref<{
   lineNum: string;
   field: string;
 }>();
+const exercisesInfoExpanded = ref<{
+  [key: string]: boolean;
+}>({});
 
 // Get a subset of tables to show according to filters
 const filteredExercisesValues = computed(() => {
@@ -605,6 +656,15 @@ const sortedProgramExercises = computed(() =>
 const maxliftsPerExercise = computed(() =>
   separateMaxliftPerExerciseAndType(props.maxlifts),
 );
+
+// Get whether each exercise info should be displayed or not
+const exercisesInfoShowExpanded = computed(() => {
+  return objectMapValues(
+    exercisesValues.value,
+    (_, key) =>
+      exercisesInfoExpanded.value[key] || !exercisesValues.value[key].exercise,
+  );
+});
 
 // Get id of first and last table element for each day
 const firstTablesInDay = computed(() =>

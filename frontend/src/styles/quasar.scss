@@ -93,6 +93,11 @@ a {
   color: $os-grey-8;
 }
 
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 /***** Setup colors *****/
 // Brand colors
