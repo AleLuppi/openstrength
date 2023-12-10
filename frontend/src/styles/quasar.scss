@@ -355,6 +355,15 @@ a {
   color: $os-grey-cold-7;
 }
 
+.placeholder-light .q-placeholder::placeholder {
+  color: $light;
+  opacity: 1;
+}
+
+.placeholder-hide-on-focus :focus.q-placeholder::placeholder {
+  color: transparent;
+}
+
 // Charts
 .text-chart-color1 {
   color: $chart-color1 !important;

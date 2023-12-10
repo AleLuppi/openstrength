@@ -259,7 +259,12 @@
       },
       "fields": {
         "name": "Program name",
-        "label": "Label"
+        "label": "Label",
+        "load": "Load",
+        "reps": "Reps",
+        "sets": "Sets",
+        "rpe": "RPE",
+        "note": "Note"
       },
       "builder": {
         "save": "Save",

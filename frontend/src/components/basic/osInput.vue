@@ -27,6 +27,7 @@
       "
       lazy-rules
       :rows="rows ?? 3"
+      :class="{ 'placeholder-hide-on-focus': placeholderHideOnFocus }"
     >
       <template v-for="(_, slot) in $slots as Readonly<QInputSlots>" #[slot]>
         <slot :name="slot" />
@@ -43,6 +44,7 @@ import type { QInputProps, QInputSlots } from "quasar";
 // Define props (from child)
 interface extendedInputProps extends QInputProps {
   placeholder?: string; // missing in QInputProps
+  placeholderHideOnFocus?: boolean;
   required?: boolean;
   rows?: number;
 }

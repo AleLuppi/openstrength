@@ -77,10 +77,12 @@
             @update:model-value="
               (value) => onModelValueUpdate(props.rowIndex, col.name, value)
             "
+            :placeholder="placeholders[col.name]"
             @focus="selectSingleCell(props.row.id, col.id)"
             borderless
             autogrow
             :dense="dense"
+            class="placeholder-light placeholder-hide-on-focus"
           >
             <template #after>
               <slot
@@ -119,6 +121,10 @@ const props = defineProps({
   },
   widths: {
     type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
+    required: false,
+  },
+  placeholders: {
+    type: [Array, Object] as PropType<any[] | { [key: string]: any }>,
     required: false,
   },
   showNewLine: {
@@ -236,6 +242,16 @@ const widths = computed(() => {
     // Handle case with unknown type
     return objectMapValues(headers.value, () => "0%");
   }
+});
+
+// Get placeholders map
+const placeholders = computed(() => {
+  const propsPlaceholders = props.placeholders;
+  return objectMapValues(headers.value, (_, key, idx) =>
+    propsPlaceholders instanceof Array
+      ? propsPlaceholders[idx]
+      : propsPlaceholders?.[key],
+  );
 });
 
 // Set rows and columns

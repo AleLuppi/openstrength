@@ -237,6 +237,21 @@
             requestText: '7%',
             requestVideo: '7%',
           }"
+          :placeholders="{
+            load: $t(
+              'coach.program_management.fields.load',
+            ).toLocaleLowerCase(),
+            reps: $t(
+              'coach.program_management.fields.reps',
+            ).toLocaleLowerCase(),
+            sets: $t(
+              'coach.program_management.fields.sets',
+            ).toLocaleLowerCase(),
+            rpe: $t('coach.program_management.fields.rpe').toLocaleLowerCase(),
+            note: $t(
+              'coach.program_management.fields.note',
+            ).toLocaleLowerCase(),
+          }"
           :showNewLine="{
             load: '',
             reps: '',
