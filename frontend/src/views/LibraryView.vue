@@ -1,242 +1,20 @@
 <template>
   <q-page class="q-pa-md">
-    <!-- Navigation -->
-    <q-tabs v-model="selectedTab" class="text-dark q-pa-md">
-      <q-tab
-        v-for="tab in ['exercise', 'program']"
-        :key="tab"
-        :name="tab"
-        :label="$t('coach.' + tab + '_management.list.title')"
-      />
-    </q-tabs>
-
-    <q-tab-panels v-model="selectedTab">
-      <!-- First tab: Exercises -->
-      <q-tab-panel name="exercise">
-        <!-- Excercise cards -->
-        <div class="row q-col-gutter-x-md">
-          <!-- List exercises -->
-          <div class="col-12 col-sm-6">
-            <q-card>
-              <q-card-section>
-                <h6>
-                  {{ $t("coach.exercise_management.list.title_exercise") }}
-                </h6>
-
-                <div class="row q-gutter-x-md items-center">
-                  <os-input
-                    v-model="searchExercise"
-                    :placeholder="
-                      $t('coach.exercise_management.list.search_exercise')
-                    "
-                    hide-bottom-space
-                    debounce="500"
-                    class="col"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="search" />
-                    </template>
-                  </os-input>
-
-                  <q-btn
-                    :icon="$q.screen.gt.sm ? undefined : 'add'"
-                    :label="
-                      $q.screen.gt.sm
-                        ? $t('coach.exercise_management.add_button')
-                        : undefined
-                    "
-                    color="button-primary"
-                    @click="onNewExercise"
-                  />
-                </div>
-              </q-card-section>
-
-              <q-separator />
-
-              <TableExerciseLibrary
-                ref="exerciseTableElement"
-                :exercises="exercises"
-                :on-add="onExerciseAdd"
-                :on-update="onExerciseUpdate"
-                :on-delete="onExerciseDelete"
-                :add-new="addingNewExercise"
-                :filter="searchExercise"
-              />
-            </q-card>
-          </div>
-
-          <!-- List variants -->
-          <!-- TODO card or pagination -->
-          <div v-if="Boolean(selectedExercise)" class="col-12 col-sm-6">
-            <!-- Show card when an exercise is selected -->
-            <q-card>
-              <q-card-section>
-                <h6>
-                  {{ $t("coach.exercise_management.list.title_variant") }}
-                </h6>
-
-                <div class="row q-gutter-x-md items-center">
-                  <os-input
-                    v-model="searchVariant"
-                    :placeholder="
-                      $t('coach.exercise_management.list.search_variant')
-                    "
-                    hide-bottom-space
-                    debounce="500"
-                    class="col"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="search" />
-                    </template>
-                  </os-input>
-
-                  <q-btn
-                    :icon="$q.screen.gt.sm ? undefined : 'add'"
-                    :label="
-                      $q.screen.gt.sm
-                        ? $t('coach.exercise_management.add_button')
-                        : undefined
-                    "
-                    color="button-primary"
-                    @click="onNewVariant"
-                  />
-                </div>
-              </q-card-section>
-
-              <q-separator />
-
-              <TableExerciseLibrary
-                :exercises="[]"
-                :variants="selectedExercise?.variants"
-                :on-update="onVariantUpdate"
-                :on-delete="onVariantDelete"
-                :filter="searchVariant"
-              />
-            </q-card>
-          </div>
-
-          <!-- Show text when no exercise is selected -->
-          <div v-else class="col-12 col-sm-6">
-            <div class="row flex-center" style="height: 100%">
-              <div class="row">
-                <q-icon
-                  name="fa-regular fa-hand-pointer"
-                  size="2rem"
-                  color="light-dark"
-                  class="q-px-md"
-                ></q-icon>
-                <p>
-                  {{ $t("coach.exercise_management.no_selected_exercises") }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Dialog to create or update variant -->
-        <q-dialog v-model="showDialogVariantForm" @hide="clearVariant">
-          <q-card>
-            <q-card-section class="row items-center q-pb-none">
-              <h5>
-                {{
-                  $t(
-                    "coach.exercise_management." +
-                      (addingNewVariant ? "add" : "update"),
-                  )
-                }}
-              </h5>
-
-              <q-space />
-              <q-btn
-                icon="close"
-                flat
-                round
-                dense
-                color="button-negative"
-                v-close-popup
-              />
-            </q-card-section>
-
-            <q-card-section>
-              <FormExerciseVariantLibrary
-                ref="variantFormElement"
-                v-if="selectedVariant"
-                :variant="selectedVariant"
-                :on-submit="onVariantSubmit"
-                :options-muscle-groups="exerciseMuscleGroupsOptions"
-                :options-equipment="exerciseEquipmentOptions"
-              />
-            </q-card-section>
-          </q-card>
-        </q-dialog>
-
-        <!-- Dialog delete an exercise or variant -->
-        <q-dialog
-          v-model="showDialogDelete"
-          @hide="
-            deletingExercise = undefined;
-            deletingVariant = undefined;
-          "
-        >
-          <q-card class="q-pa-sm dialog-min-width">
-            <q-card-section class="row items-center q-pb-none">
-              <p>
-                {{
-                  deletingExercise
-                    ? $t("coach.exercise_management.delete_exercise_confirm", {
-                        exercise: deletingExercise?.name,
-                      })
-                    : deletingVariant?.isDefault
-                    ? $t(
-                        "coach.exercise_management.delete_variant_default_confirm",
-                        {
-                          exercise: deletingVariant?.exercise?.name,
-                        },
-                      )
-                    : $t("coach.exercise_management.delete_variant_confirm", {
-                        variant: deletingVariant?.name,
-                        exercise: deletingVariant?.exercise?.name,
-                      })
-                }}
-              </p>
-            </q-card-section>
-
-            <q-card-actions align="right">
-              <q-btn
-                flat
-                :label="$t('common.cancel')"
-                type="reset"
-                color="button-negative"
-                v-close-popup
-              />
-              <q-btn
-                :label="$t('coach.exercise_management.delete_proceed')"
-                @click="
-                  if (deletingExercise) deleteExercise(deletingExercise);
-                  if (deletingVariant) deleteVariant(deletingVariant);
-                "
-                color="button-negative"
-                v-close-popup
-              />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
-      </q-tab-panel>
-
-      <!-- Second tab: Programs -->
-      <q-tab-panel name="program">
-        <!-- Display programs -->
+    <!-- Excercise cards -->
+    <div class="row q-col-gutter-x-md">
+      <!-- List exercises -->
+      <div class="col-12 col-sm-6">
         <q-card>
           <q-card-section>
             <h6>
-              {{ $t("coach.program_management.list.title_program") }}
+              {{ $t("coach.exercise_management.list.title_exercise") }}
             </h6>
 
             <div class="row q-gutter-x-md items-center">
               <os-input
-                v-model="searchProgram"
+                v-model="searchExercise"
                 :placeholder="
-                  $t('coach.program_management.list.search_program')
+                  $t('coach.exercise_management.list.search_exercise')
                 "
                 hide-bottom-space
                 debounce="500"
@@ -247,90 +25,189 @@
                 </template>
               </os-input>
 
-              <!-- Add new programm -->
               <q-btn
-                icon="add"
+                :icon="$q.screen.gt.sm ? undefined : 'add'"
                 :label="
                   $q.screen.gt.sm
-                    ? $t('coach.program_management.list.add')
+                    ? $t('coach.exercise_management.add_button')
                     : undefined
                 "
-                @click="
-                  updatingProgram = undefined;
-                  showProgramDialog = true;
-                "
+                color="button-primary"
+                @click="onNewExercise"
               />
             </div>
           </q-card-section>
 
           <q-separator />
 
-          <TableProgramLibrary
-            :programs="programs"
-            :on-update="onUpdateProgram"
-            :filter="searchProgram"
+          <TableExerciseLibrary
+            ref="exerciseTableElement"
+            :exercises="exercises"
+            :on-add="onExerciseAdd"
+            :on-update="onExerciseUpdate"
+            :on-delete="onExerciseDelete"
+            :add-new="addingNewExercise"
+            :filter="searchExercise"
           />
         </q-card>
+      </div>
 
-        <!-- Dialog to add a new athlete -->
-        <q-dialog
-          v-model="showProgramDialog"
-          @hide="updatingProgram ? clearProgram() : {}"
-        >
-          <q-card class="q-pa-sm dialog-min-width">
-            <q-card-section class="row items-center q-pb-none">
-              <h5>
-                {{
-                  updatingProgram
-                    ? $t("coach.program_management.list.update")
-                    : $t("coach.program_management.list.add")
-                }}
-              </h5>
+      <!-- List variants -->
+      <!-- TODO card or pagination -->
+      <div v-if="Boolean(selectedExercise)" class="col-12 col-sm-6">
+        <!-- Show card when an exercise is selected -->
+        <q-card>
+          <q-card-section>
+            <h6>
+              {{ $t("coach.exercise_management.list.title_variant") }}
+            </h6>
 
-              <q-space />
+            <div class="row q-gutter-x-md items-center">
+              <os-input
+                v-model="searchVariant"
+                :placeholder="
+                  $t('coach.exercise_management.list.search_variant')
+                "
+                hide-bottom-space
+                debounce="500"
+                class="col"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="search" />
+                </template>
+              </os-input>
+
               <q-btn
-                icon="close"
-                flat
-                round
-                dense
-                color="button-negative"
-                v-close-popup
+                :icon="$q.screen.gt.sm ? undefined : 'add'"
+                :label="
+                  $q.screen.gt.sm
+                    ? $t('coach.exercise_management.add_button')
+                    : undefined
+                "
+                color="button-primary"
+                @click="onNewVariant"
               />
-            </q-card-section>
+            </div>
+          </q-card-section>
 
-            <q-form
-              @submit="updatingProgram ? updateProgram() : createProgram()"
-              @reset="clearProgram"
-              class="q-my-md q-gutter-sm column"
-            >
-              <q-card-section class="q-gutter-x-xs">
-                <os-input
-                  v-model="programName"
-                  required
-                  :label="$t('coach.program_management.fields.name')"
-                ></os-input>
-                <os-input
-                  v-model="programLabel"
-                  :label="$t('coach.program_management.fields.label')"
-                ></os-input>
-              </q-card-section>
+          <q-separator />
 
-              <q-card-actions align="right">
-                <q-btn flat :label="$t('common.cancel')" type="reset" />
-                <q-btn
-                  :label="
-                    updatingProgram
-                      ? $t('coach.program_management.list.update_proceed')
-                      : $t('coach.program_management.list.add_proceed')
-                  "
-                  type="submit"
-                />
-              </q-card-actions>
-            </q-form>
-          </q-card>
-        </q-dialog>
-      </q-tab-panel>
-    </q-tab-panels>
+          <TableExerciseLibrary
+            :exercises="[]"
+            :variants="selectedExercise?.variants"
+            :on-update="onVariantUpdate"
+            :on-delete="onVariantDelete"
+            :filter="searchVariant"
+          />
+        </q-card>
+      </div>
+
+      <!-- Show text when no exercise is selected -->
+      <div v-else class="col-12 col-sm-6">
+        <div class="row flex-center" style="height: 100%">
+          <div class="row">
+            <q-icon
+              name="fa-regular fa-hand-pointer"
+              size="2rem"
+              color="light-dark"
+              class="q-px-md"
+            ></q-icon>
+            <p>
+              {{ $t("coach.exercise_management.no_selected_exercises") }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dialog to create or update variant -->
+    <q-dialog v-model="showDialogVariantForm" @hide="clearVariant">
+      <q-card>
+        <q-card-section class="row items-center q-pb-none">
+          <h5>
+            {{
+              $t(
+                "coach.exercise_management." +
+                  (addingNewVariant ? "add" : "update"),
+              )
+            }}
+          </h5>
+
+          <q-space />
+          <q-btn
+            icon="close"
+            flat
+            round
+            dense
+            color="button-negative"
+            v-close-popup
+          />
+        </q-card-section>
+
+        <q-card-section>
+          <FormExerciseVariantLibrary
+            ref="variantFormElement"
+            v-if="selectedVariant"
+            :variant="selectedVariant"
+            :on-submit="onVariantSubmit"
+            :options-muscle-groups="exerciseMuscleGroupsOptions"
+            :options-equipment="exerciseEquipmentOptions"
+          />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- Dialog delete an exercise or variant -->
+    <q-dialog
+      v-model="showDialogDelete"
+      @hide="
+        deletingExercise = undefined;
+        deletingVariant = undefined;
+      "
+    >
+      <q-card class="q-pa-sm dialog-min-width">
+        <q-card-section class="row items-center q-pb-none">
+          <p>
+            {{
+              deletingExercise
+                ? $t("coach.exercise_management.delete_exercise_confirm", {
+                    exercise: deletingExercise?.name,
+                  })
+                : deletingVariant?.isDefault
+                ? $t(
+                    "coach.exercise_management.delete_variant_default_confirm",
+                    {
+                      exercise: deletingVariant?.exercise?.name,
+                    },
+                  )
+                : $t("coach.exercise_management.delete_variant_confirm", {
+                    variant: deletingVariant?.name,
+                    exercise: deletingVariant?.exercise?.name,
+                  })
+            }}
+          </p>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            :label="$t('common.cancel')"
+            type="reset"
+            color="button-negative"
+            v-close-popup
+          />
+          <q-btn
+            :label="$t('coach.exercise_management.delete_proceed')"
+            @click="
+              if (deletingExercise) deleteExercise(deletingExercise);
+              if (deletingVariant) deleteVariant(deletingVariant);
+            "
+            color="button-negative"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -340,10 +217,10 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import TableExerciseLibrary from "@/components/tables/TableExerciseLibrary.vue";
-import TableProgramLibrary from "@/components/tables/TableProgramLibrary.vue";
+//import TableProgramLibrary from "@/components/tables/TableProgramLibrary.vue";
 import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLibrary.vue";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
-import { Program } from "@/helpers/programs/program";
+//import { Program } from "@/helpers/programs/program";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { arrayUniqueValues } from "@/helpers/array";
 import { event } from "vue-gtag";
@@ -356,7 +233,7 @@ const i18n = useI18n();
 const coachInfo = useCoachInfoStore();
 
 // Set ref
-const selectedTab = ref("exercise"); // TODO main tab to show
+//const selectedTab = ref("exercise"); // TODO main tab to show
 const exerciseTableElement = ref<typeof TableExerciseLibrary>();
 const variantFormElement = ref<typeof FormExerciseVariantLibrary>();
 const searchExercise = ref<string>();
@@ -368,11 +245,11 @@ const deletingVariant = ref<ExerciseVariant>();
 const showDialogDelete = ref(false);
 const selectedExercise = ref<Exercise>();
 const selectedVariant = ref<ExerciseVariant>();
-const updatingProgram = ref<Program>(); // TODO check Program that is currently being updated
-const showProgramDialog = ref(false); // TODO check whether to show dialog to add Program
-const programName = ref(""); // TODO check new program name
-const programLabel = ref(""); // TODO check new program note
-const searchProgram = ref<string>();
+//const updatingProgram = ref<Program>(); // TODO check Program that is currently being updated
+//const showProgramDialog = ref(false); // TODO check whether to show dialog to add Program
+//const programName = ref(""); // TODO check new program name
+//const programLabel = ref(""); // TODO check new program note
+//const searchProgram = ref<string>();
 const showVariantForm = computed(() =>
   Boolean(addingNewVariant.value || selectedVariant.value),
 );
@@ -392,7 +269,7 @@ watch(selectedExercise, (exercise) =>
 const exercises = computed<Exercise[]>(() => coachInfo.exercises || []);
 
 // Get programs to display
-const programs = computed(() => coachInfo.programs || []);
+//const programs = computed(() => coachInfo.programs || []);
 
 // Get options to display on variant creation or update
 const exerciseMuscleGroupsOptions = computed(() => {
@@ -689,7 +566,7 @@ function clearVariant() {
 /** TODO check
  * Create a new program and assign to a coach
  */
-function createProgram() {
+/* function createProgram() {
   const newProgram = new Program({
     name: programName.value,
     labels: [programLabel.value], // TODO multiple labels
@@ -707,12 +584,12 @@ function createProgram() {
       }),
   });
   showProgramDialog.value = false;
-}
+} */
 
 /** TODO check
  * Update program according to inserted values.
  */
-function updateProgram() {
+/* function updateProgram() {
   if (updatingProgram.value) {
     updatingProgram.value.name = programName.value;
     updatingProgram.value.labels = [programLabel.value]; // TODO multiple labels
@@ -729,26 +606,26 @@ function updateProgram() {
     });
     showProgramDialog.value = false;
   }
-}
+} */
 
 /** TODO check
  * Compile form with program info to allow coach to update them.
  *
  * @param program
  */
-function onUpdateProgram(program: Program) {
+/* function onUpdateProgram(program: Program) {
   updatingProgram.value = program;
   showProgramDialog.value = true;
   programName.value = program.name ?? "";
   programLabel.value = program.labels?.[0] ?? ""; // TODO multiple labels
-}
+} */
 
 /** TODO check
  * Clear values in program insertion form.
  */
-function clearProgram() {
+/* function clearProgram() {
   programName.value = "";
   programLabel.value = "";
   showProgramDialog.value = false;
-}
+} */
 </script>

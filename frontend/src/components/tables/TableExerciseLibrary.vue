@@ -153,6 +153,8 @@ const rows = computed(() => {
 
 <style scoped lang="scss">
 .os-table-max-height {
-  max-height: calc(100vh - 120px - 140px);
+  //max-height: calc(100vh - 120px - 140px);
+  // padding top - ribbon top - padding bottom
+  max-height: calc(100vh - 16px - 120px - 16px);
 }
 </style>
