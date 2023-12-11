@@ -15,7 +15,7 @@
       icon="settings"
       :done="step > 1"
     >
-      <img :src="logoFullImage" alt="Logo" />
+      <img :src="logoFullImage" :srcset="logoFullImage + ' 1.2x'" alt="Logo" />
       <h3>{{ $t("user.onboarding.title_step1") }}</h3>
       <p class="q-mt-xl">{{ $t("user.onboarding.action_step1_a") }}</p>
 

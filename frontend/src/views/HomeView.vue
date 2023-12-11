@@ -4,7 +4,7 @@
     class="q-mx-auto q-px-md q-py-lg text-center column justify-center items-stretch"
   >
     <!-- Show coming soon in case of athlete -->
-    <img :src="logoFullImage" alt="Logo" />
+    <img :src="logoFullImage" :srcset="logoFullImage + ' 1.2x'" alt="Logo" />
     <h2>
       {{ $t("comingsoon.title") }}
     </h2>
@@ -105,14 +105,14 @@
   >
     <!-- Show something else in all other cases -->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
+      <img :src="logoFullImage" :srcset="logoFullImage + ' 1.2x'" alt="Logo" />
       <h2 class="text-center">
         {{ $t("homepage.welcome_unknown_user") }}
       </h2>
     </div>
 
     <!-- Common actions -->
-    <div class="row q-gutter-lg justify-center items-center">
-      <q-icon name="menu_open" size="4em" />
+    <div class="row q-gutter-lg column align-center">
       <h6>{{ $t("homepage.actions.check_drawer") }}</h6>
     </div>
   </q-page>

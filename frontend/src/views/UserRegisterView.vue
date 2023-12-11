@@ -1,8 +1,10 @@
 <template>
-  <q-page class="q-pa-sm q-pb-lg q-mx-auto limit-max-width">
+  <q-page
+    class="q-pa-sm q-pb-lg q-mx-auto limit-max-width column justify-center"
+  >
     <!-- Logo -->
     <div class="full-width text-center">
-      <img :src="logoFullImage" :srcset="logoFullImage + ' 1.3x'" alt="Logo" />
+      <img :src="logoFullImage" :srcset="logoFullImage + ' 1.2x'" alt="Logo" />
     </div>
 
     <!-- Title -->
