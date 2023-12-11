@@ -135,7 +135,6 @@
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
           :scroll-offset="programManagerHeight + 15"
-          v-model:saved="programSaved"
           class="q-pa-sm"
         >
           <template v-slot:empty-filtered>
@@ -156,15 +155,16 @@
         <!-- Show charts on the right -->
         <div class="q-pa-sm">
           <!-- TODO i18n -->
-          <!-- CHART SELECTOR SECTION -->
+          <!-- Charts display section -->
           <div v-if="showingUtils == UtilsOptions.charts">
             <h6 class="text-margin-xs">Charts Section</h6>
             <ChartSelector></ChartSelector>
           </div>
 
-          <!-- MAX LIFT SECTION -->
+          <!-- Max Lifts section -->
           <q-card v-else-if="showingUtils == UtilsOptions.maxlifts">
             <q-card-section>
+              <!-- TODO i18n -->
               <h6 class="text-margin-xs">Max Lifts section</h6>
 
               <div class="row q-gutter-x-md items-center">
@@ -294,9 +294,21 @@ const { height } = dom;
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
+// Set constants
+const UtilsOptions = {
+  charts: "charts",
+  maxlifts: "maxlifts",
+  list: "list",
+};
+
+// Set ref for generic use
+const splitterModel = ref(30);
+const showingUtils = ref(UtilsOptions.charts);
+
 // Set ref related to program
 const programManagerElement = ref<HTMLElement>();
 const selectedProgram = ref<Program>(new Program());
+const programSaved = ref(true);
 const filterWeek = ref<string[]>();
 const filterDay = ref<string[]>();
 const filterExercise = ref<string[]>();
@@ -309,6 +321,26 @@ const updatingMaxlift = ref<MaxLift>();
 const showMaxliftAddDialog = ref(false);
 const maxliftFormElement = ref<typeof FormMaxLift>();
 const selectedMaxlift = computed(() => updatingMaxlift.value ?? new MaxLift());
+
+// Get program requested from router
+const programRequested = computed(
+  () =>
+    coachInfo.programs?.find(
+      (program) => program.uid == route.params.programId,
+    ),
+);
+watch(
+  programRequested,
+  (program) => {
+    if (program && programSaved.value) selectedProgram.value = program;
+  },
+  { immediate: true },
+);
+
+// Get temporary saved program
+const temporaryProgram = computed(
+  () => coachInfo.programs?.find((program) => !program.athleteId),
+);
 
 // Get complete program filter
 const programFilter = computed({
@@ -335,16 +367,45 @@ const athleteMaxlifts = computed(
 );
 
 // Inform user that program is not saved upon changes.
-watch(selectedProgram, () => (programSaved.value = false));
+watch(selectedProgram, () => {
+  programSaved.value = false;
+});
 
 /**
  * Save current program instance.
  */
 function saveProgram() {
+  // Currently, only one temporary program can exist
+  deleteTemporaryProgram();
+
   // Save current program instance
+  selectedProgram.value.coach = user.baseUser;
   selectedProgram.value.save({
     onSuccess: () => {
+      // Inform user about saved program
       programSaved.value = true;
+      const currProgram = selectedProgram.value;
+      (coachInfo.programs = coachInfo.programs || []).push(currProgram);
+
+      // Update athlete profile with new program
+      console.log(currProgram.athlete);
+      if (currProgram.athlete) {
+        currProgram.athlete.assignedProgramId = currProgram.uid;
+        if (currProgram.uid)
+          (currProgram.athlete.assignedPrograms =
+            currProgram.athlete.assignedPrograms || []).push(currProgram.uid);
+        currProgram.athlete.saveUpdate({
+          onError: () => {
+            $q.notify({
+              type: "negative",
+              message: i18n.t(
+                "coach.program_management.builder.save_assignment_error",
+              ),
+              position: "bottom",
+            });
+          },
+        });
+      }
     },
     onError: () => {
       $q.notify({
@@ -392,6 +453,18 @@ function saveMaxlift() {
 }
 
 /**
+ * Delete temporary program from database and programs list.
+ */
+function deleteTemporaryProgram() {
+  if (temporaryProgram.value) {
+    temporaryProgram.value.remove();
+    coachInfo.programs = coachInfo.programs?.filter(
+      (program) => program != temporaryProgram.value,
+    );
+  }
+}
+
+/**
  * Update program manager element height value.
  */
 function updateProgramManagerHeight() {
@@ -406,21 +479,6 @@ onMounted(() => {
 });
 
 // ----- TODO CHECK EVERYTHING BELOW -----
-
-// TODO
-// eslint-disable-next-line
-const programIdFromRouter = computed(() => route.params.programId);
-
-// Set constants
-const UtilsOptions = {
-  charts: "charts",
-  maxlifts: "maxlifts",
-};
-
-// Set ref
-const showingUtils = ref(UtilsOptions.charts);
-const splitterModel = ref(30);
-const programSaved = ref(true);
 
 // Max lift declarations
 const searchMaxLift = ref<string>();

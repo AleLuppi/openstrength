@@ -17,7 +17,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, PropType } from "vue";
 import { AthleteUser } from "@/helpers/users/user";
-import { getAssignedProgram } from "@/helpers/programs/athleteAssignment";
 
 // Define props
 const props = defineProps({
@@ -83,12 +82,12 @@ const rows = computed(() => {
     displayName: athlete.displayName,
     program: {
       element: "chip",
-      label: getAssignedProgram(athlete, [])?.isOngoing // TODO
-        ? "Ongoing"
+      label: athlete.assignedProgramId
+        ? "Ongoing" // TODO i18n
         : "Unassigned", // TODO i18n
-      color: getAssignedProgram(athlete, [])?.isOngoing // TODO
-        ? "positive"
-        : "negative",
+      color: athlete.assignedProgramId
+        ? "positive" // TODO i18n
+        : "negative", // TODO i18n
     },
   }));
 });

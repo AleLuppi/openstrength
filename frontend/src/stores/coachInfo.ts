@@ -15,9 +15,15 @@ import {
 } from "@/helpers/users/user";
 import {
   Exercise,
+  ExerciseVariant,
   packExerciseVariantInfo,
 } from "@/helpers/exercises/exercise";
-import { Program } from "@/helpers/programs/program";
+import {
+  Program,
+  ProgramExercise,
+  ProgramLine,
+  unflattenProgram,
+} from "@/helpers/programs/program";
 import { useUserStore } from "@/stores/user";
 import {
   reduceExercises,
@@ -55,9 +61,76 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
 
   // Library of programs
   const _programs = ref<Program[]>(); // private
+  const _programsUnresolved = ref<{
+    coach?: [Program, string][];
+    athletes?: [Program, string][];
+    exercises?: [ProgramExercise, string][];
+    maxlifts?: [
+      ProgramLine,
+      {
+        loadReference?: string;
+        repsReference?: string;
+      },
+    ][];
+  }>({}); // private
   const programs = computed({
     get: () => {
       if (!_programs.value) loadPrograms(coachId.value, true);
+
+      // Solve unresolved references
+      if (_programsUnresolved.value.coach) {
+        // Solve coach reference
+        const user = useUserStore();
+        if (user.role == UserRole.coach)
+          _programsUnresolved.value.coach.forEach(
+            ([program]) => (program.coach = user.baseUser),
+          );
+        _programsUnresolved.value.coach = undefined;
+      }
+      if (athletes.value && _programsUnresolved.value.athletes) {
+        // Solve athlete reference
+        _programsUnresolved.value.athletes.forEach(
+          ([program, athleteId]) =>
+            (program.athlete = athletes.value?.find(
+              (athlete) => athlete.uid === athleteId,
+            )),
+        );
+        _programsUnresolved.value.athletes = undefined;
+      }
+      if (exercises.value && _programsUnresolved.value.exercises) {
+        // Solve athlete reference
+        _programsUnresolved.value.exercises.forEach(
+          ([programExercise, variantId]) => {
+            const allVariants = exercises.value?.reduce(
+              (out: ExerciseVariant[], exercise) =>
+                out.concat(exercise.variants ?? []),
+              [],
+            );
+            programExercise.exerciseVariant = allVariants?.find(
+              (variant) => variant.uid === variantId,
+            );
+            programExercise.exercise =
+              programExercise.exerciseVariant?.exercise;
+          },
+        );
+        _programsUnresolved.value.exercises = undefined;
+      }
+      if (maxlifts.value && _programsUnresolved.value.maxlifts) {
+        // Solve athlete reference
+        _programsUnresolved.value.maxlifts.forEach(
+          ([programLine, maxliftId]) => {
+            if (maxliftId.loadReference)
+              programLine.loadReference = maxlifts.value?.find(
+                (maxlift) => maxlift.uid === maxliftId.loadReference,
+              );
+            if (maxliftId.repsReference)
+              programLine.repsReference = maxlifts.value?.find(
+                (maxlift) => maxlift.uid === maxliftId.repsReference,
+              );
+          },
+        );
+        _programsUnresolved.value.maxlifts = undefined;
+      }
       return _programs.value;
     },
     set: (value) => {
@@ -67,14 +140,16 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
 
   // Max lifts of managed athletes
   const _maxlifts = ref<MaxLift[]>(); // private
-  const _maxliftsUnresolved = ref<[MaxLift, { [key: string]: any }][]>([]); // private
+  const _maxliftsUnresolved = ref<[MaxLift, { exerciseName: string }][]>([]); // private
   const maxlifts = computed({
     get: () => {
       if (!_maxlifts.value) loadMaxLifts(coachId.value, true);
+
+      // Solve unresolved references
       if (exercises.value && _maxliftsUnresolved.value.length > 0) {
         _maxliftsUnresolved.value = _maxliftsUnresolved.value?.reduce(
           (
-            updatedUnresolved: [MaxLift, { [key: string]: any }][],
+            updatedUnresolved: typeof _maxliftsUnresolved.value,
             maxliftUnresolved,
           ) => {
             maxliftUnresolved[0].exercise = exercises.value?.find(
@@ -209,14 +284,50 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     // Abort if there is no need to check
     if (!coachId || (quiet && _programs.value)) return;
 
-    // TODO check documents format
     // Get documents
+    const unresolved: typeof _programsUnresolved.value = {};
     doGetDocs(programsCollection, [["coachId", "==", coachId]], {
-      onSuccess: (docs: { [key: string]: Program }) => {
+      onSuccess: (docs: { [key: string]: any }) => {
         const programsFromDoc: Program[] = [];
-        Object.entries(docs).forEach(([uid, doc]) =>
-          programsFromDoc.push(new Program({ ...doc, uid: uid })),
-        );
+        const currUnresolved: {
+          coach?: [Program, string];
+          athlete?: [Program, string];
+          exercises?: [ProgramExercise, string][];
+          maxlifts?: [
+            ProgramLine,
+            {
+              loadReference?: string;
+              repsReference?: string;
+            },
+          ][];
+        } = {};
+        Object.entries(docs).forEach(([uid, doc]) => {
+          const currProgram = unflattenProgram(
+            doc,
+            athletes.value,
+            exercises.value,
+            maxlifts.value,
+            currUnresolved,
+          );
+          currProgram.uid = uid;
+          if (currUnresolved.coach)
+            (unresolved.coach = unresolved.coach || []).push(
+              currUnresolved.coach,
+            );
+          if (currUnresolved.athlete)
+            (unresolved.athletes = unresolved.athletes || []).push(
+              currUnresolved.athlete,
+            );
+          if (currUnresolved.exercises)
+            (unresolved.exercises = unresolved.exercises || []).concat(
+              currUnresolved.exercises,
+            );
+          if (currUnresolved.maxlifts)
+            (unresolved.maxlifts = unresolved.maxlifts || []).concat(
+              currUnresolved.maxlifts,
+            );
+          programsFromDoc.push(currProgram);
+        });
         _programs.value = programsFromDoc;
         onSuccess?.(programsFromDoc);
       },

@@ -269,6 +269,7 @@
       "builder": {
         "save": "Save",
         "save_error": "Could not save program, please retry",
+        "save_assignment_error": "Program has been saved, but it could not be assigned to athlete.",
         "week_name": "Week { week }",
         "day_name": "Day { day }",
         "new_day": "Day",

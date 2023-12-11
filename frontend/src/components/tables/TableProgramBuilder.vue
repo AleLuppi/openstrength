@@ -578,9 +578,9 @@ const exercisesValues = ref<{
       reps: string | undefined;
       repsRef: ProgramLine | MaxLift | undefined;
       sets: string | undefined;
-      setsRef: ProgramLine | MaxLift | undefined;
+      setsRef: ProgramLine | undefined;
       rpe: string | undefined;
-      rpeRef: ProgramLine | MaxLift | undefined;
+      rpeRef: ProgramLine | undefined;
       note: string | undefined;
       requestText: boolean | undefined;
       requestVideo: boolean | undefined;
@@ -846,13 +846,8 @@ function onReferenceClick(
 
   // Update line reference
   const refField = lineInfo.field + "Ref";
-  if (
-    refField != "loadRef" &&
-    refField != "repsRef" &&
-    refField != "setsRef" &&
-    refField != "rpeRef"
-  )
-    return;
+  const tableRef =
+    exercisesValues.value[lineInfo.schedule].data[Number(lineInfo.lineNum)];
   const parsedReference =
     reference instanceof ProgramLine || reference instanceof MaxLift
       ? reference
@@ -861,9 +856,13 @@ function onReferenceClick(
       : type == "maxlift"
       ? props.maxlifts.find((maxlift) => (maxlift.uid = reference))
       : undefined;
-  exercisesValues.value[lineInfo.schedule].data[Number(lineInfo.lineNum)][
-    refField
-  ] = parsedReference;
+  if (refField === "loadRef" || refField === "repsRef")
+    tableRef[refField] = parsedReference;
+  if (
+    (refField === "setsRef" || refField === "rpeRef") &&
+    (!parsedReference || parsedReference instanceof ProgramLine)
+  )
+    tableRef[refField] = parsedReference;
 
   // Update program
   updateProgramExercise(lineInfo.schedule);
