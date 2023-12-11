@@ -43,7 +43,9 @@
       "to_onboarding": "Let's meet better",
       "to_onboarding_caption": "Click here to let us configure the app for you",
       "check_drawer": "Select your next action from the menu"
-    }
+    },
+    "cta_onboarding_title": "Start your onboarding",
+    "cta_onboarding_subtitle": "There are some questions for you, let's meet each other!"
   },
   "comingsoon": {
     "title": "Coming soon!",

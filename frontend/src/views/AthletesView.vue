@@ -2,7 +2,7 @@
   <q-page class="q-pa-md">
     <div class="row q-col-gutter-x-md">
       <!-- Display athletes -->
-      <div class="col-12 col-sm-4">
+      <div class="col-12 col-sm-5">
         <q-card>
           <q-card-section>
             <h6>
@@ -114,7 +114,7 @@
       </div>
 
       <!-- Right card: selected athlete data -->
-      <div v-if="Boolean(selectedAthlete)" class="col-12 col-sm-8">
+      <div v-if="Boolean(selectedAthlete)" class="col-12 col-sm-7">
         <q-card>
           <q-card-section
             class="q-gutter-x-xs"

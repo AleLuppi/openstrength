@@ -45,7 +45,7 @@
           <span class="q-focus-helper"></span>
 
           <!-- Icon, title, and subtitle -->
-          <q-icon :name="buttonInfo.icon" size="6em" color="icon-color" />
+          <q-icon :name="buttonInfo.icon" size="5em" color="icon-color" />
           <h4>
             {{ $t(buttonInfo.title) }}
           </h4>
@@ -85,7 +85,7 @@
           <!-- Icon, title, and subtitle -->
           <q-icon
             :name="buttonUnsignedUser.icon"
-            size="6em"
+            size="5em"
             color="icon-color"
           />
           <h4>
@@ -105,15 +105,32 @@
   >
     <!-- Show something else in all other cases -->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
-      <img :src="logoFullImage" :srcset="logoFullImage + ' 1.2x'" alt="Logo" />
       <h2 class="text-center">
         {{ $t("homepage.welcome_unknown_user") }}
       </h2>
     </div>
 
-    <!-- Common actions -->
-    <div class="row q-gutter-lg column align-center">
-      <h6>{{ $t("homepage.actions.check_drawer") }}</h6>
+    <!-- Action -->
+    <div class="row q-gutter-lg justify-center items-center">
+      <router-link to="profile" class="link-child">
+        <q-card
+          class="q-pa-lg column items-center justify-center square-card q-hoverable text-center"
+        >
+          <!-- Animate when on -->
+          <span class="q-focus-helper"></span>
+
+          <!-- Icon, title, and subtitle -->
+          <q-icon
+            name="fa-regular fa-circle-play"
+            size="5em"
+            color="icon-color"
+          />
+          <h4>{{ $t("homepage.cta_onboarding_title") }}</h4>
+          <p class="q-px-md text-weight-light">
+            {{ $t("homepage.cta_onboarding_subtitle") }}
+          </p>
+        </q-card>
+      </router-link>
     </div>
   </q-page>
 </template>
@@ -161,9 +178,9 @@ const buttonsUnsigedAction = [
 
 <style scoped lang="scss">
 .square-card {
-  width: 300px;
+  width: 270px;
   /* Set your desired width for the square card */
-  height: 300px;
+  height: 270px;
   /* Set your desired height for the square card */
   border-radius: 16px;
   background: var(--bg-1, #fff);

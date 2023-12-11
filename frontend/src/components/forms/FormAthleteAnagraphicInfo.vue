@@ -47,21 +47,21 @@
           :options="athleteGenderOptions"
           emit-value
           map-options
-          class="col-2"
+          class="col-3"
         />
 
         <os-input
           v-model="athleteHeight"
           :label="$t('coach.athlete_management.fields.height')"
           :suffix="heightSuffix"
-          class="col-2"
+          class="col-3"
         />
 
         <os-input
           v-model="athleteWeight"
           :label="$t('coach.athlete_management.fields.weight')"
           :suffix="weightSuffix"
-          class="col-2"
+          class="col-3"
         />
       </div>
 
