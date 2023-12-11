@@ -209,9 +209,8 @@
         "variant": "Variant",
         "loadtype": "Load type",
         "loadtype_available": {
-          "reps": "Reps",
-          "weight": "Weight",
-          "time": "Time"
+          "bodyweight": "Bodyweight",
+          "loaded": "Bodyweight + Ext.Load"
         },
         "musclegroups": "Muscle Groups",
         "musclegroups_available": {
