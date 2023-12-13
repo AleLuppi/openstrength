@@ -1,8 +1,8 @@
 <template>
   <q-page class="q-pa-md">
     <!-- Profile info card-->
-    <q-card class="q-mb-lg">
-      <h6 class="q-mx-md q-py-md">{{ $t("user.profile.info_title") }}</h6>
+    <q-card class="q-mb-lg q-pb-sm">
+      <h6 class="q-mx-md q-py-sm">{{ $t("user.profile.info_title") }}</h6>
 
       <div class="row justify-around">
         <!-- Profile Image-->
@@ -10,7 +10,7 @@
           <q-img
             v-if="photoUrl"
             :src="photoUrl"
-            size="6em"
+            :size="$q.screen.lt.sm ? '3em' : '6em'"
             width="96px"
             height="96px"
             class="justify-center q-ma-sm"
@@ -20,7 +20,7 @@
           <q-icon
             v-else
             name="account_circle"
-            size="6em"
+            :size="$q.screen.lt.sm ? '3em' : '6em'"
             class="justify-center card-icon q-ma-sm"
           />
         </q-section>
@@ -53,9 +53,9 @@
 
     <!-- Useful links card -->
     <q-card class="q-mb-lg q-pb-md">
-      <h6 class="q-mx-md q-py-md">{{ $t("user.profile.link_title") }}</h6>
+      <h6 class="q-mx-md q-py-sm">{{ $t("user.profile.link_title") }}</h6>
 
-      <div class="row justify-around">
+      <div :class="$q.screen.lt.sm ? 'column q-ml-md' : 'row justify-around'">
         <router-link :to="{ name: 'privacy_policy' }">{{
           $t("user.profile.privacy_link")
         }}</router-link>
