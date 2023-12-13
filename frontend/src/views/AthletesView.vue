@@ -114,7 +114,6 @@
       </div>
 
       <!-- Right card: selected athlete data -->
-
       <div
         v-if="Boolean(selectedAthlete)"
         :class="!$q.screen.lt.sm ? 'col-12 col-sm-7' : 'col-12 os-overlay'"
@@ -127,9 +126,8 @@
                 : 'q-gutter-x-xs os-athleteinfo-max-height-notdesktop'
             "
           >
-            <!-- TODO i18n -->
             <div class="row justify-between">
-              <h6>Athlete Info</h6>
+              <h6>{{ $t("coach.athlete_management.fields.athlete_info") }}</h6>
               <q-btn
                 v-if="$q.screen.lt.sm"
                 icon="close"
@@ -171,7 +169,6 @@
                 <!-- If selected athlete has no programs at all -->
                 <div v-else-if="selectedAthlete && Boolean(athletePrograms)">
                   <!-- TODO: pass athlete id -->
-
                   <div
                     class="row q-gutter-lg justify-center items-center"
                     style="height: 100%"
@@ -383,19 +380,19 @@ const allTabs = [
   {
     key: "programs",
     name: "Programs",
-    label: "Programs",
+    label: i18n.t("common.programs"),
     icon: "fa-regular fa-file-lines",
   },
   {
     key: "anagraphic",
     name: "Anagraphic",
-    label: "Anagraphic",
+    label: i18n.t("coach.athlete_management.fields.anagraphic"),
     icon: "fa-regular fa-address-card",
   },
   {
     key: "personalbest",
     name: "Personal Best",
-    label: "Personal Best",
+    label: i18n.t("coach.athlete_management.fields.personal_best"),
     icon: "fa-solid fa-ranking-star",
   },
 ];

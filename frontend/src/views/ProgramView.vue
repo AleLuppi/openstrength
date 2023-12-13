@@ -14,12 +14,17 @@
           class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest"
         >
           <!-- Utility buttons -->
-          <!-- TODO i18n -->
           <div class="row justify-between">
             <!-- Save button -->
             <q-btn
               icon="save"
-              :label="programSaved ? 'Saved!' : 'changes not saved...'"
+              :label="
+                i18n.t(
+                  programSaved
+                    ? 'coach.program_management.builder.saved'
+                    : 'coach.program_management.builder.not_saved',
+                )
+              "
               :disable="programSaved"
               @click="saveProgram"
               flat
@@ -28,7 +33,13 @@
             <!-- Display and update assigned user -->
             <q-btn
               @click="showAthleteAssigningDialog = true"
-              :label="selectedProgram.athlete ? undefined : 'Assign to athlete'"
+              :label="
+                i18n.t(
+                  selectedProgram.athlete
+                    ? undefined
+                    : 'coach.program_management.builder.assign_to_athlete',
+                )
+              "
               :color="selectedProgram.athlete ? 'secondary' : 'primary'"
               outline
               :dense="Boolean(selectedProgram.athlete)"
@@ -155,17 +166,20 @@
       <template v-slot:after>
         <!-- Show charts on the right -->
         <div class="q-pa-sm">
-          <!-- TODO i18n -->
           <!-- CHART SELECTOR SECTION -->
           <div v-if="showingUtils == UtilsOptions.charts">
-            <h6 class="text-margin-xs">Charts Section</h6>
+            <h6 class="text-margin-xs">
+              {{ $t("coach.charts_management.list.charts_section") }}
+            </h6>
             <ChartSelector></ChartSelector>
           </div>
 
           <!-- MAX LIFT SECTION -->
           <q-card v-else-if="showingUtils == UtilsOptions.maxlifts">
             <q-card-section>
-              <h6 class="text-margin-xs">Max Lifts section</h6>
+              <h6 class="text-margin-xs">
+                {{ $t("coach.maxlift_management.list.maxlift_section") }}
+              </h6>
 
               <div class="row q-gutter-x-md items-center">
                 <os-input

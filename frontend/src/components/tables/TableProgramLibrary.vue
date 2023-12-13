@@ -13,6 +13,9 @@
 <script setup lang="ts">
 import { computed, PropType } from "vue";
 import { Program } from "@/helpers/programs/program";
+import { useI18n } from "vue-i18n";
+
+const i18n = useI18n();
 
 // Define props
 const props = defineProps({
@@ -31,7 +34,7 @@ const columns = [
   {
     name: "name",
     required: true,
-    label: "Name", // TODO i18n
+    label: i18n.t("common.name"),
     align: "left",
     field: "name",
     sortable: true,
@@ -39,19 +42,19 @@ const columns = [
   {
     name: "athlete",
     align: "left",
-    label: "Assigned to",
+    label: i18n.t("coach.ahlete_management.fields.program_assigned_to"),
     field: "athlete",
   },
   {
     name: "note",
     align: "left",
-    label: "Note", // TODO
+    label: i18n.t("common.note"),
     field: "note",
   },
   {
     name: "label",
     align: "left",
-    label: "Label",
+    label: i18n.t("common.label"),
     field: "label",
   },
   { name: "update", align: "center", label: "", field: "update" },
@@ -71,7 +74,7 @@ const rows = computed(() => {
     update: {
       element: "button",
       on: { click: () => props.onUpdate?.(program) },
-      label: "Update",
+      label: i18n.t("common.update"),
       rounded: true,
       outline: true,
       color: "button-primary",

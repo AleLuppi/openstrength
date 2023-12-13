@@ -2,13 +2,12 @@
   <q-form ref="formElement" @submit="onSubmit">
     <!-- Actual programs -->
     <div>
-      <!-- TODO i18n -->
-      <h6>Active Program</h6>
+      <h6>{{ $t("coach.athlete_management.fields.program_title") }}</h6>
       <div class="q-mb-md">
         <q-btn
           outline
           :to="{ name: 'program', params: { programId: props.program.uid } }"
-          label="Modify Program"
+          label="$t('coach.athlete_management.call_to_action.modify_program')"
           class="q-mr-md"
         ></q-btn>
       </div>
@@ -35,7 +34,12 @@
               >
                 <q-date v-model="programStartedOn">
                   <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
+                    <q-btn
+                      v-close-popup
+                      :label="$t('common.close')"
+                      color="primary"
+                      flat
+                    />
                   </div>
                 </q-date>
               </q-popup-proxy>
@@ -58,7 +62,12 @@
               >
                 <q-date v-model="programFinishedOn">
                   <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
+                    <q-btn
+                      v-close-popup
+                      :label="$t('common.close')"
+                      color="primary"
+                      flat
+                    />
                   </div>
                 </q-date>
               </q-popup-proxy>

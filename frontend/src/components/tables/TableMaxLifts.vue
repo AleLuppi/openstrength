@@ -35,7 +35,7 @@ const columns = [
   {
     name: "exercise",
     required: true,
-    label: "Exercise", // TODO i18n
+    label: i18n.t("common.exercise"),
     align: "left",
     field: "exercise",
     sortable: true,
@@ -43,19 +43,19 @@ const columns = [
   {
     name: "type",
     align: "left",
-    label: "Type", // TODO i18n
+    label: i18n.t("common.type"),
     field: "type",
   },
   {
     name: "value",
     align: "left",
-    label: "Value", // TODO i18n
+    label: i18n.t("common.value"),
     field: "value",
   },
   {
     name: "date",
     align: "left",
-    label: "Date", // TODO i18n
+    label: i18n.t("common.date"),
     field: "date",
   },
   {
@@ -69,7 +69,7 @@ const columnsMobile = [
   {
     name: "exercise",
     required: true,
-    label: "Exercise", // TODO i18n
+    label: i18n.t("common.exercise"),
     align: "left",
     field: "exercise",
     sortable: true,
@@ -77,7 +77,7 @@ const columnsMobile = [
   {
     name: "type",
     align: "left",
-    label: "Type", // TODO i18n
+    label: i18n.t("common.type"),
     field: "type",
   },
   {

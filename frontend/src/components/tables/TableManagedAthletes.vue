@@ -22,6 +22,9 @@
 import { ref, computed, watch, PropType } from "vue";
 import { AthleteUser } from "@/helpers/users/user";
 import { getAssignedProgram } from "@/helpers/programs/athleteAssignment";
+import { useI18n } from "vue-i18n";
+
+const i18n = useI18n();
 
 // Define props
 const props = defineProps({
@@ -53,7 +56,7 @@ const columns = [
   {
     name: "name",
     required: true,
-    label: "Name", // TODO i18n
+    label: i18n.t("common.name"),
     align: "left",
     field: (row: {
       name?: string;
@@ -65,7 +68,7 @@ const columns = [
   },
   {
     name: "program",
-    label: "Program", // TODO i18n
+    label: i18n.t("common.program"),
     align: "left",
     field: "program",
   },
@@ -74,7 +77,7 @@ const columnsNotDesktop = [
   {
     name: "name",
     required: true,
-    label: "Name", // TODO i18n
+    label: i18n.t("common.name"),
     align: "left",
     field: (row: {
       name?: string;
@@ -86,7 +89,7 @@ const columnsNotDesktop = [
   },
   {
     name: "program",
-    label: "Program", // TODO i18n
+    label: i18n.t("common.program"),
     align: "left",
     field: "program",
   },
@@ -110,8 +113,8 @@ const rows = computed(() => {
     program: {
       element: "chip",
       label: getAssignedProgram(athlete, [])?.isOngoing // TODO
-        ? "Ongoing"
-        : "Unassigned", // TODO i18n
+        ? i18n.t("coach.athlete_management.fields.program_ongoing")
+        : i18n.t("coach.athlete_management.fields.program_unassigned"),
       color: getAssignedProgram(athlete, [])?.isOngoing // TODO
         ? "positive"
         : "negative",

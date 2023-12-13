@@ -71,7 +71,7 @@ const columns = computed(() =>
         {
           name: "variant",
           align: "left",
-          label: "Variant", // TODO i18n
+          label: i18n.t("common.variant"),
           field: "displayName",
           sortable: true,
         },
@@ -82,7 +82,7 @@ const columns = computed(() =>
         {
           name: "exercise",
           required: true,
-          label: "Exercise", // TODO i18n
+          label: i18n.t("common.exercise"),
           field: "displayName",
           align: "left",
           sortable: true,
@@ -90,7 +90,7 @@ const columns = computed(() =>
         {
           name: "variants",
           align: "left",
-          label: "Variants", // TODO i18n
+          label: i18n.t("common.Variants"),
           field: "variants",
         },
         { name: "delete", align: "center", label: "", field: "delete" },
@@ -132,8 +132,10 @@ const rows = computed(() => {
         },
     variants:
       item.name && item instanceof Exercise
-        ? (item.variants?.length ?? 0).toString() + " variants"
-        : "", // TODO i18n
+        ? (item.variants?.length ?? 0).toString() +
+          " " +
+          i18n.t("common.variants")
+        : "",
     update: {
       element: "button",
       on: { click: () => props.onUpdate?.(item) },
