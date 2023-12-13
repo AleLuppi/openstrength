@@ -54,13 +54,27 @@
 
       <!-- List variants -->
       <!-- TODO card or pagination -->
-      <div v-if="Boolean(selectedExercise)" class="col-12 col-sm-6">
+      <div
+        v-if="Boolean(selectedExercise)"
+        :class="!$q.screen.lt.sm ? 'col-12 col-sm-6' : 'col-12 os-overlay'"
+      >
         <!-- Show card when an exercise is selected -->
         <q-card>
           <q-card-section>
-            <h6>
-              {{ $t("coach.exercise_management.list.title_variant") }}
-            </h6>
+            <div class="row justify-between">
+              <h6>
+                {{ $t("coach.exercise_management.list.title_variant") }}
+              </h6>
+              <q-btn
+                v-if="$q.screen.lt.sm"
+                icon="close"
+                outline
+                flat
+                color="light-dark"
+                class="q-pa-sm"
+                @click="selectedExercise = undefined"
+              ></q-btn>
+            </div>
 
             <div class="row q-gutter-x-md items-center">
               <os-input
@@ -89,10 +103,10 @@
               />
             </div>
           </q-card-section>
-
           <q-separator />
 
           <TableExerciseLibrary
+            :class="$q.screen.lt.sm ? 'os-variants-max-height-mobile' : ''"
             :exercises="[]"
             :variants="selectedExercise?.variants"
             :on-update="onVariantUpdate"
@@ -103,7 +117,7 @@
       </div>
 
       <!-- Show text when no exercise is selected -->
-      <div v-else class="col-12 col-sm-6">
+      <div v-else-if="!$q.screen.lt.sm" class="col-12 col-sm-6">
         <div class="row flex-center" style="height: 100%">
           <div class="row">
             <q-icon
@@ -629,3 +643,22 @@ function clearVariant() {
   showProgramDialog.value = false;
 } */
 </script>
+
+<style script lang="scss">
+.os-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.os-variants-max-height-mobile {
+  height: calc(100vh - 38px - 50px);
+}
+</style>

@@ -4,7 +4,9 @@
     :rows="rows"
     virtual-scroll
     hide-pagination
-    class="os-table-max-height"
+    :class="
+      $q.screen.lt.md ? 'os-table-max-height-notdesktop' : 'os-table-max-height'
+    "
     @row-click="$props.onUpdate"
     :selection="isVariant ? 'none' : 'single'"
     v-model:selected="selected"
@@ -156,5 +158,10 @@ const rows = computed(() => {
   //max-height: calc(100vh - 120px - 140px);
   // padding top - ribbon top - padding bottom
   max-height: calc(100vh - 16px - 120px - 16px);
+}
+.os-table-max-height-notdesktop {
+  //max-height: calc(100vh - 120px - 140px);
+  // padding top - ribbon top - padding bottom
+  max-height: calc(100vh - 160px - 50px);
 }
 </style>
