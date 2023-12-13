@@ -17,7 +17,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, PropType } from "vue";
 import { AthleteUser } from "@/helpers/users/user";
-import { getAssignedProgram } from "@/helpers/programs/athleteAssignment";
 
 // Define props
 const props = defineProps({
@@ -29,6 +28,10 @@ const props = defineProps({
     type: AthleteUser,
     required: false,
   },
+  athletesOnly: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // Define emits
@@ -38,7 +41,7 @@ const emit = defineEmits<{
 }>();
 
 // Set table columns
-const columns = [
+const columns = computed(() => [
   {
     name: "image",
     required: false,
@@ -59,13 +62,17 @@ const columns = [
     }) => row.displayName ?? row.name + " " + row.surname,
     sortable: true,
   },
-  {
-    name: "program",
-    label: "Program", // TODO i18n
-    align: "left",
-    field: "program",
-  },
-];
+  ...(props.athletesOnly
+    ? []
+    : [
+        {
+          name: "program",
+          label: "Program", // TODO i18n
+          align: "left",
+          field: "program",
+        },
+      ]),
+]);
 
 // Set table rows
 const rows = computed(() => {
@@ -83,12 +90,12 @@ const rows = computed(() => {
     displayName: athlete.displayName,
     program: {
       element: "chip",
-      label: getAssignedProgram(athlete, [])?.isOngoing // TODO
-        ? "Ongoing"
+      label: athlete.assignedProgramId
+        ? "Ongoing" // TODO i18n
         : "Unassigned", // TODO i18n
-      color: getAssignedProgram(athlete, [])?.isOngoing // TODO
-        ? "positive"
-        : "negative",
+      color: athlete.assignedProgramId
+        ? "positive" // TODO i18n
+        : "negative", // TODO i18n
     },
   }));
 });

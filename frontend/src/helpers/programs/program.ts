@@ -5,7 +5,7 @@ import {
   doDeleteDoc,
 } from "@/helpers/database/readwrite";
 import { programsCollection } from "@/helpers/database/collections";
-import { AthleteUser, CoachUser } from "@/helpers/users/user";
+import { User, CoachUser, AthleteUser, UserRole } from "@/helpers/users/user";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
 
@@ -1109,7 +1109,7 @@ function flattenProgram(program: Program) {
     coachId: program.coach?.uid,
     athleteId: program.athlete?.uid,
     lines: program.programExercises?.reduce(
-      (out: object[], exerciseToSpread) => {
+      (out: { [key: string]: any }[], exerciseToSpread) => {
         const { uid, program, exerciseVariant, lines, ...exerciseObj } =
           exerciseToSpread;
         const flatExercise = {
@@ -1120,30 +1120,22 @@ function flattenProgram(program: Program) {
           ...out,
           ...(exerciseToSpread.lines?.map((lineToSpread) => {
             const { programExercise, ...lineObj } = lineToSpread;
-            const referenceAndType = (
-              [
-                "setsReference",
-                "repsReference",
-                "loadReference",
-                "rpeReference",
-              ] as (
-                | "setsReference"
-                | "repsReference"
-                | "loadReference"
-                | "rpeReference"
-              )[]
-            ).reduce(
-              (out: { [key: string]: any }, key) => ({
-                ...out,
-                [key]: lineToSpread[key]?.uid,
-                [key + "Type"]: lineToSpread[key]
-                  ? lineToSpread[key] instanceof MaxLift
-                    ? "maxlift"
-                    : "line"
-                  : undefined,
-              }),
-              {},
-            );
+            const referenceAndType = {
+              setsReference: lineToSpread.setsReference?.uid,
+              repsReference: lineToSpread.repsReference?.uid,
+              repsReferenceType: (lineToSpread.repsReference
+                ? lineToSpread.repsReference instanceof MaxLift
+                  ? "maxlift"
+                  : "line"
+                : undefined) as "maxlift" | "line" | undefined,
+              loadReference: lineToSpread.loadReference?.uid,
+              loadReferenceType: (lineToSpread["loadReference"]
+                ? lineToSpread.loadReference instanceof MaxLift
+                  ? "maxlift"
+                  : "line"
+                : undefined) as "maxlift" | "line" | undefined,
+              rpeReference: lineToSpread.rpeReference?.uid,
+            };
             return {
               ...flatExercise,
               ...lineObj,
@@ -1157,4 +1149,183 @@ function flattenProgram(program: Program) {
   };
 
   return flatProgram;
+}
+
+/**
+ * Create a program instance from a flat program object.
+ *
+ * This function expands a flattened version of a program into an actual Program instance.
+ * The Program instance has some dependencies to other classes defined elsewhere.
+ * One can pass clues to this method to resolve these outside class instances, but it
+ * might not be always possible. Therefore, one may need to take care of assignment
+ * outside of this function.
+ * The arguments that could not be properly assigned are:
+ *  - Program.coach (try to infer from coachId)
+ *  - Program.athlete (try to infer from athleteId)
+ *  - Program.programExercises[number].exercise (try to infer from lines[number].exercise)
+ *  - Program.programExercises[number].variant (try to infer from lines[number].exercise)
+ *  - Program.programExercises[number].lines[number].loadReference/repsReference/setsReference/rpeReference
+ *      (try to infer from lines[number].loadReference/repsReference/setsReference/rpeReference when MaxLift type)
+ *
+ * @param flatProgram program flattened to key-value pairs object, as per flatting method.
+ * @param users optional list of users to try resolve user-related exernal references.
+ * @param exercises optional list of exercises to try resolve exercise-related external references.
+ * @param maxlifts optional list of max lifts to try resolve maxlift-related external references.
+ * @param storeUnresolved if provided, store unassigned references inside the variable.
+ * @returns program instance.
+ */
+export function unflattenProgram(
+  flatProgram: ReturnType<typeof flattenProgram>,
+  users?: (User | CoachUser | AthleteUser)[],
+  exercises?: Exercise[],
+  maxlifts?: MaxLift[],
+  storeUnresolved?: {
+    coach?: [Program, string];
+    athlete?: [Program, string];
+    exercises?: [ProgramExercise, string][];
+    maxlifts?: [
+      ProgramLine,
+      {
+        loadReference?: string;
+        repsReference?: string;
+      },
+    ][];
+  },
+): Program {
+  // Get all program exercises and lines
+  const programExercises: ProgramExercise[] = [];
+  flatProgram.lines?.forEach((fullLineInfo) => {
+    const {
+      exercise,
+      scheduleWeek,
+      scheduleDay,
+      scheduleOrder,
+      exerciseNote,
+      setsReference,
+      repsReference,
+      repsReferenceType,
+      loadReference,
+      loadReferenceType,
+      rpeReference,
+      ...lineInfo
+    } = fullLineInfo;
+    const currentExercise = programExercises.find(
+      (programExercise) =>
+        programExercise.scheduleWeek == scheduleWeek &&
+        programExercise.scheduleDay == scheduleDay &&
+        programExercise.scheduleOrder == scheduleOrder,
+    );
+    if (currentExercise)
+      (currentExercise.lines = currentExercise.lines || []).push(
+        new ProgramLine({
+          programExercise: currentExercise,
+          ...lineInfo,
+        }),
+      );
+    else {
+      const currentVariant = exercises
+        ?.reduce(
+          (out: ExerciseVariant[], oneExercise) =>
+            out.concat(oneExercise.variants ?? []),
+          [],
+        )
+        .find((variant) => variant.uid == exercise);
+      programExercises.push(
+        new ProgramExercise({
+          scheduleWeek: scheduleWeek,
+          scheduleDay: scheduleDay,
+          scheduleOrder: scheduleOrder,
+          exerciseNote: exerciseNote,
+          exercise: currentVariant?.exercise,
+          exerciseVariant: currentVariant,
+          lines: [new ProgramLine({ ...lineInfo })],
+        }),
+      );
+      if (storeUnresolved && !currentVariant && exercise)
+        (storeUnresolved.exercises = storeUnresolved.exercises || []).push([
+          programExercises.at(-1)!,
+          exercise,
+        ]);
+    }
+  });
+
+  // Correct references in program lines
+  const programLines = programExercises.reduce(
+    (out: { [key: string]: ProgramLine }, programExercise) => {
+      const currLines =
+        programExercise.lines?.reduce(
+          (out: { [key: string]: ProgramLine }, line) => {
+            if (line.uid) out[line.uid] = line;
+            return out;
+          },
+          {},
+        ) ?? {};
+      return { ...out, ...currLines };
+    },
+    {},
+  );
+  flatProgram.lines?.forEach((fullLineInfo) => {
+    const currLine = programLines[fullLineInfo.uid];
+    if (!currLine) return;
+    currLine.loadReference =
+      fullLineInfo.loadReferenceType === "maxlift"
+        ? maxlifts?.find((maxlift) => maxlift.uid == fullLineInfo.loadReference)
+        : fullLineInfo.loadReferenceType === "line"
+        ? programLines[fullLineInfo.loadReference]
+        : undefined;
+    currLine.repsReference =
+      fullLineInfo.repsReferenceType === "maxlift"
+        ? maxlifts?.find((maxlift) => maxlift.uid == fullLineInfo.repsReference)
+        : fullLineInfo.repsReferenceType === "line"
+        ? programLines[fullLineInfo.repsReference]
+        : undefined;
+    currLine.setsReference = programLines[fullLineInfo.setsReference];
+    currLine.rpeReference = programLines[fullLineInfo.rpeReference];
+    if (
+      storeUnresolved &&
+      !currLine.loadReference &&
+      fullLineInfo.loadReferenceType === "maxlift" &&
+      fullLineInfo.loadReference
+    )
+      (storeUnresolved.maxlifts = storeUnresolved.maxlifts || []).push([
+        currLine,
+        { loadReference: fullLineInfo.loadReference },
+      ]);
+    if (
+      storeUnresolved &&
+      !currLine.repsReference &&
+      fullLineInfo.repsReferenceType === "maxlift" &&
+      fullLineInfo.repsReference
+    )
+      (storeUnresolved.maxlifts = storeUnresolved.maxlifts || []).push([
+        currLine,
+        { repsReference: fullLineInfo.repsReference },
+      ]);
+  });
+
+  // Build up complete program
+  const outProgram = new Program({
+    uid: flatProgram.uid,
+    name: flatProgram.name,
+    description: flatProgram.description,
+    labels: flatProgram.labels,
+    coach: users?.find(
+      (user) =>
+        user.role === UserRole.coach && user.uid === flatProgram.coachId,
+    ) as CoachUser,
+    athlete: users?.find(
+      (user) =>
+        user.role === UserRole.athlete && user.uid === flatProgram.athleteId,
+    ) as AthleteUser,
+    startedOn: flatProgram.startedOn,
+    finishedOn: flatProgram.finishedOn,
+    createdOn: flatProgram.createdOn,
+    lastUpdated: flatProgram.lastUpdated,
+    programExercises: programExercises,
+  });
+  if (storeUnresolved && !outProgram.coach && flatProgram.coachId)
+    storeUnresolved.coach = [outProgram, flatProgram.coachId];
+  if (storeUnresolved && !outProgram.athlete && flatProgram.athleteId)
+    storeUnresolved.athlete = [outProgram, flatProgram.athleteId];
+  return outProgram;
 }

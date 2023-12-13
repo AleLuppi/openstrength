@@ -6,30 +6,34 @@
     class="q-my-md q-gutter-sm column"
   >
     <q-card-section class="q-gutter-x-xs">
+      <!-- Exercise name -->
       <os-select
         v-model="maxliftExercise"
         :label="$t('coach.maxlift_management.fields.exercise')"
         :options="exercises.map((exercise) => exercise.name)"
         dense
+        required
       >
       </os-select>
 
-      <!-- TYPE -->
+      <!-- Max lift type -->
       <os-select
         v-model="maxliftType"
         :label="$t('coach.maxlift_management.fields.type')"
-        use-input
         :options="Object.values(MaxLiftType)"
+        required
       />
 
-      <!-- VALUE -->
+      <!-- Max lift value -->
       <os-input
         v-model="maxliftValue"
         :suffix="maxliftValueSuffix"
         :label="$t('coach.maxlift_management.fields.value')"
         mask="#####"
+        required
       ></os-input>
 
+      <!-- Performance date -->
       <os-input
         v-model="maxliftDate"
         :label="$t('coach.maxlift_management.fields.date')"
@@ -38,6 +42,7 @@
         dense
         mask="date"
         :rules="['date']"
+        required
       >
         <template v-slot:append>
           <q-icon name="event" class="cursor-pointer">
@@ -117,8 +122,12 @@ watch(
     maxliftType.value = props.maxlift.type;
     maxliftValue.value = props.maxlift.value;
     maxliftDate.value = props.maxlift.performedOn
-      ? props.maxlift.performedOn.toISOString().split("T")[0] // TODO set it regardless of timezone offset
+      ? props.maxlift.performedOn
+          .toISOString()
+          .split("T")[0]
+          .replaceAll("-", "/")
       : undefined;
+    console.log(maxliftDate.value, typeof maxliftDate.value);
   },
   { immediate: true },
 );

@@ -45,7 +45,7 @@
             ref="athletesTableElement"
             :athletes="athletes"
             :programs="programs"
-            @selection="onAthleteSelection"
+            @update:selected="onAthleteSelection"
             :filter="searchAthlete"
           />
         </q-card>
@@ -177,9 +177,7 @@
                           {{
                             $t("coach.athlete_management.call_to_action.title")
                           }}
-                          {{
-                            selectedAthlete.name + " " + selectedAthlete.surname
-                          }}
+                          {{ selectedAthlete.referenceName }}
                         </h6>
                         <p class="q-px-md text-weight-light">
                           {{
@@ -488,18 +486,10 @@ function onUpdateMaxLift(maxlift: MaxLift) {
 /**
  * Allow athlete modification.
  *
- * @param athleteOrAny might be athlete to be updated, requires type check.
- * @param row optional row of the table where athlete was selected.
+ * @param athlete selected athlete instance.
  */
-function onAthleteSelection(
-  athleteOrAny: AthleteUser | any,
-  row?: { [key: string]: any; name?: string },
-) {
-  if (athleteOrAny instanceof AthleteUser) selectedAthlete.value = athleteOrAny;
-  else
-    selectedAthlete.value = athletes.value.find(
-      (athlete) => athlete.name && athlete.name == row?.name,
-    );
+function onAthleteSelection(athlete?: AthleteUser) {
+  selectedAthlete.value = athlete;
 }
 
 /**

@@ -23,6 +23,11 @@ const emit = defineEmits(["drawerClick"]);
 // Set items in drawer
 const drawerItems = [
   {
+    id: "list",
+    tooltip: "coach.program_management.builder.show_program_list",
+    icon: "fa-solid fa-bars-staggered",
+  },
+  {
     id: "charts",
     tooltip: "coach.program_management.builder.show_charts_tooltip",
     icon: "fa-solid fa-chart-line",
@@ -31,11 +36,6 @@ const drawerItems = [
     id: "maxlifts",
     tooltip: "coach.program_management.builder.show_maxlifts_tooltip",
     icon: "fa-solid fa-table-list",
-  },
-  {
-    id: "list",
-    tooltip: "coach.program_management.builder.show_program_list",
-    icon: "fa-solid fa-bars-staggered",
   },
 ];
 </script>

@@ -149,50 +149,97 @@
         <!-- Exercise info -->
         <div
           class="col-3 q-pa-sm bg-lighter os-exercise-form os-light-border"
+          :class="{
+            'cursor-pointer': !exercisesInfoShowExpanded[idScheduleInfo],
+          }"
+          @click="
+            exercisesInfoExpanded = objectMapValues(
+              exercisesInfoExpanded,
+              () => false,
+            );
+            exercisesInfoExpanded[idScheduleInfo] = true;
+          "
           style="position: relative"
         >
-          <osSelect
-            :model-value="exerciseModelValue.exercise"
-            @update:model-value="
-              (val: typeof exerciseModelValue.exercise) => {
-                updateSelectedExercise(idScheduleInfo.toString(), val);
-                updateProgramExercise(idScheduleInfo.toString());
-              }
-            "
-            :options="exercises.map((exercise) => exercise.name)"
-          >
-          </osSelect>
-          <osSelect
-            :model-value="exerciseModelValue.variant"
-            @update:model-value="
-              (val: typeof exerciseModelValue.variant) => {
-                exerciseModelValue.variant = val;
-                updateProgramExercise(idScheduleInfo.toString());
-              }
-            "
-            :options="
-              selectedExercises[idScheduleInfo]?.variants?.map((variant) => ({
-                label: variant.isDefault
-                  ? $t('coach.exercise_management.default_variant')
-                  : variant.name,
-                value: variant.isDefault ? '' : variant.name,
-              }))
-            "
-            map-options
-            emit-value
-          >
-          </osSelect>
-          <osInput
-            :model-value="exerciseModelValue.note"
-            @update:model-value="
-              (val: typeof exerciseModelValue.note) => {
-                exerciseModelValue.note = val;
-                updateProgramExercise(idScheduleInfo.toString());
-              }
-            "
-            type="textarea"
-          >
-          </osInput>
+          <q-slide-transition>
+            <div v-show="exercisesInfoShowExpanded[idScheduleInfo]">
+              <osSelect
+                :model-value="exerciseModelValue.exercise"
+                @update:model-value="
+                  (val: typeof exerciseModelValue.exercise) => {
+                    updateSelectedExercise(idScheduleInfo.toString(), val);
+                    updateProgramExercise(idScheduleInfo.toString());
+                  }
+                "
+                :options="exercises.map((exercise) => exercise.name)"
+                hide-bottom-space
+              >
+              </osSelect>
+              <q-separator color="inherit" spaced="xs" />
+              <osSelect
+                :model-value="exerciseModelValue.variant"
+                @update:model-value="
+                  (val: typeof exerciseModelValue.variant) => {
+                    exerciseModelValue.variant = val;
+                    updateProgramExercise(idScheduleInfo.toString());
+                  }
+                "
+                :options="
+                  selectedExercises[idScheduleInfo]?.variants?.map(
+                    (variant) => ({
+                      label: variant.isDefault
+                        ? $t('coach.exercise_management.default_variant')
+                        : variant.name,
+                      value: variant.isDefault ? '' : variant.name,
+                    }),
+                  )
+                "
+                emit-value
+                hide-bottom-space
+              >
+              </osSelect>
+              <q-separator color="inherit" spaced="xs" />
+              <osInput
+                :model-value="exerciseModelValue.note"
+                @update:model-value="
+                  (val: typeof exerciseModelValue.note) => {
+                    exerciseModelValue.note = val;
+                    updateProgramExercise(idScheduleInfo.toString());
+                  }
+                "
+                type="textarea"
+                hide-bottom-space
+              >
+              </osInput>
+              <q-btn
+                icon="expand_less"
+                @click.stop="exercisesInfoExpanded[idScheduleInfo] = false"
+                flat
+                dense
+                color="secondary"
+                class="full-width"
+                :ripple="false"
+              />
+            </div>
+          </q-slide-transition>
+          <q-slide-transition>
+            <div
+              v-show="!exercisesInfoShowExpanded[idScheduleInfo]"
+              class="text-ellipsis"
+            >
+              <p class="text-secondary text-bold">
+                {{ exerciseModelValue.exercise }}
+                {{
+                  exerciseModelValue.variant
+                    ? " - " + exerciseModelValue.variant
+                    : ""
+                }}
+              </p>
+              <p class="text-xs text-italic">
+                {{ exerciseModelValue.note }}
+              </p>
+            </div>
+          </q-slide-transition>
 
           <!-- Delete buttons -->
           <q-btn
@@ -201,13 +248,20 @@
             round
             unelevated
             size="0.5em"
-            color="red"
+            color="light"
             class="os-exercise-delete-btn"
           />
         </div>
 
         <!-- Data table -->
         <osTableSheet
+          :model-value="exerciseModelValue.data"
+          @update:model-value="
+            (val?: typeof exerciseModelValue.data) => {
+              updateTableData(idScheduleInfo.toString(), val);
+              updateProgramExercise(idScheduleInfo.toString());
+            }
+          "
           :headers="[
             'load',
             'reps',
@@ -217,13 +271,6 @@
             'requestText',
             'requestVideo',
           ]"
-          :model-value="exerciseModelValue.data"
-          @update:model-value="
-            (val?: typeof exerciseModelValue.data) => {
-              updateTableData(idScheduleInfo.toString(), val);
-              updateProgramExercise(idScheduleInfo.toString());
-            }
-          "
           :types="{
             requestText: 'checkbox',
             requestVideo: 'checkbox',
@@ -237,7 +284,30 @@
             requestText: '7%',
             requestVideo: '7%',
           }"
-          :showNewLine="true"
+          :placeholders="{
+            load: $t(
+              'coach.program_management.fields.load',
+            ).toLocaleLowerCase(),
+            reps: $t(
+              'coach.program_management.fields.reps',
+            ).toLocaleLowerCase(),
+            sets: $t(
+              'coach.program_management.fields.sets',
+            ).toLocaleLowerCase(),
+            rpe: $t('coach.program_management.fields.rpe').toLocaleLowerCase(),
+            note: $t(
+              'coach.program_management.fields.note',
+            ).toLocaleLowerCase(),
+          }"
+          :showNewLine="{
+            load: '',
+            reps: '',
+            sets: '',
+            rpe: '',
+            note: '',
+            requestText: false,
+            requestVideo: false,
+          }"
           :deleteEmptyLine="true"
           @row-click="
             (_: any, row: any) =>
@@ -397,13 +467,7 @@
     </div>
 
     <!-- Show something when filters remove any exercise -->
-    <div
-      v-else-if="
-        !objectIsEmpty(exercisesValues) &&
-        objectIsEmpty(filteredExercisesValues)
-      "
-      class="text-center"
-    >
+    <div v-else-if="objectIsEmpty(filteredExercisesValues)" class="text-center">
       <slot name="empty-filtered">
         <h6>
           {{ $t("coach.program_management.filter.all_filtered_out") }}
@@ -513,9 +577,9 @@ const exercisesValues = ref<{
       reps: string | undefined;
       repsRef: ProgramLine | MaxLift | undefined;
       sets: string | undefined;
-      setsRef: ProgramLine | MaxLift | undefined;
+      setsRef: ProgramLine | undefined;
       rpe: string | undefined;
-      rpeRef: ProgramLine | MaxLift | undefined;
+      rpeRef: ProgramLine | undefined;
       note: string | undefined;
       requestText: boolean | undefined;
       requestVideo: boolean | undefined;
@@ -532,6 +596,9 @@ const selectingReferenceLine = ref<{
   lineNum: string;
   field: string;
 }>();
+const exercisesInfoExpanded = ref<{
+  [key: string]: boolean;
+}>({});
 
 // Get a subset of tables to show according to filters
 const filteredExercisesValues = computed(() => {
@@ -570,7 +637,7 @@ const selectedExerciseVariants = computed<{
     (exerciseValue, key) =>
       selectedExercises.value[key]?.variants?.find(
         (variant) => variant.name == exerciseValue.variant,
-      ),
+      ) ?? selectedExercises.value[key]?.defaultVariant,
   ),
 );
 
@@ -588,6 +655,15 @@ const sortedProgramExercises = computed(() =>
 const maxliftsPerExercise = computed(() =>
   separateMaxliftPerExerciseAndType(props.maxlifts),
 );
+
+// Get whether each exercise info should be displayed or not
+const exercisesInfoShowExpanded = computed(() => {
+  return objectMapValues(
+    exercisesValues.value,
+    (_, key) =>
+      exercisesInfoExpanded.value[key] || !exercisesValues.value[key].exercise,
+  );
+});
 
 // Get id of first and last table element for each day
 const firstTablesInDay = computed(() =>
@@ -691,7 +767,7 @@ function resetTableData() {
       exercisesValues.value[idScheduleInfo].exercise =
         programExercise.exercise?.name;
       exercisesValues.value[idScheduleInfo].variant =
-        programExercise.exerciseVariant?.name;
+        programExercise.exerciseVariant?.name ?? "";
       exercisesValues.value[idScheduleInfo].note =
         programExercise.exerciseNote ?? "";
 
@@ -769,13 +845,8 @@ function onReferenceClick(
 
   // Update line reference
   const refField = lineInfo.field + "Ref";
-  if (
-    refField != "loadRef" &&
-    refField != "repsRef" &&
-    refField != "setsRef" &&
-    refField != "rpeRef"
-  )
-    return;
+  const tableRef =
+    exercisesValues.value[lineInfo.schedule].data[Number(lineInfo.lineNum)];
   const parsedReference =
     reference instanceof ProgramLine || reference instanceof MaxLift
       ? reference
@@ -784,9 +855,13 @@ function onReferenceClick(
       : type == "maxlift"
       ? props.maxlifts.find((maxlift) => (maxlift.uid = reference))
       : undefined;
-  exercisesValues.value[lineInfo.schedule].data[Number(lineInfo.lineNum)][
-    refField
-  ] = parsedReference;
+  if (refField === "loadRef" || refField === "repsRef")
+    tableRef[refField] = parsedReference;
+  if (
+    (refField === "setsRef" || refField === "rpeRef") &&
+    (!parsedReference || parsedReference instanceof ProgramLine)
+  )
+    tableRef[refField] = parsedReference;
 
   // Update program
   updateProgramExercise(lineInfo.schedule);
@@ -872,6 +947,9 @@ function reorderTable(srcId: string, dstId: string) {
     exercisesValues.value,
     (key) => renameMap[key] ?? key,
   );
+
+  // Update program with new structure
+  updateProgramWhole();
 }
 
 /**
@@ -899,6 +977,9 @@ function reorderTableRelative(srcId: string, moveBy: number) {
  */
 function deleteTable(idScheduleInfo: string) {
   delete exercisesValues.value[idScheduleInfo];
+
+  // Update program with new structure
+  updateProgramWhole();
 }
 
 /**
@@ -938,6 +1019,9 @@ function addTable(idScheduleInfo: string) {
       note: undefined,
     },
   };
+
+  // Update program with new table
+  updateProgramWhole();
 }
 
 /**

@@ -60,7 +60,7 @@
             :ref="
               (el) => (childElements[getCellName(props.row.id, col.id)] = el)
             "
-            :model-value="(modelValue[props.rowIndex] ?? newRow)[col.name]"
+            :model-value="props.row[col.name]"
             @update:model-value="
               (value) => onModelValueUpdate(props.rowIndex, col.name, value)
             "
@@ -73,14 +73,16 @@
             :ref="
               (el) => (childElements[getCellName(props.row.id, col.id)] = el)
             "
-            :model-value="(modelValue[props.rowIndex] ?? newRow)[col.name]"
+            :model-value="props.row[col.name]"
             @update:model-value="
               (value) => onModelValueUpdate(props.rowIndex, col.name, value)
             "
+            :placeholder="placeholders[col.name]"
             @focus="selectSingleCell(props.row.id, col.id)"
             borderless
             autogrow
             :dense="dense"
+            class="placeholder-light placeholder-hide-on-focus"
           >
             <template #after>
               <slot
@@ -88,7 +90,7 @@
                 v-bind="{
                   row: props.row,
                   col: col,
-                  value: (modelValue[props.rowIndex] ?? newRow)[col.name],
+                  value: props.row[col.name],
                 }"
               ></slot>
             </template>
@@ -121,8 +123,14 @@ const props = defineProps({
     type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
     required: false,
   },
+  placeholders: {
+    type: [Array, Object] as PropType<any[] | { [key: string]: any }>,
+    required: false,
+  },
   showNewLine: {
-    type: Boolean,
+    type: [Boolean, Array, Object] as PropType<
+      boolean | any[] | { [key: string]: any }
+    >,
     default: false,
   },
   deleteEmptyLine: {
@@ -187,7 +195,7 @@ const types = computed(() => {
   if (props.types) {
     // Handle case of fixed types
     const propsTypes = props.types;
-    return props.modelValue.map(() =>
+    return rows.value.map(() =>
       Object.keys(headers.value).reduce(
         (out: { [key: string]: string }, key, idx) => {
           out[key] =
@@ -201,7 +209,7 @@ const types = computed(() => {
     );
   } else {
     // Handle case with unknown type
-    return props.modelValue.map((row) =>
+    return rows.value.map((row) =>
       Object.entries(row).reduce(
         (out: { [key: string]: string }, [key, value]) => {
           switch (typeof value) {
@@ -236,6 +244,16 @@ const widths = computed(() => {
   }
 });
 
+// Get placeholders map
+const placeholders = computed(() => {
+  const propsPlaceholders = props.placeholders;
+  return objectMapValues(headers.value, (_, key, idx) =>
+    propsPlaceholders instanceof Array
+      ? propsPlaceholders[idx]
+      : propsPlaceholders?.[key],
+  );
+});
+
 // Set rows and columns
 const columns = computed(() =>
   Object.entries(headers.value).map(([key, val], index) => ({
@@ -258,7 +276,18 @@ const rows = computed(() =>
 
 // Set an empty new line
 const newRow = computed(() =>
-  columns.value.reduce((out, col) => ({ ...out, [col.name]: undefined }), {}),
+  columns.value.reduce(
+    (out, col, idx) => ({
+      ...out,
+      [col.name]:
+        props.showNewLine instanceof Array
+          ? props.showNewLine[idx]
+          : props.showNewLine instanceof Object
+          ? props.showNewLine[col.name]
+          : undefined,
+    }),
+    {},
+  ),
 );
 
 /**
@@ -278,7 +307,7 @@ function onModelValueUpdate(
 
   // Add a new line if necessary
   if (rowId == outValue.length && String(newValue).trim()) {
-    outValue[rowId] = newRow.value;
+    outValue[rowId] = { ...newRow.value };
   }
 
   // Update with new value

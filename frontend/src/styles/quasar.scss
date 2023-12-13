@@ -93,6 +93,11 @@ a {
   color: $os-grey-8;
 }
 
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 /***** Setup colors *****/
 // Brand colors
@@ -353,6 +358,15 @@ a {
 .text-input-top-label {
   font-size: 0.9rem;
   color: $os-grey-cold-7;
+}
+
+.placeholder-light .q-placeholder::placeholder {
+  color: $light;
+  opacity: 1;
+}
+
+.placeholder-hide-on-focus :focus.q-placeholder::placeholder {
+  color: transparent;
 }
 
 // Charts
