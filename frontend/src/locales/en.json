@@ -211,7 +211,8 @@
         "variant": "Variant",
         "loadtype": "Load type",
         "loadtype_available": {
-          "bodyweight": "Bodyweight",
+          "bodyweight": "Only Bodyweight",
+          "onlyload": "Only Ext.Load",
           "loaded": "Bodyweight + Ext.Load"
         },
         "musclegroups": "Muscle Groups",
