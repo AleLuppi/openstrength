@@ -194,7 +194,6 @@
                     }),
                   )
                 "
-                map-options
                 emit-value
                 hide-bottom-space
               >
@@ -638,7 +637,7 @@ const selectedExerciseVariants = computed<{
     (exerciseValue, key) =>
       selectedExercises.value[key]?.variants?.find(
         (variant) => variant.name == exerciseValue.variant,
-      ),
+      ) ?? selectedExercises.value[key]?.defaultVariant,
   ),
 );
 
@@ -768,7 +767,7 @@ function resetTableData() {
       exercisesValues.value[idScheduleInfo].exercise =
         programExercise.exercise?.name;
       exercisesValues.value[idScheduleInfo].variant =
-        programExercise.exerciseVariant?.name;
+        programExercise.exerciseVariant?.name ?? "";
       exercisesValues.value[idScheduleInfo].note =
         programExercise.exerciseNote ?? "";
 
