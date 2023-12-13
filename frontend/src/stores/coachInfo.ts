@@ -98,7 +98,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
         _programsUnresolved.value.athletes = undefined;
       }
       if (exercises.value && _programsUnresolved.value.exercises) {
-        // Solve athlete reference
+        // Solve exercises references
         _programsUnresolved.value.exercises.forEach(
           ([programExercise, variantId]) => {
             const allVariants = exercises.value?.reduce(
@@ -116,7 +116,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
         _programsUnresolved.value.exercises = undefined;
       }
       if (maxlifts.value && _programsUnresolved.value.maxlifts) {
-        // Solve athlete reference
+        // Solve maxlifts references
         _programsUnresolved.value.maxlifts.forEach(
           ([programLine, maxliftId]) => {
             if (maxliftId.loadReference)
@@ -319,15 +319,16 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
               currUnresolved.athlete,
             );
           if (currUnresolved.exercises)
-            (unresolved.exercises = unresolved.exercises || []).concat(
+            unresolved.exercises = (unresolved.exercises || []).concat(
               currUnresolved.exercises,
             );
           if (currUnresolved.maxlifts)
-            (unresolved.maxlifts = unresolved.maxlifts || []).concat(
+            unresolved.maxlifts = (unresolved.maxlifts || []).concat(
               currUnresolved.maxlifts,
             );
           programsFromDoc.push(currProgram);
         });
+        _programsUnresolved.value = unresolved;
         _programs.value = programsFromDoc;
         onSuccess?.(programsFromDoc);
       },

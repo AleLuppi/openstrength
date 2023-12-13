@@ -264,7 +264,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { dom } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import { Program } from "@/helpers/programs/program";
@@ -325,14 +325,20 @@ const selectedMaxlift = computed(() => updatingMaxlift.value ?? new MaxLift());
 // Get program requested from router
 const programRequested = computed(
   () =>
-    coachInfo.programs?.find(
-      (program) => program.uid == route.params.programId,
-    ),
+    coachInfo.programs
+      ?.find((program) => program.uid == route.params.programId)
+      ?.duplicate(),
 );
 watch(
   programRequested,
   (program) => {
-    if (program && programSaved.value) selectedProgram.value = program;
+    // Update selected program if needed
+    if (program && programSaved.value) {
+      selectedProgram.value = program;
+
+      // Make sure to keep saved program flag upon this kind of update
+      nextTick(() => (programSaved.value = true));
+    }
   },
   { immediate: true },
 );
@@ -367,8 +373,8 @@ const athleteMaxlifts = computed(
 );
 
 // Inform user that program is not saved upon changes.
-watch(selectedProgram, () => {
-  programSaved.value = false;
+watch(selectedProgram, (currProgram, prevProgram) => {
+  if (currProgram.uid === prevProgram.uid) programSaved.value = false;
 });
 
 /**
@@ -388,7 +394,6 @@ function saveProgram() {
       (coachInfo.programs = coachInfo.programs || []).push(currProgram);
 
       // Update athlete profile with new program
-      console.log(currProgram.athlete);
       if (currProgram.athlete) {
         currProgram.athlete.assignedProgramId = currProgram.uid;
         if (currProgram.uid)
