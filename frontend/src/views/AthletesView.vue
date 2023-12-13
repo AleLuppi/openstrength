@@ -114,14 +114,33 @@
       </div>
 
       <!-- Right card: selected athlete data -->
-      <div v-if="Boolean(selectedAthlete)" class="col-12 col-sm-7">
+
+      <div
+        v-if="Boolean(selectedAthlete)"
+        :class="!$q.screen.lt.sm ? 'col-12 col-sm-7' : 'col-12 os-overlay'"
+      >
         <q-card>
           <q-card-section
-            class="q-gutter-x-xs"
-            style="height: calc(100vh - 38px)"
+            :class="
+              !$q.screen.lt.md
+                ? 'q-gutter-x-xs os-athleteinfo-max-height'
+                : 'q-gutter-x-xs os-athleteinfo-max-height-notdesktop'
+            "
           >
             <!-- TODO i18n -->
-            <h6>Athlete Info</h6>
+            <div class="row justify-between">
+              <h6>Athlete Info</h6>
+              <q-btn
+                v-if="$q.screen.lt.sm"
+                icon="close"
+                outline
+                flat
+                color="light-dark"
+                class="q-pa-sm"
+                @click="selectedAthlete = undefined"
+              ></q-btn>
+            </div>
+
             <q-tabs
               @update:model-value="onTabChange"
               :model-value="selectedTab"
@@ -131,7 +150,7 @@
               inline-label
             >
               <q-tab
-                v-for="tab in allTabs"
+                v-for="tab in $q.screen.width < 840 ? allTabsMobile : allTabs"
                 :key="tab.key"
                 :name="tab.name"
                 :label="tab.label"
@@ -291,7 +310,7 @@
       </div>
 
       <!-- Right card: no athlete selected call to action -->
-      <div v-else class="col-12 col-sm-8">
+      <div v-else-if="!$q.screen.lt.sm" class="col-12 col-sm-7">
         <div class="row flex-center" style="height: 100%">
           <div class="row">
             <q-icon
@@ -340,6 +359,26 @@ const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
 // Set tab navigation info
+const allTabsMobile = [
+  {
+    key: "programs",
+    name: "Programs",
+    label: "",
+    icon: "fa-regular fa-file-lines",
+  },
+  {
+    key: "anagraphic",
+    name: "Anagraphic",
+    label: "",
+    icon: "fa-regular fa-address-card",
+  },
+  {
+    key: "personalbest",
+    name: "Personal Best",
+    label: "",
+    icon: "fa-solid fa-ranking-star",
+  },
+];
 const allTabs = [
   {
     key: "programs",
@@ -556,5 +595,25 @@ function clearAthlete() {
   border-radius: 16px;
   background: $os-grey-cold-0;
   box-shadow: 0px 8px 32px 0px rgba(51, 38, 174, 0.08);
+}
+
+.os-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.os-athleteinfo-max-height {
+  height: calc(100vh - 38px);
+}
+.os-athleteinfo-max-height-notdesktop {
+  height: calc(100vh - 38px - 50px);
 }
 </style>

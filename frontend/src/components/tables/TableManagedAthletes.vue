@@ -1,11 +1,15 @@
 <template>
   <os-table
-    :columns="columns"
+    :columns="
+      $q.screen.width < 840 && !$q.screen.lt.sm ? columnsNotDesktop : columns
+    "
     :rows="rows"
     row-key="uid"
     virtual-scroll
     hide-pagination
-    class="os-table-max-height"
+    :class="
+      $q.screen.lt.md ? 'os-table-max-height-notdesktop' : 'os-table-max-height'
+    "
     @row-click="
       (...params: [Event, Object, Number]) => emit('selection', ...params)
     "
@@ -66,6 +70,27 @@ const columns = [
     field: "program",
   },
 ];
+const columnsNotDesktop = [
+  {
+    name: "name",
+    required: true,
+    label: "Name", // TODO i18n
+    align: "left",
+    field: (row: {
+      name?: string;
+      surname?: string;
+      displayName?: string;
+      [key: string]: any;
+    }) => row.displayName ?? row.name + " " + row.surname,
+    sortable: true,
+  },
+  {
+    name: "program",
+    label: "Program", // TODO i18n
+    align: "left",
+    field: "program",
+  },
+];
 
 // Set table rows
 const rows = computed(() => {
@@ -81,6 +106,7 @@ const rows = computed(() => {
     name: athlete.name,
     surname: athlete.surname,
     displayName: athlete.displayName,
+
     program: {
       element: "chip",
       label: getAssignedProgram(athlete, [])?.isOngoing // TODO
@@ -122,5 +148,8 @@ watch(selectedRows, (value) =>
 <style scoped lang="scss">
 .os-table-max-height {
   max-height: calc(100vh - 160px);
+}
+.os-table-max-height-notdesktop {
+  max-height: calc(100vh - 160px - 50px);
 }
 </style>

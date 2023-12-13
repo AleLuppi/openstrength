@@ -1,6 +1,6 @@
 <template>
   <os-table
-    :columns="columns"
+    :columns="$q.screen.lt.sm ? columnsMobile : columns"
     :rows="rows"
     row-key="rowId"
     virtual-scroll
@@ -57,6 +57,28 @@ const columns = [
     align: "left",
     label: "Date", // TODO i18n
     field: "date",
+  },
+  {
+    name: "update",
+    align: "center",
+    label: "",
+    field: "update",
+  },
+];
+const columnsMobile = [
+  {
+    name: "exercise",
+    required: true,
+    label: "Exercise", // TODO i18n
+    align: "left",
+    field: "exercise",
+    sortable: true,
+  },
+  {
+    name: "type",
+    align: "left",
+    label: "Type", // TODO i18n
+    field: "type",
   },
   {
     name: "update",
