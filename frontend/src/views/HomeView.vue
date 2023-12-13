@@ -108,7 +108,7 @@
           />
           <p
             :class="
-              $q.screen.lt.md ? 'text-center text-h4' : 'text-center text-h2'
+              $q.screen.lt.md ? 'text-center text-h6' : 'text-center text-h4'
             "
           >
             {{ $t(buttonUnsignedUser.title) }}
@@ -136,42 +136,53 @@
 
     <!-- Action -->
     <div class="row q-gutter-lg justify-center items-center">
-      <router-link to="profile" class="link-child">
-        <q-card
-          class="q-pa-lg column items-center justify-center square-card q-hoverable text-center"
-        >
-          <!-- Animate when on -->
-          <span class="q-focus-helper"></span>
+      <q-card
+        class="q-pa-lg column items-center justify-center square-card q-hoverable text-center cursor-pointer"
+        clickable
+        v-ripple
+        @click="showDialogOnboarding = true"
+      >
+        <!-- Animate when on -->
+        <span class="q-focus-helper"></span>
 
-          <!-- Icon, title, and subtitle -->
-          <q-icon
-            name="fa-regular fa-circle-play"
-            :size="$q.screen.lt.sm ? '3em' : '5em'"
-            color="icon-color"
-          />
-          <p
-            :class="
-              $q.screen.lt.md ? 'text-center text-h4' : 'text-center text-h2'
-            "
-          >
-            {{ $t("homepage.cta_onboarding_title") }}
-          </p>
-          <p class="q-px-md text-weight-light">
-            {{ $t("homepage.cta_onboarding_subtitle") }}
-          </p>
-        </q-card>
-      </router-link>
+        <!-- Icon, title, and subtitle -->
+        <q-icon
+          name="fa-regular fa-circle-play"
+          :size="$q.screen.lt.sm ? '3em' : '5em'"
+          color="icon-color"
+        />
+        <p
+          :class="
+            $q.screen.lt.md ? 'text-center text-h6' : 'text-center text-h4'
+          "
+        >
+          {{ $t("homepage.cta_onboarding_title") }}
+        </p>
+        <p class="q-px-md text-weight-light">
+          {{ $t("homepage.cta_onboarding_subtitle") }}
+        </p>
+      </q-card>
     </div>
+
+    <!-- Show optional global dialogs -->
+    <q-dialog v-model="showDialogOnboarding">
+      <UserOnboarding :on-submit="onOnboardingSubmit"></UserOnboarding>
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
-import { UserRole } from "@/helpers/users/user";
+import { User, UserRole } from "@/helpers/users/user";
+import UserOnboarding from "@/components/forms/UserOnboarding.vue";
+import { ref } from "vue";
 
 // Get user state
 const user = useUserStore();
+
+// Set onboarding form visibility
+const showDialogOnboarding = ref(false);
 
 // Set coach action buttons
 const buttonsCoachAction = [
@@ -204,6 +215,17 @@ const buttonsUnsigedAction = [
     subtitle: "homepage.actions.to_login_caption",
   },
 ];
+
+/**
+ * Actions to perform on onboarding dialog submit.
+ *
+ * @param data object data that shall be saved in user instance.
+ */
+function onOnboardingSubmit(data: { [key: string]: any }) {
+  showDialogOnboarding.value = false;
+  Object.assign(user.baseUser as User, data);
+  user.saveUser();
+}
 </script>
 
 <style scoped lang="scss">

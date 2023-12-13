@@ -9,7 +9,7 @@
       :color="selected.includes(key) ? 'primary' : 'lighter'"
       :text-color="selected.includes(key) ? 'lighter' : 'dark'"
       @click="toggleButton(key)"
-      class="q-ma-sm bordered"
+      :class="$q.screen.lt.sm ? 'q-ma-xs bordered' : 'q-ma-sm bordered'"
     >
       {{ props.useLocale ? $t(text) : text }}
     </q-btn>
