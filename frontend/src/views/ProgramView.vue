@@ -52,7 +52,10 @@
                 <q-item-section thumbnail>
                   <q-btn
                     icon="clear"
-                    @click.stop="selectedProgram.athlete = undefined"
+                    @click.stop="
+                      selectedProgram.athlete = undefined;
+                      programSaved = false;
+                    "
                     round
                     unelevated
                     size="0.5em"
@@ -153,7 +156,7 @@
 
       <template v-slot:after>
         <!-- Show charts on the right -->
-        <div class="q-pa-sm">
+        <div class="q-pa-sm" style="min-width: 100px; overflow: hidden">
           <!-- TODO i18n -->
           <!-- Charts display section -->
           <div v-if="showingUtils == UtilsOptions.charts">
@@ -232,13 +235,72 @@
                 <FormMaxLift
                   ref="maxliftFormElement"
                   :maxlift="selectedMaxlift"
-                  :exercises="exercises"
+                  :exercises="coachInfo.exercises"
                   @submit="saveMaxlift"
                   @reset="showMaxliftAddDialog = false"
                 ></FormMaxLift>
               </q-card>
             </q-dialog>
           </q-card>
+
+          <!-- Program list section -->
+          <div
+            v-else-if="showingUtils == UtilsOptions.list"
+            class="column q-gutter-y-md"
+          >
+            <!-- Start a new program -->
+            <q-btn
+              icon="add"
+              label="New program"
+              @click="substituteProgram = new Program()"
+              rounded
+              class="q-mx-auto"
+            ></q-btn>
+
+            <!-- Search status or temporary program -->
+            <q-card>
+              <!-- TODO i18n -->
+              <q-card-section v-if="selectedProgram.uid">
+                <p>Programma attuale</p>
+                <p
+                  class="text-italic text-xs"
+                  v-if="selectedProgram.lastUpdated"
+                >
+                  Last update: {{ $d(selectedProgram.lastUpdated, "middle") }}
+                </p>
+              </q-card-section>
+              <q-card-section
+                v-else-if="temporaryProgram"
+                class="cursor-pointer"
+                @click="onTemporaryProgramSelection"
+              >
+                <p class="text-primary">Apri programma temporaneo</p>
+                <p
+                  class="text-italic text-xs"
+                  v-if="temporaryProgram.lastUpdated"
+                >
+                  Last update: {{ $d(temporaryProgram.lastUpdated, "middle") }}
+                </p>
+              </q-card-section>
+              <q-card-section v-else
+                >Crea o seleziona un programma per iniziare</q-card-section
+              >
+            </q-card>
+
+            <!-- Select among assigned programs -->
+            <q-card>
+              <TableManagedAthletes
+                ref="athletesTableElement"
+                :athletes="
+                  coachInfo.athletes?.filter(
+                    (athlete) => athlete.hasProgramAssigned,
+                  ) ?? []
+                "
+                @update:selected="onAthleteProgramSelection"
+                athletes-only
+              />
+            </q-card>
+          </div>
         </div>
       </template>
 
@@ -257,9 +319,71 @@
     <DialogProgramAssignAthlete
       v-model="showAthleteAssigningDialog"
       :athletes="coachInfo.athletes ?? []"
-      v-model:selected="selectedProgram.athlete"
+      :selected="selectedProgram.athlete"
+      @update:selected="
+        (athlete) => {
+          selectedProgram.athlete = athlete;
+          programSaved = false;
+        }
+      "
     >
     </DialogProgramAssignAthlete>
+
+    <!-- Dialog to change unsaved program -->
+    <q-dialog v-model="showChangeProgramDialog">
+      <!--  TODO i18n -->
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-icon
+            name="fa-solid fa-circle-exclamation"
+            color="primary"
+            size="md"
+          />
+          <span class="q-ml-sm"
+            >Hai delle modifiche non salvate, sei sicuro di voler
+            continuare?</span
+          >
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="secondary" v-close-popup />
+          <q-btn
+            label="Continue"
+            color="primary"
+            @click="openProgram(substituteProgram, true)"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Dialog to open temporary program -->
+    <q-dialog v-model="showTemporaryProgramRestoreDialog">
+      <!--  TODO i18n -->
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-icon
+            name="fa-solid fa-circle-exclamation"
+            color="primary"
+            size="md"
+          />
+          <span class="q-ml-sm"
+            >C'è un programma non ancora assegnato, vuoi continuare la
+            modifica?</span
+          >
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="secondary" v-close-popup />
+          <q-btn
+            label="Open"
+            color="primary"
+            @click="onTemporaryProgramSelection"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -271,15 +395,17 @@ import { Program } from "@/helpers/programs/program";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import ChartSelector from "@/components/charts/ChartSelector.vue";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
-import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import { useUserStore } from "@/stores/user";
-import { Exercise } from "@/helpers/exercises/exercise";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { arrayUniqueValues } from "@/helpers/array";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
+import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
+import { AthleteUser } from "@/helpers/users/user";
+import router from "@/router";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -296,51 +422,42 @@ const coachInfo = useCoachInfoStore();
 
 // Set constants
 const UtilsOptions = {
+  list: "list",
   charts: "charts",
   maxlifts: "maxlifts",
-  list: "list",
 };
 
 // Set ref for generic use
 const splitterModel = ref(30);
-const showingUtils = ref(UtilsOptions.charts);
+const showingUtils = ref(UtilsOptions.list);
 
 // Set ref related to program
 const programManagerElement = ref<HTMLElement>();
 const selectedProgram = ref<Program>(new Program());
+const substituteProgram = ref<Program | string>();
+const oldAthleteAssigned = ref<AthleteUser>();
 const programSaved = ref(true);
 const filterWeek = ref<string[]>();
 const filterDay = ref<string[]>();
 const filterExercise = ref<string[]>();
+const showTemporaryProgramRestoreDialog = ref(false);
 const showAthleteAssigningDialog = ref(false);
 const programManagerExpanded = ref(false);
 const programManagerHeight = ref(0);
 
 // Set ref related to maxlift
 const updatingMaxlift = ref<MaxLift>();
+const searchMaxLift = ref<string>();
 const showMaxliftAddDialog = ref(false);
 const maxliftFormElement = ref<typeof FormMaxLift>();
 const selectedMaxlift = computed(() => updatingMaxlift.value ?? new MaxLift());
 
 // Get program requested from router
-const programRequested = computed(
+const requestedProgram = computed(
   () =>
     coachInfo.programs
       ?.find((program) => program.uid == route.params.programId)
       ?.duplicate(),
-);
-watch(
-  programRequested,
-  (program) => {
-    // Update selected program if needed
-    if (program && programSaved.value) {
-      selectedProgram.value = program;
-
-      // Make sure to keep saved program flag upon this kind of update
-      nextTick(() => (programSaved.value = true));
-    }
-  },
-  { immediate: true },
 );
 
 // Get temporary saved program
@@ -372,10 +489,72 @@ const athleteMaxlifts = computed(
     ),
 );
 
+// Decide whether to display warning dialog on new program
+const showChangeProgramDialog = computed({
+  get() {
+    console.log(Boolean(substituteProgram.value));
+    return Boolean(substituteProgram.value) && !programSaved.value;
+  },
+  set(newValue) {
+    if (!newValue) substituteProgram.value = undefined;
+  },
+});
+
 // Inform user that program is not saved upon changes.
 watch(selectedProgram, (currProgram, prevProgram) => {
   if (currProgram.uid === prevProgram.uid) programSaved.value = false;
 });
+
+// Update selected program upon request from router
+watch(
+  requestedProgram,
+  (program?: Program) => (substituteProgram.value = program),
+  {
+    immediate: true,
+  },
+);
+
+// Try (but not force) to open a new program when requested
+watch(substituteProgram, (program?: Program | string) => openProgram(program));
+
+// Save info on athlete currently assigned to program
+watch(
+  programSaved,
+  (isSaved) => {
+    if (isSaved) oldAthleteAssigned.value = selectedProgram.value.athlete;
+  },
+  { immediate: true },
+);
+
+// Open dialog to inform of a temporary program
+watch(
+  temporaryProgram,
+  (program) => (showTemporaryProgramRestoreDialog.value = Boolean(program)),
+  { immediate: true },
+);
+
+/**
+ * Open a program and display in builder for modification.
+ *
+ * @param program program, or corresponding program ID, that shall be opened.
+ * @param force if true, force program loading even if unsaved changes are present.
+ */
+function openProgram(program?: Program | string, force: boolean = false) {
+  // Update selected program if needed
+  if (program && (programSaved.value || force)) {
+    if (program instanceof Program) selectedProgram.value = program;
+    else
+      router.replace({
+        params: { programId: program },
+      });
+
+    // Make sure to keep saved program flag upon this kind of update
+    nextTick(() => (programSaved.value = true));
+
+    // Clear any possible pending request
+    substituteProgram.value = undefined;
+  }
+}
 
 /**
  * Save current program instance.
@@ -385,32 +564,23 @@ function saveProgram() {
   deleteTemporaryProgram();
 
   // Save current program instance
-  selectedProgram.value.coach = user.baseUser;
-  selectedProgram.value.save({
+  const currProgram = selectedProgram.value;
+  currProgram.coach = user.baseUser;
+  currProgram.save({
     onSuccess: () => {
       // Inform user about saved program
       programSaved.value = true;
-      const currProgram = selectedProgram.value;
-      (coachInfo.programs = coachInfo.programs || []).push(currProgram);
+      (coachInfo.programs =
+        coachInfo.programs?.filter(
+          (program) => program.uid != currProgram.uid,
+        ) || []).push(currProgram);
 
       // Update athlete profile with new program
-      if (currProgram.athlete) {
-        currProgram.athlete.assignedProgramId = currProgram.uid;
-        if (currProgram.uid)
-          (currProgram.athlete.assignedPrograms =
-            currProgram.athlete.assignedPrograms || []).push(currProgram.uid);
-        currProgram.athlete.saveUpdate({
-          onError: () => {
-            $q.notify({
-              type: "negative",
-              message: i18n.t(
-                "coach.program_management.builder.save_assignment_error",
-              ),
-              position: "bottom",
-            });
-          },
-        });
-      }
+      assignProgramToAthlete(
+        currProgram,
+        currProgram.athlete,
+        oldAthleteAssigned.value,
+      );
     },
     onError: () => {
       $q.notify({
@@ -424,11 +594,74 @@ function saveProgram() {
 }
 
 /**
- * Create a new maxlift and assign to a coach
+ * Assign a program to an athlete and save the update.
+ *
+ * @param program program that shall be assigned to athlete.
+ * @param athlete athlete to which program shall be assigned.
+ * @param oldAthlete old athlete to which program was assigned and shall now be unassigned.
  */
-function saveMaxlift() {
+function assignProgramToAthlete(
+  program: Program,
+  athlete?: AthleteUser,
+  oldAthlete?: AthleteUser,
+) {
+  // Update athlete info
+  if (athlete) {
+    athlete.assignedProgramId = program.uid;
+    if (program.uid)
+      (athlete.assignedPrograms = athlete.assignedPrograms || []).push(
+        program.uid,
+      );
+
+    // Store changes
+    athlete.saveUpdate({
+      onError: () => {
+        $q.notify({
+          type: "negative",
+          message: i18n.t(
+            "coach.program_management.builder.save_assignment_error",
+          ),
+          position: "bottom",
+        });
+      },
+    });
+  }
+
+  // Optionally remove program from a previously assigned athlete
+  if (oldAthlete && oldAthlete != athlete) {
+    oldAthlete.assignedProgramId = undefined;
+    oldAthlete.saveUpdate({
+      onError: () => {
+        $q.notify({
+          type: "negative",
+          message: i18n.t(
+            "coach.program_management.builder.save_unassignment_error",
+            { name: oldAthlete.referenceName },
+          ),
+          position: "bottom",
+        });
+      },
+    });
+  }
+}
+
+/**
+ * Open form with max lift info to allow coach to update them.
+ *
+ * @param maxlift instance that is being updated by coach.
+ */
+function onUpdateMaxLift(maxlift: MaxLift) {
+  updatingMaxlift.value = maxlift;
+  showMaxliftAddDialog.value = true;
+}
+
+/**
+ * Create a new maxlift and assign to a coach
+ *
+ * @param newMaxLift max lift instance that shall be saved.
+ */
+function saveMaxlift(newMaxLift: MaxLift) {
   // Get current maxlift and check if already instanciated on db
-  const newMaxLift = selectedMaxlift.value;
   const isNew = !newMaxLift.uid;
 
   // Update values
@@ -458,6 +691,22 @@ function saveMaxlift() {
 }
 
 /**
+ * Open temporary program in builder.
+ */
+function onTemporaryProgramSelection() {
+  substituteProgram.value = temporaryProgram.value;
+}
+
+/**
+ * Open the program that is assigned to selected athlete.
+ *
+ * @param athlete athlete whose program should be opened.
+ */
+function onAthleteProgramSelection(athlete?: AthleteUser) {
+  substituteProgram.value = athlete?.assignedProgramId;
+}
+
+/**
  * Delete temporary program from database and programs list.
  */
 function deleteTemporaryProgram() {
@@ -478,42 +727,6 @@ function updateProgramManagerHeight() {
     : 0;
 }
 
-// Define what to do on component mount
-onMounted(() => {
-  if ($q.screen.gt.sm) programManagerExpanded.value = true;
-});
-
-// ----- TODO CHECK EVERYTHING BELOW -----
-
-// Max lift declarations
-const searchMaxLift = ref<string>();
-
-const selectedExercise = ref<Exercise | undefined>();
-
-const maxliftType = ref<MaxLiftType>(); // TODO check
-const maxliftValue = ref(""); // TODO check
-const maxliftDate = ref<Date>(); // TODO check
-
-// Get exercises to display
-const exercises = computed<Exercise[]>(() => {
-  coachInfo.loadExercises(user.uid, true);
-  return coachInfo.exercises || [];
-});
-
-/** TODO check
- * Compile form with max lift info to allow coach to update them.
- *
- * @param maxlift
- */
-function onUpdateMaxLift(maxlift: MaxLift) {
-  updatingMaxlift.value = maxlift;
-  showMaxliftAddDialog.value = true;
-  selectedExercise.value = maxlift.exercise ?? undefined;
-  maxliftType.value = maxlift.type ?? undefined;
-  maxliftValue.value = maxlift.value ?? "";
-  maxliftDate.value = maxlift.lastUpdated ?? undefined;
-}
-
 /**
  * Handle custom right drawer click.
  *
@@ -524,11 +737,17 @@ function handleDrawerClick(clickParam: any) {
   let toShow = showingUtils.value;
   switch (clickParam) {
     case 0:
-      toShow = UtilsOptions.charts;
+      toShow = UtilsOptions.list;
       break;
     case 1:
+      toShow = UtilsOptions.charts;
+      break;
+    case 2:
       toShow = UtilsOptions.maxlifts;
       break;
+    default:
+      splitterModel.value = 0;
+      return;
   }
 
   // Update right view or handle view size
@@ -540,6 +759,12 @@ function handleDrawerClick(clickParam: any) {
     if (splitterModel.value < 15) splitterModel.value = 30;
   }
 }
+
+// Define what to do on component mount
+onMounted(() => {
+  // Open top card on large screens
+  if ($q.screen.gt.sm) programManagerExpanded.value = true;
+});
 </script>
 
 <style scoped lang="scss">

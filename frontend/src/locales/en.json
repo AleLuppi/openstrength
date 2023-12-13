@@ -270,6 +270,7 @@
         "save": "Save",
         "save_error": "Could not save program, please retry",
         "save_assignment_error": "Program has been saved, but it could not be assigned to athlete.",
+        "save_unassignment_error": "Program assignment could not be removed from athlete { name }.",
         "week_name": "Week { week }",
         "day_name": "Day { day }",
         "new_day": "Day",
@@ -281,7 +282,8 @@
         "reference_select_line_help": "Select a line as reference",
         "reference_remove": "Unlink",
         "show_charts_tooltip": "Charts",
-        "show_maxlifts_tooltip": "Reference Table"
+        "show_maxlifts_tooltip": "Reference Table",
+        "show_program_list": "List of Programs"
       },
       "filter": {
         "title": "Filter by...",

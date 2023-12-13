@@ -28,6 +28,10 @@ const props = defineProps({
     type: AthleteUser,
     required: false,
   },
+  athletesOnly: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // Define emits
@@ -37,7 +41,7 @@ const emit = defineEmits<{
 }>();
 
 // Set table columns
-const columns = [
+const columns = computed(() => [
   {
     name: "image",
     required: false,
@@ -58,13 +62,17 @@ const columns = [
     }) => row.displayName ?? row.name + " " + row.surname,
     sortable: true,
   },
-  {
-    name: "program",
-    label: "Program", // TODO i18n
-    align: "left",
-    field: "program",
-  },
-];
+  ...(props.athletesOnly
+    ? []
+    : [
+        {
+          name: "program",
+          label: "Program", // TODO i18n
+          align: "left",
+          field: "program",
+        },
+      ]),
+]);
 
 // Set table rows
 const rows = computed(() => {
