@@ -5,9 +5,9 @@
   >
     <!-- Show coming soon in case of athlete -->
     <img :src="logoFullImage" :srcset="logoFullImage + ' 1.2x'" alt="Logo" />
-    <h2>
+    <p :class="$q.screen.lt.md ? 'text-center text-h4' : 'text-center text-h2'">
       {{ $t("comingsoon.title") }}
-    </h2>
+    </p>
     <p>
       {{ $t("comingsoon.subtitle") }}
     </p>
@@ -19,7 +19,9 @@
   >
     <!-- Show homepage in case of coach -->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
-      <h2 class="text-center">
+      <p
+        :class="$q.screen.lt.md ? 'text-center text-h4' : 'text-center text-h2'"
+      >
         {{
           user.displayName
             ? $t("homepage.welcome_with_name", {
@@ -27,7 +29,7 @@
               })
             : $t("homepage.welcome_without_name")
         }}
-      </h2>
+      </p>
     </div>
 
     <!-- Common actions -->
@@ -39,19 +41,33 @@
         class="link-child"
       >
         <q-card
-          class="q-pa-lg column items-center justify-center square-card q-hoverable text-center"
+          :class="
+            $q.screen.lt.sm
+              ? 'q-pa-xs column items-center justify-center square-card-mobile q-hoverable text-center'
+              : 'q-pa-lg column items-center justify-center square-card q-hoverable text-center'
+          "
         >
           <!-- Animate when on -->
           <span class="q-focus-helper"></span>
 
           <!-- Icon, title, and subtitle -->
-          <q-icon :name="buttonInfo.icon" size="5em" color="icon-color" />
-          <h4>
-            {{ $t(buttonInfo.title) }}
-          </h4>
-          <p class="q-px-md text-weight-light">
-            {{ $t(buttonInfo.subtitle) }}
-          </p>
+          <div class="column justify-center items-center">
+            <q-icon
+              :name="buttonInfo.icon"
+              :size="$q.screen.lt.sm ? '3em' : '5em'"
+              color="icon-color"
+            />
+            <p
+              :class="
+                $q.screen.lt.md ? 'text-center text-h6' : 'text-center text-h4'
+              "
+            >
+              {{ $t(buttonInfo.title) }}
+            </p>
+            <p class="q-px-md text-weight-light">
+              {{ $t(buttonInfo.subtitle) }}
+            </p>
+          </div>
         </q-card>
       </router-link>
     </div>
@@ -63,9 +79,11 @@
   >
     <!-- Show call to action to unsigner user -->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
-      <h2 class="text-center">
+      <p
+        :class="$q.screen.lt.md ? 'text-center text-h4' : 'text-center text-h2'"
+      >
         {{ $t("homepage.welcome_unsigned_user") }}
-      </h2>
+      </p>
     </div>
 
     <!-- Common actions -->
@@ -88,9 +106,13 @@
             size="5em"
             color="icon-color"
           />
-          <h4>
+          <p
+            :class="
+              $q.screen.lt.md ? 'text-center text-h4' : 'text-center text-h2'
+            "
+          >
             {{ $t(buttonUnsignedUser.title) }}
-          </h4>
+          </p>
           <p class="q-px-md text-weight-light">
             {{ $t(buttonUnsignedUser.subtitle) }}
           </p>
@@ -105,9 +127,11 @@
   >
     <!-- Show something else in all other cases -->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
-      <h2 class="text-center">
+      <p
+        :class="$q.screen.lt.md ? 'text-center text-h4' : 'text-center text-h2'"
+      >
         {{ $t("homepage.welcome_unknown_user") }}
-      </h2>
+      </p>
     </div>
 
     <!-- Action -->
@@ -122,10 +146,16 @@
           <!-- Icon, title, and subtitle -->
           <q-icon
             name="fa-regular fa-circle-play"
-            size="5em"
+            :size="$q.screen.lt.sm ? '3em' : '5em'"
             color="icon-color"
           />
-          <h4>{{ $t("homepage.cta_onboarding_title") }}</h4>
+          <p
+            :class="
+              $q.screen.lt.md ? 'text-center text-h4' : 'text-center text-h2'
+            "
+          >
+            {{ $t("homepage.cta_onboarding_title") }}
+          </p>
           <p class="q-px-md text-weight-light">
             {{ $t("homepage.cta_onboarding_subtitle") }}
           </p>
@@ -179,9 +209,14 @@ const buttonsUnsigedAction = [
 <style scoped lang="scss">
 .square-card {
   width: 270px;
-  /* Set your desired width for the square card */
   height: 270px;
-  /* Set your desired height for the square card */
+  border-radius: 16px;
+  background: var(--bg-1, #fff);
+  box-shadow: 0px 8px 32px 0px rgba(51, 38, 174, 0.08);
+}
+.square-card-mobile {
+  width: 300px;
+  height: 150px;
   border-radius: 16px;
   background: var(--bg-1, #fff);
   box-shadow: 0px 8px 32px 0px rgba(51, 38, 174, 0.08);
