@@ -948,6 +948,9 @@ function reorderTable(srcId: string, dstId: string) {
     exercisesValues.value,
     (key) => renameMap[key] ?? key,
   );
+
+  // Update program with new structure
+  updateProgramWhole();
 }
 
 /**
@@ -975,6 +978,9 @@ function reorderTableRelative(srcId: string, moveBy: number) {
  */
 function deleteTable(idScheduleInfo: string) {
   delete exercisesValues.value[idScheduleInfo];
+
+  // Update program with new structure
+  updateProgramWhole();
 }
 
 /**
@@ -1014,6 +1020,9 @@ function addTable(idScheduleInfo: string) {
       note: undefined,
     },
   };
+
+  // Update program with new table
+  updateProgramWhole();
 }
 
 /**
