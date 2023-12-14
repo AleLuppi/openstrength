@@ -35,7 +35,7 @@ export function testAllLoadCases() {
   });
 
   const names = [
-    "requireLoad",
+    "loadRequire",
     "loadValue",
     "loadComputedValue",
     "loadSupposedValue",
@@ -340,7 +340,7 @@ export function testLoad(
   resultsExpected: Array<boolean | number | string | undefined>,
 ) {
   if (
-    lineTest.requireLoad === resultsExpected[0] &&
+    lineTest.loadRequire === resultsExpected[0] &&
     lineTest.loadValue === resultsExpected[1] &&
     lineTest.loadComputedValue === resultsExpected[2] &&
     lineTest.loadSupposedValue === resultsExpected[3] &&
@@ -353,9 +353,9 @@ export function testLoad(
     console.log("Start test with", valueToTest);
     console.log(
       names[0],
-      lineTest.requireLoad,
+      lineTest.loadRequire,
       "   passed",
-      lineTest.requireLoad === resultsExpected[0],
+      lineTest.loadRequire === resultsExpected[0],
     );
     console.log("loadBaseValue", lineTest.loadBaseValue);
     console.log(
@@ -401,7 +401,6 @@ export function testLoad(
   console.log("                ");
 }
 
-
 /****************/
 /***** REPS *****/
 /****************/
@@ -438,7 +437,7 @@ export function testAllRepCases() {
   });
 
   const names = [
-    "requireReps",
+    "repsRequire",
     "repsValue",
     "repsComputedValue",
     "repsSupposedValue",
@@ -612,7 +611,7 @@ export function testReps(
   resultsExpected: Array<boolean | number | string | undefined>,
 ) {
   if (
-    lineTest.requireReps === resultsExpected[0] &&
+    lineTest.repsRequire === resultsExpected[0] &&
     lineTest.repsValue === resultsExpected[1] &&
     lineTest.repsComputedValue === resultsExpected[2] &&
     lineTest.repsSupposedValue === resultsExpected[3] &&
@@ -625,9 +624,9 @@ export function testReps(
     console.log("Start test with", valueToTest);
     console.log(
       names[0],
-      lineTest.requireReps,
+      lineTest.repsRequire,
       "   passed",
-      lineTest.requireReps === resultsExpected[0],
+      lineTest.repsRequire === resultsExpected[0],
     );
     console.log("repsBaseValue", lineTest.repsBaseValue);
     console.log(
@@ -709,7 +708,7 @@ export function testAllSetsCases() {
   });
 
   const names = [
-    "requireSets",
+    "setsRequire",
     "setsValue",
     "setsComputedValue",
     "setsSupposedValue",
@@ -860,7 +859,7 @@ export function testSets(
   resultsExpected: Array<boolean | number | string | undefined>,
 ) {
   if (
-    lineTest.requireSets === resultsExpected[0] &&
+    lineTest.setsRequire === resultsExpected[0] &&
     lineTest.setsValue === resultsExpected[1] &&
     lineTest.setsComputedValue === resultsExpected[2] &&
     lineTest.setsSupposedValue === resultsExpected[3] &&
@@ -873,9 +872,9 @@ export function testSets(
     console.log("Start test with", valueToTest);
     console.log(
       names[0],
-      lineTest.requireSets,
+      lineTest.setsRequire,
       "   passed",
-      lineTest.requireSets === resultsExpected[0],
+      lineTest.setsRequire === resultsExpected[0],
     );
     console.log("setsBaseValue", lineTest.setsBaseValue);
     console.log(
@@ -921,7 +920,6 @@ export function testSets(
   console.log("                ");
 }
 
-
 /***************/
 /***** RPE *****/
 /***************/
@@ -965,7 +963,7 @@ export function testAllRpeCases() {
   });
 
   const names = [
-    "requireRpe",
+    "rpeRequire",
     "rpeValue",
     "rpeComputedValue",
     "rpeSupposedValue",
@@ -1115,7 +1113,7 @@ export function testRpe(
   resultsExpected: Array<boolean | number | string | undefined>,
 ) {
   if (
-    lineTest.requireRpe === resultsExpected[0] &&
+    lineTest.rpeRequire === resultsExpected[0] &&
     lineTest.rpeValue === resultsExpected[1] &&
     lineTest.rpeComputedValue === resultsExpected[2] &&
     lineTest.rpeSupposedValue === resultsExpected[3] &&
@@ -1128,9 +1126,9 @@ export function testRpe(
     console.log("Start test with", valueToTest);
     console.log(
       names[0],
-      lineTest.requireRpe,
+      lineTest.rpeRequire,
       "   passed",
-      lineTest.requireRpe === resultsExpected[0],
+      lineTest.rpeRequire === resultsExpected[0],
     );
     console.log("rpeBaseValue", lineTest.rpeBaseValue);
     console.log(
@@ -1175,3 +1173,8 @@ export function testRpe(
   console.log("                ");
   console.log("                ");
 }
+
+testAllLoadCases();
+testAllRepCases();
+testAllSetsCases();
+testAllRpeCases();

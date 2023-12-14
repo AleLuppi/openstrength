@@ -8,6 +8,16 @@ import { programsCollection } from "@/helpers/database/collections";
 import { User, CoachUser, AthleteUser, UserRole } from "@/helpers/users/user";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import {
+  matchNumberFractionInteger,
+  matchNumberFractionPercentageFloat,
+  matchNumberIntegerInBrackets,
+  matchNumberOptionallySignedPercentageFloat,
+  matchNumberSignedFloatWithOptionalUnit,
+  matchNumberSignedInteger,
+  matchNumberUnsignedFloatWithOptionalUnit,
+  matchNumberUnsignedInteger,
+} from "@/helpers/regex";
 
 /**
  * Training program properties.
@@ -432,6 +442,8 @@ export class ProgramLine {
   requestFeedbackText?: boolean;
   requestFeedbackVideo?: boolean;
 
+  /***** Computed Properties *****/
+  // Reference values when reference can be line or max lift
   public get refLoadValue() {
     return this.loadReference instanceof ProgramLine
       ? this.loadReference.loadValue ??
@@ -439,7 +451,6 @@ export class ProgramLine {
           this.loadReference.loadSupposedValue
       : Number(this.loadReference?.value);
   }
-
   public get refRepsValue() {
     return this.repsReference instanceof ProgramLine
       ? this.repsReference.repsValue ??
@@ -448,136 +459,92 @@ export class ProgramLine {
       : Number(this.repsReference?.value);
   }
 
+  // Values
   public get setsValue(): number | undefined {
-    if (this.setsBaseValue !== undefined && /^\d*$/.test(this.setsBaseValue)) {
+    if (this.setsBaseValue && matchNumberUnsignedInteger(this.setsBaseValue))
       return parseInt(this.setsBaseValue);
-    } else {
-      return this.setsComputedValue;
-    }
+    else return this.setsComputedValue;
   }
   public get repsValue(): number | undefined {
-    if (this.repsBaseValue !== undefined && /^\d*$/.test(this.repsBaseValue)) {
+    if (this.repsBaseValue && matchNumberUnsignedInteger(this.repsBaseValue))
       return parseInt(this.repsBaseValue);
-    } else {
-      return this.repsComputedValue;
-    }
+    else return this.repsComputedValue;
   }
   public get loadValue(): number | undefined {
-    if (
-      this.loadBaseValue !== undefined &&
-      /^\d+kg(?!\/)/.test(this.loadBaseValue)
-    ) {
-      return parseFloat(this.loadBaseValue);
-    } else if (
-      this.loadBaseValue !== undefined &&
-      /^\d+%$/.test(this.loadBaseValue)
-    ) {
-      return this.loadComputedValue;
-    } else if (
-      this.loadBaseValue !== undefined &&
-      /^([+-]?\d*\.?\d+)kg$/.test(this.loadBaseValue)
-    ) {
-      return this.loadComputedValue;
-    } else if (
-      this.loadBaseValue !== undefined &&
-      /^([+-]?\d*\.?\d+)%$/.test(this.loadBaseValue)
-    ) {
-      return this.loadComputedValue;
+    if (this.loadBaseValue) {
+      if (matchNumberUnsignedFloatWithOptionalUnit(this.loadBaseValue))
+        return parseFloat(this.loadBaseValue);
+      else if (
+        matchNumberOptionallySignedPercentageFloat(this.loadBaseValue) ||
+        matchNumberSignedFloatWithOptionalUnit(this.loadBaseValue)
+      )
+        return this.loadComputedValue;
     }
 
     return undefined;
   }
-
   public get rpeValue(): number | undefined {
-    if (this.rpeBaseValue !== undefined && /^\d*$/.test(this.rpeBaseValue)) {
+    if (this.rpeBaseValue && matchNumberUnsignedInteger(this.rpeBaseValue)) {
       const parsedRPE = parseInt(this.rpeBaseValue);
       return parsedRPE >= 0 && parsedRPE <= 10 ? parsedRPE : undefined;
-    } else {
-      return this.rpeComputedValue;
-    }
+    } else return this.rpeComputedValue;
   }
 
+  // Computed values
   get setsComputedValue(): number | undefined {
-    if (
-      this.setsReference !== null &&
-      this.setsReference?.setsValue !== undefined
-    ) {
-      if (
-        this.setsOperation !== undefined &&
-        /^[+-]\d*$/.test(this.setsOperation)
-      ) {
+    if (this.setsReference?.setsValue) {
+      if (this.setsOperation && matchNumberSignedInteger(this.setsOperation)) {
         const operationValue = parseInt(this.setsOperation);
         return this.setsReference.setsValue + operationValue;
       }
-    } else {
-      return undefined;
-    }
+    } else return undefined;
   }
   //TODO: add case from rpe table (load and rpe present)
   get repsComputedValue(): number | undefined {
-    if (this.repsReference !== null && this.refRepsValue !== undefined) {
-      if (
-        this.repsOperation !== undefined &&
-        /^[+-]\d*$/.test(this.repsOperation)
-      ) {
+    if (this.repsReference && this.refRepsValue) {
+      if (this.repsOperation && matchNumberSignedInteger(this.repsOperation)) {
         const operationValue = parseInt(this.repsOperation);
         return this.refRepsValue + operationValue;
       }
-    } else {
-      return undefined;
-    }
+    } else return undefined;
   }
   get loadComputedValue(): number | undefined {
-    if (this.loadReference !== undefined && this.refLoadValue !== undefined) {
+    if (this.loadReference && this.refLoadValue) {
       if (
-        this.loadOperation !== undefined &&
-        this.loadBaseValue !== undefined &&
-        /^(\d*)%\/(\d*)%$/.test(this.loadBaseValue) === false
+        this.loadOperation?.trim() &&
+        this.loadBaseValue &&
+        !matchNumberFractionPercentageFloat(this.loadBaseValue)
       ) {
-        if (this.loadOperation.startsWith("*")) {
-          return this.refLoadValue * parseFloat(this.loadOperation.slice(1));
-        } else if (
-          this.loadOperation.startsWith("+") ||
-          this.loadOperation.startsWith("-")
-        ) {
+        if (this.loadOperation.trim().startsWith("*"))
+          return (
+            this.refLoadValue * parseFloat(this.loadOperation.split("*")[1])
+          );
+        else if (matchNumberSignedFloatWithOptionalUnit(this.loadOperation))
           return this.refLoadValue + parseFloat(this.loadOperation);
-        }
-      } else {
-        return undefined;
-      }
+      } else return undefined;
     }
 
     return undefined;
   }
-
   get rpeComputedValue(): number | undefined {
-    if (
-      this.rpeReference !== null &&
-      this.rpeReference?.rpeValue !== undefined
-    ) {
-      if (
-        this.rpeOperation !== undefined &&
-        /^[+-]\d*$/.test(this.rpeOperation)
-      ) {
+    if (this.rpeReference?.rpeValue) {
+      if (this.rpeOperation && matchNumberSignedInteger(this.rpeOperation)) {
         const operationValue = parseInt(this.rpeOperation);
         const computedValue = this.rpeReference.rpeValue + operationValue;
 
         // Ensure the computed value is between 0 and 10
         return Math.max(0, Math.min(10, computedValue));
       }
-    } else {
-      return undefined;
-    }
+    } else return undefined;
   }
 
+  // Operations
   get setsOperation(): string | undefined {
-    if (this.setsBaseValue !== undefined) {
+    if (this.setsBaseValue) {
       const [, operationPart] =
         this.setsBaseValue.match(/(?:[^\d\s+-]+)?([+-]\d+)$/) || [];
       return operationPart ? operationPart : undefined;
-    } else {
-      return undefined;
-    }
+    } else return undefined;
   }
   get repsOperation(): string | undefined {
     if (this.repsBaseValue !== undefined) {
@@ -588,16 +555,17 @@ export class ProgramLine {
     }
   }
   get loadOperation(): string | undefined {
-    if (this.loadBaseValue !== undefined) {
-      const kgPattern = /^([+-]\d+\.?\d*)kg$/;
-      const percentagePattern = /^([+-]?\d*\.?\d*)%$/;
-      const percentageRangePattern = /^([+-]?\d*\.?\d*)%\/([+-]?\d*\.?\d*)%$/;
+    if (this.loadBaseValue) {
       const trailingOperationPattern = /^.*([+-]\d*\.?\d*%|[+-]\d*\.?\d*kg)$/;
 
-      const kgMatch = this.loadBaseValue.match(kgPattern);
-      const percentageMatch = this.loadBaseValue.match(percentagePattern);
-      const percentageRangeMatch = this.loadBaseValue.match(
-        percentageRangePattern,
+      const kgMatch = matchNumberSignedFloatWithOptionalUnit(
+        this.loadBaseValue,
+      );
+      const percentageMatch = matchNumberOptionallySignedPercentageFloat(
+        this.loadBaseValue,
+      );
+      const percentageRangeMatch = matchNumberFractionPercentageFloat(
+        this.loadBaseValue,
       );
       const trailingOperationMatch = this.loadBaseValue.match(
         trailingOperationPattern,
@@ -643,7 +611,6 @@ export class ProgramLine {
 
     return undefined;
   }
-
   get rpeOperation(): string | undefined {
     if (this.rpeBaseValue !== undefined) {
       const [, operationPart] =
@@ -654,58 +621,53 @@ export class ProgramLine {
     }
   }
 
+  // Supposed values
   get setsSupposedValue(): number | undefined {
-    if (
-      this.setsBaseValue !== undefined &&
-      /^\d*\/\d*$/.test(this.setsBaseValue)
-    ) {
-      const [secondNumber, firstNumber] = this.setsBaseValue
-        .split("/")
+    if (this.setsBaseValue && matchNumberFractionInteger(this.setsBaseValue)) {
+      const [secondNumber, firstNumber] = matchNumberFractionInteger(
+        this.setsBaseValue,
+      )!
+        .slice(1, 3)
         .map(Number);
       return (secondNumber + firstNumber) / 2;
     } else if (
-      this.setsBaseValue !== undefined &&
-      /^\(\d*\)$/.test(this.setsBaseValue)
+      this.setsBaseValue &&
+      matchNumberIntegerInBrackets(this.setsBaseValue)
     ) {
-      return parseInt(this.setsBaseValue.slice(1, -1));
-    } else if (this.setsOperation !== undefined) {
+      return parseInt(matchNumberIntegerInBrackets(this.setsBaseValue)?.at(1)!);
+    } else if (this.setsOperation) {
       const referenceValue =
         this.setsReference?.setsComputedValue ??
         this.setsReference?.setsSupposedValue;
-      if (referenceValue !== undefined) {
+      if (referenceValue) {
         return referenceValue + parseInt(this.setsOperation);
       } else {
         const referenceSupposedValue = this.setsReference?.setsSupposedValue;
-        return referenceSupposedValue !== undefined
+        return referenceSupposedValue
           ? referenceSupposedValue + parseInt(this.setsOperation)
           : undefined;
       }
-    } else {
-      return undefined;
-    }
+    } else return undefined;
   }
   get repsSupposedValue(): number | undefined {
-    if (
-      this.repsBaseValue !== undefined &&
-      /^\d*\/\d*$/.test(this.repsBaseValue)
-    ) {
-      const [secondNumber, firstNumber] = this.repsBaseValue
-        .split("/")
+    if (this.repsBaseValue && matchNumberFractionInteger(this.repsBaseValue)) {
+      const [secondNumber, firstNumber] = matchNumberFractionInteger(
+        this.repsBaseValue,
+      )!
+        .slice(1, 3)
         .map(Number);
       return (secondNumber + firstNumber) / 2;
     } else if (
-      this.repsBaseValue !== undefined &&
-      /^\(\d*\)$/.test(this.repsBaseValue)
+      this.repsBaseValue &&
+      matchNumberIntegerInBrackets(this.repsBaseValue)
     ) {
-      return parseInt(this.repsBaseValue.slice(1, -1));
-    } else if (this.repsOperation !== undefined) {
+      return parseInt(matchNumberIntegerInBrackets(this.repsBaseValue)?.at(1)!);
+    } else if (this.repsOperation) {
       const referenceValue = this.refRepsValue;
       return referenceValue
         ? referenceValue + parseInt(this.repsOperation)
         : undefined;
-    } else {
-      return undefined;
-    }
+    } else return undefined;
   }
   get loadSupposedValue(): number | undefined {
     const kgRangeRegex = /^(\d*)kg\/(\d*)kg$/;
@@ -757,7 +719,7 @@ export class ProgramLine {
         this.loadOperation !== undefined &&
         this.loadOperation.startsWith("*")
       ) {
-        return this.refLoadValue * parseFloat(this.loadOperation.slice(1));
+        return this.refLoadValue * parseFloat(this.loadOperation.split("*")[1]);
       } else {
         return undefined;
       }
@@ -793,21 +755,19 @@ export class ProgramLine {
 
     return undefined;
   }
-
   get rpeSupposedValue(): number | undefined {
-    if (
-      this.rpeBaseValue !== undefined &&
-      /^\d*\/\d*$/.test(this.rpeBaseValue)
-    ) {
-      const [secondNumber, firstNumber] = this.rpeBaseValue
-        .split("/")
+    if (this.rpeBaseValue && matchNumberFractionInteger(this.rpeBaseValue)) {
+      const [secondNumber, firstNumber] = matchNumberFractionInteger(
+        this.rpeBaseValue,
+      )!
+        .slice(1, 3)
         .map(Number);
       return (secondNumber + firstNumber) / 2;
     } else if (
-      this.rpeBaseValue !== undefined &&
-      /^\(\d*\)$/.test(this.rpeBaseValue)
+      this.rpeBaseValue &&
+      matchNumberIntegerInBrackets(this.rpeBaseValue)
     ) {
-      return parseInt(this.rpeBaseValue.slice(1, -1));
+      return parseInt(matchNumberIntegerInBrackets(this.rpeBaseValue)?.at(1)!);
     } else if (this.rpeOperation !== undefined) {
       const referenceValue =
         this.rpeReference?.rpeComputedValue ??
@@ -825,7 +785,8 @@ export class ProgramLine {
     }
   }
 
-  get requireSets(): boolean {
+  // Requires
+  get setsRequire(): boolean {
     if (
       this.setsBaseValue !== undefined &&
       /^(\\?|\(\d*\)|\d*\/\d*|\?)$/.test(this.setsBaseValue)
@@ -835,7 +796,7 @@ export class ProgramLine {
       return false;
     }
   }
-  get requireReps(): boolean {
+  get repsRequire(): boolean {
     if (
       this.repsBaseValue !== undefined &&
       /^(\\?|\(\d*\)|\d*\/\d*|\?)$/.test(this.repsBaseValue)
@@ -845,7 +806,7 @@ export class ProgramLine {
       return false;
     }
   }
-  get requireLoad(): boolean {
+  get loadRequire(): boolean {
     if (
       this.loadBaseValue !== undefined &&
       /^(?:\?|(?:\d+kg\/\d+kg)|(?:\d+%\/\d+%)|(?:\(\d+kg\))|(?:\(\d+%\)))$/.test(
@@ -857,7 +818,7 @@ export class ProgramLine {
       return false;
     }
   }
-  get requireRpe(): boolean {
+  get rpeRequire(): boolean {
     if (
       this.rpeBaseValue !== undefined &&
       /^(\\?|\(\d*\)|\d*\/\d*|\?)$/.test(this.rpeBaseValue)
@@ -868,27 +829,18 @@ export class ProgramLine {
     }
   }
 
+  // Range min and max
   get setsRangeMin(): number | undefined {
-    if (
-      this.setsBaseValue !== undefined &&
-      /^\d*\/\d*$/.test(this.setsBaseValue)
-    ) {
-      const [minPart] = this.setsBaseValue.match(/^\d*/) || [];
+    if (this.setsBaseValue && matchNumberFractionInteger(this.setsBaseValue)) {
+      const minPart = matchNumberFractionInteger(this.setsBaseValue)?.at(1);
       return minPart ? parseInt(minPart) : undefined;
-    } else {
-      return undefined;
-    }
+    } else return undefined;
   }
   get repsRangeMin(): number | undefined {
-    if (
-      this.repsBaseValue !== undefined &&
-      /^\d*\/\d*$/.test(this.repsBaseValue)
-    ) {
-      const [minPart] = this.repsBaseValue.match(/^\d*/) || [];
+    if (this.repsBaseValue && matchNumberFractionInteger(this.repsBaseValue)) {
+      const minPart = matchNumberFractionInteger(this.repsBaseValue)?.at(1);
       return minPart ? parseInt(minPart) : undefined;
-    } else {
-      return undefined;
-    }
+    } else return undefined;
   }
   //TODO substitute check on maxreference from line data to a global method (or within the class?)
   get loadRangeMin(): number | undefined {
@@ -916,37 +868,22 @@ export class ProgramLine {
     return undefined;
   }
   get rpeRangeMin(): number | undefined {
-    if (
-      this.rpeBaseValue !== undefined &&
-      /^\d*\/\d*$/.test(this.rpeBaseValue)
-    ) {
-      const [minPart] = this.rpeBaseValue.match(/^\d*/) || [];
+    if (this.rpeBaseValue && matchNumberFractionInteger(this.rpeBaseValue)) {
+      const minPart = matchNumberFractionInteger(this.rpeBaseValue)?.at(1);
       return minPart ? parseInt(minPart) : undefined;
-    } else {
-      return undefined;
-    }
+    } else return undefined;
   }
   get setsRangeMax(): number | undefined {
-    if (
-      this.setsBaseValue !== undefined &&
-      /^\d*\/\d*$/.test(this.setsBaseValue)
-    ) {
-      const [, maxPart] = this.setsBaseValue.match(/\/(\d*)$/) || [];
+    if (this.setsBaseValue && matchNumberFractionInteger(this.setsBaseValue)) {
+      const maxPart = matchNumberFractionInteger(this.setsBaseValue)?.at(2);
       return maxPart ? parseInt(maxPart) : undefined;
-    } else {
-      return undefined;
-    }
+    } else return undefined;
   }
   get repsRangeMax(): number | undefined {
-    if (
-      this.repsBaseValue !== undefined &&
-      /^\d*\/\d*$/.test(this.repsBaseValue)
-    ) {
-      const [, maxPart] = this.repsBaseValue.match(/\/(\d*)$/) || [];
+    if (this.repsBaseValue && matchNumberFractionInteger(this.repsBaseValue)) {
+      const maxPart = matchNumberFractionInteger(this.repsBaseValue)?.at(2);
       return maxPart ? parseInt(maxPart) : undefined;
-    } else {
-      return undefined;
-    }
+    } else return undefined;
   }
   get loadRangeMax(): number | undefined {
     if (
@@ -973,15 +910,10 @@ export class ProgramLine {
     return undefined;
   }
   get rpeRangeMax(): number | undefined {
-    if (
-      this.rpeBaseValue !== undefined &&
-      /^\d*\/\d*$/.test(this.rpeBaseValue)
-    ) {
-      const [, maxPart] = this.rpeBaseValue.match(/\/(\d*)$/) || [];
+    if (this.rpeBaseValue && matchNumberFractionInteger(this.rpeBaseValue)) {
+      const maxPart = matchNumberFractionInteger(this.rpeBaseValue)?.at(2);
       return maxPart ? parseInt(maxPart) : undefined;
-    } else {
-      return undefined;
-    }
+    } else return undefined;
   }
 
   constructor({
