@@ -140,8 +140,8 @@
             </div>
 
             <q-tabs
-              @update:model-value="onTabChange"
               :model-value="selectedTab"
+              @update:model-value="onTabChange"
               class="text-dark q-pa-md"
               dense
               no-caps
@@ -149,7 +149,7 @@
             >
               <q-tab
                 v-for="tab in $q.screen.width < 840 ? allTabsMobile : allTabs"
-                :key="tab.key"
+                :key="tab.name"
                 :name="tab.name"
                 :label="tab.label"
                 :icon="tab.icon"
@@ -290,7 +290,7 @@
 
                       <FormMaxLift
                         ref="maxliftFormElement"
-                        :maxlift="maxlift"
+                        :maxlift="updatingMaxLift"
                         :exercises="exercises"
                         @submit="saveMaxlift"
                         @reset="showMaxLiftAddDialog = false"
@@ -337,7 +337,6 @@ import FormAthleteAnagraphicInfo from "@/components/forms/FormAthleteAnagraphicI
 import FormAthleteProgramInfo from "@/components/forms/FormAthleteProgramInfo.vue";
 import { Program } from "@/helpers/programs/program";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
-import { Exercise } from "@/helpers/exercises/exercise";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
 import { event } from "vue-gtag";
 import {
@@ -356,70 +355,61 @@ const coachInfo = useCoachInfoStore();
 // Set tab navigation info
 const allTabsMobile = [
   {
-    key: "programs",
-    name: "Programs",
+    name: "programs",
     label: "",
     icon: "fa-regular fa-file-lines",
   },
   {
-    key: "anagraphic",
-    name: "Anagraphic",
+    name: "anagraphic",
     label: "",
     icon: "fa-regular fa-address-card",
   },
   {
-    key: "personalbest",
-    name: "Personal Best",
+    name: "personalbest",
     label: "",
     icon: "fa-solid fa-ranking-star",
   },
 ];
 const allTabs = [
   {
-    key: "programs",
-    name: "Programs",
+    name: "programs",
     label: i18n.t("common.programs"),
     icon: "fa-regular fa-file-lines",
   },
   {
-    key: "anagraphic",
-    name: "Anagraphic",
+    name: "anagraphic",
     label: i18n.t("coach.athlete_management.fields.anagraphic"),
     icon: "fa-regular fa-address-card",
   },
   {
-    key: "personalbest",
-    name: "Personal Best",
+    name: "personalbest",
     label: i18n.t("coach.athlete_management.fields.personal_best"),
     icon: "fa-solid fa-ranking-star",
   },
 ];
 
-// Set ref
-const searchAthlete = ref<string>(); // TODO search
+// Set athlete related ref
+const searchAthlete = ref<string>();
 const updatingAthlete = ref<AthleteUser>(); // athlete that is currently being updated
 const selectedAthlete = ref<AthleteUser>(); // athlete that is currently selected in left table
 const athleteTableElement = ref<typeof TableManagedAthletes>();
 const athleteFormElement = ref<typeof FormAthleteAnagraphicInfo>();
+
+// Set additional athlete info ref
+const selectedTab = ref("programs");
 const athleteProgramFormElement = ref<typeof FormAthleteProgramInfo>();
 const maxliftFormElement = ref<typeof FormMaxLift>();
-
-const selectedTab = ref("Programs"); // TODO main tab to show
 const showAthleteDialog = ref(false); // whether to show dialog to add athlete
 
-// Athlete info for add dialog
+// Set athlete data ref for new athlete dialog
 const athleteName = ref(""); // new athlete name
 const athleteSurname = ref(""); // new athlete surname
 const athleteNote = ref(""); // new athlete note
 
-// Max lift declarations
+// Set ref for max lift declarations
 const searchMaxLift = ref<string>();
 const updatingMaxLift = ref<MaxLift>();
 const showMaxLiftAddDialog = ref(false);
-
-const selectedExercise = ref<Exercise | undefined>();
-
-const maxlift = computed<MaxLift>(() => updatingMaxLift.value ?? new MaxLift());
 
 // Get coach info
 const athletes = computed(() => coachInfo.athletes || []);
@@ -468,11 +458,12 @@ function onTabChange(tab: string) {
 }
 
 /**
- * Create a new maxlift and assign to a coach
+ * Create a new maxlift and assign to a coach.
+ *
+ * @param newMaxLift max lift instance that shall be saved.
  */
-function saveMaxlift() {
+function saveMaxlift(newMaxLift: MaxLift) {
   // Get current maxlift and check if already instanciated on db
-  const newMaxLift = maxlift.value;
   const isNew = !newMaxLift.uid;
 
   // Update values
@@ -508,15 +499,14 @@ function saveMaxlift() {
   showMaxLiftAddDialog.value = false;
 }
 
-/** TODO check
- * Compile form with max lift info to allow coach to update them.
+/**
+ * Open form with max lift info to allow coach to update them.
  *
- * @param maxlift
+ * @param maxlift instance that is being updated by coach.
  */
 function onUpdateMaxLift(maxlift: MaxLift) {
   updatingMaxLift.value = maxlift;
   showMaxLiftAddDialog.value = true;
-  selectedExercise.value = maxlift.exercise ?? undefined;
 }
 
 /**
@@ -600,6 +590,7 @@ function clearAthlete() {
 .os-athleteinfo-max-height {
   height: calc(100vh - 38px);
 }
+
 .os-athleteinfo-max-height-notdesktop {
   height: calc(100vh - 38px - 50px);
 }
