@@ -259,22 +259,24 @@
             <!-- Search status or temporary program -->
             <q-card>
               <q-card-section v-if="selectedProgram.uid">
-                <div class="row items-center justify-between">
-                  <p>{{ selectedProgram.name ?? $t("common.program") }}</p>
-                  <p
-                    class="text-italic text-xs"
-                    v-if="selectedProgram.lastUpdated"
-                  >
-                    {{ $t("coach.program_management.builder.last_update")
-                    }}{{ $d(selectedProgram.lastUpdated, "middle") }}
-                  </p>
-                </div>
-                <p class="q-mt-md text-italic">
+                <p>
                   {{
-                    selectedProgram.description
-                      ? selectedProgram.description
-                      : " "
+                    selectedProgram.name ??
+                    $t("coach.program_management.fields.program")
                   }}
+                </p>
+                <p
+                  class="text-italic text-xs"
+                  v-if="selectedProgram.lastUpdated"
+                >
+                  {{ $t("coach.program_management.builder.last_update") }}
+                  {{ $d(selectedProgram.lastUpdated, "middle") }}
+                </p>
+                <p
+                  class="q-mt-md text-italic"
+                  v-if="selectedProgram.description"
+                >
+                  {{ selectedProgram.description }}
                 </p>
               </q-card-section>
               <q-card-section
@@ -289,12 +291,12 @@
                   class="text-italic text-xs"
                   v-if="temporaryProgram.lastUpdated"
                 >
-                  {{ $t("coach.program_management.builder.last_update")
-                  }}{{ $d(temporaryProgram.lastUpdated, "middle") }}
+                  {{ $t("coach.program_management.builder.last_update") }}
+                  {{ $d(temporaryProgram.lastUpdated, "middle") }}
                 </p>
               </q-card-section>
               <q-card-section v-else>{{
-                $t("coach.program_management.builder.last_update")
+                $t("coach.program_management.builder.start_program")
               }}</q-card-section>
             </q-card>
 
@@ -318,9 +320,9 @@
       <template v-slot:separator>
         <!-- Add a middle separator -->
         <q-avatar
-          color="light"
+          color="secondary"
           text-color="white"
-          size="30px"
+          size="32px"
           icon="drag_indicator"
         />
       </template>
