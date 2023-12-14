@@ -12,9 +12,12 @@
 
 <script setup lang="ts">
 import { computed, PropType } from "vue";
-import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 
+// Init plugin
+const $q = useQuasar();
 const i18n = useI18n();
 
 // Define props
@@ -35,7 +38,7 @@ const columns = [
   {
     name: "exercise",
     required: true,
-    label: "Exercise", // TODO i18n
+    label: i18n.t("coach.maxlift_management.fields.exercise"),
     align: "left",
     field: "exercise",
     sortable: true,
@@ -43,21 +46,25 @@ const columns = [
   {
     name: "type",
     align: "left",
-    label: "Type", // TODO i18n
+    label: i18n.t("coach.maxlift_management.fields.type"),
     field: "type",
   },
-  {
-    name: "value",
-    align: "left",
-    label: "Value", // TODO i18n
-    field: "value",
-  },
-  {
-    name: "date",
-    align: "left",
-    label: "Date", // TODO i18n
-    field: "date",
-  },
+  ...(!$q.screen.lt.sm
+    ? [
+        {
+          name: "value",
+          align: "left",
+          label: i18n.t("coach.maxlift_management.fields.value"),
+          field: "value",
+        },
+        {
+          name: "date",
+          align: "left",
+          label: i18n.t("coach.maxlift_management.fields.date"),
+          field: "date",
+        },
+      ]
+    : []),
   {
     name: "update",
     align: "center",

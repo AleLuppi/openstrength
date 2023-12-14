@@ -5,7 +5,11 @@
     row-key="uid"
     virtual-scroll
     hide-pagination
-    class="os-table-max-height"
+    :class="
+      $q.screen.lt.md
+        ? 'os-table-max-height-with-header'
+        : 'os-table-max-height'
+    "
     @row-click="
       (...params: [Event, Object, Number]) => emit('selection', ...params)
     "
@@ -16,7 +20,13 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, PropType } from "vue";
+import { useQuasar } from "quasar";
+import { useI18n } from "vue-i18n";
 import { AthleteUser } from "@/helpers/users/user";
+
+// Init plugin
+const $q = useQuasar();
+const i18n = useI18n();
 
 // Define props
 const props = defineProps({
@@ -42,17 +52,21 @@ const emit = defineEmits<{
 
 // Set table columns
 const columns = computed(() => [
-  {
-    name: "image",
-    required: false,
-    label: "",
-    align: "center",
-    field: "image",
-  },
+  ...($q.screen.width > 840 || !$q.screen.lt.sm
+    ? [
+        {
+          name: "image",
+          required: false,
+          label: "",
+          align: "center",
+          field: "image",
+        },
+      ]
+    : []),
   {
     name: "name",
     required: true,
-    label: "Name", // TODO i18n
+    label: i18n.t("coach.athlete_management.fields.name"),
     align: "left",
     field: (row: {
       name?: string;
@@ -67,7 +81,7 @@ const columns = computed(() => [
     : [
         {
           name: "program",
-          label: "Program", // TODO i18n
+          label: i18n.t("coach.program_management.fields.program"),
           align: "left",
           field: "program",
         },
@@ -91,11 +105,9 @@ const rows = computed(() => {
     program: {
       element: "chip",
       label: athlete.assignedProgramId
-        ? "Ongoing" // TODO i18n
-        : "Unassigned", // TODO i18n
-      color: athlete.assignedProgramId
-        ? "positive" // TODO i18n
-        : "negative", // TODO i18n
+        ? i18n.t("coach.athlete_management.fields.program_ongoing")
+        : i18n.t("coach.athlete_management.fields.program_unassigned"),
+      color: athlete.assignedProgramId ? "positive" : "negative",
     },
   }));
 });
@@ -129,5 +141,9 @@ watch(selectedRows, (value) =>
 <style scoped lang="scss">
 .os-table-max-height {
   max-height: calc(100vh - 160px);
+}
+
+.os-table-max-height-with-header {
+  max-height: calc(100vh - 160px - 50px);
 }
 </style>

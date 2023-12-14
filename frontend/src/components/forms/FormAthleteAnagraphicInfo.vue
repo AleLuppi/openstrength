@@ -7,6 +7,7 @@
           v-model="athleteName"
           :label="$t('coach.athlete_management.fields.name')"
           :readonly="readonly"
+          class="col-md-auto col-sm-6 col-12"
         />
 
         <!-- Athlete Surname -->
@@ -14,6 +15,7 @@
           v-model="athleteSurname"
           :label="$t('coach.athlete_management.fields.surname')"
           :readonly="readonly"
+          class="col-md-auto col-sm-6 col-12"
         />
 
         <!--Athlete Birthday-->
@@ -21,6 +23,7 @@
           v-model="athleteBirthday"
           :label="$t('coach.athlete_management.fields.birthday')"
           :readonly="readonly"
+          class="col-md-auto col-sm-6 col-12"
         >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
@@ -38,30 +41,28 @@
             </q-icon>
           </template>
         </os-input>
-      </div>
 
-      <div class="row q-col-gutter-x-md">
         <os-select
           v-model="athleteGender"
           :label="$t('coach.athlete_management.fields.gender')"
           :options="athleteGenderOptions"
           emit-value
           map-options
-          class="col-2"
+          class="col-4"
         />
 
         <os-input
           v-model="athleteHeight"
           :label="$t('coach.athlete_management.fields.height')"
           :suffix="heightSuffix"
-          class="col-2"
+          class="col-4"
         />
 
         <os-input
           v-model="athleteWeight"
           :label="$t('coach.athlete_management.fields.weight')"
           :suffix="weightSuffix"
-          class="col-2"
+          class="col-4"
         />
       </div>
 

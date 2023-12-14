@@ -9,7 +9,8 @@
       :color="selected.includes(key) ? 'primary' : 'lighter'"
       :text-color="selected.includes(key) ? 'lighter' : 'dark'"
       @click="toggleButton(key)"
-      class="q-ma-sm bordered"
+      class="bordered"
+      :class="$q.screen.lt.sm ? 'q-ma-xs' : 'q-ma-sm'"
     >
       {{ props.useLocale ? $t(text) : text }}
     </q-btn>
@@ -23,6 +24,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import type { QBtnProps } from "quasar";
+import { useI18n } from "vue-i18n";
+
+const i18n = useI18n();
 
 // Define props (from child)
 interface extendedBtnProps extends QBtnProps {
@@ -79,11 +83,15 @@ function validate() {
 
   // Fail if lower than minimum
   if (selected.value.length < min) {
-    errorMessage.value = `Select at least ${min} values.`; // TODO add locale
+    errorMessage.value = i18n.t("user.onboarding.error_min_selection", {
+      num: min,
+    });
     return false;
   }
   if (selected.value.length > max) {
-    errorMessage.value = `Select at most ${max} values.`; // TODO add locale
+    errorMessage.value = i18n.t("user.onboarding.error_max_selection", {
+      num: max,
+    });
     return false;
   }
   errorMessage.value = "";

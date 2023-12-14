@@ -83,7 +83,7 @@ import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 const props = defineProps({
   maxlift: {
     type: MaxLift,
-    required: true,
+    required: false,
   },
   exercises: {
     type: Array as PropType<Exercise[]>,
@@ -118,10 +118,10 @@ const maxliftDate = ref<string>();
 watch(
   () => props.maxlift,
   () => {
-    maxliftExercise.value = props.maxlift.exercise?.name;
-    maxliftType.value = props.maxlift.type;
-    maxliftValue.value = props.maxlift.value;
-    maxliftDate.value = props.maxlift.performedOn
+    maxliftExercise.value = props.maxlift?.exercise?.name;
+    maxliftType.value = props.maxlift?.type;
+    maxliftValue.value = props.maxlift?.value;
+    maxliftDate.value = props.maxlift?.performedOn
       ? props.maxlift.performedOn
           .toISOString()
           .split("T")[0]
@@ -154,7 +154,7 @@ const maxliftValueSuffix = computed(() => {
  * Perform operations on form submit.
  */
 function onSubmit() {
-  const maxlift = props.maxlift;
+  const maxlift = props.maxlift ?? new MaxLift();
   maxlift.exercise = props.exercises.find(
     (exercise) => exercise.name == maxliftExercise.value,
   );

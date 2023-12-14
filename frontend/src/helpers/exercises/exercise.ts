@@ -10,8 +10,9 @@ import { exercisesCollection } from "@/helpers/database/collections";
  * Define available load types.
  */
 export enum ExerciseLoadType {
-  weight = "weight",
-  time = "time",
+  bodyweight = "bodyweight",
+  loaded = "loaded",
+  loadonly = "loadonly",
 }
 
 /**

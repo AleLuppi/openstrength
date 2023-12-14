@@ -4,8 +4,8 @@
     class="q-mx-auto q-px-md q-py-lg text-center column justify-center items-stretch"
   >
     <!-- Show coming soon in case of athlete -->
-    <img :src="logoFullImage" alt="Logo" />
-    <h2>
+    <img :src="logoFullImage" :srcset="logoFullImage + ' 1.2x'" alt="Logo" />
+    <h2 class="text-center">
       {{ $t("comingsoon.title") }}
     </h2>
     <p>
@@ -39,19 +39,30 @@
         class="link-child"
       >
         <q-card
-          class="q-pa-lg column items-center justify-center square-card q-hoverable text-center"
+          class="column items-center justify-center square-card q-hoverable text-center"
+          :class="
+            $q.screen.lt.sm
+              ? 'q-pa-xs square-card-mobile'
+              : 'q-pa-lg square-card'
+          "
         >
           <!-- Animate when on -->
           <span class="q-focus-helper"></span>
 
           <!-- Icon, title, and subtitle -->
-          <q-icon :name="buttonInfo.icon" size="6em" color="icon-color" />
-          <h4>
-            {{ $t(buttonInfo.title) }}
-          </h4>
-          <p class="q-px-md text-weight-light">
-            {{ $t(buttonInfo.subtitle) }}
-          </p>
+          <div class="column justify-center items-center">
+            <q-icon
+              :name="buttonInfo.icon"
+              :size="$q.screen.lt.sm ? '3em' : '5em'"
+              color="icon-color"
+            />
+            <h4 class="text-center">
+              {{ $t(buttonInfo.title) }}
+            </h4>
+            <p class="q-px-md text-weight-light">
+              {{ $t(buttonInfo.subtitle) }}
+            </p>
+          </div>
         </q-card>
       </router-link>
     </div>
@@ -85,10 +96,10 @@
           <!-- Icon, title, and subtitle -->
           <q-icon
             :name="buttonUnsignedUser.icon"
-            size="6em"
+            size="5em"
             color="icon-color"
           />
-          <h4>
+          <h4 class="text-center'">
             {{ $t(buttonUnsignedUser.title) }}
           </h4>
           <p class="q-px-md text-weight-light">
@@ -110,21 +121,55 @@
       </h2>
     </div>
 
-    <!-- Common actions -->
+    <!-- Action -->
     <div class="row q-gutter-lg justify-center items-center">
-      <q-icon name="menu_open" size="4em" />
-      <h6>{{ $t("homepage.actions.check_drawer") }}</h6>
+      <q-card
+        class="q-pa-lg column items-center justify-center square-card q-hoverable text-center cursor-pointer"
+        clickable
+        v-ripple
+        @click="showDialogOnboarding = true"
+      >
+        <!-- Animate when on -->
+        <span class="q-focus-helper"></span>
+
+        <!-- Icon, title, and subtitle -->
+        <q-icon
+          name="fa-regular fa-circle-play"
+          :size="$q.screen.lt.sm ? '3em' : '5em'"
+          color="icon-color"
+        />
+        <p
+          :class="
+            $q.screen.lt.md ? 'text-center text-h6' : 'text-center text-h4'
+          "
+        >
+          {{ $t("homepage.onboarding_title") }}
+        </p>
+        <p class="q-px-md text-weight-light">
+          {{ $t("homepage.onboarding_subtitle") }}
+        </p>
+      </q-card>
     </div>
+
+    <!-- Show optional global dialogs -->
+    <q-dialog v-model="showDialogOnboarding">
+      <UserOnboarding :on-submit="onOnboardingSubmit"></UserOnboarding>
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
-import { UserRole } from "@/helpers/users/user";
+import { User, UserRole } from "@/helpers/users/user";
+import UserOnboarding from "@/components/forms/UserOnboarding.vue";
 
 // Get user state
 const user = useUserStore();
+
+// Set onboarding form visibility
+const showDialogOnboarding = ref(false);
 
 // Set coach action buttons
 const buttonsCoachAction = [
@@ -157,14 +202,31 @@ const buttonsUnsigedAction = [
     subtitle: "homepage.actions.to_login_caption",
   },
 ];
+
+/**
+ * Actions to perform on onboarding dialog submit.
+ *
+ * @param data object data that shall be saved in user instance.
+ */
+function onOnboardingSubmit(data: { [key: string]: any }) {
+  showDialogOnboarding.value = false;
+  Object.assign(user.baseUser as User, data);
+  user.saveUser();
+}
 </script>
 
 <style scoped lang="scss">
 .square-card {
+  width: 270px;
+  height: 270px;
+  border-radius: 16px;
+  background: var(--bg-1, #fff);
+  box-shadow: 0px 8px 32px 0px rgba(51, 38, 174, 0.08);
+}
+
+.square-card-mobile {
   width: 300px;
-  /* Set your desired width for the square card */
-  height: 300px;
-  /* Set your desired height for the square card */
+  height: 150px;
   border-radius: 16px;
   background: var(--bg-1, #fff);
   box-shadow: 0px 8px 32px 0px rgba(51, 38, 174, 0.08);

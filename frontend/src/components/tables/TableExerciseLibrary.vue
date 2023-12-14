@@ -4,7 +4,11 @@
     :rows="rows"
     virtual-scroll
     hide-pagination
-    class="os-table-max-height"
+    :class="
+      $q.screen.lt.md
+        ? 'os-table-max-height-with-header'
+        : 'os-table-max-height'
+    "
     @row-click="$props.onUpdate"
     :selection="isVariant ? 'none' : 'single'"
     v-model:selected="selected"
@@ -69,7 +73,7 @@ const columns = computed(() =>
         {
           name: "variant",
           align: "left",
-          label: "Variant", // TODO i18n
+          label: i18n.t("coach.exercise_management.fields.variant"),
           field: "displayName",
           sortable: true,
         },
@@ -80,7 +84,7 @@ const columns = computed(() =>
         {
           name: "exercise",
           required: true,
-          label: "Exercise", // TODO i18n
+          label: i18n.t("coach.exercise_management.fields.exercise"),
           field: "displayName",
           align: "left",
           sortable: true,
@@ -88,7 +92,7 @@ const columns = computed(() =>
         {
           name: "variants",
           align: "left",
-          label: "Variants", // TODO i18n
+          label: i18n.t("coach.exercise_management.fields.variants"),
           field: "variants",
         },
         { name: "delete", align: "center", label: "", field: "delete" },
@@ -130,8 +134,12 @@ const rows = computed(() => {
         },
     variants:
       item.name && item instanceof Exercise
-        ? (item.variants?.length ?? 0).toString() + " variants"
-        : "", // TODO i18n
+        ? (item.variants?.length ?? 0).toString() +
+          " " +
+          i18n
+            .t("coach.exercise_management.fields.variants")
+            .toLocaleLowerCase()
+        : "",
     update: {
       element: "button",
       on: { click: () => props.onUpdate?.(item) },
@@ -153,6 +161,10 @@ const rows = computed(() => {
 
 <style scoped lang="scss">
 .os-table-max-height {
-  max-height: calc(100vh - 120px - 140px);
+  max-height: calc(100vh - 16px - 120px - 16px);
+}
+
+.os-table-max-height-with-header {
+  max-height: calc(100vh - 160px - 50px);
 }
 </style>

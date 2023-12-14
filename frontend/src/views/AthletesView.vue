@@ -2,7 +2,7 @@
   <q-page class="q-pa-md">
     <div class="row q-col-gutter-x-md">
       <!-- Display athletes -->
-      <div class="col-12 col-sm-4">
+      <div class="col-12 col-sm-5">
         <q-card>
           <q-card-section>
             <h6>
@@ -114,17 +114,31 @@
       </div>
 
       <!-- Right card: selected athlete data -->
-      <div v-if="Boolean(selectedAthlete)" class="col-12 col-sm-8">
+      <component
+        :is="$q.screen.lt.sm ? QDialog : 'div'"
+        v-if="Boolean(selectedAthlete)"
+        :model-value="Boolean(selectedAthlete)"
+        @update:model-value="selectedAthlete = undefined"
+        class="col-7"
+      >
         <q-card>
-          <q-card-section
-            class="q-gutter-x-xs"
-            style="height: calc(100vh - 38px)"
-          >
-            <!-- TODO i18n -->
-            <h6>Athlete Info</h6>
+          <q-card-section class="q-gutter-x-xs os-athleteinfo-max-height">
+            <div class="row justify-between items-center">
+              <h6>{{ $t("coach.athlete_management.fields.athlete_info") }}</h6>
+              <q-btn
+                v-if="$q.screen.lt.sm"
+                icon="close"
+                outline
+                flat
+                round
+                color="light-dark"
+                class="q-pa-sm"
+                @click="selectedAthlete = undefined"
+              ></q-btn>
+            </div>
+
             <q-tabs
-              @update:model-value="onTabChange"
-              :model-value="selectedTab"
+              v-model="selectedTab"
               class="text-dark q-pa-md"
               dense
               no-caps
@@ -132,7 +146,7 @@
             >
               <q-tab
                 v-for="tab in allTabs"
-                :key="tab.key"
+                :key="tab.name"
                 :name="tab.name"
                 :label="tab.label"
                 :icon="tab.icon"
@@ -140,7 +154,7 @@
             </q-tabs>
             <q-tab-panels v-model="selectedTab">
               <!-- Program info -->
-              <q-tab-panel name="Programs">
+              <q-tab-panel name="programs">
                 <!-- If selected athlete has ongoing program show program data form-->
                 <div v-if="selectedAthlete && Boolean(athleteCurrentProgram)">
                   <FormAthleteProgramInfo
@@ -152,7 +166,6 @@
                 <!-- If selected athlete has no programs at all -->
                 <div v-else-if="selectedAthlete && Boolean(athletePrograms)">
                   <!-- TODO: pass athlete id -->
-
                   <div
                     class="row q-gutter-lg justify-center items-center"
                     style="height: 100%"
@@ -193,7 +206,7 @@
               </q-tab-panel>
 
               <!-- Athlete Anagraphic and phisical data -->
-              <q-tab-panel name="Anagraphic">
+              <q-tab-panel name="anagraphic">
                 <FormAthleteAnagraphicInfo
                   ref="athleteFormElement"
                   v-if="selectedAthlete"
@@ -202,7 +215,7 @@
               </q-tab-panel>
 
               <!-- Personal Best table -->
-              <q-tab-panel name="Personal Best">
+              <q-tab-panel name="personalbest">
                 <h6>
                   {{
                     $t("coach.athlete_management.call_to_action.maxlift_title")
@@ -274,7 +287,7 @@
 
                       <FormMaxLift
                         ref="maxliftFormElement"
-                        :maxlift="maxlift"
+                        :maxlift="updatingMaxLift"
                         :exercises="exercises"
                         @submit="saveMaxlift"
                         @reset="showMaxLiftAddDialog = false"
@@ -286,10 +299,10 @@
             </q-tab-panels>
           </q-card-section>
         </q-card>
-      </div>
+      </component>
 
       <!-- Right card: no athlete selected call to action -->
-      <div v-else class="col-12 col-sm-8">
+      <div v-else-if="!$q.screen.lt.sm" class="col-7">
         <div class="row flex-center" style="height: 100%">
           <div class="row">
             <q-icon
@@ -310,7 +323,7 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick, watch } from "vue";
-import { useQuasar } from "quasar";
+import { useQuasar, QDialog } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
@@ -321,7 +334,6 @@ import FormAthleteAnagraphicInfo from "@/components/forms/FormAthleteAnagraphicI
 import FormAthleteProgramInfo from "@/components/forms/FormAthleteProgramInfo.vue";
 import { Program } from "@/helpers/programs/program";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
-import { Exercise } from "@/helpers/exercises/exercise";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
 import { event } from "vue-gtag";
 import {
@@ -340,50 +352,53 @@ const coachInfo = useCoachInfoStore();
 // Set tab navigation info
 const allTabs = [
   {
-    key: "programs",
-    name: "Programs",
-    label: "Programs",
+    name: "programs",
+    label:
+      $q.screen.width < 840
+        ? ""
+        : i18n.t("coach.program_management.fields.program"),
     icon: "fa-regular fa-file-lines",
   },
   {
-    key: "anagraphic",
-    name: "Anagraphic",
-    label: "Anagraphic",
+    name: "anagraphic",
+    label:
+      $q.screen.width < 840
+        ? ""
+        : i18n.t("coach.athlete_management.fields.anagraphic"),
     icon: "fa-regular fa-address-card",
   },
   {
-    key: "personalbest",
-    name: "Personal Best",
-    label: "Personal Best",
+    name: "personalbest",
+    label:
+      $q.screen.width < 840
+        ? ""
+        : i18n.t("coach.athlete_management.fields.personal_best"),
     icon: "fa-solid fa-ranking-star",
   },
 ];
 
-// Set ref
-const searchAthlete = ref<string>(); // TODO search
+// Set athlete related ref
+const searchAthlete = ref<string>();
 const updatingAthlete = ref<AthleteUser>(); // athlete that is currently being updated
 const selectedAthlete = ref<AthleteUser>(); // athlete that is currently selected in left table
 const athleteTableElement = ref<typeof TableManagedAthletes>();
 const athleteFormElement = ref<typeof FormAthleteAnagraphicInfo>();
+
+// Set additional athlete info ref
+const selectedTab = ref("programs");
 const athleteProgramFormElement = ref<typeof FormAthleteProgramInfo>();
 const maxliftFormElement = ref<typeof FormMaxLift>();
-
-const selectedTab = ref("Programs"); // TODO main tab to show
 const showAthleteDialog = ref(false); // whether to show dialog to add athlete
 
-// Athlete info for add dialog
+// Set athlete data ref for new athlete dialog
 const athleteName = ref(""); // new athlete name
 const athleteSurname = ref(""); // new athlete surname
 const athleteNote = ref(""); // new athlete note
 
-// Max lift declarations
+// Set ref for max lift declarations
 const searchMaxLift = ref<string>();
 const updatingMaxLift = ref<MaxLift>();
 const showMaxLiftAddDialog = ref(false);
-
-const selectedExercise = ref<Exercise | undefined>();
-
-const maxlift = computed<MaxLift>(() => updatingMaxLift.value ?? new MaxLift());
 
 // Get coach info
 const athletes = computed(() => coachInfo.athletes || []);
@@ -424,19 +439,13 @@ const athleteMaxlifts = computed(() =>
   ),
 );
 
-/** TODO check
- * Allow tab navigation
- */
-function onTabChange(tab: string) {
-  selectedTab.value = tab;
-}
-
 /**
- * Create a new maxlift and assign to a coach
+ * Create a new maxlift and assign to a coach.
+ *
+ * @param newMaxLift max lift instance that shall be saved.
  */
-function saveMaxlift() {
+function saveMaxlift(newMaxLift: MaxLift) {
   // Get current maxlift and check if already instanciated on db
-  const newMaxLift = maxlift.value;
   const isNew = !newMaxLift.uid;
 
   // Update values
@@ -472,15 +481,14 @@ function saveMaxlift() {
   showMaxLiftAddDialog.value = false;
 }
 
-/** TODO check
- * Compile form with max lift info to allow coach to update them.
+/**
+ * Open form with max lift info to allow coach to update them.
  *
- * @param maxlift
+ * @param maxlift instance that is being updated by coach.
  */
 function onUpdateMaxLift(maxlift: MaxLift) {
   updatingMaxLift.value = maxlift;
   showMaxLiftAddDialog.value = true;
-  selectedExercise.value = maxlift.exercise ?? undefined;
 }
 
 /**
@@ -546,5 +554,9 @@ function clearAthlete() {
   border-radius: 16px;
   background: $os-grey-cold-0;
   box-shadow: 0px 8px 32px 0px rgba(51, 38, 174, 0.08);
+}
+
+.os-athleteinfo-max-height {
+  height: calc(100vh - 38px);
 }
 </style>

@@ -14,13 +14,19 @@
           class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest"
         >
           <!-- Utility buttons -->
-          <!-- TODO i18n -->
           <div class="row justify-between">
             <!-- Save button -->
             <q-btn
               icon="save"
-              :label="programSaved ? 'Saved!' : 'changes not saved...'"
+              :label="
+                i18n.t(
+                  programSaved
+                    ? 'coach.program_management.builder.saved'
+                    : 'coach.program_management.builder.not_saved',
+                )
+              "
               :disable="programSaved"
+              :color="programSaved ? 'positive' : 'negative'"
               @click="saveProgram"
               flat
             ></q-btn>
@@ -28,7 +34,13 @@
             <!-- Display and update assigned user -->
             <q-btn
               @click="showAthleteAssigningDialog = true"
-              :label="selectedProgram.athlete ? undefined : 'Assign to athlete'"
+              :label="
+                i18n.t(
+                  selectedProgram.athlete
+                    ? ''
+                    : 'coach.program_management.builder.assign_to_athlete',
+                )
+              "
               :color="selectedProgram.athlete ? 'secondary' : 'primary'"
               outline
               :dense="Boolean(selectedProgram.athlete)"
@@ -58,8 +70,8 @@
                     "
                     round
                     unelevated
-                    size="0.5em"
-                    color="red"
+                    size="0.45em"
+                    color="button-negative"
                     class="q-mr-sm"
                   />
                 </q-item-section>
@@ -139,7 +151,6 @@
       <template v-slot:after>
         <!-- Show charts on the right -->
         <div class="q-pa-sm" style="min-width: 100px; overflow: hidden">
-          <!-- TODO i18n -->
           <!-- Charts display section -->
           <div v-if="showingUtils == UtilsOptions.charts">
             <ChartSelector
@@ -153,8 +164,9 @@
           <!-- Max Lifts section -->
           <q-card v-else-if="showingUtils == UtilsOptions.maxlifts">
             <q-card-section>
-              <!-- TODO i18n -->
-              <h6 class="text-margin-xs">Max Lifts section</h6>
+              <h6 class="text-margin-xs">
+                {{ $t("coach.maxlift_management.list.maxlift_section") }}
+              </h6>
 
               <div class="row q-gutter-x-md items-center">
                 <os-input
@@ -220,7 +232,7 @@
 
                 <FormMaxLift
                   ref="maxliftFormElement"
-                  :maxlift="selectedMaxlift"
+                  :maxlift="updatingMaxlift"
                   :exercises="coachInfo.exercises"
                   @submit="saveMaxlift"
                   @reset="showMaxliftAddDialog = false"
@@ -237,22 +249,34 @@
             <!-- Start a new program -->
             <q-btn
               icon="add"
-              label="New program"
+              :label="i18n.t('coach.program_management.builder.new_program')"
               @click="substituteProgram = new Program()"
               rounded
+              outline
               class="q-mx-auto"
             ></q-btn>
 
             <!-- Search status or temporary program -->
             <q-card>
-              <!-- TODO i18n -->
               <q-card-section v-if="selectedProgram.uid">
-                <p>Programma attuale</p>
+                <p>
+                  {{
+                    selectedProgram.name ??
+                    $t("coach.program_management.fields.program")
+                  }}
+                </p>
                 <p
                   class="text-italic text-xs"
                   v-if="selectedProgram.lastUpdated"
                 >
-                  Last update: {{ $d(selectedProgram.lastUpdated, "middle") }}
+                  {{ $t("coach.program_management.builder.last_update") }}
+                  {{ $d(selectedProgram.lastUpdated, "middle") }}
+                </p>
+                <p
+                  class="q-mt-md text-italic"
+                  v-if="selectedProgram.description"
+                >
+                  {{ selectedProgram.description }}
                 </p>
               </q-card-section>
               <q-card-section
@@ -260,17 +284,20 @@
                 class="cursor-pointer"
                 @click="onTemporaryProgramSelection"
               >
-                <p class="text-primary">Apri programma temporaneo</p>
+                <p class="text-primary">
+                  {{ $t("coach.program_management.builder.open_temporary") }}
+                </p>
                 <p
                   class="text-italic text-xs"
                   v-if="temporaryProgram.lastUpdated"
                 >
-                  Last update: {{ $d(temporaryProgram.lastUpdated, "middle") }}
+                  {{ $t("coach.program_management.builder.last_update") }}
+                  {{ $d(temporaryProgram.lastUpdated, "middle") }}
                 </p>
               </q-card-section>
-              <q-card-section v-else
-                >Crea o seleziona un programma per iniziare</q-card-section
-              >
+              <q-card-section v-else>{{
+                $t("coach.program_management.builder.start_program")
+              }}</q-card-section>
             </q-card>
 
             <!-- Select among assigned programs -->
@@ -293,9 +320,9 @@
       <template v-slot:separator>
         <!-- Add a middle separator -->
         <q-avatar
-          color="primary"
+          color="secondary"
           text-color="white"
-          size="40px"
+          size="32px"
           icon="drag_indicator"
         />
       </template>
@@ -317,24 +344,27 @@
 
     <!-- Dialog to change unsaved program -->
     <q-dialog v-model="showChangeProgramDialog">
-      <!--  TODO i18n -->
       <q-card>
         <q-card-section class="row items-center">
           <q-icon
             name="fa-solid fa-circle-exclamation"
-            color="primary"
-            size="md"
+            color="negative"
+            size="sm"
           />
-          <span class="q-ml-sm"
-            >Hai delle modifiche non salvate, sei sicuro di voler
-            continuare?</span
-          >
+          <span class="q-ml-sm">{{
+            $t("coach.program_management.builder.not_saved_prompt")
+          }}</span>
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="secondary" v-close-popup />
           <q-btn
-            label="Continue"
+            flat
+            :label="i18n.t('common.cancel')"
+            color="secondary"
+            v-close-popup
+          />
+          <q-btn
+            :label="i18n.t('common.continue')"
             color="primary"
             @click="openProgram(substituteProgram, true)"
             v-close-popup
@@ -345,7 +375,6 @@
 
     <!-- Dialog to open temporary program -->
     <q-dialog v-model="showTemporaryProgramRestoreDialog">
-      <!--  TODO i18n -->
       <q-card>
         <q-card-section class="row items-center">
           <q-icon
@@ -353,16 +382,20 @@
             color="primary"
             size="md"
           />
-          <span class="q-ml-sm"
-            >C'è un programma non ancora assegnato, vuoi continuare la
-            modifica?</span
-          >
+          <span class="q-ml-sm">{{
+            $t("coach.program_management.builder.not_assigned_prompt")
+          }}</span>
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="secondary" v-close-popup />
           <q-btn
-            label="Open"
+            flat
+            :label="i18n.t('common.cancel')"
+            color="secondary"
+            v-close-popup
+          />
+          <q-btn
+            :label="i18n.t('common.open')"
             color="primary"
             @click="onTemporaryProgramSelection"
             v-close-popup
@@ -440,7 +473,6 @@ const updatingMaxlift = ref<MaxLift>();
 const searchMaxLift = ref<string>();
 const showMaxliftAddDialog = ref(false);
 const maxliftFormElement = ref<typeof FormMaxLift>();
-const selectedMaxlift = computed(() => updatingMaxlift.value ?? new MaxLift());
 
 // Get program requested from router
 const requestedProgram = computed(
@@ -645,7 +677,7 @@ function onUpdateMaxLift(maxlift: MaxLift) {
 }
 
 /**
- * Create a new maxlift and assign to a coach
+ * Create a new maxlift and assign to a coach.
  *
  * @param newMaxLift max lift instance that shall be saved.
  */

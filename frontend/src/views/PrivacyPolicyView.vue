@@ -14,14 +14,7 @@
         stampa presente nelle impostazioni di qualsiasi browser.</span
       >
     </p>
-    <h2>
-      <span>Titolare del Trattamento dei Dati</span>
-    </h2>
-    <p>
-      <span>Lorenzo Boffa<br />Largo Mozart, 4<br />20064 </span
-      ><span>Gorgonzola</span><span>&nbsp;(</span><span>MI</span
-      ><span>) - Italy</span>
-    </p>
+
     <p>
       <span>Indirizzo email del Titolare:</span
       ><span>&nbsp;lorenzo.boffa06@gmail.com</span>
@@ -109,7 +102,9 @@
         quello in cui l&rsquo;Utente si trova. Per ottenere ulteriori
         informazioni sul luogo del trattamento l&rsquo;Utente pu&ograve; fare
         riferimento alla sezione relativa ai dettagli sul trattamento dei Dati
-        Personali.</span
+        Personali. Al momento il titolare dei dati è Lorenzo Boffa e la sede
+        operativa è in Largo Mozart, 4, Gorgonzola (MI) Italia. Contattare:
+        lorenzo.boffa06@gmail.com per ulteriori dettagli.</span
       >
     </p>
     <h4><span>Periodo di conservazione</span></h4>

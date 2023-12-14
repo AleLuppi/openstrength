@@ -43,7 +43,9 @@
       "to_onboarding": "Let's meet better",
       "to_onboarding_caption": "Click here to let us configure the app for you",
       "check_drawer": "Select your next action from the menu"
-    }
+    },
+    "onboarding_title": "Start your onboarding",
+    "onboarding_subtitle": "There are some questions for you, let's meet each other!"
   },
   "comingsoon": {
     "title": "Coming soon!",
@@ -124,7 +126,9 @@
       "action_step2_a": "How will you be using the app? Select one. Note: if you want to both train and be trained select coach.",
       "title_step3": "Let's meet better",
       "action_step3_a": "Select the most common disciplines among your athletes:",
-      "action_step3_b": "Select the average number of athletes you work with at the same time:"
+      "action_step3_b": "Select the average number of athletes you work with at the same time:",
+      "error_min_selection": "Select at least \"{ num }\" values.",
+      "error_max_selection": "Select at most \"{ num }\" values."
     }
   },
   "coach": {
@@ -164,16 +168,24 @@
         "weight": "Weight",
         "note": "Note",
         "update": "Update athlete",
+        "program_title": "Active program",
         "program_name": "Program Name",
         "program_start": "Start Date",
         "program_finish": "End Date",
         "program_description": "Description",
-        "program_update": "Update program info"
+        "program_update": "Update program info",
+        "program_ongoing": "Ongoing",
+        "program_unassigned": "Unassigned",
+        "program_assigned_to": "Assigned to",
+        "athlete_info": "Athlete Info",
+        "anagraphic": "Anagraphic",
+        "personal_best": "Personal Best"
       },
       "call_to_action": {
         "title": "Create a program for",
         "subtitle": "The are no programs available at the moment, create one to start",
-        "maxlift_title": "Register your athlete PRs"
+        "maxlift_title": "Register your athlete PRs",
+        "modify_program": "Modify Program"
       },
       "no_selected_athlete": "Select or add an athlete to start"
     },
@@ -205,13 +217,15 @@
       "delete_proceed": "Delete it",
       "default_variant": "(default)",
       "fields": {
+        "exercise": "Exercise",
         "name": "Name",
         "variant": "Variant",
+        "variants": "Variants",
         "loadtype": "Load type",
         "loadtype_available": {
-          "reps": "Reps",
-          "weight": "Weight",
-          "time": "Time"
+          "bodyweight": "Only Bodyweight",
+          "loaded": "Bodyweight + Ext.Load",
+          "loadonly": "Only Ext.Load"
         },
         "musclegroups": "Muscle Groups",
         "musclegroups_available": {
@@ -258,6 +272,8 @@
         "search_program": "Search program..."
       },
       "fields": {
+        "program": "Program",
+        "programs": "Programs",
         "name": "Program name",
         "label": "Label",
         "load": "Load",
@@ -268,9 +284,13 @@
       },
       "builder": {
         "save": "Save",
+        "saved": "Saved!",
+        "not_saved": "changes not saved...",
+        "not_saved_prompt": "There are unsaved changes, do you really want to proceed?",
         "save_error": "Could not save program, please retry",
         "save_assignment_error": "Program has been saved, but it could not be assigned to athlete.",
         "save_unassignment_error": "Program assignment could not be removed from athlete { name }.",
+        "not_assigned_prompt": "There is an unassigned program, do you want to continue the modification?",
         "week_name": "Week { week }",
         "day_name": "Day { day }",
         "new_day": "Day",
@@ -283,7 +303,12 @@
         "reference_remove": "Unlink",
         "show_charts_tooltip": "Charts",
         "show_maxlifts_tooltip": "Reference Table",
-        "show_program_list": "List of Programs"
+        "assign_to_athlete": "Assign to athlete",
+        "show_program_list": "List of Programs",
+        "last_update": "Last update:",
+        "open_temporary": "Open temporary program",
+        "start_program": "Create or select a program to start",
+        "new_program": "New program"
       },
       "filter": {
         "title": "Filter by...",
@@ -303,7 +328,8 @@
         "update": "Insert max lift info",
         "update_proceed": "Update max lift",
         "update_error": "Could not update max lift, please retry",
-        "no_athlete": "Select an athlete to see related data"
+        "no_athlete": "Select an athlete to see related data",
+        "maxlift_section": "PRs section"
       },
       "fields": {
         "exercise": "Exercise name",
@@ -311,6 +337,11 @@
         "type": "Max lift type",
         "value": "Max lift value",
         "date": "Max lift date"
+      }
+    },
+    "charts_management": {
+      "list": {
+        "charts_section": "Charts section"
       }
     }
   },
@@ -332,6 +363,14 @@
     "finish": "Finish",
     "or": "or",
     "other": "Other",
-    "submit": "Submit"
+    "submit": "Submit",
+    "close": "Close",
+    "name": "Name",
+    "type": "Type",
+    "value": "Value",
+    "date": "Date",
+    "note": "Note",
+    "label": "Label",
+    "update": "Update"
   }
 }

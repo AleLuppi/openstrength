@@ -1,18 +1,15 @@
 <template>
-  <os-table
-    :columns="columns"
-    :rows="rows"
-    row-key="rowId"
-    virtual-scroll
-    hide-pagination
-    class="os-table-max-height"
-    selection="single"
-  ></os-table>
+  <os-table :columns="columns" :rows="rows" row-key="rowId" virtual-scroll hide-pagination class="os-table-max-height"
+    selection="single"></os-table>
 </template>
 
 <script setup lang="ts">
 import { computed, PropType } from "vue";
+import { useI18n } from "vue-i18n";
 import { Program } from "@/helpers/programs/program";
+
+// Init plugin
+const i18n = useI18n();
 
 // Define props
 const props = defineProps({
@@ -31,7 +28,7 @@ const columns = [
   {
     name: "name",
     required: true,
-    label: "Name", // TODO i18n
+    label: i18n.t("coach.program_management.fields.name"),
     align: "left",
     field: "name",
     sortable: true,
@@ -39,19 +36,19 @@ const columns = [
   {
     name: "athlete",
     align: "left",
-    label: "Assigned to",
+    label: i18n.t("coach.ahlete_management.fields.program_assigned_to"),
     field: "athlete",
   },
   {
     name: "note",
     align: "left",
-    label: "Note", // TODO
+    label: i18n.t("coach.program_management.fields.note"),
     field: "note",
   },
   {
     name: "label",
     align: "left",
-    label: "Label",
+    label: i18n.t("coach.program_management.fields.label"),
     field: "label",
   },
   { name: "update", align: "center", label: "", field: "update" },
@@ -71,7 +68,7 @@ const rows = computed(() => {
     update: {
       element: "button",
       on: { click: () => props.onUpdate?.(program) },
-      label: "Update",
+      label: i18n.t("common.update"),
       rounded: true,
       outline: true,
       color: "button-primary",

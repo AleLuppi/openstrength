@@ -10,12 +10,12 @@
     <!-- Step 1: anagraphic -->
     <q-step
       :name="1"
-      :title="$t('user.onboarding.header_step1')"
+      :title="$q.screen.lt.sm ? '' : $t('user.onboarding.header_step1')"
       :caption="$t('user.onboarding.header_caption_step1')"
       icon="settings"
       :done="step > 1"
     >
-      <img :src="logoFullImage" alt="Logo" />
+      <img :src="logoFullImage" :srcset="logoFullImage + ' 1.2x'" alt="Logo" />
       <h3>{{ $t("user.onboarding.title_step1") }}</h3>
       <p class="q-mt-xl">{{ $t("user.onboarding.action_step1_a") }}</p>
 
@@ -41,7 +41,7 @@
     <!-- Step 2: role -->
     <q-step
       :name="2"
-      :title="$t('user.onboarding.header_step2')"
+      :title="$q.screen.lt.sm ? '' : $t('user.onboarding.header_step2')"
       :caption="$t('user.onboarding.header_caption_step2')"
       icon="person"
       :done="step > 2"
@@ -64,13 +64,13 @@
     <!-- Step 3: custom info -->
     <q-step
       :name="3"
-      :title="$t('user.onboarding.header_step3')"
+      :title="$q.screen.lt.sm ? '' : $t('user.onboarding.header_step3')"
       :caption="$t('user.onboarding.header_caption_step3')"
       icon="info"
       :done="step > 3"
     >
       <h3>{{ $t("user.onboarding.title_step3") }}</h3>
-      <p class="q-mt-xl">{{ $t("user.onboarding.action_step3_a") }}</p>
+      <p class="q-mt-sm">{{ $t("user.onboarding.action_step3_a") }}</p>
 
       <div class="row justify-center">
         <osToggleButtons
@@ -81,7 +81,9 @@
         />
       </div>
 
-      <p class="q-mt-xl">{{ $t("user.onboarding.action_step3_b") }}</p>
+      <p :class="$q.screen.lt.sm ? 'q-mt-sm' : 'q-mt-xl'">
+        {{ $t("user.onboarding.action_step3_b") }}
+      </p>
 
       <div class="row justify-center">
         <osToggleButtons
