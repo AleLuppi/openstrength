@@ -8,6 +8,16 @@ import { programsCollection } from "@/helpers/database/collections";
 import { User, CoachUser, AthleteUser, UserRole } from "@/helpers/users/user";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import {
+  matchNumberFractionInteger,
+  matchNumberFractionPercentageFloat,
+  matchNumberIntegerInBrackets,
+  matchNumberOptionallySignedPercentageFloat,
+  matchNumberSignedFloatWithOptionalUnit,
+  matchNumberSignedInteger,
+  matchNumberUnsignedFloatWithOptionalUnit,
+  matchNumberUnsignedInteger,
+} from "@/helpers/regex";
 
 /**
  * Training program properties.
@@ -432,7 +442,479 @@ export class ProgramLine {
   requestFeedbackText?: boolean;
   requestFeedbackVideo?: boolean;
 
-  // TODO computed properties
+  /***** Computed Properties *****/
+  // Reference values when reference can be line or max lift
+  public get refLoadValue() {
+    return this.loadReference instanceof ProgramLine
+      ? this.loadReference.loadValue ??
+          this.loadReference.loadComputedValue ??
+          this.loadReference.loadSupposedValue
+      : Number(this.loadReference?.value);
+  }
+  public get refRepsValue() {
+    return this.repsReference instanceof ProgramLine
+      ? this.repsReference.repsValue ??
+          this.repsReference.repsComputedValue ??
+          this.repsReference.repsSupposedValue
+      : Number(this.repsReference?.value);
+  }
+
+  // Values
+  public get setsValue(): number | undefined {
+    if (this.setsBaseValue && matchNumberUnsignedInteger(this.setsBaseValue))
+      return parseInt(this.setsBaseValue);
+    else return this.setsComputedValue;
+  }
+  public get repsValue(): number | undefined {
+    if (this.repsBaseValue && matchNumberUnsignedInteger(this.repsBaseValue))
+      return parseInt(this.repsBaseValue);
+    else return this.repsComputedValue;
+  }
+  public get loadValue(): number | undefined {
+    if (this.loadBaseValue) {
+      if (matchNumberUnsignedFloatWithOptionalUnit(this.loadBaseValue))
+        return parseFloat(this.loadBaseValue);
+      else if (
+        matchNumberOptionallySignedPercentageFloat(this.loadBaseValue) ||
+        matchNumberSignedFloatWithOptionalUnit(this.loadBaseValue)
+      )
+        return this.loadComputedValue;
+    }
+
+    return undefined;
+  }
+  public get rpeValue(): number | undefined {
+    if (this.rpeBaseValue && matchNumberUnsignedInteger(this.rpeBaseValue)) {
+      const parsedRPE = parseInt(this.rpeBaseValue);
+      return parsedRPE >= 0 && parsedRPE <= 10 ? parsedRPE : undefined;
+    } else return this.rpeComputedValue;
+  }
+
+  // Computed values
+  get setsComputedValue(): number | undefined {
+    if (this.setsReference?.setsValue) {
+      if (this.setsOperation && matchNumberSignedInteger(this.setsOperation)) {
+        const operationValue = parseInt(this.setsOperation);
+        return this.setsReference.setsValue + operationValue;
+      }
+    } else return undefined;
+  }
+  //TODO: add case from rpe table (load and rpe present)
+  get repsComputedValue(): number | undefined {
+    if (this.repsReference && this.refRepsValue) {
+      if (this.repsOperation && matchNumberSignedInteger(this.repsOperation)) {
+        const operationValue = parseInt(this.repsOperation);
+        return this.refRepsValue + operationValue;
+      }
+    } else return undefined;
+  }
+  get loadComputedValue(): number | undefined {
+    if (this.loadReference && this.refLoadValue) {
+      if (
+        this.loadOperation?.trim() &&
+        this.loadBaseValue &&
+        !matchNumberFractionPercentageFloat(this.loadBaseValue)
+      ) {
+        if (this.loadOperation.trim().startsWith("*"))
+          return (
+            this.refLoadValue * parseFloat(this.loadOperation.split("*")[1])
+          );
+        else if (matchNumberSignedFloatWithOptionalUnit(this.loadOperation))
+          return this.refLoadValue + parseFloat(this.loadOperation);
+      } else return undefined;
+    }
+
+    return undefined;
+  }
+  get rpeComputedValue(): number | undefined {
+    if (this.rpeReference?.rpeValue) {
+      if (this.rpeOperation && matchNumberSignedInteger(this.rpeOperation)) {
+        const operationValue = parseInt(this.rpeOperation);
+        const computedValue = this.rpeReference.rpeValue + operationValue;
+
+        // Ensure the computed value is between 0 and 10
+        return Math.max(0, Math.min(10, computedValue));
+      }
+    } else return undefined;
+  }
+
+  // Operations
+  get setsOperation(): string | undefined {
+    if (this.setsBaseValue) {
+      const [, operationPart] =
+        this.setsBaseValue.match(/(?:[^\d\s+-]+)?([+-]\d+)$/) || [];
+      return operationPart ? operationPart : undefined;
+    } else return undefined;
+  }
+  get repsOperation(): string | undefined {
+    if (this.repsBaseValue !== undefined) {
+      const [, operationPart] = this.repsBaseValue.match(/([+-]\d+).*?$/) || [];
+      return operationPart ? operationPart : undefined;
+    } else {
+      return undefined;
+    }
+  }
+  get loadOperation(): string | undefined {
+    if (this.loadBaseValue) {
+      const trailingOperationPattern = /^.*([+-]\d*\.?\d*%|[+-]\d*\.?\d*kg)$/;
+
+      const kgMatch = matchNumberSignedFloatWithOptionalUnit(
+        this.loadBaseValue,
+      );
+      const percentageMatch = matchNumberOptionallySignedPercentageFloat(
+        this.loadBaseValue,
+      );
+      const percentageRangeMatch = matchNumberFractionPercentageFloat(
+        this.loadBaseValue,
+      );
+      const trailingOperationMatch = this.loadBaseValue.match(
+        trailingOperationPattern,
+      );
+
+      if (kgMatch) {
+        // Case: Explicit kg value like "+10kg" or "-20kg"
+        return `${parseInt(kgMatch[1]) >= 0 ? "+" : ""}${kgMatch[1]}`;
+      } else if (percentageRangeMatch) {
+        // Case: Percentage range like "70%/73%"
+        const average =
+          (parseFloat(percentageRangeMatch[1]) +
+            parseFloat(percentageRangeMatch[2])) /
+          2 /
+          100;
+        return `*${average}`;
+      } else if (percentageMatch) {
+        // Case: Single percentage like "+20%" or "70%"
+        const result: number = parseFloat(percentageMatch[1]) / 100;
+        if (this.loadBaseValue[0] === "-" || this.loadBaseValue[0] === "+") {
+          return `*${1.0 + result}`;
+        } else {
+          return `*${result}`;
+        }
+      } else if (trailingOperationMatch) {
+        // Case: Trailing operation like "W2-30%" or "W1+24%"
+        const operationValue = trailingOperationMatch[1];
+        if (operationValue.endsWith("kg")) {
+          const result: number = parseFloat(operationValue);
+          return `${result}`;
+        } else if (operationValue.endsWith("%")) {
+          const result: number = parseFloat(operationValue) / 100;
+
+          if (operationValue[0] === "-" || operationValue[0] === "+") {
+            return `*${1.0 + result}`;
+          }
+        }
+      } else {
+        // Case: No specific pattern, return as is
+        return undefined;
+      }
+    }
+
+    return undefined;
+  }
+  get rpeOperation(): string | undefined {
+    if (this.rpeBaseValue !== undefined) {
+      const [, operationPart] =
+        this.rpeBaseValue.match(/(?:[^\d\s+-]+)?([+-]\d+)$/) || [];
+      return operationPart ? operationPart : undefined;
+    } else {
+      return undefined;
+    }
+  }
+
+  // Supposed values
+  get setsSupposedValue(): number | undefined {
+    if (this.setsBaseValue && matchNumberFractionInteger(this.setsBaseValue)) {
+      const [secondNumber, firstNumber] = matchNumberFractionInteger(
+        this.setsBaseValue,
+      )!
+        .slice(1, 3)
+        .map(Number);
+      return (secondNumber + firstNumber) / 2;
+    } else if (
+      this.setsBaseValue &&
+      matchNumberIntegerInBrackets(this.setsBaseValue)
+    ) {
+      return parseInt(matchNumberIntegerInBrackets(this.setsBaseValue)?.at(1)!);
+    } else if (this.setsOperation) {
+      const referenceValue =
+        this.setsReference?.setsComputedValue ??
+        this.setsReference?.setsSupposedValue;
+      if (referenceValue) {
+        return referenceValue + parseInt(this.setsOperation);
+      } else {
+        const referenceSupposedValue = this.setsReference?.setsSupposedValue;
+        return referenceSupposedValue
+          ? referenceSupposedValue + parseInt(this.setsOperation)
+          : undefined;
+      }
+    } else return undefined;
+  }
+  get repsSupposedValue(): number | undefined {
+    if (this.repsBaseValue && matchNumberFractionInteger(this.repsBaseValue)) {
+      const [secondNumber, firstNumber] = matchNumberFractionInteger(
+        this.repsBaseValue,
+      )!
+        .slice(1, 3)
+        .map(Number);
+      return (secondNumber + firstNumber) / 2;
+    } else if (
+      this.repsBaseValue &&
+      matchNumberIntegerInBrackets(this.repsBaseValue)
+    ) {
+      return parseInt(matchNumberIntegerInBrackets(this.repsBaseValue)?.at(1)!);
+    } else if (this.repsOperation) {
+      const referenceValue = this.refRepsValue;
+      return referenceValue
+        ? referenceValue + parseInt(this.repsOperation)
+        : undefined;
+    } else return undefined;
+  }
+  get loadSupposedValue(): number | undefined {
+    const kgRangeRegex = /^(\d*)kg\/(\d*)kg$/;
+    const kgValueRegex = /^\((\d*kg)\)$/;
+    const kgSimpleRegex = /^([+-]?\d*\.?\d+)kg$/; // e.g. +20kg
+    const percentRangeRegex = /^(\d*)%\/(\d*)%$/;
+    const percentValueSupposedRegex = /^\((\d*%)\)$/;
+    const percentageSimpleRegex = /^([+-]?\d*\.?\d+)%$/; // e.g. +20%
+    const trailingOperationPattern = /^.*([+-]\d*\.?\d*%|[+-]\d*\.?\d*kg)$/; //e.g. W1-20% or W1+5kg
+
+    const matchKgRange = this.loadBaseValue?.match(kgRangeRegex);
+    const matchKgValue = this.loadBaseValue?.match(kgValueRegex);
+    const matchKgSimple = this.loadBaseValue?.match(kgSimpleRegex);
+    const matchPercentRange = this.loadBaseValue?.match(percentRangeRegex);
+    const matchPercentValueSupposed = this.loadBaseValue?.match(
+      percentValueSupposedRegex,
+    );
+    const matchPercentageSimple = this.loadBaseValue?.match(
+      percentageSimpleRegex,
+    );
+    const matchTrailingOperation = this.loadBaseValue?.match(
+      trailingOperationPattern,
+    );
+
+    if (matchKgRange) {
+      const [, first, second] = matchKgRange;
+      return (parseInt(second) + parseInt(first)) / 2;
+    }
+
+    if (matchKgValue) {
+      const [, content] = matchKgValue;
+      return parseInt(content);
+    }
+
+    if (matchKgSimple && this.refLoadValue !== undefined) {
+      if (
+        this.loadOperation !== undefined &&
+        (this.loadOperation.startsWith("+") ||
+          this.loadOperation.startsWith("-"))
+      ) {
+        return this.refLoadValue + parseFloat(this.loadOperation);
+      } else {
+        return undefined;
+      }
+    }
+
+    if (matchPercentageSimple && this.refLoadValue !== undefined) {
+      if (
+        this.loadOperation !== undefined &&
+        this.loadOperation.startsWith("*")
+      ) {
+        return this.refLoadValue * parseFloat(this.loadOperation.split("*")[1]);
+      } else {
+        return undefined;
+      }
+    }
+
+    if (matchPercentRange && this.refLoadValue !== undefined) {
+      const [, firstPercent, secondPercent] = matchPercentRange;
+      return (
+        ((parseFloat(secondPercent) / 100) * this.refLoadValue +
+          (parseFloat(firstPercent) / 100) * this.refLoadValue) /
+        2
+      );
+    }
+
+    if (matchPercentValueSupposed && this.refLoadValue !== undefined) {
+      const [, content] = matchPercentValueSupposed;
+      return (parseFloat(content) / 100) * this.refLoadValue;
+    }
+
+    if (matchTrailingOperation && this.refLoadValue !== undefined) {
+      const operationValue = matchTrailingOperation[1];
+      if (operationValue.endsWith("kg")) {
+        const result: number = parseFloat(operationValue);
+        return this.refLoadValue + result;
+      } else if (operationValue.endsWith("%")) {
+        const result: number = parseFloat(operationValue) / 100;
+
+        if (operationValue[0] === "-" || operationValue[0] === "+") {
+          return (1 + result) * this.refLoadValue;
+        }
+      }
+    }
+
+    return undefined;
+  }
+  get rpeSupposedValue(): number | undefined {
+    if (this.rpeBaseValue && matchNumberFractionInteger(this.rpeBaseValue)) {
+      const [secondNumber, firstNumber] = matchNumberFractionInteger(
+        this.rpeBaseValue,
+      )!
+        .slice(1, 3)
+        .map(Number);
+      return (secondNumber + firstNumber) / 2;
+    } else if (
+      this.rpeBaseValue &&
+      matchNumberIntegerInBrackets(this.rpeBaseValue)
+    ) {
+      return parseInt(matchNumberIntegerInBrackets(this.rpeBaseValue)?.at(1)!);
+    } else if (this.rpeOperation !== undefined) {
+      const referenceValue =
+        this.rpeReference?.rpeComputedValue ??
+        this.rpeReference?.rpeSupposedValue;
+      if (referenceValue !== undefined) {
+        return referenceValue + parseInt(this.rpeOperation);
+      } else {
+        const referenceSupposedValue = this.rpeReference?.rpeSupposedValue;
+        return referenceSupposedValue !== undefined
+          ? referenceSupposedValue + parseInt(this.rpeOperation)
+          : undefined;
+      }
+    } else {
+      return undefined;
+    }
+  }
+
+  // Requires
+  get setsRequire(): boolean {
+    if (
+      this.setsBaseValue !== undefined &&
+      /^(\\?|\(\d*\)|\d*\/\d*|\?)$/.test(this.setsBaseValue)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  get repsRequire(): boolean {
+    if (
+      this.repsBaseValue !== undefined &&
+      /^(\\?|\(\d*\)|\d*\/\d*|\?)$/.test(this.repsBaseValue)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  get loadRequire(): boolean {
+    if (
+      this.loadBaseValue !== undefined &&
+      /^(?:\?|(?:\d+kg\/\d+kg)|(?:\d+%\/\d+%)|(?:\(\d+kg\))|(?:\(\d+%\)))$/.test(
+        this.loadBaseValue,
+      )
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  get rpeRequire(): boolean {
+    if (
+      this.rpeBaseValue !== undefined &&
+      /^(\\?|\(\d*\)|\d*\/\d*|\?)$/.test(this.rpeBaseValue)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // Range min and max
+  get setsRangeMin(): number | undefined {
+    if (this.setsBaseValue && matchNumberFractionInteger(this.setsBaseValue)) {
+      const minPart = matchNumberFractionInteger(this.setsBaseValue)?.at(1);
+      return minPart ? parseInt(minPart) : undefined;
+    } else return undefined;
+  }
+  get repsRangeMin(): number | undefined {
+    if (this.repsBaseValue && matchNumberFractionInteger(this.repsBaseValue)) {
+      const minPart = matchNumberFractionInteger(this.repsBaseValue)?.at(1);
+      return minPart ? parseInt(minPart) : undefined;
+    } else return undefined;
+  }
+  //TODO substitute check on maxreference from line data to a global method (or within the class?)
+  get loadRangeMin(): number | undefined {
+    if (
+      this.loadBaseValue !== undefined &&
+      /^\d*kg\/\d*kg$/.test(this.loadBaseValue)
+    ) {
+      const [, min] = this.loadBaseValue.match(/^(\d*)kg\/\d*kg$/) || [];
+      return min !== undefined ? Number(min) : undefined;
+    } else if (
+      this.loadBaseValue !== undefined &&
+      /^\d*%\/\d*%$/.test(this.loadBaseValue)
+    ) {
+      if (this.loadReference !== undefined && this.refLoadValue !== undefined) {
+        const [, minPercent] = this.loadBaseValue.match(/^(\d*)%\//) || [];
+        if (minPercent !== undefined) {
+          const parsedMinPercent = parseFloat(minPercent);
+          return isNaN(parsedMinPercent)
+            ? undefined
+            : (parsedMinPercent / 100) * this.refLoadValue;
+        }
+      }
+    }
+
+    return undefined;
+  }
+  get rpeRangeMin(): number | undefined {
+    if (this.rpeBaseValue && matchNumberFractionInteger(this.rpeBaseValue)) {
+      const minPart = matchNumberFractionInteger(this.rpeBaseValue)?.at(1);
+      return minPart ? parseInt(minPart) : undefined;
+    } else return undefined;
+  }
+  get setsRangeMax(): number | undefined {
+    if (this.setsBaseValue && matchNumberFractionInteger(this.setsBaseValue)) {
+      const maxPart = matchNumberFractionInteger(this.setsBaseValue)?.at(2);
+      return maxPart ? parseInt(maxPart) : undefined;
+    } else return undefined;
+  }
+  get repsRangeMax(): number | undefined {
+    if (this.repsBaseValue && matchNumberFractionInteger(this.repsBaseValue)) {
+      const maxPart = matchNumberFractionInteger(this.repsBaseValue)?.at(2);
+      return maxPart ? parseInt(maxPart) : undefined;
+    } else return undefined;
+  }
+  get loadRangeMax(): number | undefined {
+    if (
+      this.loadBaseValue !== undefined &&
+      /^\d*kg\/\d*kg$/.test(this.loadBaseValue)
+    ) {
+      const [, max] = this.loadBaseValue.match(/^\d*kg\/(\d*)kg$/) || [];
+      return max !== undefined ? Number(max) : undefined;
+    } else if (
+      this.loadBaseValue !== undefined &&
+      /^\d*%\/\d*%$/.test(this.loadBaseValue)
+    ) {
+      if (this.loadReference !== undefined && this.refLoadValue !== undefined) {
+        const [, maxPercent] = this.loadBaseValue.match(/^\d*%\/(\d*)%$/) || [];
+        if (maxPercent !== undefined) {
+          const parsedMaxPercent = parseFloat(maxPercent);
+          return isNaN(parsedMaxPercent)
+            ? undefined
+            : (parsedMaxPercent / 100) * this.refLoadValue;
+        }
+      }
+    }
+
+    return undefined;
+  }
+  get rpeRangeMax(): number | undefined {
+    if (this.rpeBaseValue && matchNumberFractionInteger(this.rpeBaseValue)) {
+      const maxPart = matchNumberFractionInteger(this.rpeBaseValue)?.at(2);
+      return maxPart ? parseInt(maxPart) : undefined;
+    } else return undefined;
+  }
 
   constructor({
     uid,

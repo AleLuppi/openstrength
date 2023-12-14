@@ -77,13 +77,7 @@
                 <h6>{{ $t("coach.program_management.filter.title") }}</h6>
                 <os-select
                   v-model="filterWeek"
-                  :options="
-                    arrayUniqueValues(
-                      selectedProgram?.programExercises?.map((exercise) =>
-                        exercise.scheduleWeek?.toString(),
-                      ) || [],
-                    )
-                  "
+                  :options="getProgramUniqueWeeks(selectedProgram)"
                   :label="$t('coach.program_management.filter.filter_week')"
                   multiple
                   hide-bottom-space
@@ -91,13 +85,7 @@
                 ></os-select>
                 <os-select
                   v-model="filterDay"
-                  :options="
-                    arrayUniqueValues(
-                      selectedProgram?.programExercises?.map((exercise) =>
-                        exercise.scheduleDay?.toString(),
-                      ) || [],
-                    )
-                  "
+                  :options="getProgramUniqueDays(selectedProgram)"
                   :label="$t('coach.program_management.filter.filter_day')"
                   multiple
                   hide-bottom-space
@@ -105,13 +93,7 @@
                 ></os-select>
                 <os-select
                   v-model="filterExercise"
-                  :options="
-                    arrayUniqueValues(
-                      selectedProgram?.programExercises?.map(
-                        (exercise) => exercise.exercise?.name,
-                      ) || [],
-                    )
-                  "
+                  :options="getProgramUniqueExercises(selectedProgram)"
                   :label="$t('coach.program_management.filter.filter_exercise')"
                   multiple
                   hide-bottom-space
@@ -160,8 +142,12 @@
           <!-- TODO i18n -->
           <!-- Charts display section -->
           <div v-if="showingUtils == UtilsOptions.charts">
-            <h6 class="text-margin-xs">Charts Section</h6>
-            <ChartSelector></ChartSelector>
+            <ChartSelector
+              :program="selectedProgram"
+              :filter-week="filterWeek"
+              :filter-day="filterDay"
+              :filter-exercise="filterExercise"
+            ></ChartSelector>
           </div>
 
           <!-- Max Lifts section -->
@@ -400,11 +386,15 @@ import { useUserStore } from "@/stores/user";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
-import { arrayUniqueValues } from "@/helpers/array";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
 import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
 import { AthleteUser } from "@/helpers/users/user";
+import {
+  getProgramUniqueWeeks,
+  getProgramUniqueDays,
+  getProgramUniqueExercises,
+} from "@/helpers/programs/linesManagement";
 import router from "@/router";
 
 // Set expose
@@ -492,7 +482,6 @@ const athleteMaxlifts = computed(
 // Decide whether to display warning dialog on new program
 const showChangeProgramDialog = computed({
   get() {
-    console.log(Boolean(substituteProgram.value));
     return Boolean(substituteProgram.value) && !programSaved.value;
   },
   set(newValue) {
