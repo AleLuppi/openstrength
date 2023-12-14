@@ -127,7 +127,6 @@ watch(
           .split("T")[0]
           .replaceAll("-", "/")
       : undefined;
-    console.log(maxliftDate.value, typeof maxliftDate.value);
   },
   { immediate: true },
 );

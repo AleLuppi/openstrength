@@ -482,7 +482,6 @@ const athleteMaxlifts = computed(
 // Decide whether to display warning dialog on new program
 const showChangeProgramDialog = computed({
   get() {
-    console.log(Boolean(substituteProgram.value));
     return Boolean(substituteProgram.value) && !programSaved.value;
   },
   set(newValue) {
