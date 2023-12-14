@@ -232,7 +232,7 @@
 
                 <FormMaxLift
                   ref="maxliftFormElement"
-                  :maxlift="selectedMaxlift"
+                  :maxlift="updatingMaxlift"
                   :exercises="coachInfo.exercises"
                   @submit="saveMaxlift"
                   @reset="showMaxliftAddDialog = false"
@@ -471,7 +471,6 @@ const updatingMaxlift = ref<MaxLift>();
 const searchMaxLift = ref<string>();
 const showMaxliftAddDialog = ref(false);
 const maxliftFormElement = ref<typeof FormMaxLift>();
-const selectedMaxlift = computed(() => updatingMaxlift.value ?? new MaxLift());
 
 // Get program requested from router
 const requestedProgram = computed(
@@ -676,7 +675,7 @@ function onUpdateMaxLift(maxlift: MaxLift) {
 }
 
 /**
- * Create a new maxlift and assign to a coach
+ * Create a new maxlift and assign to a coach.
  *
  * @param newMaxLift max lift instance that shall be saved.
  */
