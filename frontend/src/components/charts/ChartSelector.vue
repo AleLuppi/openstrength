@@ -15,24 +15,20 @@
     </div>
 
     <!-- CHARTS RENDERING -->
-
-    <div v-if="charts">
-      <chart-component
-        v-for="(chartDataRequest, index) in chartDataRequests"
-        :key="myBeautifulKey + index"
-        class="q-mb-sm"
-        :title="getChartTitle(chartDataRequest)"
-        :description="getChartDescription(chartDataRequest)"
-        :data="chartData[index]"
-        :options="getChartOptions(chartDataRequest)"
-      />
-    </div>
-    <div v-else>Click the refresh button to show available charts</div>
+    <chart-component
+      v-for="(chartDataRequest, index) in chartDataRequests"
+      :key="chartsKey + index"
+      class="q-mb-sm"
+      :title="getChartTitle(chartDataRequest)"
+      :description="getChartDescription(chartDataRequest)"
+      :data="chartData[index]"
+      :options="getChartOptions(chartDataRequest)"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { ref, computed, watch, PropType } from "vue";
 import ChartComponent from "@/components/charts/ChartComponent.vue";
 import {
   computeChartData,
@@ -48,32 +44,35 @@ import {
 } from "@/helpers/charts/chartTypes";
 import { Program } from "@/helpers/programs/program";
 
+// Define props
 const props = defineProps({
   program: {
     type: Program,
     required: true,
   },
   filterExercise: {
-    type: Set,
+    type: Array as PropType<string[]>,
     default: undefined,
     required: false,
   },
   filterDay: {
-    type: Set,
+    type: Array as PropType<string[]>,
     default: undefined,
     required: false,
   },
   filterWeek: {
-    type: Set,
+    type: Array as PropType<string[]>,
     default: undefined,
     required: false,
   },
 });
 
-const charts = ref<boolean>(false);
-const myBeautifulKey = ref<string>("");
+// Set ref
+const chartsKey = ref<string>("");
 
+// Set constants
 const chartDescriptions: OSChartDescriptor[] = [
+  // TODO i18n
   {
     chartType: OSChartType.Volume,
     chartVersion: OSChartVersion.TotalVolume,
@@ -96,7 +95,8 @@ const chartDescriptions: OSChartDescriptor[] = [
     chartDescription: "Total sets over week",
   },
 
-  /*  {
+  /* TODO
+  {
     chartType: OSChartType.Intensity,
     chartVersion: OSChartVersion.MaxIntensity,
     xAxisType: OSAvailableXType.Weeks,
@@ -109,38 +109,36 @@ const chartDescriptions: OSChartDescriptor[] = [
     xAxisType: OSAvailableXType.Weeks,
     chartTitle: "Total Volume varying weeks",
     chartDescription: "Mean intensity over the week (computed as load/1RM)",
-  }, */
+  },
+  */
 ];
 
-const chartDataRequests = computed(() =>
+// Get a list of data requests for program
+const chartDataRequests = computed<OSChartDataRequest[]>(() =>
   chartDescriptions.map((chartDescriptor) => {
     return {
       chartInfo: chartDescriptor,
       program: props.program,
-      selectedExercises: props.filterExercise as Set<string> | undefined,
-      selectedDays: props.filterDay as Set<string> | undefined,
-      selectedWeeks: props.filterWeek as Set<string> | undefined,
+      selectedExercises: props.filterExercise,
+      selectedDays: props.filterDay,
+      selectedWeeks: props.filterWeek,
     };
   }),
 );
 
 watch(
-  () => [
-    props.program,
-    props.filterExercise,
-    props.filterDay,
-    props.filterWeek,
-  ],
+  () => [props.filterExercise, props.filterDay, props.filterWeek],
   () => {
     updateCharts();
   },
   { deep: true },
 );
 
-// Compute chart data
+/**
+ * Force reload of chart components to refresh charts data.
+ */
 function updateCharts() {
-  charts.value = true;
-  myBeautifulKey.value += "a";
+  chartsKey.value = chartsKey.value == "+" ? "-" : "+";
 }
 
 /**
@@ -150,14 +148,11 @@ function updateCharts() {
 const chartData = computed(() =>
   chartDataRequests.value.map((val) => formatChartData(computeChartData(val))),
 );
-watch(chartData, (val) => console.log(val));
-// function getChartData(chartDataRequest: OSChartDataRequest): any {
-//   return formatChartData(computeChartData(chartDataRequest));
-// }
 
 /**
- * Builds chart options
- * @param chartDataRequest
+ * Build chart options.
+ *
+ * @param chartDataRequest structure maintainig chart request.
  */
 function getChartOptions(chartDataRequest: OSChartDataRequest): any {
   return createChartOptions(
@@ -166,10 +161,20 @@ function getChartOptions(chartDataRequest: OSChartDataRequest): any {
   );
 }
 
+/**
+ * Build chart title.
+ *
+ * @param chartDataRequest structure maintainig chart request.
+ */
 function getChartTitle(chartDataRequest: OSChartDataRequest): string {
   return chartDataRequest.chartInfo.chartTitle || "";
 }
 
+/**
+ * Build chart description.
+ *
+ * @param chartDataRequest structure maintainig chart request.
+ */
 function getChartDescription(chartDataRequest: OSChartDataRequest): string {
   return chartDataRequest.chartInfo.chartDescription || "";
 }

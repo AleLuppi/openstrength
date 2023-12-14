@@ -59,16 +59,9 @@ export type ProgramExerciseProps = {
   exercise?: Exercise;
   exerciseVariant?: ExerciseVariant;
   exerciseNote?: string;
-  exercise1RM?: string;
-  exerciseMaxReps?: string;
-  exerciseMaxHold?: string;
 
   // Lines composing exercise
   lines?: ProgramLine[];
-
-  // Computed properties
-  exerciseMaxlift1RM?: MaxLift;
-  exerciseMaxliftMaxReps?: MaxLift;
 };
 
 /**
@@ -107,7 +100,6 @@ export type ProgramLineProps = {
   setsValue?: number;
   setsSupposedValue?: number;
   setsComputedValue?: number;
-
   repsRequire?: boolean;
   repsOperation?: string;
   repsRangeMin?: number;
@@ -115,7 +107,6 @@ export type ProgramLineProps = {
   repsValue?: number;
   repsSupposedValue?: number;
   repsComputedValue?: number;
-
   loadRequire?: boolean;
   loadOperation?: string;
   loadRangeMin?: number;
@@ -123,7 +114,6 @@ export type ProgramLineProps = {
   loadValue?: number;
   loadSupposedValue?: number;
   loadComputedValue?: number;
-
   rpeRequire?: boolean;
   rpeOperation?: string;
   rpeRangeMin?: number;
@@ -365,9 +355,6 @@ export class ProgramExercise {
   exercise?: Exercise;
   exerciseVariant?: ExerciseVariant;
   exerciseNote?: string;
-  exercise1RM?: string;
-  exerciseMaxReps?: string;
-  exerciseMaxHold?: string;
 
   // Lines composing exercise
   lines?: ProgramLine[];
@@ -381,9 +368,6 @@ export class ProgramExercise {
     exercise,
     exerciseVariant,
     exerciseNote,
-    exercise1RM,
-    exerciseMaxReps,
-    exerciseMaxHold,
     lines,
   }: ProgramExerciseProps = {}) {
     this.uid = uid;
@@ -394,9 +378,6 @@ export class ProgramExercise {
     this.exercise = exercise;
     this.exerciseVariant = exerciseVariant;
     this.exerciseNote = exerciseNote;
-    this.exercise1RM = exercise1RM;
-    this.exerciseMaxReps = exerciseMaxReps;
-    this.exerciseMaxHold = exerciseMaxHold;
     lines?.forEach((line) => {
       if (!line.programExercise) line.programExercise = this;
     });

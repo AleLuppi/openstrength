@@ -26,21 +26,19 @@
 
     <q-card-section>
       <!-- Check if data is defined and not empty -->
-      <template v-if="dataIsInvalid">
-        <div class="text-h6 text-center text-weight-bold text-negative">
-          Check your data and try refreshing the chart
-        </div>
-      </template>
+      <div v-if="dataIsInvalid" class="text-h6 text-center">
+        <!-- TODO i18n -->
+        Check your data, then refresh the chart
+      </div>
+
       <!-- Render chart canvas only if data is valid -->
-      <template v-else>
-        <canvas ref="chartCanvas"></canvas>
-      </template>
+      <canvas v-else ref="chartCanvas"></canvas>
     </q-card-section>
   </q-card>
 </template>
 
-<script setup>
-import { ref, watch, onMounted, computed } from "vue";
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, PropType } from "vue";
 import { colors } from "quasar";
 import {
   Chart,
@@ -53,7 +51,10 @@ import {
   BarController,
   Tooltip,
   Legend,
+  ChartData,
+  ChartTypeRegistry,
 } from "chart.js";
+import { ExerciseChartData } from "@/helpers/charts/chartDataFormatter";
 
 // Init plugins
 Chart.register(
@@ -80,8 +81,7 @@ const props = defineProps({
     required: true,
   },
   data: {
-    type: Array,
-    required: true,
+    type: Object as PropType<ChartData<"line", ExerciseChartData[]>>,
   },
   options: {
     type: Object,
@@ -102,7 +102,7 @@ const props = defineProps({
 });
 
 // Define refs
-const chartCanvas = ref(null);
+const chartCanvas = ref<HTMLCanvasElement>();
 
 // Computed property to check if data is invalid
 const dataIsInvalid = computed(() => {
@@ -114,18 +114,19 @@ const dataIsInvalid = computed(() => {
 });
 
 /**
- * Render the Chart
+ * Render the chart.
  */
 function renderChart() {
   // Ensure canvas reference exists
   if (!chartCanvas.value) {
+    // TODO display error to user
     console.error("Missing reference to canvas element.");
     return;
   }
 
   try {
     // Add background color to datasets
-    props.data.datasets.forEach((el, idx) => {
+    props.data!.datasets.forEach((el, idx) => {
       let currColor = getPaletteColor("chart-color" + (idx + 1));
       el.borderColor = currColor;
       el.backgroundColor = lighten(currColor, 25);
@@ -133,9 +134,9 @@ function renderChart() {
 
     // Fill canvas
     const ctx = chartCanvas.value.getContext("2d");
-    new Chart(ctx, {
-      type: props.type,
-      data: props.data,
+    new Chart(ctx!, {
+      type: props.type as keyof ChartTypeRegistry,
+      data: props.data!,
       options: props.options,
     });
   } catch (error) {

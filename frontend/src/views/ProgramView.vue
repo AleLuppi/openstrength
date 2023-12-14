@@ -1,24 +1,47 @@
 <template>
   <q-page style="height: 0">
     <!-- Program table -->
-    <q-splitter v-model="splitterModel" reverse :limits="[0, 50]" style="height: 100%">
+    <q-splitter
+      v-model="splitterModel"
+      reverse
+      :limits="[0, 50]"
+      style="height: 100%"
+    >
       <template v-slot:before>
         <!-- Program management card -->
-        <div ref="programManagerElement" class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest">
+        <div
+          ref="programManagerElement"
+          class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest"
+        >
           <!-- Utility buttons -->
           <!-- TODO i18n -->
           <div class="row justify-between">
             <!-- Save button -->
-            <q-btn icon="save" :label="programSaved ? 'Saved!' : 'changes not saved...'" :disable="programSaved"
-              @click="saveProgram" flat></q-btn>
+            <q-btn
+              icon="save"
+              :label="programSaved ? 'Saved!' : 'changes not saved...'"
+              :disable="programSaved"
+              @click="saveProgram"
+              flat
+            ></q-btn>
 
             <!-- Display and update assigned user -->
-            <q-btn @click="showAthleteAssigningDialog = true"
+            <q-btn
+              @click="showAthleteAssigningDialog = true"
               :label="selectedProgram.athlete ? undefined : 'Assign to athlete'"
-              :color="selectedProgram.athlete ? 'secondary' : 'primary'" outline
-              :dense="Boolean(selectedProgram.athlete)">
-              <q-item v-if="selectedProgram.athlete" dense class="q-py-none q-px-md">
-                <q-item-section avatar v-if="$q.screen.gt.xs && selectedProgram.athlete.photoUrl">
+              :color="selectedProgram.athlete ? 'secondary' : 'primary'"
+              outline
+              :dense="Boolean(selectedProgram.athlete)"
+            >
+              <q-item
+                v-if="selectedProgram.athlete"
+                dense
+                class="q-py-none q-px-md"
+              >
+                <q-item-section
+                  avatar
+                  v-if="$q.screen.gt.xs && selectedProgram.athlete.photoUrl"
+                >
                   <q-avatar size="md">
                     <img :src="selectedProgram.athlete.photoUrl" />
                   </q-avatar>
@@ -27,58 +50,88 @@
                   selectedProgram.athlete.referenceName
                 }}</q-item-section>
                 <q-item-section thumbnail>
-                  <q-btn icon="clear" @click.stop="
-                  selectedProgram.athlete = undefined;
-                  programSaved = false;
-                  " round unelevated size="0.5em" color="red" class="q-mr-sm" />
+                  <q-btn
+                    icon="clear"
+                    @click.stop="
+                      selectedProgram.athlete = undefined;
+                      programSaved = false;
+                    "
+                    round
+                    unelevated
+                    size="0.5em"
+                    color="red"
+                    class="q-mr-sm"
+                  />
                 </q-item-section>
               </q-item>
             </q-btn>
           </div>
 
           <!-- Filter by week, day, exercise -->
-          <q-slide-transition @show="updateProgramManagerHeight" @hide="updateProgramManagerHeight">
+          <q-slide-transition
+            @show="updateProgramManagerHeight"
+            @hide="updateProgramManagerHeight"
+          >
             <div v-show="programManagerExpanded">
               <div class="row items-end justify-evenly q-pt-md">
                 <h6>{{ $t("coach.program_management.filter.title") }}</h6>
-                <os-select v-model="filterWeek" :options="arrayUniqueValues(
-                  selectedProgram?.programExercises?.map((exercise) =>
-                    exercise.scheduleWeek?.toString(),
-                  ) || [],
-                )
-                  " :label="$t('coach.program_management.filter.filter_week')" multiple hide-bottom-space
-                  class="col-3"></os-select>
-                <os-select v-model="filterDay" :options="arrayUniqueValues(
-                  selectedProgram?.programExercises?.map((exercise) =>
-                    exercise.scheduleDay?.toString(),
-                  ) || [],
-                )
-                  " :label="$t('coach.program_management.filter.filter_day')" multiple hide-bottom-space
-                  class="col-3"></os-select>
-                <os-select v-model="filterExercise" :options="arrayUniqueValues(
-                  selectedProgram?.programExercises?.map(
-                    (exercise) => exercise.exercise?.name,
-                  ) || [],
-                )
-                  " :label="$t('coach.program_management.filter.filter_exercise')" multiple hide-bottom-space
-                  class="col-3"></os-select>
+                <os-select
+                  v-model="filterWeek"
+                  :options="getProgramUniqueWeeks(selectedProgram)"
+                  :label="$t('coach.program_management.filter.filter_week')"
+                  multiple
+                  hide-bottom-space
+                  class="col-3"
+                ></os-select>
+                <os-select
+                  v-model="filterDay"
+                  :options="getProgramUniqueDays(selectedProgram)"
+                  :label="$t('coach.program_management.filter.filter_day')"
+                  multiple
+                  hide-bottom-space
+                  class="col-3"
+                ></os-select>
+                <os-select
+                  v-model="filterExercise"
+                  :options="getProgramUniqueExercises(selectedProgram)"
+                  :label="$t('coach.program_management.filter.filter_exercise')"
+                  multiple
+                  hide-bottom-space
+                  class="col-3"
+                ></os-select>
               </div>
             </div>
           </q-slide-transition>
-          <q-btn :icon="programManagerExpanded ? 'expand_less' : 'expand_more'"
-            @click="programManagerExpanded = !programManagerExpanded" flat dense color="secondary"
-            class="full-width q-mx-lg" :ripple="false"></q-btn>
+          <q-btn
+            :icon="programManagerExpanded ? 'expand_less' : 'expand_more'"
+            @click="programManagerExpanded = !programManagerExpanded"
+            flat
+            dense
+            color="secondary"
+            class="full-width q-mx-lg"
+            :ripple="false"
+          ></q-btn>
         </div>
 
         <!-- Show table to build program on the left -->
-        <TableProgramBuilder v-model="selectedProgram" :exercises="coachInfo.exercises" :filter="programFilter"
-          :maxlifts="athleteMaxlifts" :scroll-offset="programManagerHeight + 15" class="q-pa-sm">
+        <TableProgramBuilder
+          v-model="selectedProgram"
+          :exercises="coachInfo.exercises"
+          :filter="programFilter"
+          :maxlifts="athleteMaxlifts"
+          :scroll-offset="programManagerHeight + 15"
+          class="q-pa-sm"
+        >
           <template v-slot:empty-filtered>
             <h6>
               {{ $t("coach.program_management.filter.all_filtered_out") }}
             </h6>
-            <q-btn @click="programFilter = { week: [], day: [], exercise: [] }"
-              :label="$t('coach.program_management.filter.clear_filters')" rounded outline />
+            <q-btn
+              @click="programFilter = { week: [], day: [], exercise: [] }"
+              :label="$t('coach.program_management.filter.clear_filters')"
+              rounded
+              outline
+            />
           </template>
         </TableProgramBuilder>
       </template>
@@ -89,8 +142,12 @@
           <!-- TODO i18n -->
           <!-- Charts display section -->
           <div v-if="showingUtils == UtilsOptions.charts">
-            <ChartSelector :program="selectedProgram" :filter-exercise="filterExerciseSet" :filter-day="filterDaySet"
-              :filter-week="filterWeekSet"></ChartSelector>
+            <ChartSelector
+              :program="selectedProgram"
+              :filter-week="filterWeek"
+              :filter-day="filterDay"
+              :filter-exercise="filterExercise"
+            ></ChartSelector>
           </div>
 
           <!-- Max Lifts section -->
@@ -100,78 +157,134 @@
               <h6 class="text-margin-xs">Max Lifts section</h6>
 
               <div class="row q-gutter-x-md items-center">
-                <os-input v-model="searchMaxLift" :placeholder="$t('coach.maxlift_management.list.search_maxlift')
-                  " hide-bottom-space debounce="500" class="col">
+                <os-input
+                  v-model="searchMaxLift"
+                  :placeholder="
+                    $t('coach.maxlift_management.list.search_maxlift')
+                  "
+                  hide-bottom-space
+                  debounce="500"
+                  class="col"
+                >
                   <template v-slot:prepend>
                     <q-icon name="search" />
                   </template>
                 </os-input>
 
                 <!-- Add new maxlift -->
-                <q-btn icon="add" outline @click="
-                  updatingMaxlift = undefined;
-                showMaxliftAddDialog = true;
-                " />
+                <q-btn
+                  icon="add"
+                  outline
+                  @click="
+                    updatingMaxlift = undefined;
+                    showMaxliftAddDialog = true;
+                  "
+                />
               </div>
             </q-card-section>
 
             <q-separator />
 
-            <TableMaxLifts :maxlifts="athleteMaxlifts ?? []" @update="onUpdateMaxLift" :filter="searchMaxLift"
-              :no-data-label="$t('coach.maxlift_management.list.no_athlete')" />
+            <TableMaxLifts
+              :maxlifts="athleteMaxlifts ?? []"
+              @update="onUpdateMaxLift"
+              :filter="searchMaxLift"
+              :no-data-label="$t('coach.maxlift_management.list.no_athlete')"
+            />
 
             <!-- Dialog to add a new max lift -->
-            <q-dialog v-model="showMaxliftAddDialog" @hide="maxliftFormElement?.reset">
+            <q-dialog
+              v-model="showMaxliftAddDialog"
+              @hide="maxliftFormElement?.reset"
+            >
               <q-card class="q-pa-sm dialog-min-width">
                 <q-card-section class="row items-center q-pb-none">
                   <h5>
                     {{
                       updatingMaxlift
-                      ? $t("coach.maxlift_management.list.update")
-                      : $t("coach.maxlift_management.list.add")
+                        ? $t("coach.maxlift_management.list.update")
+                        : $t("coach.maxlift_management.list.add")
                     }}
                   </h5>
 
                   <q-space />
-                  <q-btn icon="close" flat round dense color="button-negative" v-close-popup />
+                  <q-btn
+                    icon="close"
+                    flat
+                    round
+                    dense
+                    color="button-negative"
+                    v-close-popup
+                  />
                 </q-card-section>
 
-                <FormMaxLift ref="maxliftFormElement" :maxlift="selectedMaxlift" :exercises="coachInfo.exercises"
-                  @submit="saveMaxlift" @reset="showMaxliftAddDialog = false"></FormMaxLift>
+                <FormMaxLift
+                  ref="maxliftFormElement"
+                  :maxlift="selectedMaxlift"
+                  :exercises="coachInfo.exercises"
+                  @submit="saveMaxlift"
+                  @reset="showMaxliftAddDialog = false"
+                ></FormMaxLift>
               </q-card>
             </q-dialog>
           </q-card>
 
           <!-- Program list section -->
-          <div v-else-if="showingUtils == UtilsOptions.list" class="column q-gutter-y-md">
+          <div
+            v-else-if="showingUtils == UtilsOptions.list"
+            class="column q-gutter-y-md"
+          >
             <!-- Start a new program -->
-            <q-btn icon="add" label="New program" @click="substituteProgram = new Program()" rounded
-              class="q-mx-auto"></q-btn>
+            <q-btn
+              icon="add"
+              label="New program"
+              @click="substituteProgram = new Program()"
+              rounded
+              class="q-mx-auto"
+            ></q-btn>
 
             <!-- Search status or temporary program -->
             <q-card>
               <!-- TODO i18n -->
               <q-card-section v-if="selectedProgram.uid">
                 <p>Programma attuale</p>
-                <p class="text-italic text-xs" v-if="selectedProgram.lastUpdated">
+                <p
+                  class="text-italic text-xs"
+                  v-if="selectedProgram.lastUpdated"
+                >
                   Last update: {{ $d(selectedProgram.lastUpdated, "middle") }}
                 </p>
               </q-card-section>
-              <q-card-section v-else-if="temporaryProgram" class="cursor-pointer" @click="onTemporaryProgramSelection">
+              <q-card-section
+                v-else-if="temporaryProgram"
+                class="cursor-pointer"
+                @click="onTemporaryProgramSelection"
+              >
                 <p class="text-primary">Apri programma temporaneo</p>
-                <p class="text-italic text-xs" v-if="temporaryProgram.lastUpdated">
+                <p
+                  class="text-italic text-xs"
+                  v-if="temporaryProgram.lastUpdated"
+                >
                   Last update: {{ $d(temporaryProgram.lastUpdated, "middle") }}
                 </p>
               </q-card-section>
-              <q-card-section v-else>Crea o seleziona un programma per iniziare</q-card-section>
+              <q-card-section v-else
+                >Crea o seleziona un programma per iniziare</q-card-section
+              >
             </q-card>
 
             <!-- Select among assigned programs -->
             <q-card>
-              <TableManagedAthletes ref="athletesTableElement" :athletes="coachInfo.athletes?.filter(
-                (athlete) => athlete.hasProgramAssigned,
-              ) ?? []
-                " @update:selected="onAthleteProgramSelection" athletes-only />
+              <TableManagedAthletes
+                ref="athletesTableElement"
+                :athletes="
+                  coachInfo.athletes?.filter(
+                    (athlete) => athlete.hasProgramAssigned,
+                  ) ?? []
+                "
+                @update:selected="onAthleteProgramSelection"
+                athletes-only
+              />
             </q-card>
           </div>
         </div>
@@ -179,17 +292,27 @@
 
       <template v-slot:separator>
         <!-- Add a middle separator -->
-        <q-avatar color="primary" text-color="white" size="40px" icon="drag_indicator" />
+        <q-avatar
+          color="primary"
+          text-color="white"
+          size="40px"
+          icon="drag_indicator"
+        />
       </template>
     </q-splitter>
 
     <!-- Dialog to assign program to athlete -->
-    <DialogProgramAssignAthlete v-model="showAthleteAssigningDialog" :athletes="coachInfo.athletes ?? []"
-      :selected="selectedProgram.athlete" @update:selected="(athlete) => {
-        selectedProgram.athlete = athlete;
-        programSaved = false;
-      }
-        ">
+    <DialogProgramAssignAthlete
+      v-model="showAthleteAssigningDialog"
+      :athletes="coachInfo.athletes ?? []"
+      :selected="selectedProgram.athlete"
+      @update:selected="
+        (athlete) => {
+          selectedProgram.athlete = athlete;
+          programSaved = false;
+        }
+      "
+    >
     </DialogProgramAssignAthlete>
 
     <!-- Dialog to change unsaved program -->
@@ -197,14 +320,25 @@
       <!--  TODO i18n -->
       <q-card>
         <q-card-section class="row items-center">
-          <q-icon name="fa-solid fa-circle-exclamation" color="primary" size="md" />
-          <span class="q-ml-sm">Hai delle modifiche non salvate, sei sicuro di voler
-            continuare?</span>
+          <q-icon
+            name="fa-solid fa-circle-exclamation"
+            color="primary"
+            size="md"
+          />
+          <span class="q-ml-sm"
+            >Hai delle modifiche non salvate, sei sicuro di voler
+            continuare?</span
+          >
         </q-card-section>
 
         <q-card-actions align="right">
           <q-btn flat label="Cancel" color="secondary" v-close-popup />
-          <q-btn label="Continue" color="primary" @click="openProgram(substituteProgram, true)" v-close-popup />
+          <q-btn
+            label="Continue"
+            color="primary"
+            @click="openProgram(substituteProgram, true)"
+            v-close-popup
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -214,14 +348,25 @@
       <!--  TODO i18n -->
       <q-card>
         <q-card-section class="row items-center">
-          <q-icon name="fa-solid fa-circle-exclamation" color="primary" size="md" />
-          <span class="q-ml-sm">C'è un programma non ancora assegnato, vuoi continuare la
-            modifica?</span>
+          <q-icon
+            name="fa-solid fa-circle-exclamation"
+            color="primary"
+            size="md"
+          />
+          <span class="q-ml-sm"
+            >C'è un programma non ancora assegnato, vuoi continuare la
+            modifica?</span
+          >
         </q-card-section>
 
         <q-card-actions align="right">
           <q-btn flat label="Cancel" color="secondary" v-close-popup />
-          <q-btn label="Open" color="primary" @click="onTemporaryProgramSelection" v-close-popup />
+          <q-btn
+            label="Open"
+            color="primary"
+            @click="onTemporaryProgramSelection"
+            v-close-popup
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -241,13 +386,16 @@ import { useUserStore } from "@/stores/user";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
-import { arrayUniqueValues } from "@/helpers/array";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
 import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
 import { AthleteUser } from "@/helpers/users/user";
+import {
+  getProgramUniqueWeeks,
+  getProgramUniqueDays,
+  getProgramUniqueExercises,
+} from "@/helpers/programs/linesManagement";
 import router from "@/router";
-import { getUniqueDayAndWeekNames } from "@/helpers/charts/chartDataFormatter";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -279,9 +427,9 @@ const selectedProgram = ref<Program>(new Program());
 const substituteProgram = ref<Program | string>();
 const oldAthleteAssigned = ref<AthleteUser>();
 const programSaved = ref(true);
-const filterWeek = ref<string[]>([]);
-const filterDay = ref<string[]>([]);
-const filterExercise = ref<string[]>([]);
+const filterWeek = ref<string[]>();
+const filterDay = ref<string[]>();
+const filterExercise = ref<string[]>();
 const showTemporaryProgramRestoreDialog = ref(false);
 const showAthleteAssigningDialog = ref(false);
 const programManagerExpanded = ref(false);
@@ -340,27 +488,6 @@ const showChangeProgramDialog = computed({
   set(newValue) {
     if (!newValue) substituteProgram.value = undefined;
   },
-});
-
-// Filter Week Sets
-const filterWeekSet = computed(() => {
-  if (filterWeek.value.length === 0) {
-    return getUniqueDayAndWeekNames(selectedProgram.value).weeks;
-  } else {
-    return new Set([...filterWeek.value].sort());
-  }
-});
-const filterDaySet = computed(() => {
-  if (filterDay.value.length === 0) {
-    return getUniqueDayAndWeekNames(selectedProgram.value).days;
-  } else {
-    return new Set([...filterDay.value].sort());
-  }
-});
-const filterExerciseSet = computed(() => {
-  return filterExercise.value.length > 0
-    ? new Set(filterExercise.value)
-    : undefined;
 });
 
 // Inform user that program is not saved upon changes.
@@ -545,7 +672,7 @@ function saveMaxlift(newMaxLift: MaxLift) {
         type: "negative",
         message: i18n.t(
           "coach.maxlift_management.list." +
-          (isNew ? "add_error" : "update_error"),
+            (isNew ? "add_error" : "update_error"),
         ),
         position: "bottom",
       }),

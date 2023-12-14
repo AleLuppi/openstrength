@@ -1,4 +1,9 @@
-import { ProgramExercise, ProgramLine } from "@/helpers/programs/program";
+import {
+  Program,
+  ProgramExercise,
+  ProgramLine,
+} from "@/helpers/programs/program";
+import { arrayUniqueValues } from "@/helpers/array";
 
 /**
  * Sort program exercises according to week, day, order.
@@ -102,5 +107,62 @@ export function orderProgramExercises(
       return { ...out, [getName(week, day, order)]: exercise };
     },
     {},
+  );
+}
+
+/**
+ * Retrieve a list of unique weeks from a program.
+ *
+ * @param program instance of interest.
+ * @param exerciseName if provided, only consider exercises whose name match the provided one.
+ * @returns sorted list of unique week names.
+ */
+export function getProgramUniqueWeeks(
+  program?: Program,
+  exerciseName?: string,
+) {
+  return arrayUniqueValues(
+    program?.programExercises
+      ?.filter(
+        (exercise) => !exerciseName || exercise.exercise?.name == exerciseName,
+      )
+      .map((exercise) => exercise.scheduleWeek?.toString()) || [],
+  );
+}
+
+/**
+ * Retrieve a list of unique days from a program.
+ *
+ * @param program instance of interest.
+ * @param exerciseName if provided, only consider exercises whose name match the provided one.
+ * @returns sorted list of unique day names.
+ */
+export function getProgramUniqueDays(program?: Program, exerciseName?: string) {
+  return arrayUniqueValues(
+    program?.programExercises
+      ?.filter(
+        (exercise) => !exerciseName || exercise.exercise?.name == exerciseName,
+      )
+      .map((exercise) => exercise.scheduleDay?.toString()) || [],
+  );
+}
+
+/**
+ * Retrieve a list of unique exercise names from a program.
+ *
+ * @param program instance of interest.
+ * @param exerciseName if provided, only consider exercises whose name match the provided one.
+ * @returns sorted list of unique exercise names.
+ */
+export function getProgramUniqueExercises(
+  program?: Program,
+  exerciseName?: string,
+) {
+  return arrayUniqueValues(
+    program?.programExercises
+      ?.filter(
+        (exercise) => !exerciseName || exercise.exercise?.name == exerciseName,
+      )
+      .map((exercise) => exercise.exercise?.name) || [],
   );
 }

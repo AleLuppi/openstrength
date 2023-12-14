@@ -6,7 +6,7 @@ import {
   calculateTotalSets,
   calculateTotalVolume,
   computeUndefined,
-} from "./chartDatasetComputations";
+} from "@/helpers/charts/chartDatasetComputations";
 import {
   OSAvailableXType,
   OSChartDataRequest,
@@ -14,6 +14,11 @@ import {
   OSChartType,
   OSChartVersion,
 } from "./chartTypes";
+import {
+  getProgramUniqueDays,
+  getProgramUniqueExercises,
+  getProgramUniqueWeeks,
+} from "@/helpers/programs/linesManagement";
 const { getPaletteColor, lighten } = colors;
 
 // TODO: find a way to compute all the charts, now only total reps is computed
@@ -21,7 +26,7 @@ const { getPaletteColor, lighten } = colors;
 /**
  * Defines how data should be organized for charts (key is X, value is Y)
  */
-interface ExerciseChartData {
+export interface ExerciseChartData {
   key: string;
   value: number;
 }
@@ -38,78 +43,6 @@ interface ExerciseChartDataset {
     yAxisKey: string;
   };
   label: string;
-}
-
-/**
- * TODO: remove this method and import from excelconverter or put in a generic service
- * Determines unique day and week names of the program
- */
-export function getUniqueDayAndWeekNames(program: Program): {
-  days: Set<string | number>;
-  weeks: Set<string | number>;
-} {
-  const days = new Set<string | number>();
-  const weeks = new Set<string | number>();
-
-  program.programExercises?.forEach((exercise) => {
-    days.add(exercise.scheduleDay as string);
-    weeks.add(exercise.scheduleWeek as string);
-  });
-
-  // Convert Sets to sorted arrays
-  const sortedDays = Array.from(days).sort();
-  const sortedWeeks = Array.from(weeks).sort();
-
-  return { days: new Set(sortedDays), weeks: new Set(sortedWeeks) };
-}
-
-/**
- * Determines unique day and week names of the program for a given exercise
- */
-export function getUniqueWeeksAndDaysForExercise(
-  program: Program,
-  exerciseFullName: string,
-): { weeks: Set<string>; days: Set<string> } {
-  const weeks: Set<string> = new Set();
-  const days: Set<string> = new Set();
-
-  program.programExercises?.forEach((exercise) => {
-    const exerciseName = exercise.exercise?.name || "";
-    const currentExerciseFullName = `${exerciseName}`.trim();
-
-    if (currentExerciseFullName === exerciseFullName) {
-      const week = String(exercise.scheduleWeek);
-      const day = String(exercise.scheduleDay);
-
-      if (typeof week === "string" || typeof week === "number") {
-        weeks.add(String(week));
-      }
-
-      if (typeof day === "string" || typeof day === "number") {
-        days.add(String(day));
-      }
-    }
-  });
-
-  return { days, weeks };
-}
-
-/**
- * Method to get unique exercise names from the program (name considers base exercise and variant)
- */
-export function getUniqueExerciseNames(program: Program): Set<string> {
-  const uniqueExerciseNames: Set<string> = new Set();
-
-  program.programExercises?.forEach((exercise) => {
-    const exerciseName = exercise.exercise?.name || "";
-    const uniqueName = `${exerciseName}`.trim();
-
-    if (uniqueName) {
-      uniqueExerciseNames.add(uniqueName as string);
-    }
-  });
-
-  return uniqueExerciseNames;
 }
 
 /**
@@ -181,21 +114,15 @@ export function getCalculationFunction(
 export function computeDataForExercise(
   program: Program,
   currentExerciseFullName: string,
-  weeks?: Set<string>,
-  days?: Set<string>,
+  weeks?: string[],
+  days?: string[],
   chartInfo?: OSChartDescriptor,
 ): ExerciseChartData[] {
-  if (!weeks || !days) {
-    const { weeks: computedUniqueWeeks, days: computedUniqueDays } =
-      getUniqueWeeksAndDaysForExercise(program, currentExerciseFullName);
-
-    if (!weeks) {
-      weeks = computedUniqueWeeks;
-    }
-
-    if (!days) {
-      days = computedUniqueDays;
-    }
+  if (!weeks || weeks.length == 0) {
+    weeks = getProgramUniqueWeeks(program, currentExerciseFullName);
+  }
+  if (!days || days.length == 0) {
+    days = getProgramUniqueDays(program, currentExerciseFullName);
   }
 
   const data: ExerciseChartData[] = [];
@@ -252,13 +179,16 @@ export function computeChartData(
   if (!chartRequest.chartInfo.xAxisType) {
     chartRequest.chartInfo.xAxisType = OSAvailableXType.Weeks;
   }
-  if (!chartRequest.selectedExercises) {
-    chartRequest.selectedExercises = getUniqueExerciseNames(
+  if (
+    !chartRequest.selectedExercises ||
+    chartRequest.selectedExercises.length == 0
+  ) {
+    chartRequest.selectedExercises = getProgramUniqueExercises(
       chartRequest.program,
     );
   }
 
-  chartRequest.selectedExercises?.forEach((exerciseName) => {
+  chartRequest.selectedExercises.forEach((exerciseName) => {
     const data = computeDataForExercise(
       chartRequest.program,
       exerciseName,
@@ -291,6 +221,7 @@ export function formatChartData(
   datasets?: ExerciseChartDataset[],
 ): ChartData<"line", ExerciseChartData[]> | undefined {
   if (!datasets || datasets.length === 0) {
+    // TODO inform user about the issue
     console.error("Invalid datasets structure.");
     return undefined;
   }
