@@ -7,7 +7,7 @@
         <q-btn
           outline
           :to="{ name: 'program', params: { programId: props.program.uid } }"
-          label="$t('coach.athlete_management.call_to_action.modify_program')"
+          :label="$t('coach.athlete_management.call_to_action.modify_program')"
           class="q-mr-md"
         ></q-btn>
       </div>

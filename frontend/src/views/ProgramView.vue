@@ -26,6 +26,7 @@
                 )
               "
               :disable="programSaved"
+              :color="programSaved ? 'positive' : 'negative'"
               @click="saveProgram"
               flat
             ></q-btn>
@@ -69,8 +70,8 @@
                     "
                     round
                     unelevated
-                    size="0.5em"
-                    color="red"
+                    size="0.45em"
+                    color="button-negative"
                     class="q-mr-sm"
                   />
                 </q-item-section>
@@ -248,22 +249,32 @@
             <!-- Start a new program -->
             <q-btn
               icon="add"
-              label="New program"
+              :label="i18n.t('coach.program_management.builder.new_program')"
               @click="substituteProgram = new Program()"
               rounded
+              outline
               class="q-mx-auto"
             ></q-btn>
 
             <!-- Search status or temporary program -->
             <q-card>
-              <!-- TODO i18n -->
               <q-card-section v-if="selectedProgram.uid">
-                <p>Programma attuale</p>
-                <p
-                  class="text-italic text-xs"
-                  v-if="selectedProgram.lastUpdated"
-                >
-                  Last update: {{ $d(selectedProgram.lastUpdated, "middle") }}
+                <div class="row items-center justify-between">
+                  <p>{{ selectedProgram.name ?? $t("common.program") }}</p>
+                  <p
+                    class="text-italic text-xs"
+                    v-if="selectedProgram.lastUpdated"
+                  >
+                    {{ $t("coach.program_management.builder.last_update")
+                    }}{{ $d(selectedProgram.lastUpdated, "middle") }}
+                  </p>
+                </div>
+                <p class="q-mt-md text-italic">
+                  {{
+                    selectedProgram.description
+                      ? selectedProgram.description
+                      : " "
+                  }}
                 </p>
               </q-card-section>
               <q-card-section
@@ -271,17 +282,20 @@
                 class="cursor-pointer"
                 @click="onTemporaryProgramSelection"
               >
-                <p class="text-primary">Apri programma temporaneo</p>
+                <p class="text-primary">
+                  {{ $t("coach.program_management.builder.open_temporary") }}
+                </p>
                 <p
                   class="text-italic text-xs"
                   v-if="temporaryProgram.lastUpdated"
                 >
-                  Last update: {{ $d(temporaryProgram.lastUpdated, "middle") }}
+                  {{ $t("coach.program_management.builder.last_update")
+                  }}{{ $d(temporaryProgram.lastUpdated, "middle") }}
                 </p>
               </q-card-section>
-              <q-card-section v-else
-                >Crea o seleziona un programma per iniziare</q-card-section
-              >
+              <q-card-section v-else>{{
+                $t("coach.program_management.builder.last_update")
+              }}</q-card-section>
             </q-card>
 
             <!-- Select among assigned programs -->
@@ -304,9 +318,9 @@
       <template v-slot:separator>
         <!-- Add a middle separator -->
         <q-avatar
-          color="primary"
+          color="light"
           text-color="white"
-          size="40px"
+          size="30px"
           icon="drag_indicator"
         />
       </template>
@@ -328,24 +342,27 @@
 
     <!-- Dialog to change unsaved program -->
     <q-dialog v-model="showChangeProgramDialog">
-      <!--  TODO i18n -->
       <q-card>
         <q-card-section class="row items-center">
           <q-icon
             name="fa-solid fa-circle-exclamation"
-            color="primary"
-            size="md"
+            color="negative"
+            size="sm"
           />
-          <span class="q-ml-sm"
-            >Hai delle modifiche non salvate, sei sicuro di voler
-            continuare?</span
-          >
+          <span class="q-ml-sm">{{
+            $t("coach.program_management.builder.not_saved_prompt")
+          }}</span>
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="secondary" v-close-popup />
           <q-btn
-            label="Continue"
+            flat
+            :label="i18n.t('common.cancel')"
+            color="secondary"
+            v-close-popup
+          />
+          <q-btn
+            :label="i18n.t('common.continue')"
             color="primary"
             @click="openProgram(substituteProgram, true)"
             v-close-popup
@@ -356,7 +373,6 @@
 
     <!-- Dialog to open temporary program -->
     <q-dialog v-model="showTemporaryProgramRestoreDialog">
-      <!--  TODO i18n -->
       <q-card>
         <q-card-section class="row items-center">
           <q-icon
@@ -364,16 +380,20 @@
             color="primary"
             size="md"
           />
-          <span class="q-ml-sm"
-            >C'è un programma non ancora assegnato, vuoi continuare la
-            modifica?</span
-          >
+          <span class="q-ml-sm">{{
+            $t("coach.program_management.builder.not_assigned_prompt")
+          }}</span>
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="secondary" v-close-popup />
           <q-btn
-            label="Open"
+            flat
+            :label="i18n.t('common.cancel')"
+            color="secondary"
+            v-close-popup
+          />
+          <q-btn
+            :label="i18n.t('common.open')"
             color="primary"
             @click="onTemporaryProgramSelection"
             v-close-popup

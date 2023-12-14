@@ -283,9 +283,11 @@
         "save": "Save",
         "saved": "Saved!",
         "not_saved": "changes not saved...",
+        "not_saved_prompt": "There are unsaved changes, are you sure to continue?",
         "save_error": "Could not save program, please retry",
         "save_assignment_error": "Program has been saved, but it could not be assigned to athlete.",
         "save_unassignment_error": "Program assignment could not be removed from athlete { name }.",
+        "not_assigned_prompt": "There is an unassigned program, do you want to continue the modification?",
         "week_name": "Week { week }",
         "day_name": "Day { day }",
         "new_day": "Day",
@@ -299,7 +301,11 @@
         "show_charts_tooltip": "Charts",
         "show_maxlifts_tooltip": "Reference Table",
         "assign_to_athlete": "Assign to athlete",
-        "show_program_list": "List of Programs"
+        "show_program_list": "List of Programs",
+        "last_update": "Last update: ", 
+        "open_temporary": "Open temporary program",
+        "start_program": "Create or select a program to start",
+        "new_program": "New program"
       },
       "filter": {
         "title": "Filter by...",
@@ -357,6 +363,7 @@
     "other": "Other",
     "submit": "Submit",
     "close": "Close",
+    "open": "Open",
     "variant": "Variant",
     "Variants": "Variants",
     "variants": "variants",
