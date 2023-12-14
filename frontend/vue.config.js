@@ -2,6 +2,8 @@ const { defineConfig } = require("@vue/cli-service");
 module.exports = defineConfig({
   transpileDependencies: ["quasar"],
 
+  productionSourceMap: process.env.VUE_APP_SOURCE_MAP === true,
+
   pluginOptions: {
     quasar: {
       importStrategy: "kebab",

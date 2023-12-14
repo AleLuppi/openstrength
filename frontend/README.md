@@ -32,13 +32,15 @@ npm run lint
 ```
 
 ### Deploy on Firebase
-Test web app dedicated channel. Deploy it and get the temporary link (`CHANNEL_ID` can be any valid name).
+> **Note:** login to Firebase is required via `firebase login`
+
+Test web app in a dedicated channel. Deploy it and get the temporary link (`CHANNEL_ID` can be any valid name).
 ```
-firebase hosting:channel:deploy CHANNEL_ID
+npm run release -- CHANNEL_ID
 ```
-Deploy the web app Firebase's hosting domains (_login is required via_ `firebase login`).
+Deploy the web app on Firebase's hosting domains.
 ```
-firebase deploy --only hosting
+npm run deploy
 ```
 Optionally, it is possible to deploy other services too (database, storage, firestore, functions), separated by commas. See documentation for more details: [https://firebase.google.com/docs/cli#partial_deploys](https://firebase.google.com/docs/cli#partial_deploys).
 
