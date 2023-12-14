@@ -9,7 +9,8 @@
       :color="selected.includes(key) ? 'primary' : 'lighter'"
       :text-color="selected.includes(key) ? 'lighter' : 'dark'"
       @click="toggleButton(key)"
-      :class="$q.screen.lt.sm ? 'q-ma-xs bordered' : 'q-ma-sm bordered'"
+      class="bordered"
+      :class="$q.screen.lt.sm ? 'q-ma-xs' : 'q-ma-sm'"
     >
       {{ props.useLocale ? $t(text) : text }}
     </q-btn>
@@ -83,13 +84,13 @@ function validate() {
   // Fail if lower than minimum
   if (selected.value.length < min) {
     errorMessage.value = i18n.t("user.onboarding.error_min_selection", {
-      min: min,
+      num: min,
     });
     return false;
   }
   if (selected.value.length > max) {
     errorMessage.value = i18n.t("user.onboarding.error_max_selection", {
-      max: max,
+      num: max,
     });
     return false;
   }

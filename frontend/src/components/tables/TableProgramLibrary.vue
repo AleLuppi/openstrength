@@ -1,20 +1,14 @@
 <template>
-  <os-table
-    :columns="columns"
-    :rows="rows"
-    row-key="rowId"
-    virtual-scroll
-    hide-pagination
-    class="os-table-max-height"
-    selection="single"
-  ></os-table>
+  <os-table :columns="columns" :rows="rows" row-key="rowId" virtual-scroll hide-pagination class="os-table-max-height"
+    selection="single"></os-table>
 </template>
 
 <script setup lang="ts">
 import { computed, PropType } from "vue";
-import { Program } from "@/helpers/programs/program";
 import { useI18n } from "vue-i18n";
+import { Program } from "@/helpers/programs/program";
 
+// Init plugin
 const i18n = useI18n();
 
 // Define props
@@ -34,7 +28,7 @@ const columns = [
   {
     name: "name",
     required: true,
-    label: i18n.t("common.name"),
+    label: i18n.t("coach.program_management.fields.name"),
     align: "left",
     field: "name",
     sortable: true,
@@ -48,13 +42,13 @@ const columns = [
   {
     name: "note",
     align: "left",
-    label: i18n.t("common.note"),
+    label: i18n.t("coach.program_management.fields.note"),
     field: "note",
   },
   {
     name: "label",
     align: "left",
-    label: i18n.t("common.label"),
+    label: i18n.t("coach.program_management.fields.label"),
     field: "label",
   },
   { name: "update", align: "center", label: "", field: "update" },

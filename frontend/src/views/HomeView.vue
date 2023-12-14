@@ -5,9 +5,9 @@
   >
     <!-- Show coming soon in case of athlete -->
     <img :src="logoFullImage" :srcset="logoFullImage + ' 1.2x'" alt="Logo" />
-    <p :class="$q.screen.lt.md ? 'text-center text-h4' : 'text-center text-h2'">
+    <h2 class="text-center">
       {{ $t("comingsoon.title") }}
-    </p>
+    </h2>
     <p>
       {{ $t("comingsoon.subtitle") }}
     </p>
@@ -19,9 +19,7 @@
   >
     <!-- Show homepage in case of coach -->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
-      <p
-        :class="$q.screen.lt.md ? 'text-center text-h4' : 'text-center text-h2'"
-      >
+      <h2 class="text-center">
         {{
           user.displayName
             ? $t("homepage.welcome_with_name", {
@@ -29,7 +27,7 @@
               })
             : $t("homepage.welcome_without_name")
         }}
-      </p>
+      </h2>
     </div>
 
     <!-- Common actions -->
@@ -41,10 +39,11 @@
         class="link-child"
       >
         <q-card
+          class="column items-center justify-center square-card q-hoverable text-center"
           :class="
             $q.screen.lt.sm
-              ? 'q-pa-xs column items-center justify-center square-card-mobile q-hoverable text-center'
-              : 'q-pa-lg column items-center justify-center square-card q-hoverable text-center'
+              ? 'q-pa-xs square-card-mobile'
+              : 'q-pa-lg square-card'
           "
         >
           <!-- Animate when on -->
@@ -57,13 +56,9 @@
               :size="$q.screen.lt.sm ? '3em' : '5em'"
               color="icon-color"
             />
-            <p
-              :class="
-                $q.screen.lt.md ? 'text-center text-h6' : 'text-center text-h4'
-              "
-            >
+            <h4 class="text-center">
               {{ $t(buttonInfo.title) }}
-            </p>
+            </h4>
             <p class="q-px-md text-weight-light">
               {{ $t(buttonInfo.subtitle) }}
             </p>
@@ -79,11 +74,9 @@
   >
     <!-- Show call to action to unsigner user -->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
-      <p
-        :class="$q.screen.lt.md ? 'text-center text-h4' : 'text-center text-h2'"
-      >
+      <h2 class="text-center">
         {{ $t("homepage.welcome_unsigned_user") }}
-      </p>
+      </h2>
     </div>
 
     <!-- Common actions -->
@@ -106,13 +99,9 @@
             size="5em"
             color="icon-color"
           />
-          <p
-            :class="
-              $q.screen.lt.md ? 'text-center text-h6' : 'text-center text-h4'
-            "
-          >
+          <h4 class="text-center'">
             {{ $t(buttonUnsignedUser.title) }}
-          </p>
+          </h4>
           <p class="q-px-md text-weight-light">
             {{ $t(buttonUnsignedUser.subtitle) }}
           </p>
@@ -127,11 +116,9 @@
   >
     <!-- Show something else in all other cases -->
     <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
-      <p
-        :class="$q.screen.lt.md ? 'text-center text-h4' : 'text-center text-h2'"
-      >
+      <h2 class="text-center">
         {{ $t("homepage.welcome_unknown_user") }}
-      </p>
+      </h2>
     </div>
 
     <!-- Action -->
@@ -156,10 +143,10 @@
             $q.screen.lt.md ? 'text-center text-h6' : 'text-center text-h4'
           "
         >
-          {{ $t("homepage.cta_onboarding_title") }}
+          {{ $t("homepage.onboarding_title") }}
         </p>
         <p class="q-px-md text-weight-light">
-          {{ $t("homepage.cta_onboarding_subtitle") }}
+          {{ $t("homepage.onboarding_subtitle") }}
         </p>
       </q-card>
     </div>
@@ -172,11 +159,11 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
 import { User, UserRole } from "@/helpers/users/user";
 import UserOnboarding from "@/components/forms/UserOnboarding.vue";
-import { ref } from "vue";
 
 // Get user state
 const user = useUserStore();
@@ -236,6 +223,7 @@ function onOnboardingSubmit(data: { [key: string]: any }) {
   background: var(--bg-1, #fff);
   box-shadow: 0px 8px 32px 0px rgba(51, 38, 174, 0.08);
 }
+
 .square-card-mobile {
   width: 300px;
   height: 150px;

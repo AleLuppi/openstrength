@@ -1,14 +1,14 @@
 <template>
   <os-table
-    :columns="
-      $q.screen.width < 840 && !$q.screen.lt.sm ? columnsNotDesktop : columns
-    "
+    :columns="columns"
     :rows="rows"
     row-key="uid"
     virtual-scroll
     hide-pagination
     :class="
-      $q.screen.lt.md ? 'os-table-max-height-notdesktop' : 'os-table-max-height'
+      $q.screen.lt.md
+        ? 'os-table-max-height-with-header'
+        : 'os-table-max-height'
     "
     @row-click="
       (...params: [Event, Object, Number]) => emit('selection', ...params)
@@ -20,10 +20,12 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, PropType } from "vue";
-import { AthleteUser } from "@/helpers/users/user";
-import { getAssignedProgram } from "@/helpers/programs/athleteAssignment";
+import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
+import { AthleteUser } from "@/helpers/users/user";
 
+// Init plugin
+const $q = useQuasar();
 const i18n = useI18n();
 
 // Define props
@@ -50,42 +52,21 @@ const emit = defineEmits<{
 
 // Set table columns
 const columns = computed(() => [
-  {
-    name: "image",
-    required: false,
-    label: "",
-    align: "center",
-    field: "image",
-  },
-  {
-    name: "name",
-    required: true,
-    label: i18n.t("common.name"),
-    align: "left",
-    field: (row: {
-      name?: string;
-      surname?: string;
-      displayName?: string;
-      [key: string]: any;
-    }) => row.displayName ?? row.name + " " + row.surname,
-    sortable: true,
-  },
-  ...(props.athletesOnly
-    ? []
-    : [
+  ...($q.screen.width > 840 || !$q.screen.lt.sm
+    ? [
         {
-          name: "program",
-          label: i18n.t("common.program"),
-          align: "left",
-          field: "program",
+          name: "image",
+          required: false,
+          label: "",
+          align: "center",
+          field: "image",
         },
-      ]),
-]);
-const columnsNotDesktop = computed(() => [
+      ]
+    : []),
   {
     name: "name",
     required: true,
-    label: i18n.t("common.name"),
+    label: i18n.t("coach.athlete_management.fields.name"),
     align: "left",
     field: (row: {
       name?: string;
@@ -100,7 +81,7 @@ const columnsNotDesktop = computed(() => [
     : [
         {
           name: "program",
-          label: i18n.t("common.program"),
+          label: i18n.t("coach.program_management.fields.program"),
           align: "left",
           field: "program",
         },
@@ -121,15 +102,12 @@ const rows = computed(() => {
     name: athlete.name,
     surname: athlete.surname,
     displayName: athlete.displayName,
-
     program: {
       element: "chip",
-      label: getAssignedProgram(athlete, [])?.isOngoing // TODO
+      label: athlete.assignedProgramId
         ? i18n.t("coach.athlete_management.fields.program_ongoing")
         : i18n.t("coach.athlete_management.fields.program_unassigned"),
-      color: getAssignedProgram(athlete, [])?.isOngoing // TODO
-        ? "positive"
-        : "negative",
+      color: athlete.assignedProgramId ? "positive" : "negative",
     },
   }));
 });
@@ -164,7 +142,8 @@ watch(selectedRows, (value) =>
 .os-table-max-height {
   max-height: calc(100vh - 160px);
 }
-.os-table-max-height-notdesktop {
+
+.os-table-max-height-with-header {
   max-height: calc(100vh - 160px - 50px);
 }
 </style>

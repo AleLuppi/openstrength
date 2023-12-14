@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md" style="height: 0">
     <!-- Excercise cards -->
     <div class="row q-col-gutter-x-md">
       <!-- List exercises -->
@@ -54,14 +54,21 @@
 
       <!-- List variants -->
       <!-- TODO card or pagination -->
-      <div
+      <component
+        :is="$q.screen.lt.sm ? QDialog : 'div'"
         v-if="Boolean(selectedExercise)"
-        :class="!$q.screen.lt.sm ? 'col-12 col-sm-6' : 'col-12 os-overlay'"
+        :model-value="Boolean(selectedExercise)"
+        @update:model-value="
+          (val: boolean) => {
+            if (!val) clearExercise();
+          }
+        "
+        class="col-6"
       >
         <!-- Show card when an exercise is selected -->
         <q-card>
           <q-card-section>
-            <div class="row justify-between">
+            <div class="row justify-between items-center">
               <h6>
                 {{ $t("coach.exercise_management.list.title_variant") }}
               </h6>
@@ -70,9 +77,10 @@
                 icon="close"
                 outline
                 flat
+                round
                 color="light-dark"
                 class="q-pa-sm"
-                @click="selectedExercise = undefined"
+                @click="clearExercise"
               ></q-btn>
             </div>
 
@@ -106,7 +114,6 @@
           <q-separator />
 
           <TableExerciseLibrary
-            :class="$q.screen.lt.sm ? 'os-variants-max-height-mobile' : ''"
             :exercises="[]"
             :variants="selectedExercise?.variants"
             :on-update="onVariantUpdate"
@@ -114,7 +121,7 @@
             :filter="searchVariant"
           />
         </q-card>
-      </div>
+      </component>
 
       <!-- Show text when no exercise is selected -->
       <div v-else-if="!$q.screen.lt.sm" class="col-12 col-sm-6">
@@ -227,14 +234,12 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue";
-import { useQuasar } from "quasar";
+import { useQuasar, QDialog } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import TableExerciseLibrary from "@/components/tables/TableExerciseLibrary.vue";
-//import TableProgramLibrary from "@/components/tables/TableProgramLibrary.vue";
 import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLibrary.vue";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
-//import { Program } from "@/helpers/programs/program";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { arrayUniqueValues } from "@/helpers/array";
 import { event } from "vue-gtag";
@@ -247,7 +252,6 @@ const i18n = useI18n();
 const coachInfo = useCoachInfoStore();
 
 // Set ref
-//const selectedTab = ref("exercise"); // TODO main tab to show
 const exerciseTableElement = ref<typeof TableExerciseLibrary>();
 const variantFormElement = ref<typeof FormExerciseVariantLibrary>();
 const searchExercise = ref<string>();
@@ -259,11 +263,6 @@ const deletingVariant = ref<ExerciseVariant>();
 const showDialogDelete = ref(false);
 const selectedExercise = ref<Exercise>();
 const selectedVariant = ref<ExerciseVariant>();
-//const updatingProgram = ref<Program>(); // TODO check Program that is currently being updated
-//const showProgramDialog = ref(false); // TODO check whether to show dialog to add Program
-//const programName = ref(""); // TODO check new program name
-//const programLabel = ref(""); // TODO check new program note
-//const searchProgram = ref<string>();
 const showVariantForm = computed(() =>
   Boolean(addingNewVariant.value || selectedVariant.value),
 );
@@ -281,9 +280,6 @@ watch(selectedExercise, (exercise) =>
 
 // Get exercises to display
 const exercises = computed<Exercise[]>(() => coachInfo.exercises || []);
-
-// Get programs to display
-//const programs = computed(() => coachInfo.programs || []);
 
 // Get options to display on variant creation or update
 const exerciseMuscleGroupsOptions = computed(() => {
@@ -576,89 +572,4 @@ function clearVariant() {
   selectedVariant.value = undefined;
   deletingVariant.value = undefined;
 }
-
-/** TODO check
- * Create a new program and assign to a coach
- */
-/* function createProgram() {
-  const newProgram = new Program({
-    name: programName.value,
-    labels: [programLabel.value], // TODO multiple labels
-  });
-  newProgram.saveNew({
-    onSuccess: () => {
-      (coachInfo.programs = coachInfo.programs || []).push(newProgram);
-      clearProgram();
-    },
-    onError: () =>
-      $q.notify({
-        type: "negative",
-        message: i18n.t("coach.program_management.list.add_error"),
-        position: "bottom",
-      }),
-  });
-  showProgramDialog.value = false;
-} */
-
-/** TODO check
- * Update program according to inserted values.
- */
-/* function updateProgram() {
-  if (updatingProgram.value) {
-    updatingProgram.value.name = programName.value;
-    updatingProgram.value.labels = [programLabel.value]; // TODO multiple labels
-    updatingProgram.value.saveUpdate({
-      onSuccess: () => {
-        clearProgram();
-      },
-      onError: () =>
-        $q.notify({
-          type: "negative",
-          message: i18n.t("coach.program_management.list.update_error"),
-          position: "bottom",
-        }),
-    });
-    showProgramDialog.value = false;
-  }
-} */
-
-/** TODO check
- * Compile form with program info to allow coach to update them.
- *
- * @param program
- */
-/* function onUpdateProgram(program: Program) {
-  updatingProgram.value = program;
-  showProgramDialog.value = true;
-  programName.value = program.name ?? "";
-  programLabel.value = program.labels?.[0] ?? ""; // TODO multiple labels
-} */
-
-/** TODO check
- * Clear values in program insertion form.
- */
-/* function clearProgram() {
-  programName.value = "";
-  programLabel.value = "";
-  showProgramDialog.value = false;
-} */
 </script>
-
-<style script lang="scss">
-.os-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 20px;
-  box-sizing: border-box;
-  z-index: 2;
-}
-
-.os-variants-max-height-mobile {
-  height: calc(100vh - 38px - 50px);
-}
-</style>

@@ -114,25 +114,23 @@
       </div>
 
       <!-- Right card: selected athlete data -->
-      <div
+      <component
+        :is="$q.screen.lt.sm ? QDialog : 'div'"
         v-if="Boolean(selectedAthlete)"
-        :class="!$q.screen.lt.sm ? 'col-12 col-sm-7' : 'col-12 os-overlay'"
+        :model-value="Boolean(selectedAthlete)"
+        @update:model-value="selectedAthlete = undefined"
+        class="col-7"
       >
         <q-card>
-          <q-card-section
-            :class="
-              !$q.screen.lt.md
-                ? 'q-gutter-x-xs os-athleteinfo-max-height'
-                : 'q-gutter-x-xs os-athleteinfo-max-height-notdesktop'
-            "
-          >
-            <div class="row justify-between">
+          <q-card-section class="q-gutter-x-xs os-athleteinfo-max-height">
+            <div class="row justify-between items-center">
               <h6>{{ $t("coach.athlete_management.fields.athlete_info") }}</h6>
               <q-btn
                 v-if="$q.screen.lt.sm"
                 icon="close"
                 outline
                 flat
+                round
                 color="light-dark"
                 class="q-pa-sm"
                 @click="selectedAthlete = undefined"
@@ -140,15 +138,14 @@
             </div>
 
             <q-tabs
-              :model-value="selectedTab"
-              @update:model-value="onTabChange"
+              v-model="selectedTab"
               class="text-dark q-pa-md"
               dense
               no-caps
               inline-label
             >
               <q-tab
-                v-for="tab in $q.screen.width < 840 ? allTabsMobile : allTabs"
+                v-for="tab in allTabs"
                 :key="tab.name"
                 :name="tab.name"
                 :label="tab.label"
@@ -302,10 +299,10 @@
             </q-tab-panels>
           </q-card-section>
         </q-card>
-      </div>
+      </component>
 
       <!-- Right card: no athlete selected call to action -->
-      <div v-else-if="!$q.screen.lt.sm" class="col-12 col-sm-7">
+      <div v-else-if="!$q.screen.lt.sm" class="col-7">
         <div class="row flex-center" style="height: 100%">
           <div class="row">
             <q-icon
@@ -326,7 +323,7 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick, watch } from "vue";
-import { useQuasar } from "quasar";
+import { useQuasar, QDialog } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
@@ -353,37 +350,29 @@ const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
 // Set tab navigation info
-const allTabsMobile = [
-  {
-    name: "programs",
-    label: "",
-    icon: "fa-regular fa-file-lines",
-  },
-  {
-    name: "anagraphic",
-    label: "",
-    icon: "fa-regular fa-address-card",
-  },
-  {
-    name: "personalbest",
-    label: "",
-    icon: "fa-solid fa-ranking-star",
-  },
-];
 const allTabs = [
   {
     name: "programs",
-    label: i18n.t("common.programs"),
+    label:
+      $q.screen.width < 840
+        ? ""
+        : i18n.t("coach.program_management.fields.program"),
     icon: "fa-regular fa-file-lines",
   },
   {
     name: "anagraphic",
-    label: i18n.t("coach.athlete_management.fields.anagraphic"),
+    label:
+      $q.screen.width < 840
+        ? ""
+        : i18n.t("coach.athlete_management.fields.anagraphic"),
     icon: "fa-regular fa-address-card",
   },
   {
     name: "personalbest",
-    label: i18n.t("coach.athlete_management.fields.personal_best"),
+    label:
+      $q.screen.width < 840
+        ? ""
+        : i18n.t("coach.athlete_management.fields.personal_best"),
     icon: "fa-solid fa-ranking-star",
   },
 ];
@@ -449,13 +438,6 @@ const athleteMaxlifts = computed(() =>
     (maxlift) => maxlift.athleteId === selectedAthlete.value?.uid,
   ),
 );
-
-/** TODO check
- * Allow tab navigation
- */
-function onTabChange(tab: string) {
-  selectedTab.value = tab;
-}
 
 /**
  * Create a new maxlift and assign to a coach.
@@ -574,24 +556,7 @@ function clearAthlete() {
   box-shadow: 0px 8px 32px 0px rgba(51, 38, 174, 0.08);
 }
 
-.os-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 20px;
-  box-sizing: border-box;
-  z-index: 2;
-}
-
 .os-athleteinfo-max-height {
   height: calc(100vh - 38px);
-}
-
-.os-athleteinfo-max-height-notdesktop {
-  height: calc(100vh - 38px - 50px);
 }
 </style>

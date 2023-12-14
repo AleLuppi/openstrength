@@ -5,7 +5,9 @@
     virtual-scroll
     hide-pagination
     :class="
-      $q.screen.lt.md ? 'os-table-max-height-notdesktop' : 'os-table-max-height'
+      $q.screen.lt.md
+        ? 'os-table-max-height-with-header'
+        : 'os-table-max-height'
     "
     @row-click="$props.onUpdate"
     :selection="isVariant ? 'none' : 'single'"
@@ -71,7 +73,7 @@ const columns = computed(() =>
         {
           name: "variant",
           align: "left",
-          label: i18n.t("common.variant"),
+          label: i18n.t("coach.exercise_management.fields.variant"),
           field: "displayName",
           sortable: true,
         },
@@ -82,7 +84,7 @@ const columns = computed(() =>
         {
           name: "exercise",
           required: true,
-          label: i18n.t("common.exercise"),
+          label: i18n.t("coach.exercise_management.fields.exercise"),
           field: "displayName",
           align: "left",
           sortable: true,
@@ -90,7 +92,7 @@ const columns = computed(() =>
         {
           name: "variants",
           align: "left",
-          label: i18n.t("common.Variants"),
+          label: i18n.t("coach.exercise_management.fields.variants"),
           field: "variants",
         },
         { name: "delete", align: "center", label: "", field: "delete" },
@@ -134,7 +136,9 @@ const rows = computed(() => {
       item.name && item instanceof Exercise
         ? (item.variants?.length ?? 0).toString() +
           " " +
-          i18n.t("common.variants")
+          i18n
+            .t("coach.exercise_management.fields.variants")
+            .toLocaleLowerCase()
         : "",
     update: {
       element: "button",
@@ -157,13 +161,10 @@ const rows = computed(() => {
 
 <style scoped lang="scss">
 .os-table-max-height {
-  //max-height: calc(100vh - 120px - 140px);
-  // padding top - ribbon top - padding bottom
   max-height: calc(100vh - 16px - 120px - 16px);
 }
-.os-table-max-height-notdesktop {
-  //max-height: calc(100vh - 120px - 140px);
-  // padding top - ribbon top - padding bottom
+
+.os-table-max-height-with-header {
   max-height: calc(100vh - 160px - 50px);
 }
 </style>

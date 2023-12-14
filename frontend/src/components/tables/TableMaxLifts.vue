@@ -1,6 +1,6 @@
 <template>
   <os-table
-    :columns="$q.screen.lt.sm ? columnsMobile : columns"
+    :columns="columns"
     :rows="rows"
     row-key="rowId"
     virtual-scroll
@@ -12,9 +12,12 @@
 
 <script setup lang="ts">
 import { computed, PropType } from "vue";
-import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 
+// Init plugin
+const $q = useQuasar();
 const i18n = useI18n();
 
 // Define props
@@ -35,7 +38,7 @@ const columns = [
   {
     name: "exercise",
     required: true,
-    label: i18n.t("common.exercise"),
+    label: i18n.t("coach.maxlift_management.fields.exercise"),
     align: "left",
     field: "exercise",
     sortable: true,
@@ -43,43 +46,25 @@ const columns = [
   {
     name: "type",
     align: "left",
-    label: i18n.t("common.type"),
+    label: i18n.t("coach.maxlift_management.fields.type"),
     field: "type",
   },
-  {
-    name: "value",
-    align: "left",
-    label: i18n.t("common.value"),
-    field: "value",
-  },
-  {
-    name: "date",
-    align: "left",
-    label: i18n.t("common.date"),
-    field: "date",
-  },
-  {
-    name: "update",
-    align: "center",
-    label: "",
-    field: "update",
-  },
-];
-const columnsMobile = [
-  {
-    name: "exercise",
-    required: true,
-    label: i18n.t("common.exercise"),
-    align: "left",
-    field: "exercise",
-    sortable: true,
-  },
-  {
-    name: "type",
-    align: "left",
-    label: i18n.t("common.type"),
-    field: "type",
-  },
+  ...(!$q.screen.lt.sm
+    ? [
+        {
+          name: "value",
+          align: "left",
+          label: i18n.t("coach.maxlift_management.fields.value"),
+          field: "value",
+        },
+        {
+          name: "date",
+          align: "left",
+          label: i18n.t("coach.maxlift_management.fields.date"),
+          field: "date",
+        },
+      ]
+    : []),
   {
     name: "update",
     align: "center",

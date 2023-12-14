@@ -44,8 +44,8 @@
       "to_onboarding_caption": "Click here to let us configure the app for you",
       "check_drawer": "Select your next action from the menu"
     },
-    "cta_onboarding_title": "Start your onboarding",
-    "cta_onboarding_subtitle": "There are some questions for you, let's meet each other!"
+    "onboarding_title": "Start your onboarding",
+    "onboarding_subtitle": "There are some questions for you, let's meet each other!"
   },
   "comingsoon": {
     "title": "Coming soon!",
@@ -126,9 +126,9 @@
       "action_step2_a": "How will you be using the app? Select one. Note: if you want to both train and be trained select coach.",
       "title_step3": "Let's meet better",
       "action_step3_a": "Select the most common disciplines among your athletes:",
-      "action_step3_b": "Select the average number of athletes you work with at the same time:", 
-      "error_min_selection": "Select at least \"{ min }\" values.",
-      "error_max_selection": "Select at most \"{ max }\" values."
+      "action_step3_b": "Select the average number of athletes you work with at the same time:",
+      "error_min_selection": "Select at least \"{ num }\" values.",
+      "error_max_selection": "Select at most \"{ num }\" values."
     }
   },
   "coach": {
@@ -180,7 +180,6 @@
         "athlete_info": "Athlete Info",
         "anagraphic": "Anagraphic",
         "personal_best": "Personal Best"
-        
       },
       "call_to_action": {
         "title": "Create a program for",
@@ -218,13 +217,15 @@
       "delete_proceed": "Delete it",
       "default_variant": "(default)",
       "fields": {
+        "exercise": "Exercise",
         "name": "Name",
         "variant": "Variant",
+        "variants": "Variants",
         "loadtype": "Load type",
         "loadtype_available": {
           "bodyweight": "Only Bodyweight",
-          "onlyload": "Only Ext.Load",
-          "loaded": "Bodyweight + Ext.Load"
+          "loaded": "Bodyweight + Ext.Load",
+          "loadonly": "Only Ext.Load"
         },
         "musclegroups": "Muscle Groups",
         "musclegroups_available": {
@@ -271,6 +272,8 @@
         "search_program": "Search program..."
       },
       "fields": {
+        "program": "Program",
+        "programs": "Programs",
         "name": "Program name",
         "label": "Label",
         "load": "Load",
@@ -319,7 +322,7 @@
         "update": "Insert max lift info",
         "update_proceed": "Update max lift",
         "update_error": "Could not update max lift, please retry",
-        "no_athlete": "Select an athlete to see related data", 
+        "no_athlete": "Select an athlete to see related data",
         "maxlift_section": "PRs section"
       },
       "fields": {
@@ -334,7 +337,6 @@
       "list": {
         "charts_section": "Charts section"
       }
-
     }
   },
   "sport": {
@@ -357,13 +359,7 @@
     "other": "Other",
     "submit": "Submit",
     "close": "Close",
-    "variant": "Variant",
-    "Variants": "Variants",
-    "variants": "variants",
-    "exercise": "Exercise", 
     "name": "Name",
-    "program": "Program",
-    "programs": "Programs",
     "type": "Type",
     "value": "Value",
     "date": "Date",
