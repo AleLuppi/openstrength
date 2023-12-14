@@ -36,7 +36,7 @@
               :label="
                 i18n.t(
                   selectedProgram.athlete
-                    ? undefined
+                    ? ''
                     : 'coach.program_management.builder.assign_to_athlete',
                 )
               "
