@@ -1,251 +1,181 @@
 <template>
-  <!-- Chart Selector Component -->
-  <div class="chart-selector">
-    <!-- DROPDOWNS  -->
-    <div class="row q-ma-sm justify-evenly">
-      <!-- VOLUME DROPDOWN -->
-      <q-btn-dropdown color="primary" label="Volume">
-        <q-list>
-          <q-item
-            clickable
-            v-close-popup
-            v-for="item in volumeOptions"
-            :key="item.value"
-          >
-            <q-item-section>
-              <q-checkbox
-                v-model="selectionVolume"
-                :val="item.value"
-                :label="item.label"
-              />
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
-
-      <!-- INTENSITY DROPDOWN-->
-      <q-btn-dropdown color="primary" label="Intensity">
-        <q-list>
-          <q-item
-            clickable
-            v-close-popup
-            v-for="item in intensityOptions"
-            :key="item.value"
-          >
-            <q-item-section>
-              <q-checkbox
-                v-model="selectionIntensity"
-                :val="item.value"
-                :label="item.label"
-              />
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
-
-      <!-- IRT DROPDOWN -->
-      <q-btn-dropdown color="primary" label="IRT">
-        <q-list>
-          <q-item
-            clickable
-            v-close-popup
-            v-for="item in irtOptions"
-            :key="item.value"
-          >
-            <q-item-section>
-              <q-checkbox
-                v-model="selectionIRT"
-                :val="item.value"
-                :label="item.label"
-              />
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
+  <!-- TODO: add i18n-->
+  <div style="width: 100%">
+    <div class="row justify-between">
+      <h6 class="text-margin-xs">Charts Section</h6>
+      <q-btn
+        @click="updateCharts()"
+        icon="fa-solid fa-refresh"
+        outline
+        flat
+        color="secondary"
+      >
+        <q-tooltip :offset="[10, 10]"> Click to refresh charts data </q-tooltip>
+      </q-btn>
     </div>
 
     <!-- CHARTS RENDERING -->
-    <q-scroll-area dark class="rounded-borders" style="height: 70vh">
-      <div class="q-px-xs q-py-sm">
-        <!-- VOLUME CHART -->
-        <div v-if="selectionVolume.includes('total')" class="q-ma-xs">
-          <chart-component
-            title="Total Volume"
-            description="Andamento del volume per le diverse alzate principali."
-            :data="dataA4"
-            :options="optionA4"
-          />
-        </div>
-        <div v-if="selectionVolume.includes('totalreps')" class="q-ma-xs">
-          <chart-component
-            title="Total Reps"
-            description="Andamento del volume per le diverse alzate principali."
-            :data="dataA4"
-            :options="optionA4"
-          />
-        </div>
-        <div v-if="selectionVolume.includes('totalsets')" class="q-ma-xs">
-          <chart-component
-            title="Total Sets"
-            description="Andamento del volume per le diverse alzate principali."
-            :data="dataA4"
-            :options="optionA4"
-          />
-        </div>
-
-        <!-- INTENSITY CHART -->
-        <div v-if="selectionIntensity.includes('max')" class="q-ma-xs">
-          <chart-component
-            title="Intensity Max"
-            description="Andamento del volume per le diverse alzate principali."
-            :data="dataA4"
-            :options="optionA4"
-          />
-        </div>
-        <div v-if="selectionIntensity.includes('mean')" class="q-ma-xs">
-          <chart-component
-            title="Intensity Mean"
-            description="Andamento del volume per le diverse alzate principali."
-            :data="dataA4"
-            :options="optionA4"
-          />
-        </div>
-        <div v-if="selectionIntensity.includes('cumulated')" class="q-ma-xs">
-          <chart-component
-            title="Intensity Cumulated"
-            description="Andamento del volume per le diverse alzate principali."
-            :data="dataA4"
-            :options="optionA4"
-          />
-        </div>
-
-        <!-- IRT CHART -->
-        <div v-if="selectionIRT.includes('max')" class="q-ma-xs">
-          <chart-component
-            title="IRT Max"
-            description="Andamento del volume per le diverse alzate principali."
-            :data="dataA4"
-            :options="optionA4"
-          />
-        </div>
-        <div v-if="selectionIRT.includes('mean')" class="q-ma-xs">
-          <chart-component
-            title="IRT Mean"
-            description="Andamento del volume per le diverse alzate principali."
-            :data="dataA4"
-            :options="optionA4"
-          />
-        </div>
-        <div v-if="selectionIRT.includes('cumulated')" class="q-ma-xs">
-          <chart-component
-            title="IRT Cumulated"
-            description="Andamento del volume per le diverse alzate principali."
-            :data="dataA4"
-            :options="optionA4"
-          />
-        </div>
-      </div>
-    </q-scroll-area>
+    <chart-component
+      v-for="(chartDataRequest, index) in chartDataRequests"
+      :key="chartsKey + index"
+      class="q-mb-sm"
+      :title="getChartTitle(chartDataRequest)"
+      :description="getChartDescription(chartDataRequest)"
+      :data="chartData[index]"
+      :options="getChartOptions(chartDataRequest)"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed, watch, PropType } from "vue";
 import ChartComponent from "@/components/charts/ChartComponent.vue";
+import {
+  computeChartData,
+  createChartOptions,
+  formatChartData,
+} from "@/helpers/charts/chartDataFormatter";
+import {
+  OSAvailableXType,
+  OSChartDataRequest,
+  OSChartDescriptor,
+  OSChartType,
+  OSChartVersion,
+} from "@/helpers/charts/chartTypes";
+import { Program } from "@/helpers/programs/program";
 
-// TODO load from program data
-const dataA4 = {
-  datasets: [
-    {
-      label: "Panca",
-      data: [40, 42, 33, 30, 35, 38],
-      borderColor: "rgba(0, 123, 255, 1)",
-      backgroundColor: "rgba(0, 123, 255, 0.2)",
-      fill: false,
-      cubicInterpolationMode: "monotone",
-      tension: 0.1,
-      yAxisID: "y",
-    },
-    {
-      label: "Stacco",
-      data: [70, 74, 78, 80, 83, 87],
-      borderColor: "red",
-      backgroundColor: "rgba(255, 0, 0, 0.2)",
-      fill: false,
-      cubicInterpolationMode: "monotone",
-      tension: 0.1,
-      yAxisID: "y",
-    },
-    {
-      label: "Squat",
-      data: [80, 82, 83, 86, 90, 92],
-      borderColor: "green",
-      backgroundColor: "rgba(0, 255, 0, 0.2)",
-      fill: false,
-      cubicInterpolationMode: "monotone",
-      tension: 0.1,
-      yAxisID: "y",
-    },
-  ],
-  labels: [
-    "Settimana 1",
-    "Settimana 2",
-    "Settimana 3",
-    "Settimana 4",
-    "Settimana 5",
-    "Settimana 6",
-  ],
-};
-
-// TODO load from program data
-const optionA4 = {
-  responsive: true,
-  maintainAspectRatio: false,
-  scales: {
-    x: {
-      display: true,
-      title: {
-        display: true,
-        text: "Date",
-      },
-    },
-    y: {
-      type: "linear",
-      display: true,
-      position: "left",
-      title: {
-        display: true,
-        text: "Volume",
-      },
-    },
+// Define props
+const props = defineProps({
+  program: {
+    type: Program,
+    required: true,
   },
-};
+  filterExercise: {
+    type: Array as PropType<string[]>,
+    default: undefined,
+    required: false,
+  },
+  filterDay: {
+    type: Array as PropType<string[]>,
+    default: undefined,
+    required: false,
+  },
+  filterWeek: {
+    type: Array as PropType<string[]>,
+    default: undefined,
+    required: false,
+  },
+});
 
-const selectionVolume = ref(["total"]);
-const selectionIntensity = ref(["cumulated"]);
-const selectionIRT = ref(["cumulated"]);
+// Set ref
+const chartsKey = ref<string>("");
 
-const volumeOptions = [
-  { value: "total", label: "Total Volume" },
-  { value: "totalreps", label: "Total Reps" },
-  { value: "totalsets", label: "Total Sets" },
+// Set constants
+const chartDescriptions: OSChartDescriptor[] = [
+  // TODO i18n
+  {
+    chartType: OSChartType.Volume,
+    chartVersion: OSChartVersion.TotalVolume,
+    xAxisType: OSAvailableXType.Weeks,
+    chartTitle: "Total Volume varying weeks",
+    chartDescription: "Total sets x reps x load(kg) over week",
+  },
+  {
+    chartType: OSChartType.Volume,
+    chartVersion: OSChartVersion.TotalReps,
+    xAxisType: OSAvailableXType.Weeks,
+    chartTitle: "Total Reps varying weeks",
+    chartDescription: "Total sets x reps total over week",
+  },
+  {
+    chartType: OSChartType.Volume,
+    chartVersion: OSChartVersion.TotalSets,
+    xAxisType: OSAvailableXType.Weeks,
+    chartTitle: "Total Sets varying weeks",
+    chartDescription: "Total sets over week",
+  },
+
+  /* TODO
+  {
+    chartType: OSChartType.Intensity,
+    chartVersion: OSChartVersion.MaxIntensity,
+    xAxisType: OSAvailableXType.Weeks,
+    chartTitle: "Total Volume varying weeks",
+    chartDescription: "Maximum intensity in the week (computed as load/1RM)",
+  },
+  {
+    chartType: OSChartType.Intensity,
+    chartVersion: OSChartVersion.MeanIntensity,
+    xAxisType: OSAvailableXType.Weeks,
+    chartTitle: "Total Volume varying weeks",
+    chartDescription: "Mean intensity over the week (computed as load/1RM)",
+  },
+  */
 ];
 
-const intensityOptions = [
-  { value: "max", label: "Max Intensity" },
-  { value: "mean", label: "Mean Intensity" },
-  { value: "cumulated", label: "Cumulated Intensity" },
-];
+// Get a list of data requests for program
+const chartDataRequests = computed<OSChartDataRequest[]>(() =>
+  chartDescriptions.map((chartDescriptor) => {
+    return {
+      chartInfo: chartDescriptor,
+      program: props.program,
+      selectedExercises: props.filterExercise,
+      selectedDays: props.filterDay,
+      selectedWeeks: props.filterWeek,
+    };
+  }),
+);
 
-const irtOptions = [
-  { value: "max", label: "Max IRT" },
-  { value: "mean", label: "Mean IRT" },
-  { value: "cumulated", label: "Cumulated IRT" },
-];
-</script>
+watch(
+  () => [props.filterExercise, props.filterDay, props.filterWeek],
+  () => {
+    updateCharts();
+  },
+  { deep: true },
+);
 
-<style scoped lang="scss">
-.chart-selector {
-  width: 100%;
+/**
+ * Force reload of chart components to refresh charts data.
+ */
+function updateCharts() {
+  chartsKey.value = chartsKey.value == "+" ? "-" : "+";
 }
-</style>
+
+/**
+ * Computes data
+ * @param chartDataRequest
+ */
+const chartData = computed(() =>
+  chartDataRequests.value.map((val) => formatChartData(computeChartData(val))),
+);
+
+/**
+ * Build chart options.
+ *
+ * @param chartDataRequest structure maintainig chart request.
+ */
+function getChartOptions(chartDataRequest: OSChartDataRequest): any {
+  return createChartOptions(
+    chartDataRequest.chartInfo.xAxisType,
+    chartDataRequest.chartInfo.chartVersion,
+  );
+}
+
+/**
+ * Build chart title.
+ *
+ * @param chartDataRequest structure maintainig chart request.
+ */
+function getChartTitle(chartDataRequest: OSChartDataRequest): string {
+  return chartDataRequest.chartInfo.chartTitle || "";
+}
+
+/**
+ * Build chart description.
+ *
+ * @param chartDataRequest structure maintainig chart request.
+ */
+function getChartDescription(chartDataRequest: OSChartDataRequest): string {
+  return chartDataRequest.chartInfo.chartDescription || "";
+}
+</script>
