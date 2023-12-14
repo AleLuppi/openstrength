@@ -157,7 +157,7 @@
             </q-tabs>
             <q-tab-panels v-model="selectedTab">
               <!-- Program info -->
-              <q-tab-panel name="Programs">
+              <q-tab-panel name="programs">
                 <!-- If selected athlete has ongoing program show program data form-->
                 <div v-if="selectedAthlete && Boolean(athleteCurrentProgram)">
                   <FormAthleteProgramInfo
@@ -209,7 +209,7 @@
               </q-tab-panel>
 
               <!-- Athlete Anagraphic and phisical data -->
-              <q-tab-panel name="Anagraphic">
+              <q-tab-panel name="anagraphic">
                 <FormAthleteAnagraphicInfo
                   ref="athleteFormElement"
                   v-if="selectedAthlete"
@@ -218,7 +218,7 @@
               </q-tab-panel>
 
               <!-- Personal Best table -->
-              <q-tab-panel name="Personal Best">
+              <q-tab-panel name="personalbest">
                 <h6>
                   {{
                     $t("coach.athlete_management.call_to_action.maxlift_title")
