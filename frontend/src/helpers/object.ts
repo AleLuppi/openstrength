@@ -23,6 +23,26 @@ export function objectFilterOutUndefined(obj: { [key: string]: any }) {
 }
 
 /**
+ * Sort key-value pairs in object according to a specific list of keys order.
+ *
+ * @param obj object that shall be sorted.
+ * @param list list of keys to sort object by.
+ * @param ignoreUndefined if true, ignore undefined values, otherwise keep them.
+ * @returns object with sorted key-value pairs.
+ */
+export function objectSortKeysByList(
+  obj: { [key: string]: any },
+  list: string[],
+  ignoreUndefined: boolean = false,
+) {
+  const out: typeof obj = {};
+  list.forEach((key) => {
+    if (!ignoreUndefined || obj[key] != undefined) out[key] = obj[key];
+  });
+  return out;
+}
+
+/**
  * Assign values from source object to destination, while avoiding overwrite fields that are undefined on source.
  *
  * @param objA destination object that shall be updated.

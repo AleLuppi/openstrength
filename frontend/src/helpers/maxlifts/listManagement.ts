@@ -1,5 +1,6 @@
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import { arraySortObjectsByField } from "@/helpers/array";
+import { objectSortKeysByList } from "../object";
 
 /**
  * Get a object having exercise name and max lift type as key, and MaxLift instance as value.
@@ -23,6 +24,11 @@ export function separateMaxliftPerExerciseAndType(maxlifts: MaxLift[]) {
         };
       if (!out[maxlift.exercise.name][maxlift.type])
         out[maxlift.exercise.name][maxlift.type] = maxlift;
+      out[maxlift.exercise.name] = objectSortKeysByList(
+        out[maxlift.exercise.name],
+        Object.values(MaxLiftType),
+        true,
+      );
       return out;
     },
     {},

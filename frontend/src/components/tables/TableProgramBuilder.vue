@@ -318,7 +318,17 @@
         >
           <template #item="itemProps">
             <q-btn
-              v-if="itemProps.value && String(itemProps.value).endsWith('%')"
+              v-if="
+                new ProgramLine({
+                  [itemProps.col.field + 'BaseValue']: itemProps.value,
+                })[
+                  (itemProps.col.field + 'Operation') as
+                    | 'loadOperation'
+                    | 'repsOperation'
+                    | 'setsOperation'
+                    | 'rpeOperation'
+                ]
+              "
               icon="fa-solid fa-link"
               color="secondary"
               size="0.4em"
@@ -341,6 +351,10 @@
                     v-for="[maxliftType, maxlift] in Object.entries(
                       maxliftsPerExercise[exerciseModelValue.exercise ?? ''] ??
                         {},
+                    ).filter(([maxliftType]) =>
+                      MaxLiftTypesPerValue[
+                        itemProps.col.field as 'load' | 'reps' | 'sets' | 'rpe'
+                      ].includes(maxliftType as MaxLiftType),
                     )"
                     :key="maxliftType"
                     @click="
@@ -519,7 +533,11 @@ import {
   objectMapKeys,
   objectMapValues,
 } from "@/helpers/object";
-import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import {
+  MaxLift,
+  MaxLiftType,
+  MaxLiftTypesPerValue,
+} from "@/helpers/maxlifts/maxlift";
 import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
 
 // Init plugin

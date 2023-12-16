@@ -4,7 +4,7 @@ import { Exercise, ExerciseVariant } from "../exercises/exercise";
 import { maxliftsCollection } from "@/helpers/database/collections";
 
 /**
- * Define available max lift types
+ * Define available max lift types.
  */
 export enum MaxLiftType {
   _1RM = "1RM",
@@ -18,7 +18,29 @@ export enum MaxLiftType {
 }
 
 /**
- * Max lift properties (see LiftsMax box in Miro)
+ * Define how max lift types are split across line values.
+ */
+export const MaxLiftTypesPerValue: {
+  load: MaxLiftType[];
+  reps: MaxLiftType[];
+  sets: MaxLiftType[];
+  rpe: MaxLiftType[];
+} = {
+  load: [
+    MaxLiftType._1RM,
+    MaxLiftType._3RM,
+    MaxLiftType._5RM,
+    MaxLiftType._6RM,
+    MaxLiftType._8RM,
+    MaxLiftType._10RM,
+  ],
+  reps: [MaxLiftType._maxrep, MaxLiftType._maxtime],
+  sets: [],
+  rpe: [],
+};
+
+/**
+ * Max lift properties.
  */
 export type MaxLiftProps = {
   // Basic max lift info
