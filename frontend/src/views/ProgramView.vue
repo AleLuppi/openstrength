@@ -19,7 +19,7 @@
             <q-btn
               icon="save"
               :label="
-                i18n.t(
+                $t(
                   programSaved
                     ? 'coach.program_management.builder.saved'
                     : 'coach.program_management.builder.not_saved',
@@ -35,11 +35,9 @@
             <q-btn
               @click="showAthleteAssigningDialog = true"
               :label="
-                i18n.t(
-                  selectedProgram.athlete
-                    ? ''
-                    : 'coach.program_management.builder.assign_to_athlete',
-                )
+                selectedProgram.athlete
+                  ? ''
+                  : $t('coach.program_management.builder.assign_to_athlete')
               "
               :color="selectedProgram.athlete ? 'secondary' : 'primary'"
               outline
@@ -249,7 +247,7 @@
             <!-- Start a new program -->
             <q-btn
               icon="add"
-              :label="i18n.t('coach.program_management.builder.new_program')"
+              :label="$t('coach.program_management.builder.new_program')"
               @click="substituteProgram = new Program()"
               rounded
               outline
@@ -359,12 +357,12 @@
         <q-card-actions align="right">
           <q-btn
             flat
-            :label="i18n.t('common.cancel')"
+            :label="$t('common.cancel')"
             color="secondary"
             v-close-popup
           />
           <q-btn
-            :label="i18n.t('common.continue')"
+            :label="$t('common.continue')"
             color="primary"
             @click="openProgram(substituteProgram, true)"
             v-close-popup
@@ -390,12 +388,12 @@
         <q-card-actions align="right">
           <q-btn
             flat
-            :label="i18n.t('common.cancel')"
+            :label="$t('common.cancel')"
             color="secondary"
             v-close-popup
           />
           <q-btn
-            :label="i18n.t('common.open')"
+            :label="$t('common.open')"
             color="primary"
             @click="onTemporaryProgramSelection"
             v-close-popup
