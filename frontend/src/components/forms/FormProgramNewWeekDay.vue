@@ -12,6 +12,7 @@
       :prefix="$t('coach.program_management.builder.week_name')"
       :rules="[(val) => scope.validate(val)]"
       @keyup.enter="scope.set"
+      maxlength="2"
       size="1"
       hide-bottom-space
     />
@@ -21,6 +22,7 @@
       :prefix="$t('coach.program_management.builder.day_name')"
       :rules="[(val) => scope.validate(val)]"
       @keyup.enter="scope.set"
+      maxlength="1"
       size="1"
       hide-bottom-space
       class="q-px-sm"
