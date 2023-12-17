@@ -84,17 +84,17 @@
             :dense="dense"
             class="placeholder-light placeholder-hide-on-focus"
           >
-            <template #after>
-              <slot
-                name="item"
-                v-bind="{
-                  row: props.row,
-                  col: col,
-                  value: props.row[col.name],
-                }"
-              ></slot>
-            </template>
           </q-input>
+
+          <!-- Optional element provided by parent -->
+          <slot
+            name="item"
+            v-bind="{
+              row: props.row,
+              col: col,
+              value: props.row[col.name],
+            }"
+          ></slot>
         </q-td>
       </q-tr>
     </template>

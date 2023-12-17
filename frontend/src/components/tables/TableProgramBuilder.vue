@@ -276,11 +276,11 @@
             requestVideo: 'checkbox',
           }"
           :widths="{
-            load: '9%',
-            reps: '9%',
-            sets: '9%',
-            rpe: '9%',
-            note: '50%',
+            load: '10%',
+            reps: '10%',
+            sets: '10%',
+            rpe: '10%',
+            note: '46%',
             requestText: '7%',
             requestVideo: '7%',
           }"
@@ -329,9 +329,31 @@
                     | 'rpeOperation'
                 ]
               "
-              icon="fa-solid fa-link"
+              :icon="
+                exerciseModelValue.data[itemProps.row.id][
+                  (itemProps.col.field + 'Ref') as
+                    | 'loadRef'
+                    | 'repsRef'
+                    | 'setsRef'
+                    | 'rpeRef'
+                ] == undefined
+                  ? 'fa-solid fa-link'
+                  : undefined
+              "
+              :label="
+                getReferenceDisplayName(
+                  exerciseModelValue.data[itemProps.row.id][
+                    (itemProps.col.field + 'Ref') as
+                      | 'loadRef'
+                      | 'repsRef'
+                      | 'setsRef'
+                      | 'rpeRef'
+                  ],
+                )
+              "
               color="secondary"
-              size="0.4em"
+              size="0.7em
+              "
               :flat="
                 exerciseModelValue.data[itemProps.row.id][
                   (itemProps.col.field + 'Ref') as
@@ -341,9 +363,10 @@
                     | 'rpeRef'
                 ] == undefined
               "
-              round
+              dense
               :ripple="false"
               tabindex="-1"
+              style="width: 100%"
             >
               <!-- Show list of options to select as reference -->
               <q-menu anchor="center right" self="center left">
@@ -369,6 +392,7 @@
                     v-close-popup
                     dense
                   >
+                    <!-- TODO i18n -->
                     <q-item-section>{{ maxliftType }}</q-item-section>
                   </q-item>
                   <q-separator />
@@ -1167,6 +1191,31 @@ function getDayDisplayName(dayId: string | number, split: boolean = false) {
   return i18n.t("coach.program_management.builder.day_name", {
     day: split ? splitScheduleInfoNames(dayId.toString())[1] : dayId.toString(),
   });
+}
+
+/**
+ * Get the displayable name of a selected reference.
+ *
+ * @param reference reference whose name shall be retrieved.
+ */
+function getReferenceDisplayName(reference: ProgramLine | MaxLift | undefined) {
+  // Handle unknown case
+  if (!reference) return undefined;
+
+  // Handle program line or max lift
+  if (reference instanceof ProgramLine)
+    return (
+      "W" +
+      (reference.programExercise?.scheduleWeek
+        ?.toString()
+        .slice(undefined, 2) ?? "-") +
+      "D" +
+      (reference.programExercise?.scheduleDay?.toString().slice(undefined, 2) ??
+        "-") +
+      "L" +
+      (reference.lineOrder != undefined ? reference.lineOrder + 1 : "-")
+    );
+  else return reference.type ?? ""; // TODO i18n
 }
 
 /**
