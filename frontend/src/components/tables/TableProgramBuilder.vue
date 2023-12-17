@@ -343,6 +343,7 @@
               "
               round
               :ripple="false"
+              tabindex="-1"
             >
               <!-- Show list of options to select as reference -->
               <q-menu anchor="center right" self="center left">
