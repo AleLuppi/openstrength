@@ -318,17 +318,7 @@
         >
           <template #item="itemProps">
             <q-btn
-              v-if="
-                new ProgramLine({
-                  [itemProps.col.field + 'BaseValue']: itemProps.value,
-                })[
-                  (itemProps.col.field + 'Operation') as
-                    | 'loadOperation'
-                    | 'repsOperation'
-                    | 'setsOperation'
-                    | 'rpeOperation'
-                ]
-              "
+              v-if="showReferenceButton(itemProps.col.field, itemProps.value)"
               :icon="
                 exerciseModelValue.data[itemProps.row.id][
                   (itemProps.col.field + 'Ref') as
@@ -908,6 +898,27 @@ function onReferenceClick(
 
   // Update program
   updateProgramExercise(lineInfo.schedule);
+}
+
+/**
+ * Decide whether to show reference button in a cell or not.
+ *
+ * @param field program field the interested cell is refers to.
+ * @param value string model value in interested cell.
+ */
+function showReferenceButton(field: string, value: string) {
+  // Show reference add button if "operation" value is not null
+  return Boolean(
+    new ProgramLine({
+      [field + "BaseValue"]: value,
+    })[
+      (field + "Operation") as
+        | "loadOperation"
+        | "repsOperation"
+        | "setsOperation"
+        | "rpeOperation"
+    ],
+  );
 }
 
 /**
