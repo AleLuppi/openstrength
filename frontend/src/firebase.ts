@@ -25,7 +25,7 @@ export default app;
 
 // Initialize Analytics and get a reference to the service
 export const analytics = isSupported().then((supported) =>
-  supported ? getAnalytics(app) : null
+  supported ? getAnalytics(app) : null,
 );
 
 // Initialize Firebase Authentication and get a reference to the service

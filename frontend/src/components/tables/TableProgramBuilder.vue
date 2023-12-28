@@ -462,20 +462,17 @@
         <q-btn
           icon="add"
           :label="$t('coach.program_management.builder.new_day')"
-          @click="editWeekDayName = ['', '']"
+          @click="addWeekDayAfter(idScheduleInfo.toString(), true)"
           rounded
           unelevated
-        >
-          <FormProgramNewWeekDay
-            v-model="editWeekDayName"
-            @save="renameWeekDay"
-            :cover="false"
-            anchor="bottom middle"
-            self="top middle"
-            :offset="[0, 5]"
-          >
-          </FormProgramNewWeekDay>
-        </q-btn>
+        />
+        <q-btn
+          icon="add"
+          :label="$t('coach.program_management.builder.new_week')"
+          @click="addWeekDayAfter(idScheduleInfo.toString(), false)"
+          rounded
+          unelevated
+        />
       </div>
     </div>
 
@@ -539,7 +536,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType, watch } from "vue";
+import { ref, computed, PropType, watch, nextTick } from "vue";
 import { uid, debounce, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import FormProgramNewWeekDay from "@/components/forms/FormProgramNewWeekDay.vue";
@@ -564,6 +561,7 @@ import {
   MaxLiftTypesPerValue,
 } from "@/helpers/maxlifts/maxlift";
 import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
+import { stringGetNext } from "@/helpers/scalar";
 
 // Init plugin
 const $q = useQuasar();
@@ -1094,23 +1092,32 @@ function addTable(idScheduleInfo: string) {
  * @param toSchedule destination week and day name.
  * @param fromSchedule source week and day name.
  * @param createIfEmpty if true, create a new table at destination week and day if source is empty.
+ * @param notify if true, user will be informed about renaming error, otherwise error will remain silent.
+ * @returns newly created table ID if successful, false otherwise.
  */
 function renameWeekDay(
   toSchedule: string[],
   fromSchedule: string[],
   createIfEmpty: boolean = true,
+  notify: boolean = true,
 ) {
   // Check and parse input
   if (toSchedule.length < 2 || fromSchedule.length < 2) {
-    $q.notify({
-      type: "negative",
-      message: i18n.t("coach.program_management.builder.new_day_error"),
-      position: "bottom",
-    });
+    if (notify)
+      $q.notify({
+        type: "negative",
+        message: i18n.t("coach.program_management.builder.new_day_error"),
+        position: "bottom",
+      });
     return;
   }
   const [toWeekId, toDayId] = toSchedule;
   const [fromWeekId, fromDayId] = fromSchedule;
+  const outSchedule: [string | number, string | number, string | number] = [
+    toWeekId,
+    toDayId,
+    -1,
+  ];
 
   // Check if new naming can be used
   if (!toWeekId || !toDayId) return;
@@ -1122,13 +1129,14 @@ function renameWeekDay(
       ),
     )
   ) {
-    $q.notify({
-      type: "negative",
-      message: i18n.t(
-        "coach.program_management.builder.new_day_already_exists",
-      ),
-      position: "bottom",
-    });
+    if (notify)
+      $q.notify({
+        type: "negative",
+        message: i18n.t(
+          "coach.program_management.builder.new_day_already_exists",
+        ),
+        position: "bottom",
+      });
     return;
   }
 
@@ -1149,11 +1157,57 @@ function renameWeekDay(
   );
 
   // Optionally add a table is source is empty
-  if (createIfEmpty && isSourceEmpty)
-    addTable(mergeScheduleInfoNames(toWeekId, toDayId, 1));
+  if (createIfEmpty && isSourceEmpty) {
+    outSchedule[2] = 1;
+    addTable(mergeScheduleInfoNames(...outSchedule));
+  }
 
   // Update program with new naming
   updateProgramWhole();
+
+  // Inform about successful update
+  return outSchedule;
+}
+
+/**
+ * Create a new week/day couple immediately after a selected week/day.
+ *
+ * @param idScheduleInfo schedule ID after which new week/day shall be inserted.
+ * @param addDay if true, a new day will be created, otherwise a new week will.
+ * @param doScroll if true, scroll to the newly created element.
+ */
+function addWeekDayAfter(
+  idScheduleInfo: string,
+  addDay: boolean = true,
+  doScroll: boolean = true,
+) {
+  // Get current week and day
+  let [week, day] = splitScheduleInfoNames(idScheduleInfo);
+
+  // Select the next naming value
+  for (;;) {
+    if (addDay) day = stringGetNext(day) ?? "";
+    else week = stringGetNext(week) ?? "";
+
+    // Check if error occurred, thus create a week and day with temporary names
+    if (!week || !day) {
+      week = "?";
+      day = "?";
+    }
+
+    // Try to create a new week and day pair
+    const creationResult = renameWeekDay([week, day], ["", ""], true, false);
+    if (creationResult) {
+      if (doScroll)
+        nextTick(() =>
+          scrollToElementInParent(
+            tableElements.value[mergeScheduleInfoNames(...creationResult)],
+            props.scrollOffset,
+          ),
+        );
+      return;
+    }
+  }
 }
 
 /**

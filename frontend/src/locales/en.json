@@ -293,6 +293,7 @@
         "not_assigned_prompt": "There is an unassigned program, do you want to continue the modification?",
         "week_name": "Week { week }",
         "day_name": "Day { day }",
+        "new_week": "Week",
         "new_day": "Day",
         "new_exercise": "Exercise",
         "new_day_error": "Could not create day with selected name, please retry",
