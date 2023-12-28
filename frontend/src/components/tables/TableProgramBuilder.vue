@@ -275,6 +275,16 @@
             requestText: 'checkbox',
             requestVideo: 'checkbox',
           }"
+          :childProps="{
+            requestText: {
+              'checked-icon': 'fa-solid fa-comment-dots',
+              'unchecked-icon': 'fa-solid fa-comment-slash',
+            },
+            requestVideo: {
+              'checked-icon': 'fa-solid fa-video',
+              'unchecked-icon': 'fa-solid fa-video-slash',
+            },
+          }"
           :widths="{
             load: '10%',
             reps: '10%',
