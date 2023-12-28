@@ -1,6 +1,6 @@
 // Import the required functions from the SDKs
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { initializeFirestore, getFirestore } from "firebase/firestore";
 // Other SDKs for Firebase products at following link
@@ -24,7 +24,9 @@ const app = initializeApp(firebaseConfig);
 export default app;
 
 // Initialize Analytics and get a reference to the service
-export const analytics = getAnalytics(app);
+export const analytics = isSupported().then((supported) =>
+  supported ? getAnalytics(app) : null
+);
 
 // Initialize Firebase Authentication and get a reference to the service
 export const auth = getAuth(app);
