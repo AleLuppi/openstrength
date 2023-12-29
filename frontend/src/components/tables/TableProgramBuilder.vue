@@ -9,7 +9,7 @@
       <!-- Show week and day and allow navigation -->
       <div
         v-if="firstTablesInDay.includes(idScheduleInfo.toString())"
-        class="row items-center q-gutter-x-sm"
+        class="row items-center q-gutter-x-xs"
         :class="{
           'q-mt-lg': firstTablesInDay.indexOf(idScheduleInfo.toString()) > 0,
         }"
@@ -97,11 +97,15 @@
           "
           icon="edit"
           size="sm"
-          color="light"
+          color="dark-light"
           flat
           round
           :ripple="false"
         >
+          <q-tooltip>
+            {{ $t("coach.program_management.builder.day_rename") }}
+          </q-tooltip>
+
           <FormProgramNewWeekDay
             v-model="editWeekDayName"
             @save="renameWeekDay"
@@ -111,6 +115,34 @@
             :offset="[15, 0]"
           >
           </FormProgramNewWeekDay>
+        </q-btn>
+
+        <q-btn
+          @click="duplicateWholeDay(idScheduleInfo.toString())"
+          icon="fa-regular fa-clone"
+          size="sm"
+          color="dark-light"
+          flat
+          round
+          :ripple="false"
+        >
+          <q-tooltip>
+            {{ $t("coach.program_management.builder.day_duplicate") }}
+          </q-tooltip>
+        </q-btn>
+
+        <q-btn
+          @click="deleteWholeDay(idScheduleInfo.toString())"
+          icon="fa-solid fa-trash"
+          size="sm"
+          color="dark-light"
+          flat
+          round
+          :ripple="false"
+        >
+          <q-tooltip>
+            {{ $t("coach.program_management.builder.day_delete") }}
+          </q-tooltip>
         </q-btn>
 
         <q-separator inset size="1px" class="col" />
@@ -1077,7 +1109,14 @@ function reorderTableRelative(srcId: string, moveBy: number) {
  * @param idScheduleInfo full name string.
  */
 function deleteTable(idScheduleInfo: string) {
-  delete exercisesValues.value[idScheduleInfo];
+  const [week, day] = splitScheduleInfoNames(idScheduleInfo).slice(0, 2);
+  const tmpScheduleInfo = mergeScheduleInfoNames(
+    week,
+    day,
+    getLargestOrderInDay(idScheduleInfo) + 1,
+  );
+  reorderTable(idScheduleInfo, tmpScheduleInfo);
+  delete exercisesValues.value[tmpScheduleInfo];
 
   // Update program with new structure
   updateProgramWhole();
@@ -1096,17 +1135,7 @@ function addTable(
   // Get the proper new table id
   if (idScheduleInfo in exercisesValues.value) {
     const scheduleInfo = splitScheduleInfoNames(idScheduleInfo);
-    const largestOrder = Math.max(
-      ...Object.keys(exercisesValues.value).reduce((orders: number[], key) => {
-        const currScheduleInfo = splitScheduleInfoNames(key);
-        if (
-          currScheduleInfo[0] == scheduleInfo[0] &&
-          currScheduleInfo[1] == scheduleInfo[1]
-        )
-          return [...orders, Number(currScheduleInfo[2])];
-        return orders;
-      }, []),
-    );
+    const largestOrder = getLargestOrderInDay(idScheduleInfo);
     idScheduleInfo = mergeScheduleInfoNames(
       scheduleInfo[0],
       scheduleInfo[1],
@@ -1142,6 +1171,57 @@ function duplicateTableInDay(idScheduleInfo: string, destWeekDay?: string) {
     destWeekDay ?? idScheduleInfo,
     exercisesValues.value[idScheduleInfo],
   );
+}
+
+/**
+ * Delete all tables in a day.
+ *
+ * @param idScheduleInfo full name string referencing the day to delete.
+ */
+function deleteWholeDay(idScheduleInfo: string) {
+  // Delete all data tables
+  const [week, day] = splitScheduleInfoNames(idScheduleInfo);
+  Object.keys(exercisesValues.value).forEach((key) => {
+    if (arrayCompare(splitScheduleInfoNames(key).slice(0, 2), [week, day]))
+      deleteTable(key);
+  });
+}
+
+/**
+ * Duplicate all tables in a selected day.
+ *
+ * @param idScheduleInfo ID of day that shall be duplicated.
+ * @param destWeekDay optional destination week and day, otherwise duplicate in successive week and day.
+ * @param doScroll if true, scroll to the newly created element.
+ */
+function duplicateWholeDay(
+  idScheduleInfo: string,
+  destWeekDay?: string,
+  doScroll: boolean = true,
+) {
+  // Create new day if required
+  const newTable = destWeekDay
+    ? undefined
+    : mergeScheduleInfoNames(...addWeekDayAfter(idScheduleInfo, true, false));
+
+  // Duplicate all data tables
+  const [week, day] = splitScheduleInfoNames(idScheduleInfo);
+  Object.keys(exercisesValues.value).forEach((key) => {
+    if (arrayCompare(splitScheduleInfoNames(key).slice(0, 2), [week, day]))
+      duplicateTableInDay(key, destWeekDay ?? newTable);
+  });
+
+  // Delete empty table if existent
+  if (newTable) deleteTable(newTable);
+
+  // Scroll to duplicated day
+  if (doScroll && (destWeekDay || newTable))
+    nextTick(() =>
+      scrollToElementInParent(
+        tableElements.value[(destWeekDay ?? newTable)!],
+        props.scrollOffset,
+      ),
+    );
 }
 
 /**
@@ -1263,7 +1343,7 @@ function addWeekDayAfter(
             props.scrollOffset,
           ),
         );
-      return;
+      return creationResult;
     }
   }
 }
@@ -1298,6 +1378,26 @@ function splitScheduleInfoNames(
   sep: string = sepWekDay,
 ) {
   return nameScheduleInfo.split(sep);
+}
+
+/**
+ * Get largest line order for lines in a day.
+ *
+ * @param idScheduleInfo schedule ID of interesting day.
+ */
+function getLargestOrderInDay(idScheduleInfo: string) {
+  const scheduleInfo = splitScheduleInfoNames(idScheduleInfo);
+  return Math.max(
+    ...Object.keys(exercisesValues.value).reduce((orders: number[], key) => {
+      const currScheduleInfo = splitScheduleInfoNames(key);
+      if (
+        currScheduleInfo[0] == scheduleInfo[0] &&
+        currScheduleInfo[1] == scheduleInfo[1]
+      )
+        return [...orders, Number(currScheduleInfo[2])];
+      return orders;
+    }, []),
+  );
 }
 
 /**
