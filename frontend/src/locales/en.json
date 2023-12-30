@@ -254,8 +254,12 @@
           "steps": "Steps",
           "dipbelt": "Dip Belt",
           "machine": "Machine",
-          "bar": "Bar",
-          "parallettes": "Parallettes"
+          "cablemachine": "Cable Machine",
+          "isotonicmachine": "Isotonic Machine",
+          "bar": "Pullup Bar",
+          "parallettes": "Parallettes",
+          "rings": "Rings",
+          "box": "Box"
         },
         "video": "Video link",
         "description": "Description"

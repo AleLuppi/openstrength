@@ -37,6 +37,7 @@ export enum ExerciseMuscleGroups {
  * Define available equipment.
  */
 export enum ExerciseEquipment {
+  rings = "rings",
   barbell = "barbell",
   plates = "plates",
   dumbell = "dumbell",
@@ -47,8 +48,11 @@ export enum ExerciseEquipment {
   steps = "steps",
   dipbelt = "dipbelt",
   machine = "machine",
+  cablemachine = "cablemachine",
+  isotonicmachine = "isotonicmachine",
   bar = "bar",
   parallettes = "parallettes",
+  box = "box",
 }
 
 /**
