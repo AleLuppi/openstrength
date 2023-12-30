@@ -276,11 +276,14 @@
         "programs": "Programs",
         "name": "Name",
         "label": "Label",
+        "description": "Description",
         "load": "Load",
         "reps": "Reps",
         "sets": "Sets",
         "rpe": "RPE",
-        "note": "Note"
+        "note": "Note",
+        "start_date": "Start date",
+        "end_date": "End date"
       },
       "builder": {
         "save": "Save",
@@ -291,6 +294,7 @@
         "save_assignment_error": "Program has been saved, but it could not be assigned to athlete.",
         "save_unassignment_error": "Program assignment could not be removed from athlete { name }.",
         "not_assigned_prompt": "There is an unassigned program, do you want to continue the modification?",
+        "warn_assignment": "{ name } already has a program assigned, that will be overwritten. Do you want to proceed?",
         "week_name": "Week { week }",
         "day_name": "Day { day }",
         "new_week": "Week",
@@ -304,7 +308,7 @@
         "day_rename": "Rename",
         "day_duplicate": "Duplicate day",
         "day_delete": "Delete day",
-        "empty": "Create your program now by adding your first exercise!",
+        "empty": "Start your program now by adding your first exercise!",
         "reference_select_line": "Select a line",
         "reference_select_line_help": "Select a line as reference",
         "reference_remove": "Unlink",
@@ -314,8 +318,11 @@
         "show_program_list": "List of Programs",
         "last_update": "Last update:",
         "open_temporary": "Open temporary program",
+        "initialize_program": "Build a new program now!",
         "start_program": "Create or select a program to start",
-        "new_program": "New program"
+        "new_program": "New program",
+        "new_program_info": "Fill in the fields with the info of your new program",
+        "new_program_submit": "Proceed"
       },
       "filter": {
         "title": "Filter by...",
