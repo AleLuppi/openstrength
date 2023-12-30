@@ -1181,10 +1181,12 @@ function duplicateTableInDay(idScheduleInfo: string, destWeekDay?: string) {
 function deleteWholeDay(idScheduleInfo: string) {
   // Delete all data tables
   const [week, day] = splitScheduleInfoNames(idScheduleInfo);
-  Object.keys(exercisesValues.value).forEach((key) => {
-    if (arrayCompare(splitScheduleInfoNames(key).slice(0, 2), [week, day]))
-      deleteTable(key);
-  });
+  Object.keys(exercisesValues.value)
+    .reverse()
+    .forEach((key) => {
+      if (arrayCompare(splitScheduleInfoNames(key).slice(0, 2), [week, day]))
+        deleteTable(key);
+    });
 }
 
 /**
