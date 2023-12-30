@@ -21,7 +21,6 @@
       @filter="filter"
       :label="undefined"
       :use-chips="multiple"
-      new-value-mode="add-unique"
       :rules="
         (rules ?? []).concat([
           (val: string) =>
@@ -32,6 +31,12 @@
       "
       lazy-rules
     >
+      <template v-slot:no-option>
+        <q-item>
+          <!-- TODO: i18n  -->
+          <q-item-section> No results </q-item-section>
+        </q-item>
+      </template>
       <template v-for="(_, slot) in $slots as Readonly<QSelectSlots>" #[slot]>
         <slot :name="slot" />
       </template>

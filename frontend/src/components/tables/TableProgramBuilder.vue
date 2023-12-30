@@ -164,6 +164,8 @@
           <q-slide-transition>
             <div v-show="exercisesInfoShowExpanded[idScheduleInfo]">
               <osSelect
+                use-input
+                input-debounce="150"
                 :model-value="exerciseModelValue.exercise"
                 @update:model-value="
                   (val: typeof exerciseModelValue.exercise) => {
@@ -177,6 +179,8 @@
               </osSelect>
               <q-separator color="inherit" spaced="xs" />
               <osSelect
+                use-input
+                input-debounce="150"
                 :model-value="exerciseModelValue.variant"
                 @update:model-value="
                   (val: typeof exerciseModelValue.variant) => {
