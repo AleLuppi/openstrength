@@ -34,6 +34,7 @@
         emit-value
         map-options
         multiple
+        use-input
         new-value-mode="add-unique"
         class="col-12"
       />
@@ -54,6 +55,7 @@
         emit-value
         map-options
         multiple
+        use-input
         new-value-mode="add-unique"
         class="col-12 col-md-6"
       />
