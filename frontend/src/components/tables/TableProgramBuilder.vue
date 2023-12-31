@@ -9,13 +9,13 @@
       <!-- Show week and day and allow navigation -->
       <div
         v-if="firstTablesInDay.includes(idScheduleInfo.toString())"
-        class="row items-center q-gutter-x-sm"
+        class="row items-center q-gutter-x-xs"
         :class="{
           'q-mt-lg': firstTablesInDay.indexOf(idScheduleInfo.toString()) > 0,
         }"
       >
         <h6 class="q-mt-none">
-          <span class="underlined-dashed cursor-pointer">
+          <span class="underlined-dashed cursor-pointer text-h4 text-margin-xs">
             {{ getWeekDisplayName(idScheduleInfo, true) }}
             <q-menu auto-close>
               <q-list
@@ -55,7 +55,7 @@
             </q-menu>
           </span>
           -
-          <span class="underlined-dashed cursor-pointer">
+          <span class="underlined-dashed cursor-pointer text-h6 text-margin-xs">
             {{ getDayDisplayName(idScheduleInfo, true) }}
             <q-menu auto-close>
               <q-list
@@ -97,11 +97,15 @@
           "
           icon="edit"
           size="sm"
-          color="light"
+          color="dark-light"
           flat
           round
           :ripple="false"
         >
+          <q-tooltip>
+            {{ $t("coach.program_management.builder.day_rename") }}
+          </q-tooltip>
+
           <FormProgramNewWeekDay
             v-model="editWeekDayName"
             @save="renameWeekDay"
@@ -111,6 +115,34 @@
             :offset="[15, 0]"
           >
           </FormProgramNewWeekDay>
+        </q-btn>
+
+        <q-btn
+          @click="duplicateWholeDay(idScheduleInfo.toString())"
+          icon="fa-regular fa-clone"
+          size="sm"
+          color="dark-light"
+          flat
+          round
+          :ripple="false"
+        >
+          <q-tooltip>
+            {{ $t("coach.program_management.builder.day_duplicate") }}
+          </q-tooltip>
+        </q-btn>
+
+        <q-btn
+          @click="deleteWholeDay(idScheduleInfo.toString())"
+          icon="fa-regular fa-trash-can"
+          size="sm"
+          color="dark-light"
+          flat
+          round
+          :ripple="false"
+        >
+          <q-tooltip>
+            {{ $t("coach.program_management.builder.day_delete") }}
+          </q-tooltip>
         </q-btn>
 
         <q-separator inset size="1px" class="col" />
@@ -147,110 +179,153 @@
         </div>
 
         <!-- Exercise info -->
-        <div
-          class="col-3 q-pa-sm bg-lighter os-exercise-form os-light-border"
-          :class="{
-            'cursor-pointer': !exercisesInfoShowExpanded[idScheduleInfo],
-          }"
-          @click="
-            exercisesInfoExpanded = objectMapValues(
-              exercisesInfoExpanded,
-              () => false,
-            );
-            exercisesInfoExpanded[idScheduleInfo] = true;
-          "
-          style="position: relative"
-        >
-          <q-slide-transition>
-            <div v-show="exercisesInfoShowExpanded[idScheduleInfo]">
-              <osSelect
-                :model-value="exerciseModelValue.exercise"
-                @update:model-value="
-                  (val: typeof exerciseModelValue.exercise) => {
-                    updateSelectedExercise(idScheduleInfo.toString(), val);
-                    updateProgramExercise(idScheduleInfo.toString());
-                  }
-                "
-                :options="exercises.map((exercise) => exercise.name)"
-                hide-bottom-space
+        <div class="col-3">
+          <div
+            class="q-pa-sm bg-lighter os-exercise-form os-light-border"
+            :class="{
+              'cursor-pointer': !exercisesInfoShowExpanded[idScheduleInfo],
+            }"
+            @click="
+              exercisesInfoExpanded = objectMapValues(
+                exercisesInfoExpanded,
+                () => false,
+              );
+              exercisesInfoExpanded[idScheduleInfo] = true;
+            "
+            style="position: relative"
+          >
+            <q-slide-transition>
+              <div v-show="exercisesInfoShowExpanded[idScheduleInfo]">
+                <osSelect
+                  :model-value="exerciseModelValue.exercise"
+                  @update:model-value="
+                    (val: typeof exerciseModelValue.exercise) => {
+                      updateSelectedExercise(idScheduleInfo.toString(), val);
+                      updateProgramExercise(idScheduleInfo.toString());
+                    }
+                  "
+                  :options="exercises.map((exercise) => exercise.name)"
+                  hide-bottom-space
+                >
+                </osSelect>
+                <q-separator color="inherit" spaced="xs" />
+                <osSelect
+                  :model-value="exerciseModelValue.variant"
+                  @update:model-value="
+                    (val: typeof exerciseModelValue.variant) => {
+                      exerciseModelValue.variant = val;
+                      updateProgramExercise(idScheduleInfo.toString());
+                    }
+                  "
+                  :options="
+                    selectedExercises[idScheduleInfo]?.variants?.map(
+                      (variant) => ({
+                        label: variant.isDefault
+                          ? $t('coach.exercise_management.default_variant')
+                          : variant.name,
+                        value: variant.isDefault ? '' : variant.name,
+                      }),
+                    )
+                  "
+                  emit-value
+                  hide-bottom-space
+                >
+                </osSelect>
+                <q-separator color="inherit" spaced="xs" />
+                <osInput
+                  :model-value="exerciseModelValue.note"
+                  @update:model-value="
+                    (val: typeof exerciseModelValue.note) => {
+                      exerciseModelValue.note = val;
+                      updateProgramExercise(idScheduleInfo.toString());
+                    }
+                  "
+                  type="textarea"
+                  hide-bottom-space
+                >
+                </osInput>
+                <q-btn
+                  icon="expand_less"
+                  @click.stop="exercisesInfoExpanded[idScheduleInfo] = false"
+                  flat
+                  dense
+                  color="secondary"
+                  class="full-width"
+                  :ripple="false"
+                />
+              </div>
+            </q-slide-transition>
+            <q-slide-transition>
+              <div
+                v-show="!exercisesInfoShowExpanded[idScheduleInfo]"
+                class="text-ellipsis"
               >
-              </osSelect>
-              <q-separator color="inherit" spaced="xs" />
-              <osSelect
-                :model-value="exerciseModelValue.variant"
-                @update:model-value="
-                  (val: typeof exerciseModelValue.variant) => {
-                    exerciseModelValue.variant = val;
-                    updateProgramExercise(idScheduleInfo.toString());
-                  }
+                <p class="text-secondary text-bold">
+                  {{ exerciseModelValue.exercise }}
+                  {{
+                    exerciseModelValue.variant
+                      ? " - " + exerciseModelValue.variant
+                      : ""
+                  }}
+                </p>
+                <p class="text-xs text-italic">
+                  {{ exerciseModelValue.note }}
+                </p>
+              </div>
+            </q-slide-transition>
+          </div>
+          <osButtonSupport
+            :icons="[
+              'fa-regular fa-clone',
+              'exit_to_app',
+              'fa-regular fa-trash-can',
+            ]"
+            :colors="['lighter', 'lighter', 'lighter']"
+            :hover-colors="['info', 'info', 'negative']"
+            :tooltips="[
+              $t('coach.program_management.builder.line_duplicate'),
+              $t('coach.program_management.builder.line_duplicate_in_day'),
+              $t('coach.program_management.builder.line_delete'),
+            ]"
+            @click="
+              (idx) => {
+                switch (idx) {
+                  case 0:
+                    duplicateTableInDay(idScheduleInfo.toString());
+                  case 1:
+                    editWeekDayName = splitScheduleInfoNames(
+                      idScheduleInfo.toString(),
+                    );
+                    break;
+                  case 2:
+                    deleteTable(idScheduleInfo.toString());
+                    break;
+                  default:
+                    break;
+                }
+              }
+            "
+            direction="b"
+            class="q-mx-sm"
+          >
+            <template #slot-1>
+              <FormProgramNewWeekDay
+                v-model="editWeekDayName"
+                @save="
+                  (val) =>
+                    duplicateTableInDay(
+                      idScheduleInfo.toString(),
+                      mergeScheduleInfoNames(val[0], val[1], 1),
+                    )
                 "
-                :options="
-                  selectedExercises[idScheduleInfo]?.variants?.map(
-                    (variant) => ({
-                      label: variant.isDefault
-                        ? $t('coach.exercise_management.default_variant')
-                        : variant.name,
-                      value: variant.isDefault ? '' : variant.name,
-                    }),
-                  )
-                "
-                emit-value
-                hide-bottom-space
+                :force-save="true"
+                :cover="false"
+                anchor="center left"
+                self="center right"
               >
-              </osSelect>
-              <q-separator color="inherit" spaced="xs" />
-              <osInput
-                :model-value="exerciseModelValue.note"
-                @update:model-value="
-                  (val: typeof exerciseModelValue.note) => {
-                    exerciseModelValue.note = val;
-                    updateProgramExercise(idScheduleInfo.toString());
-                  }
-                "
-                type="textarea"
-                hide-bottom-space
-              >
-              </osInput>
-              <q-btn
-                icon="expand_less"
-                @click.stop="exercisesInfoExpanded[idScheduleInfo] = false"
-                flat
-                dense
-                color="secondary"
-                class="full-width"
-                :ripple="false"
-              />
-            </div>
-          </q-slide-transition>
-          <q-slide-transition>
-            <div
-              v-show="!exercisesInfoShowExpanded[idScheduleInfo]"
-              class="text-ellipsis"
-            >
-              <p class="text-secondary text-bold">
-                {{ exerciseModelValue.exercise }}
-                {{
-                  exerciseModelValue.variant
-                    ? " - " + exerciseModelValue.variant
-                    : ""
-                }}
-              </p>
-              <p class="text-xs text-italic">
-                {{ exerciseModelValue.note }}
-              </p>
-            </div>
-          </q-slide-transition>
-
-          <!-- Delete buttons -->
-          <q-btn
-            icon="clear"
-            @click="deleteTable(idScheduleInfo.toString())"
-            round
-            unelevated
-            size="0.5em"
-            color="light"
-            class="os-exercise-delete-btn"
-          />
+              </FormProgramNewWeekDay>
+            </template>
+          </osButtonSupport>
         </div>
 
         <!-- Data table -->
@@ -274,6 +349,16 @@
           :types="{
             requestText: 'checkbox',
             requestVideo: 'checkbox',
+          }"
+          :childProps="{
+            requestText: {
+              'checked-icon': 'fa-solid fa-comment-dots',
+              'unchecked-icon': 'fa-solid fa-comment-slash',
+            },
+            requestVideo: {
+              'checked-icon': 'fa-solid fa-video',
+              'unchecked-icon': 'fa-solid fa-video-slash',
+            },
           }"
           :widths="{
             load: '10%',
@@ -452,20 +537,17 @@
         <q-btn
           icon="add"
           :label="$t('coach.program_management.builder.new_day')"
-          @click="editWeekDayName = ['', '']"
+          @click="addWeekDayAfter(idScheduleInfo.toString(), true)"
           rounded
           unelevated
-        >
-          <FormProgramNewWeekDay
-            v-model="editWeekDayName"
-            @save="renameWeekDay"
-            :cover="false"
-            anchor="bottom middle"
-            self="top middle"
-            :offset="[0, 5]"
-          >
-          </FormProgramNewWeekDay>
-        </q-btn>
+        />
+        <q-btn
+          icon="add"
+          :label="$t('coach.program_management.builder.new_week')"
+          @click="addWeekDayAfter(idScheduleInfo.toString(), false)"
+          rounded
+          unelevated
+        />
       </div>
     </div>
 
@@ -529,7 +611,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType, watch } from "vue";
+import { ref, computed, PropType, watch, nextTick } from "vue";
 import { uid, debounce, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import FormProgramNewWeekDay from "@/components/forms/FormProgramNewWeekDay.vue";
@@ -554,6 +636,8 @@ import {
   MaxLiftTypesPerValue,
 } from "@/helpers/maxlifts/maxlift";
 import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
+import { stringGetNext } from "@/helpers/scalar";
+import osButtonSupport from "../basic/osButtonSupport.vue";
 
 // Init plugin
 const $q = useQuasar();
@@ -1030,7 +1114,14 @@ function reorderTableRelative(srcId: string, moveBy: number) {
  * @param idScheduleInfo full name string.
  */
 function deleteTable(idScheduleInfo: string) {
-  delete exercisesValues.value[idScheduleInfo];
+  const [week, day] = splitScheduleInfoNames(idScheduleInfo).slice(0, 2);
+  const tmpScheduleInfo = mergeScheduleInfoNames(
+    week,
+    day,
+    getLargestOrderInDay(idScheduleInfo) + 1,
+  );
+  reorderTable(idScheduleInfo, tmpScheduleInfo);
+  delete exercisesValues.value[tmpScheduleInfo];
 
   // Update program with new structure
   updateProgramWhole();
@@ -1040,22 +1131,16 @@ function deleteTable(idScheduleInfo: string) {
  * Add one exercise to the list.
  *
  * @param idScheduleInfo full name that shall be assigned to the new table, only gets week and day codes if not available.
+ * @param value if provided, initialize a non-empty table with supplied values.
  */
-function addTable(idScheduleInfo: string) {
+function addTable(
+  idScheduleInfo: string,
+  value?: (typeof exercisesValues.value)[string],
+) {
   // Get the proper new table id
   if (idScheduleInfo in exercisesValues.value) {
     const scheduleInfo = splitScheduleInfoNames(idScheduleInfo);
-    const largestOrder = Math.max(
-      ...Object.keys(exercisesValues.value).reduce((orders: number[], key) => {
-        const currScheduleInfo = splitScheduleInfoNames(key);
-        if (
-          currScheduleInfo[0] == scheduleInfo[0] &&
-          currScheduleInfo[1] == scheduleInfo[1]
-        )
-          return [...orders, Number(currScheduleInfo[2])];
-        return orders;
-      }, []),
-    );
+    const largestOrder = getLargestOrderInDay(idScheduleInfo);
     idScheduleInfo = mergeScheduleInfoNames(
       scheduleInfo[0],
       scheduleInfo[1],
@@ -1066,16 +1151,84 @@ function addTable(idScheduleInfo: string) {
   // Reload whole object to force reorder check
   exercisesValues.value = {
     ...exercisesValues.value,
-    [idScheduleInfo]: {
-      data: [],
-      exercise: undefined,
-      variant: undefined,
-      note: undefined,
-    },
+    [idScheduleInfo]: value
+      ? { ...value, data: value.data.map((line) => ({ ...line })) }
+      : {
+          data: [],
+          exercise: undefined,
+          variant: undefined,
+          note: undefined,
+        },
   };
 
   // Update program with new table
   updateProgramWhole();
+}
+
+/**
+ * Duplicate a table in a specific day.
+ *
+ * @param idScheduleInfo table that shall be duplicated.
+ * @param destWeekDay optional destination week and day, otherwise duplicate in original week and day.
+ */
+function duplicateTableInDay(idScheduleInfo: string, destWeekDay?: string) {
+  addTable(
+    destWeekDay ?? idScheduleInfo,
+    exercisesValues.value[idScheduleInfo],
+  );
+}
+
+/**
+ * Delete all tables in a day.
+ *
+ * @param idScheduleInfo full name string referencing the day to delete.
+ */
+function deleteWholeDay(idScheduleInfo: string) {
+  // Delete all data tables
+  const [week, day] = splitScheduleInfoNames(idScheduleInfo);
+  Object.keys(exercisesValues.value)
+    .reverse()
+    .forEach((key) => {
+      if (arrayCompare(splitScheduleInfoNames(key).slice(0, 2), [week, day]))
+        deleteTable(key);
+    });
+}
+
+/**
+ * Duplicate all tables in a selected day.
+ *
+ * @param idScheduleInfo ID of day that shall be duplicated.
+ * @param destWeekDay optional destination week and day, otherwise duplicate in successive week and day.
+ * @param doScroll if true, scroll to the newly created element.
+ */
+function duplicateWholeDay(
+  idScheduleInfo: string,
+  destWeekDay?: string,
+  doScroll: boolean = true,
+) {
+  // Create new day if required
+  const newTable = destWeekDay
+    ? undefined
+    : mergeScheduleInfoNames(...addWeekDayAfter(idScheduleInfo, true, false));
+
+  // Duplicate all data tables
+  const [week, day] = splitScheduleInfoNames(idScheduleInfo);
+  Object.keys(exercisesValues.value).forEach((key) => {
+    if (arrayCompare(splitScheduleInfoNames(key).slice(0, 2), [week, day]))
+      duplicateTableInDay(key, destWeekDay ?? newTable);
+  });
+
+  // Delete empty table if existent
+  if (newTable) deleteTable(newTable);
+
+  // Scroll to duplicated day
+  if (doScroll && (destWeekDay || newTable))
+    nextTick(() =>
+      scrollToElementInParent(
+        tableElements.value[(destWeekDay ?? newTable)!],
+        props.scrollOffset,
+      ),
+    );
 }
 
 /**
@@ -1084,23 +1237,32 @@ function addTable(idScheduleInfo: string) {
  * @param toSchedule destination week and day name.
  * @param fromSchedule source week and day name.
  * @param createIfEmpty if true, create a new table at destination week and day if source is empty.
+ * @param notify if true, user will be informed about renaming error, otherwise error will remain silent.
+ * @returns newly created table ID if successful, false otherwise.
  */
 function renameWeekDay(
   toSchedule: string[],
   fromSchedule: string[],
   createIfEmpty: boolean = true,
+  notify: boolean = true,
 ) {
   // Check and parse input
   if (toSchedule.length < 2 || fromSchedule.length < 2) {
-    $q.notify({
-      type: "negative",
-      message: i18n.t("coach.program_management.builder.new_day_error"),
-      position: "bottom",
-    });
+    if (notify)
+      $q.notify({
+        type: "negative",
+        message: i18n.t("coach.program_management.builder.new_day_error"),
+        position: "bottom",
+      });
     return;
   }
   const [toWeekId, toDayId] = toSchedule;
   const [fromWeekId, fromDayId] = fromSchedule;
+  const outSchedule: [string | number, string | number, string | number] = [
+    toWeekId,
+    toDayId,
+    -1,
+  ];
 
   // Check if new naming can be used
   if (!toWeekId || !toDayId) return;
@@ -1112,13 +1274,14 @@ function renameWeekDay(
       ),
     )
   ) {
-    $q.notify({
-      type: "negative",
-      message: i18n.t(
-        "coach.program_management.builder.new_day_already_exists",
-      ),
-      position: "bottom",
-    });
+    if (notify)
+      $q.notify({
+        type: "negative",
+        message: i18n.t(
+          "coach.program_management.builder.new_day_already_exists",
+        ),
+        position: "bottom",
+      });
     return;
   }
 
@@ -1139,11 +1302,57 @@ function renameWeekDay(
   );
 
   // Optionally add a table is source is empty
-  if (createIfEmpty && isSourceEmpty)
-    addTable(mergeScheduleInfoNames(toWeekId, toDayId, 1));
+  if (createIfEmpty && isSourceEmpty) {
+    outSchedule[2] = 1;
+    addTable(mergeScheduleInfoNames(...outSchedule));
+  }
 
   // Update program with new naming
   updateProgramWhole();
+
+  // Inform about successful update
+  return outSchedule;
+}
+
+/**
+ * Create a new week/day couple immediately after a selected week/day.
+ *
+ * @param idScheduleInfo schedule ID after which new week/day shall be inserted.
+ * @param addDay if true, a new day will be created, otherwise a new week will.
+ * @param doScroll if true, scroll to the newly created element.
+ */
+function addWeekDayAfter(
+  idScheduleInfo: string,
+  addDay: boolean = true,
+  doScroll: boolean = true,
+) {
+  // Get current week and day
+  let [week, day] = splitScheduleInfoNames(idScheduleInfo);
+
+  // Select the next naming value
+  for (;;) {
+    if (addDay) day = stringGetNext(day) ?? "";
+    else week = stringGetNext(week) ?? "";
+
+    // Check if error occurred, thus create a week and day with temporary names
+    if (!week || !day) {
+      week = "?";
+      day = "?";
+    }
+
+    // Try to create a new week and day pair
+    const creationResult = renameWeekDay([week, day], ["", ""], true, false);
+    if (creationResult) {
+      if (doScroll)
+        nextTick(() =>
+          scrollToElementInParent(
+            tableElements.value[mergeScheduleInfoNames(...creationResult)],
+            props.scrollOffset,
+          ),
+        );
+      return creationResult;
+    }
+  }
 }
 
 /**
@@ -1176,6 +1385,26 @@ function splitScheduleInfoNames(
   sep: string = sepWekDay,
 ) {
   return nameScheduleInfo.split(sep);
+}
+
+/**
+ * Get largest line order for lines in a day.
+ *
+ * @param idScheduleInfo schedule ID of interesting day.
+ */
+function getLargestOrderInDay(idScheduleInfo: string) {
+  const scheduleInfo = splitScheduleInfoNames(idScheduleInfo);
+  return Math.max(
+    ...Object.keys(exercisesValues.value).reduce((orders: number[], key) => {
+      const currScheduleInfo = splitScheduleInfoNames(key);
+      if (
+        currScheduleInfo[0] == scheduleInfo[0] &&
+        currScheduleInfo[1] == scheduleInfo[1]
+      )
+        return [...orders, Number(currScheduleInfo[2])];
+      return orders;
+    }, []),
+  );
 }
 
 /**
@@ -1343,12 +1572,5 @@ function updateProgramExercise(idScheduleInfo: string) {
 .os-exercise-form {
   border-radius: 10px 0 0 10px;
   margin-inline-end: -1px;
-}
-
-.os-exercise-delete-btn {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translate(-50%, -40%);
 }
 </style>

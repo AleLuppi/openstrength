@@ -10,6 +10,7 @@
       <template v-slot:before>
         <!-- Program management card -->
         <div
+          v-if="selectedProgram.uid"
           ref="programManagerElement"
           class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest"
         >
@@ -27,17 +28,31 @@
               "
               :disable="programSaved"
               :color="programSaved ? 'positive' : 'negative'"
-              @click="saveProgram"
+              @click="saveProgram()"
               flat
+            ></q-btn>
+
+            <!-- Start a new program -->
+            <q-btn
+              icon="add"
+              :label="$t('coach.program_management.builder.new_program')"
+              @click="substituteProgram = new Program()"
+              rounded
+              outline
+              class="q-mx-auto"
             ></q-btn>
 
             <!-- Display and update assigned user -->
             <q-btn
-              @click="showAthleteAssigningDialog = true"
+              @click="
+                selectedProgram.athlete
+                  ? null
+                  : (substituteProgram = new Program())
+              "
               :label="
                 selectedProgram.athlete
                   ? ''
-                  : $t('coach.program_management.builder.assign_to_athlete')
+                  : $t('coach.program_management.builder.new_program')
               "
               :color="selectedProgram.athlete ? 'secondary' : 'primary'"
               outline
@@ -59,20 +74,6 @@
                 <q-item-section>{{
                   selectedProgram.athlete.referenceName
                 }}</q-item-section>
-                <q-item-section thumbnail>
-                  <q-btn
-                    icon="clear"
-                    @click.stop="
-                      selectedProgram.athlete = undefined;
-                      programSaved = false;
-                    "
-                    round
-                    unelevated
-                    size="0.45em"
-                    color="button-negative"
-                    class="q-mr-sm"
-                  />
-                </q-item-section>
               </q-item>
             </q-btn>
           </div>
@@ -125,6 +126,7 @@
 
         <!-- Show table to build program on the left -->
         <TableProgramBuilder
+          v-if="selectedProgram.athlete"
           v-model="selectedProgram"
           :exercises="coachInfo.exercises"
           :filter="programFilter"
@@ -144,6 +146,17 @@
             />
           </template>
         </TableProgramBuilder>
+        <div v-else class="q-pa-lg column items-center">
+          <h6>
+            {{ $t("coach.program_management.builder.initialize_program") }}
+          </h6>
+          <q-btn
+            @click="substituteProgram = new Program()"
+            :label="$t('coach.program_management.builder.new_program')"
+            rounded
+            unelevated
+          />
+        </div>
       </template>
 
       <template v-slot:after>
@@ -244,15 +257,7 @@
             v-else-if="showingUtils == UtilsOptions.list"
             class="column q-gutter-y-md"
           >
-            <!-- Start a new program -->
-            <q-btn
-              icon="add"
-              :label="$t('coach.program_management.builder.new_program')"
-              @click="substituteProgram = new Program()"
-              rounded
-              outline
-              class="q-mx-auto"
-            ></q-btn>
+            <h6>Program List</h6>
 
             <!-- Search status or temporary program -->
             <q-card>
@@ -325,6 +330,23 @@
         />
       </template>
     </q-splitter>
+
+    <!-- Dialog to set program info -->
+    <q-dialog v-model="showNewProgramDialog">
+      <q-card>
+        <q-card-section>
+          <FormProgramInfo
+            :program="selectedProgram"
+            @submit="
+              (program) => {
+                saveProgram(program);
+                showNewProgramDialog = false;
+              }
+            "
+          ></FormProgramInfo>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
 
     <!-- Dialog to assign program to athlete -->
     <DialogProgramAssignAthlete
@@ -427,6 +449,7 @@ import {
   getProgramUniqueExercises,
 } from "@/helpers/programs/linesManagement";
 import router from "@/router";
+import FormProgramInfo from "@/components/forms/FormProgramInfo.vue";
 
 // Set expose
 defineExpose({ handleDrawerClick });
@@ -461,6 +484,7 @@ const programSaved = ref(true);
 const filterWeek = ref<string[]>();
 const filterDay = ref<string[]>();
 const filterExercise = ref<string[]>();
+const showNewProgramDialog = ref(false);
 const showTemporaryProgramRestoreDialog = ref(false);
 const showAthleteAssigningDialog = ref(false);
 const programManagerExpanded = ref(false);
@@ -561,8 +585,10 @@ watch(
 function openProgram(program?: Program | string, force: boolean = false) {
   // Update selected program if needed
   if (program && (programSaved.value || force)) {
-    if (program instanceof Program) selectedProgram.value = program;
-    else
+    if (program instanceof Program) {
+      selectedProgram.value = program;
+      if (!program.athlete) showNewProgramDialog.value = true;
+    } else
       router.replace({
         params: { programId: program },
       });
@@ -577,13 +603,15 @@ function openProgram(program?: Program | string, force: boolean = false) {
 
 /**
  * Save current program instance.
+ *
+ * @param program optional program instance that shall be save.
  */
-function saveProgram() {
+function saveProgram(program?: Program) {
   // Currently, only one temporary program can exist
   deleteTemporaryProgram();
 
   // Save current program instance
-  const currProgram = selectedProgram.value;
+  const currProgram = program ?? selectedProgram.value;
   currProgram.coach = user.baseUser;
   currProgram.save({
     onSuccess: () => {

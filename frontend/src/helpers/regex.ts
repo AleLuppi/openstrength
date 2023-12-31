@@ -1,4 +1,5 @@
 /***** Common regex patterns *****/
+const stringAlphanumeric = /^\s*([a-zA-Z0-9]+)\s*$/;
 const numberUnsignedInteger = /^\s*(\d+)\s*$/;
 const numberUnsignedFloat = /^\s*(\d+[.,]?\d*)\s*$/;
 const numberUnsignedFloatWithUnit = /^\s*(\d+[.,]?\d*)\s*(\w+)\s*$/;
@@ -25,6 +26,10 @@ const numberIntegerInBrackets = /^\s*\(\s*(\d+)\s*\)\s*$/;
 const numberFloatInBrackets = /^\s*\(\s*(\d+[.,]?\d*)\s*\)\s*$/;
 
 /***** Use common regex patterns *****/
+export function matchStringAlphanumeric(s: string) {
+  return stringAlphanumeric.exec(s);
+}
+
 export function matchNumberUnsignedInteger(s: string) {
   return numberUnsignedInteger.exec(s);
 }

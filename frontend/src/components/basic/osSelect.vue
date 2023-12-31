@@ -115,11 +115,3 @@ function filter(val: string, doneFn: Function) {
   });
 }
 </script>
-
-<style scoped lang="scss">
-.input-required:after {
-  color: $red;
-  content: " *";
-  display: inline;
-}
-</style>

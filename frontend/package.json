@@ -7,6 +7,7 @@
     "build": "vue-cli-service build",
     "release": "vue-cli-service build --mode release && firebase hosting:channel:deploy",
     "deploy": "vue-cli-service build && firebase deploy --only hosting",
+    "test": "vitest",
     "lint": "vue-cli-service lint",
     "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\""
   },
@@ -42,6 +43,7 @@
     "sass": "1.32.12",
     "sass-loader": "^12.0.0",
     "typescript": "^5.1.6",
+    "vitest": "^1.1.0",
     "vue-cli-plugin-i18n": "~2.3.2",
     "vue-cli-plugin-quasar": "~5.0.2",
     "vue-eslint-parser": "^9.3.1"
