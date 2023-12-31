@@ -10,6 +10,7 @@
       <template v-slot:before>
         <!-- Program management card -->
         <div
+          v-if="selectedProgram.uid"
           ref="programManagerElement"
           class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest"
         >
@@ -29,6 +30,16 @@
               :color="programSaved ? 'positive' : 'negative'"
               @click="saveProgram()"
               flat
+            ></q-btn>
+
+            <!-- Start a new program -->
+            <q-btn
+              icon="add"
+              :label="$t('coach.program_management.builder.new_program')"
+              @click="substituteProgram = new Program()"
+              rounded
+              outline
+              class="q-mx-auto"
             ></q-btn>
 
             <!-- Display and update assigned user -->
@@ -246,15 +257,7 @@
             v-else-if="showingUtils == UtilsOptions.list"
             class="column q-gutter-y-md"
           >
-            <!-- Start a new program -->
-            <q-btn
-              icon="add"
-              :label="$t('coach.program_management.builder.new_program')"
-              @click="substituteProgram = new Program()"
-              rounded
-              outline
-              class="q-mx-auto"
-            ></q-btn>
+            <h6>Program List</h6>
 
             <!-- Search status or temporary program -->
             <q-card>

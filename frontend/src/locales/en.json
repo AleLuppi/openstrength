@@ -302,7 +302,7 @@
         "new_exercise": "Exercise",
         "new_day_error": "Could not create day with selected name, please retry",
         "new_day_already_exists": "A day with this name already exists",
-        "line_duplicate": "Duplicate",
+        "line_duplicate": "Duplicate exercise",
         "line_duplicate_in_day": "Copy in another day",
         "line_delete": "Delete",
         "day_rename": "Rename",

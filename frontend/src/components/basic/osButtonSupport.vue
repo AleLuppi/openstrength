@@ -14,8 +14,8 @@
         @mouseover="isHover[idx] = true"
         @mouseleave="isHover[idx] = false"
         dense
-        size="0.8em"
-        class="support-btn"
+        size="0.6em"
+        class="support-btn q-pa-sm"
         :class="`support-btn-${direction}`"
       >
         <q-tooltip v-if="tooltips?.[idx]" :delay="250">

@@ -15,7 +15,7 @@
         }"
       >
         <h6 class="q-mt-none">
-          <span class="underlined-dashed cursor-pointer">
+          <span class="underlined-dashed cursor-pointer text-h4 text-margin-xs">
             {{ getWeekDisplayName(idScheduleInfo, true) }}
             <q-menu auto-close>
               <q-list
@@ -55,7 +55,7 @@
             </q-menu>
           </span>
           -
-          <span class="underlined-dashed cursor-pointer">
+          <span class="underlined-dashed cursor-pointer text-h6 text-margin-xs">
             {{ getDayDisplayName(idScheduleInfo, true) }}
             <q-menu auto-close>
               <q-list
@@ -133,7 +133,7 @@
 
         <q-btn
           @click="deleteWholeDay(idScheduleInfo.toString())"
-          icon="fa-solid fa-trash"
+          icon="fa-regular fa-trash-can"
           size="sm"
           color="dark-light"
           flat
@@ -275,8 +275,13 @@
             </q-slide-transition>
           </div>
           <osButtonSupport
-            :icons="['content_copy', 'exit_to_app', 'clear']"
-            :hover-colors="['info', 'warning', 'negative']"
+            :icons="[
+              'fa-regular fa-clone',
+              'exit_to_app',
+              'fa-regular fa-trash-can',
+            ]"
+            :colors="['lighter', 'lighter', 'lighter']"
+            :hover-colors="['info', 'info', 'negative']"
             :tooltips="[
               $t('coach.program_management.builder.line_duplicate'),
               $t('coach.program_management.builder.line_duplicate_in_day'),
