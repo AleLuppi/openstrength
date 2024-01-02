@@ -288,7 +288,7 @@
       "builder": {
         "save": "Save",
         "saved": "Saved!",
-        "not_saved": "changes not saved...",
+        "not_saved": "Save program!",
         "not_saved_prompt": "There are unsaved changes, do you really want to proceed?",
         "save_error": "Could not save program, please retry",
         "save_assignment_error": "Program has been saved, but it could not be assigned to athlete.",
