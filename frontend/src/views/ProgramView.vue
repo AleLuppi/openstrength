@@ -467,7 +467,12 @@ import {
 import router from "@/router";
 import FormProgramInfo from "@/components/forms/FormProgramInfo.vue";
 
-// Set expose
+// Define emits
+const emit = defineEmits<{
+  activateDrawerItem: [item: number];
+}>();
+
+// Define expose
 defineExpose({ handleDrawerClick });
 
 // Use plugins
@@ -486,6 +491,7 @@ const UtilsOptions = {
   charts: "charts",
   maxlifts: "maxlifts",
 };
+const splitterThresholdValue = 15;
 
 // Set ref for generic use
 const splitterModel = ref(30);
@@ -589,6 +595,22 @@ watch(
 watch(
   temporaryProgram,
   (program) => (showTemporaryProgramRestoreDialog.value = Boolean(program)),
+  { immediate: true },
+);
+
+// Update drawer active item when splitter value changes
+watch(
+  splitterModel,
+  (newVal, oldVal) => {
+    if ((oldVal === 0 || oldVal === undefined) && newVal > 0)
+      emit(
+        "activateDrawerItem",
+        Object.values(UtilsOptions).findIndex(
+          (val) => val == showingUtils.value,
+        ),
+      );
+    if (oldVal && oldVal > 0 && newVal === 0) emit("activateDrawerItem", -1);
+  },
   { immediate: true },
 );
 
@@ -795,18 +817,14 @@ function updateProgramManagerHeight() {
  *
  * @param clickParam parameters provided by drawer on click.
  */
-function handleDrawerClick(clickParam: any) {
+function handleDrawerClick(clickParam: number) {
   // Get preferred right view
   let toShow = showingUtils.value;
   switch (clickParam) {
     case 0:
-      toShow = UtilsOptions.list;
-      break;
     case 1:
-      toShow = UtilsOptions.charts;
-      break;
     case 2:
-      toShow = UtilsOptions.maxlifts;
+      toShow = Object.values(UtilsOptions)[clickParam];
       break;
     default:
       splitterModel.value = 0;
@@ -815,12 +833,17 @@ function handleDrawerClick(clickParam: any) {
 
   // Update right view or handle view size
   if (toShow === showingUtils.value) {
-    if (splitterModel.value < 15) splitterModel.value = 30;
-    else splitterModel.value = 0;
+    if (splitterModel.value < splitterThresholdValue) splitterModel.value = 30;
+    else {
+      splitterModel.value = 0;
+      emit("activateDrawerItem", -1);
+      return;
+    }
   } else {
     showingUtils.value = toShow;
-    if (splitterModel.value < 15) splitterModel.value = 30;
+    if (splitterModel.value < splitterThresholdValue) splitterModel.value = 30;
   }
+  emit("activateDrawerItem", clickParam);
 }
 
 // Define what to do on component mount
