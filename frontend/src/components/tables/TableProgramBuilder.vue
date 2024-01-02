@@ -523,6 +523,7 @@
       </div>
 
       <!-- New element button -->
+      <!-- TODO: i18n -->
       <div
         v-if="lastTablesInDay.includes(idScheduleInfo.toString())"
         class="row items-center justify-center q-gutter-md"
@@ -531,23 +532,41 @@
           icon="add"
           :label="$t('coach.program_management.builder.new_exercise')"
           @click="addTable(idScheduleInfo.toString())"
+          flat
+          outline
           rounded
           unelevated
-        />
+        >
+          <q-tooltip :delay="500">
+            {{ $t("coach.program_management.builder.new_exercise_tooltip") }}
+          </q-tooltip>
+        </q-btn>
         <q-btn
           icon="add"
           :label="$t('coach.program_management.builder.new_day')"
           @click="addWeekDayAfter(idScheduleInfo.toString(), true)"
+          flat
+          outline
           rounded
           unelevated
-        />
+        >
+          <q-tooltip :delay="500">
+            {{ $t("coach.program_management.builder.new_day_tooltip") }}
+          </q-tooltip>
+        </q-btn>
         <q-btn
           icon="add"
           :label="$t('coach.program_management.builder.new_week')"
           @click="addWeekDayAfter(idScheduleInfo.toString(), false)"
+          flat
+          outline
           rounded
           unelevated
-        />
+        >
+          <q-tooltip :delay="500">
+            {{ $t("coach.program_management.builder.new_week_tooltip") }}
+          </q-tooltip></q-btn
+        >
       </div>
     </div>
 
