@@ -169,10 +169,13 @@ function onOnboardingSubmit(data: { [key: string]: any }) {
   user.saveUser();
 
   // Assign default exercise library
-  if (user.role === UserRole.coach) {
-    defaultExerciseCollection.forEach(
-      (exercise) => exercise.variants?.forEach((variant) => variant.saveNew()),
-    );
+  if (coachInfo.exercises == undefined || coachInfo.exercises.length <= 0) {
+    if (user.role === UserRole.coach) {
+      defaultExerciseCollection.forEach(
+        (exercise) =>
+          exercise.variants?.forEach((variant) => variant.saveNew()),
+      );
+    }
   }
 }
 
