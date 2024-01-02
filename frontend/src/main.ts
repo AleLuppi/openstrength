@@ -13,6 +13,7 @@ import i18n from "./i18n";
 
 // Custom components to register
 import osInput from "./components/basic/osInput.vue";
+import osField from "./components/basic/osField.vue";
 import osSelect from "./components/basic/osSelect.vue";
 import osTable from "./components/basic/osTable.vue";
 import osTableSheet from "./components/basic/osTableSheet.vue";
@@ -33,6 +34,7 @@ app.config.globalProperties.$globalProperties = globalProperties;
 
 // Register components
 app.component("osInput", osInput);
+app.component("osField", osField);
 app.component("osSelect", osSelect);
 app.component("osTable", osTable);
 app.component("osTableSheet", osTableSheet);

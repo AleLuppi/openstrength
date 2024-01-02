@@ -57,6 +57,7 @@
         >
           <q-checkbox
             v-if="types[props.rowIndex]?.[col.name] == typesAvailable.checkbox"
+            v-bind="childProps[col.name]"
             :ref="
               (el) => (childElements[getCellName(props.row.id, col.id)] = el)
             "
@@ -73,6 +74,7 @@
             :ref="
               (el) => (childElements[getCellName(props.row.id, col.id)] = el)
             "
+            v-bind="childProps[col.name]"
             :model-value="props.row[col.name]"
             @update:model-value="
               (value) => onModelValueUpdate(props.rowIndex, col.name, value)
@@ -118,6 +120,11 @@ const props = defineProps({
   types: {
     type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
     required: false,
+  },
+  childProps: {
+    type: [Array, Object] as PropType<
+      { [prop: string]: any }[] | { [key: string]: { [prop: string]: any } }
+    >,
   },
   widths: {
     type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
@@ -227,6 +234,20 @@ const types = computed(() => {
         {},
       ),
     );
+  }
+});
+
+// Get props map
+const childProps = computed(() => {
+  if (props.childProps) {
+    // Handle case of provided props
+    const propsChild = props.childProps;
+    return objectMapValues(headers.value, (_, key, idx) =>
+      propsChild instanceof Array ? propsChild[idx] : propsChild[key],
+    );
+  } else {
+    // Handle case with unknown type
+    return {};
   }
 });
 

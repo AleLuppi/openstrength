@@ -1,7 +1,6 @@
-@import './quasar.variables.scss';
-@import '~quasar-styl';
+@import "./quasar.variables.scss";
+@import "~quasar-styl";
 // @import '~quasar-addon-styl';
-
 
 /***** Setup fonts *****/
 h1,
@@ -238,12 +237,9 @@ a {
   background: $warning !important;
 }
 
-
-
 .bg-inherit {
   background: inherit;
 }
-
 
 /***** Setup sizes *****/
 .limit-max-width {
@@ -258,7 +254,6 @@ a {
   width: 90%;
 }
 
-
 /***** Setup appearance *****/
 .bordered {
   // TODO uniform name with other colors
@@ -268,7 +263,6 @@ a {
 .border-primary {
   border: 2px solid $primary;
 }
-
 
 /***** Useful classes *****/
 
@@ -281,7 +275,7 @@ a {
 
 // Avoid underline
 .no-decoration {
-  text-decoration: none
+  text-decoration: none;
 }
 
 // Underline
@@ -295,8 +289,14 @@ a {
   text-underline-offset: 0.3em;
 }
 
-
 /***** DOM element related classes *****/
+// Input
+.input-required:after {
+  color: $red;
+  content: " *";
+  display: inline;
+}
+
 // Icon
 .text-icon-color {
   color: $os-primary-4 !important;
@@ -305,7 +305,6 @@ a {
 .bg-icon-color {
   color: $os-primary-4 !important;
 }
-
 
 // Button
 .text-button-primary {
@@ -334,7 +333,6 @@ a {
   background: $os-secondary-4 !important;
 }
 
-
 // Table
 .bg-table-header {
   background: $os-grey-cold-2 !important;
@@ -352,7 +350,6 @@ a {
   font-size: 0.9rem;
   color: $os-grey-cold-7;
 }
-
 
 // Input
 .text-input-top-label {

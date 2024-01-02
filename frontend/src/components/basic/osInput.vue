@@ -61,11 +61,3 @@ defineExpose({
   getNativeElement: () => inputElement.value?.getNativeElement(),
 });
 </script>
-
-<style scoped lang="scss">
-.input-required:after {
-  color: $red;
-  content: " *";
-  display: inline;
-}
-</style>
