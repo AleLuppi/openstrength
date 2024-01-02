@@ -11,10 +11,11 @@
         v-model="maxliftExercise"
         :label="$t('coach.maxlift_management.fields.exercise')"
         :options="exercises.map((exercise) => exercise.name)"
+        use-input
+        input-debounce="150"
         dense
         required
-      >
-      </os-select>
+      />
 
       <!-- Max lift type -->
       <os-select

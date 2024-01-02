@@ -159,6 +159,7 @@
         </div>
       </template>
 
+      <!-- RIGHT MENU-->
       <template v-slot:after>
         <!-- Show charts on the right -->
         <div class="q-pa-sm" style="min-width: 100px; overflow: hidden">
@@ -212,7 +213,7 @@
               :maxlifts="athleteMaxlifts ?? []"
               @update="onUpdateMaxLift"
               :filter="searchMaxLift"
-              :no-data-label="$t('coach.maxlift_management.list.no_athlete')"
+              :no-data-label="$t('coach.maxlift_management.list.no_maxlift')"
             />
 
             <!-- Dialog to add a new max lift -->
@@ -257,24 +258,39 @@
             v-else-if="showingUtils == UtilsOptions.list"
             class="column q-gutter-y-md"
           >
-            <h6>Program List</h6>
+            <h6>{{ $t("coach.program_management.fields.program_title") }}</h6>
 
             <!-- Search status or temporary program -->
             <q-card>
               <q-card-section v-if="selectedProgram.uid">
-                <p>
-                  {{
-                    selectedProgram.name ??
-                    $t("coach.program_management.fields.program")
-                  }}
-                </p>
-                <p
-                  class="text-italic text-xs"
-                  v-if="selectedProgram.lastUpdated"
-                >
-                  {{ $t("coach.program_management.builder.last_update") }}
-                  {{ $d(selectedProgram.lastUpdated, "middle") }}
-                </p>
+                <div class="row justify-between">
+                  <div class="column">
+                    <p>
+                      {{
+                        selectedProgram.name ??
+                        $t("coach.program_management.fields.program")
+                      }}
+                    </p>
+                    <p
+                      class="text-italic text-xs"
+                      v-if="selectedProgram.lastUpdated"
+                    >
+                      {{ $t("coach.program_management.builder.last_update") }}
+                      {{ $d(selectedProgram.lastUpdated, "middle") }}
+                    </p>
+                  </div>
+
+                  <q-btn
+                    icon="edit"
+                    outline
+                    flat
+                    rounded
+                    size="0.8em"
+                    color="light-dark"
+                    @click="showNewProgramDialog = true"
+                  ></q-btn>
+                </div>
+
                 <p
                   class="q-mt-md text-italic"
                   v-if="selectedProgram.description"

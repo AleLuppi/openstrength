@@ -273,10 +273,11 @@
         "add_proceed": "Confirm",
         "update": "Insert your program info",
         "update_proceed": "Update program",
-        "search_program": "Search program..."
+        "search_program": "Search program..."      
       },
       "fields": {
         "program": "Program",
+        "program_title": "Your programs",
         "programs": "Programs",
         "name": "Name",
         "label": "Label",
@@ -343,14 +344,15 @@
     "maxlift_management": {
       "list": {
         "search_maxlift": "Search...",
-        "add": "Add a new max lift",
+        "add": "Add a new personal record",
         "add_proceed": "Confirm",
-        "add_error": "Could not save max lift, please retry",
-        "update": "Insert max lift info",
-        "update_proceed": "Update max lift",
-        "update_error": "Could not update max lift, please retry",
+        "add_error": "Could not save personal record, please retry",
+        "update": "Insert personal record info",
+        "update_proceed": "Update personal record",
+        "update_error": "Could not update personal record, please retry",
+        "no_maxlift": "Add a personal record for the current athlete",
         "no_athlete": "Select an athlete to see related data",
-        "maxlift_section": "PRs section"
+        "maxlift_section": "Personal records section"
       },
       "fields": {
         "exercise": "Exercise",

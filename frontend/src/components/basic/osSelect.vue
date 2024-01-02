@@ -21,6 +21,7 @@
       @filter="filter"
       :label="undefined"
       :use-chips="multiple"
+      new-value-mode="add-unique"
       :rules="
         (rules ?? []).concat([
           (val: string) =>
