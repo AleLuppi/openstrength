@@ -164,9 +164,12 @@ import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
 import { User, UserRole } from "@/helpers/users/user";
 import UserOnboarding from "@/components/forms/UserOnboarding.vue";
+import { defaultExerciseCollection } from "@/utils/defaultExerciseCollection";
+import { useCoachInfoStore } from "@/stores/coachInfo";
 
 // Get user state
 const user = useUserStore();
+const coachInfo = useCoachInfoStore();
 
 // Set onboarding form visibility
 const showDialogOnboarding = ref(false);
@@ -209,9 +212,20 @@ const buttonsUnsigedAction = [
  * @param data object data that shall be saved in user instance.
  */
 function onOnboardingSubmit(data: { [key: string]: any }) {
+  // Save user info
   showDialogOnboarding.value = false;
   Object.assign(user.baseUser as User, data);
   user.saveUser();
+
+  // Assign default exercise library
+  if (coachInfo.exercises == undefined || coachInfo.exercises.length <= 0) {
+    if (user.role === UserRole.coach) {
+      defaultExerciseCollection.forEach(
+        (exercise) =>
+          exercise.variants?.forEach((variant) => variant.saveNew()),
+      );
+    }
+  }
 }
 </script>
 

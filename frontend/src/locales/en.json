@@ -254,8 +254,12 @@
           "steps": "Steps",
           "dipbelt": "Dip Belt",
           "machine": "Machine",
-          "bar": "Bar",
-          "parallettes": "Parallettes"
+          "cablemachine": "Cable Machine",
+          "isotonicmachine": "Isotonic Machine",
+          "bar": "Pullup Bar",
+          "parallettes": "Parallettes",
+          "rings": "Rings",
+          "box": "Box"
         },
         "video": "Video link",
         "description": "Description"
@@ -269,10 +273,11 @@
         "add_proceed": "Confirm",
         "update": "Insert your program info",
         "update_proceed": "Update program",
-        "search_program": "Search program..."
+        "search_program": "Search program..."      
       },
       "fields": {
         "program": "Program",
+        "program_title": "Your programs",
         "programs": "Programs",
         "name": "Name",
         "label": "Label",
@@ -298,8 +303,11 @@
         "week_name": "Week { week }",
         "day_name": "Day { day }",
         "new_week": "Week",
+        "new_week_tooltip": "Adds a new week with current day",
         "new_day": "Day",
+        "new_day_tooltip": "Adds a new empty day to the current week",
         "new_exercise": "Exercise",
+        "new_exercise_tooltip": "Adds a new exercise to the current day",
         "new_day_error": "Could not create day with selected name, please retry",
         "new_day_already_exists": "A day with this name already exists",
         "line_duplicate": "Duplicate exercise",
@@ -336,14 +344,15 @@
     "maxlift_management": {
       "list": {
         "search_maxlift": "Search...",
-        "add": "Add a new max lift",
+        "add": "Add a new personal record",
         "add_proceed": "Confirm",
-        "add_error": "Could not save max lift, please retry",
-        "update": "Insert max lift info",
-        "update_proceed": "Update max lift",
-        "update_error": "Could not update max lift, please retry",
+        "add_error": "Could not save personal record, please retry",
+        "update": "Insert personal record info",
+        "update_proceed": "Update personal record",
+        "update_error": "Could not update personal record, please retry",
+        "no_maxlift": "Add a personal record for the current athlete",
         "no_athlete": "Select an athlete to see related data",
-        "maxlift_section": "PRs section"
+        "maxlift_section": "Personal records section"
       },
       "fields": {
         "exercise": "Exercise",

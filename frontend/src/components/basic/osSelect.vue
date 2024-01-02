@@ -32,6 +32,29 @@
       "
       lazy-rules
     >
+      <template v-slot:no-option="slotProps">
+        <q-item>
+          <q-item-section
+            v-if="newValueMode"
+            class="cursor-pointer"
+            @click="
+              newValueMode == 'toggle'
+                ? selectElement?.toggleOption(slotProps.inputValue)
+                : selectElement?.add(
+                    slotProps.inputValue,
+                    newValueMode == 'add-unique',
+                  );
+              selectElement?.updateInputValue('');
+            "
+          >
+            {{ slotProps.inputValue }}
+          </q-item-section>
+          <q-item-section v-else>
+            <!-- TODO: i18n  -->
+            No results
+          </q-item-section>
+        </q-item>
+      </template>
       <template v-for="(_, slot) in $slots as Readonly<QSelectSlots>" #[slot]>
         <slot :name="slot" />
       </template>
