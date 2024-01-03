@@ -159,7 +159,6 @@
         </div>
       </template>
 
-      <!-- RIGHT MENU-->
       <template v-slot:after>
         <!-- Show charts on the right -->
         <div class="q-pa-sm" style="min-width: 100px; overflow: hidden">
@@ -258,7 +257,7 @@
             v-else-if="showingUtils == UtilsOptions.list"
             class="column q-gutter-y-md"
           >
-            <h6>{{ $t("coach.program_management.fields.program_title") }}</h6>
+            <h6>{{ $t("coach.program_management.list.program_section") }}</h6>
 
             <!-- Search status or temporary program -->
             <q-card>

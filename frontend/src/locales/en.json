@@ -271,15 +271,15 @@
       "list": {
         "title": "Programs library",
         "title_program": "Programs",
+        "program_section": "Your programs",
         "add": "Add a new program",
         "add_proceed": "Confirm",
         "update": "Insert your program info",
         "update_proceed": "Update program",
-        "search_program": "Search program..."      
+        "search_program": "Search program..."
       },
       "fields": {
         "program": "Program",
-        "program_title": "Your programs",
         "programs": "Programs",
         "name": "Program name",
         "label": "Label",
@@ -305,11 +305,11 @@
         "week_name": "Week { week }",
         "day_name": "Day { day }",
         "new_week": "Week",
-        "new_week_tooltip": "Adds a new week with current day",
+        "new_week_tooltip": "Add a new week",
         "new_day": "Day",
-        "new_day_tooltip": "Adds a new empty day to the current week",
+        "new_day_tooltip": "Add an empty day to this week",
         "new_exercise": "Exercise",
-        "new_exercise_tooltip": "Adds a new exercise to the current day",
+        "new_exercise_tooltip": "Add a new exercise to this day",
         "new_day_error": "Could not create day with selected name, please retry",
         "new_day_already_exists": "A day with this name already exists",
         "line_duplicate": "Duplicate exercise",
@@ -405,6 +405,7 @@
     "date": "Date",
     "note": "Note",
     "label": "Label",
-    "update": "Update"
+    "update": "Update",
+    "no_results": "No results"
   }
 }

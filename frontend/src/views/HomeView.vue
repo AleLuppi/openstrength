@@ -127,7 +127,7 @@
         class="q-pa-lg column items-center justify-center square-card q-hoverable text-center cursor-pointer"
         clickable
         v-ripple
-        @click="showDialogOnboarding = true"
+        @click="$emit('request-global-dialog', 'onboarding')"
       >
         <!-- Animate when on -->
         <span class="q-focus-helper"></span>
@@ -150,29 +150,21 @@
         </p>
       </q-card>
     </div>
-
-    <!-- Show optional global dialogs -->
-    <q-dialog v-model="showDialogOnboarding">
-      <UserOnboarding :on-submit="onOnboardingSubmit"></UserOnboarding>
-    </q-dialog>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
-import { User, UserRole } from "@/helpers/users/user";
-import UserOnboarding from "@/components/forms/UserOnboarding.vue";
-import { defaultExerciseCollection } from "@/utils/defaultExerciseCollection";
-import { useCoachInfoStore } from "@/stores/coachInfo";
+import { UserRole } from "@/helpers/users/user";
+
+// Define emits
+defineEmits<{
+  "request-global-dialog": [which: string];
+}>();
 
 // Get user state
 const user = useUserStore();
-const coachInfo = useCoachInfoStore();
-
-// Set onboarding form visibility
-const showDialogOnboarding = ref(false);
 
 // Set coach action buttons
 const buttonsCoachAction = [
@@ -205,28 +197,6 @@ const buttonsUnsigedAction = [
     subtitle: "homepage.actions.to_login_caption",
   },
 ];
-
-/**
- * Actions to perform on onboarding dialog submit.
- *
- * @param data object data that shall be saved in user instance.
- */
-function onOnboardingSubmit(data: { [key: string]: any }) {
-  // Save user info
-  showDialogOnboarding.value = false;
-  Object.assign(user.baseUser as User, data);
-  user.saveUser();
-
-  // Assign default exercise library
-  if (coachInfo.exercises == undefined || coachInfo.exercises.length <= 0) {
-    if (user.role === UserRole.coach) {
-      defaultExerciseCollection.forEach(
-        (exercise) =>
-          exercise.variants?.forEach((variant) => variant.saveNew()),
-      );
-    }
-  }
-}
 </script>
 
 <style scoped lang="scss">
