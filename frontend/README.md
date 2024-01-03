@@ -31,5 +31,18 @@ Run linter to clean code. Run it before commit (or enable auto-lint on update).
 npm run lint
 ```
 
-### Customize configuration
+### Deploy on Firebase
+> **Note:** login to Firebase is required via `firebase login`
+
+Test web app in a dedicated channel. Deploy it and get the temporary link (`CHANNEL_ID` can be any valid name).
+```
+npm run release -- CHANNEL_ID
+```
+Deploy the web app on Firebase's hosting domains.
+```
+npm run deploy
+```
+Optionally, it is possible to deploy other services too (database, storage, firestore, functions), separated by commas. See documentation for more details: [https://firebase.google.com/docs/cli#partial_deploys](https://firebase.google.com/docs/cli#partial_deploys).
+
+## Customize configuration
 To update Vue CLI configuration, see [Configuration Reference](https://cli.vuejs.org/config/).

@@ -1,48 +1,221 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header v-if="showHeader" elevated>
-      <q-toolbar>
-        <q-btn v-if="!leftDrawerOpen || $q.screen.lt.md" flat dense round @click="leftDrawerOpen = !leftDrawerOpen"
-          aria-label="Menu" icon="menu" />
+  <q-layout
+    view="lHh LpR lFf"
+    @mousedown="interacted = true"
+    @scroll="interacted = true"
+    @touchstart="interacted = true"
+  >
+    <!-- Header -->
+    <q-header v-if="showHeader" bordered class="bg-lightest text-light">
+      <q-toolbar v-if="$q.screen.lt.md">
+        <q-btn
+          v-if="!leftDrawerOpen || $q.screen.lt.md"
+          flat
+          dense
+          round
+          @click="leftDrawerOpen = !leftDrawerOpen"
+          aria-label="Menu"
+          icon="menu"
+        />
 
-        <q-toolbar-title>
-          DBM
-        </q-toolbar-title>
+        <q-space />
 
-        <!-- TODO action to buttons -->
-        <q-btn icon="question_answer" :label="$q.screen.gt.sm ? $t('layout.header.button_feedback') : ''"
-          :round="!$q.screen.gt.sm" no-caps flat />
-        <q-btn icon="notifications" flat round />
-        <q-btn icon="help" flat round />
-        <q-btn icon="person" flat round />
+        <!-- Action buttons -->
+        <q-btn
+          icon="person"
+          flat
+          round
+          :to="{ name: 'profile' }"
+          color="text-light"
+        />
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-grey-2">
-      <DrawerList />
+    <!-- Left drawer -->
+    <q-drawer
+      v-if="showLeftDrawer"
+      v-model="leftDrawerOpen"
+      side="left"
+      show-if-above
+      bordered
+      mini
+      :mini-width="100"
+      class="bg-lightest"
+    >
+      <LeftDrawerElements />
+
+      <template v-slot:mini>
+        <LeftDrawerElements :mini="true" />
+      </template>
     </q-drawer>
 
+    <!-- Optional right drawer, customizible by route view -->
+    <q-drawer
+      v-if="rightDrawerElement"
+      v-model="rightDrawerOpen"
+      side="right"
+      show-if-above
+      bordered
+      :width="50"
+      class="bg-lightest"
+    >
+      <component
+        :is="rightDrawerElement"
+        @drawerClick="onRightDrawerClick"
+        :active="rightDrawerActive"
+      ></component>
+    </q-drawer>
+
+    <!-- Actual page content -->
     <q-page-container>
-      <RouterView />
+      <RouterView v-slot="{ Component }">
+        <component
+          ref="viewComponent"
+          :is="Component"
+          @request-global-dialog="onShowGlobalDialog"
+          @activateDrawerItem="(item: number) => (rightDrawerActive = item)"
+        />
+      </RouterView>
     </q-page-container>
 
-    <q-footer v-if="showFooter" :elevated="elevatedFooter">
+    <!-- Footer -->
+    <q-footer v-if="showFooter">
       <!-- TODO -->
     </q-footer>
+
+    <!-- Show optional global dialogs -->
+    <q-dialog v-model="showDialogOnboarding">
+      <UserOnboarding :on-submit="onOnboardingSubmit"></UserOnboarding>
+    </q-dialog>
   </q-layout>
 </template>
 
-<script setup>
-import { ref, computed } from 'vue'
+<script setup lang="ts">
+import { ref, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
-import { useQuasar } from 'quasar';
-import DrawerList from '@/components/layout/DrawerList.vue'
+import { useQuasar } from "quasar";
+import { User as FirebaseUser } from "firebase/auth";
+import router from "@/router";
+import setdefaults from "@/boot/setQuasarDefaultProps";
+import { useUserStore } from "@/stores/user";
+import { useCoachInfoStore } from "@/stores/coachInfo";
+import { addCallbackOnAuthStateChanged } from "@/helpers/users/auth";
+import { User, UserRole } from "@/helpers/users/user";
+import { ProgramExercise } from "@/helpers/programs/program";
+import { sortExercises } from "@/helpers/exercises/listManagement";
+import { setLocale } from "@/helpers/locales";
+import LeftDrawerElements from "@/components/layout/LeftDrawerElements.vue";
+import UserOnboarding from "@/components/forms/UserOnboarding.vue";
+import { defaultExerciseCollection } from "@/utils/defaultExerciseCollection";
 
+// Init plugin
+const route = useRoute();
 const $q = useQuasar();
 
+// Get state
+const user = useUserStore();
+const coachInfo = useCoachInfoStore();
+
 // Set ref
-const route = useRoute();
+const viewComponent = ref<any>(null);
 const leftDrawerOpen = ref(false);
+const rightDrawerOpen = ref(false);
+const rightDrawerElement = computed(() => route.meta?.showRightDrawer);
+const rightDrawerActive = ref<number>(-1);
 const showHeader = computed(() => route.meta?.showHeader ?? true);
-const showFooter = computed(() => route.meta?.showFooterElevated ?? true);
+const showFooter = computed(() => route.meta?.showFooter ?? true);
+const showLeftDrawer = computed(() => route.meta?.showLeftDrawer ?? true);
+const showDialogOnboarding = ref(false);
+
+// Check if any interaction with the app has ever occurred
+let interacted = false;
+
+// Run few useful things before app starts rendering
+onBeforeMount(() => {
+  // Set default props of components
+  setdefaults();
+
+  // Ensure user storage is up to date with auth
+  addCallbackOnAuthStateChanged({
+    onUserIn: async (firebaseUser: FirebaseUser) => {
+      user.loadFirebaseUser(firebaseUser, true);
+      await user.loadUser();
+      if (user.locale) setLocale(user.locale);
+
+      // Try original page app is unused yet, otherwise just check for authorizations
+      if (route.redirectedFrom && !interacted)
+        router.replace(route.redirectedFrom);
+      else
+        router.replace({
+          params: { userId: user.uid },
+        });
+
+      // Show onboarding dialog if required
+      if (!user.role || user.role == UserRole.unknown)
+        showDialogOnboarding.value = true;
+    },
+    onUserOut: () => {
+      user.$reset();
+      coachInfo.$reset();
+
+      // Refresh page to allow redirect if on unauthorized page
+      router.replace({
+        params: { userId: "" },
+      });
+    },
+  });
+});
+
+/**
+ * Actions to perform on onboarding dialog submit.
+ *
+ * @param data object data that shall be saved in user instance.
+ */
+async function onOnboardingSubmit(data: { [key: string]: any }) {
+  // Save user info
+  showDialogOnboarding.value = false;
+  Object.assign(user.baseUser as User, data);
+  user.saveUser();
+
+  // Assign default exercise library to new coach
+  if (user.role === UserRole.coach) {
+    coachInfo.loadExercises(undefined, true, {
+      onSuccess: (exercises?: ProgramExercise[]) => {
+        if (exercises == undefined || exercises.length <= 0) {
+          defaultExerciseCollection.forEach(
+            (exercise) =>
+              exercise.variants?.forEach((variant) => variant.saveNew()),
+          );
+          coachInfo.exercises = defaultExerciseCollection;
+          sortExercises(coachInfo.exercises, true);
+        }
+      },
+    });
+  }
+}
+
+/**
+ * Allow view component to handle custom right drawer click.
+ *
+ * @param clickParam parameters provided by drawer on click.
+ */
+function onRightDrawerClick(clickParam: any) {
+  viewComponent.value?.handleDrawerClick?.(clickParam);
+}
+
+/**
+ * Show one of the available global dialogs.
+ *
+ * Current global dialogs are:
+ *  - onboarding
+ *
+ * @param which select which global dialog to show.
+ */
+function onShowGlobalDialog(which: string) {
+  switch (which) {
+    case "onboarding":
+      showDialogOnboarding.value = true;
+      break;
+  }
+}
 </script>
