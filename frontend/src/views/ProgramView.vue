@@ -36,7 +36,7 @@
             <q-btn
               icon="add"
               :label="$t('coach.program_management.builder.new_program')"
-              @click="substituteProgram = new Program()"
+              @click="proposeNewProgram"
               rounded
               outline
               class="q-mx-auto"
@@ -44,11 +44,7 @@
 
             <!-- Display and update assigned user -->
             <q-btn
-              @click="
-                selectedProgram.athlete
-                  ? null
-                  : (substituteProgram = new Program())
-              "
+              @click="selectedProgram.athlete ? null : proposeNewProgram()"
               :label="
                 selectedProgram.athlete
                   ? ''
@@ -151,7 +147,7 @@
             {{ $t("coach.program_management.builder.initialize_program") }}
           </h6>
           <q-btn
-            @click="substituteProgram = new Program()"
+            @click="proposeNewProgram"
             :label="$t('coach.program_management.builder.new_program')"
             rounded
             unelevated
@@ -772,6 +768,13 @@ function saveMaxlift(newMaxLift: MaxLift) {
       }),
   });
   showMaxliftAddDialog.value = false;
+}
+
+/**
+ * Propose a new program as selected program.
+ */
+function proposeNewProgram() {
+  substituteProgram.value = new Program();
 }
 
 /**
