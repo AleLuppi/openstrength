@@ -68,7 +68,11 @@
     <!-- Actual page content -->
     <q-page-container>
       <RouterView v-slot="{ Component }">
-        <component ref="viewComponent" :is="Component" />
+        <component
+          ref="viewComponent"
+          :is="Component"
+          @request-global-dialog="onShowGlobalDialog"
+        />
       </RouterView>
     </q-page-container>
 
@@ -95,6 +99,8 @@ import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { addCallbackOnAuthStateChanged } from "@/helpers/users/auth";
 import { User, UserRole } from "@/helpers/users/user";
+import { ProgramExercise } from "@/helpers/programs/program";
+import { sortExercises } from "@/helpers/exercises/listManagement";
 import { setLocale } from "@/helpers/locales";
 import LeftDrawerElements from "@/components/layout/LeftDrawerElements.vue";
 import UserOnboarding from "@/components/forms/UserOnboarding.vue";
@@ -162,20 +168,26 @@ onBeforeMount(() => {
  *
  * @param data object data that shall be saved in user instance.
  */
-function onOnboardingSubmit(data: { [key: string]: any }) {
+async function onOnboardingSubmit(data: { [key: string]: any }) {
   // Save user info
   showDialogOnboarding.value = false;
   Object.assign(user.baseUser as User, data);
   user.saveUser();
 
-  // Assign default exercise library
-  if (coachInfo.exercises == undefined || coachInfo.exercises.length <= 0) {
-    if (user.role === UserRole.coach) {
-      defaultExerciseCollection.forEach(
-        (exercise) =>
-          exercise.variants?.forEach((variant) => variant.saveNew()),
-      );
-    }
+  // Assign default exercise library to new coach
+  if (user.role === UserRole.coach) {
+    coachInfo.loadExercises(undefined, true, {
+      onSuccess: (exercises?: ProgramExercise[]) => {
+        if (exercises == undefined || exercises.length <= 0) {
+          defaultExerciseCollection.forEach(
+            (exercise) =>
+              exercise.variants?.forEach((variant) => variant.saveNew()),
+          );
+          coachInfo.exercises = defaultExerciseCollection;
+          sortExercises(coachInfo.exercises, true);
+        }
+      },
+    });
   }
 }
 
@@ -186,5 +198,21 @@ function onOnboardingSubmit(data: { [key: string]: any }) {
  */
 function onRightDrawerClick(clickParam: any) {
   viewComponent.value?.handleDrawerClick?.(clickParam);
+}
+
+/**
+ * Show one of the available global dialogs.
+ *
+ * Current global dialogs are:
+ *  - onboarding
+ *
+ * @param which select which global dialog to show.
+ */
+function onShowGlobalDialog(which: string) {
+  switch (which) {
+    case "onboarding":
+      showDialogOnboarding.value = true;
+      break;
+  }
 }
 </script>
