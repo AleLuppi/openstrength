@@ -62,13 +62,18 @@
       <component
         :is="rightDrawerElement"
         @drawerClick="onRightDrawerClick"
+        :active="rightDrawerActive"
       ></component>
     </q-drawer>
 
     <!-- Actual page content -->
     <q-page-container>
       <RouterView v-slot="{ Component }">
-        <component ref="viewComponent" :is="Component" />
+        <component
+          ref="viewComponent"
+          :is="Component"
+          @activateDrawerItem="(item: number) => (rightDrawerActive = item)"
+        />
       </RouterView>
     </q-page-container>
 
@@ -113,6 +118,7 @@ const viewComponent = ref<any>(null);
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
 const rightDrawerElement = computed(() => route.meta?.showRightDrawer);
+const rightDrawerActive = ref<number>(-1);
 const showHeader = computed(() => route.meta?.showHeader ?? true);
 const showFooter = computed(() => route.meta?.showFooter ?? true);
 const showLeftDrawer = computed(() => route.meta?.showLeftDrawer ?? true);
