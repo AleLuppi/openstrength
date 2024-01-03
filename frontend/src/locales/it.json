@@ -271,6 +271,7 @@
           "list": {
             "title": "Libreria programmi",
             "title_program": "Programmi",
+            "program_section": "I tuoi programmi",
             "add": "Aggiungi un nuovo programma",
             "add_proceed": "Conferma",
             "update": "Inserisci le informazioni del tuo programma",

@@ -70,12 +70,9 @@
     <q-page-container>
       <RouterView v-slot="{ Component }">
         <component
-         
           ref="viewComponent"
-         
           :is="Component"
           @request-global-dialog="onShowGlobalDialog"
-       
           @activateDrawerItem="(item: number) => (rightDrawerActive = item)"
         />
       </RouterView>
