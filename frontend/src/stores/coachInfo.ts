@@ -54,7 +54,6 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
       if (!_exercises.value) loadExercises(coachId.value, true);
       return _exercises.value;
     },
-
     set: (value) => {
       _exercises.value = value;
     },

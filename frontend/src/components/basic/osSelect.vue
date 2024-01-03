@@ -50,8 +50,7 @@
             {{ slotProps.inputValue }}
           </q-item-section>
           <q-item-section v-else>
-            <!-- TODO: i18n  -->
-            No results
+            {{ $t("common.no_results") }}
           </q-item-section>
         </q-item>
       </template>

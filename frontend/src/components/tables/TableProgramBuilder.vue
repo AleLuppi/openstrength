@@ -527,7 +527,6 @@
       </div>
 
       <!-- New element button -->
-      <!-- TODO: i18n -->
       <div
         v-if="lastTablesInDay.includes(idScheduleInfo.toString())"
         class="row items-center justify-center q-gutter-md"
