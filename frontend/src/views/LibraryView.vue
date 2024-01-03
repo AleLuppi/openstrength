@@ -170,7 +170,7 @@
             ref="variantFormElement"
             v-if="selectedVariant"
             :variant="selectedVariant"
-            :on-submit="onVariantSubmit"
+            @submit="onVariantSubmit"
             :options-muscle-groups="exerciseMuscleGroupsOptions"
             :options-equipment="exerciseEquipmentOptions"
           />

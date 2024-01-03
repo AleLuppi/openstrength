@@ -209,6 +209,28 @@
                   :options="exercises.map((exercise) => exercise.name)"
                   hide-bottom-space
                 >
+                  <!--                   <template #after-options>
+                    <q-btn outline class="q-ma-xs" @click="onNewExercise()">{{
+                      $t("coach.exercise_management.create_new_exercise")
+                    }}</q-btn>
+                  </template>
+                  <template #no-option>
+                    <q-item>
+                      <q-item-section> No results </q-item-section>
+                    </q-item>
+                    <q-item>
+                      <q-item-section>
+                        <q-btn
+                          outline
+                          class="q-ma-none"
+                          @click="onNewExercise()"
+                          >{{
+                            $t("coach.exercise_management.create_new_exercise")
+                          }}</q-btn
+                        >
+                      </q-item-section>
+                    </q-item>
+                  </template> -->
                 </osSelect>
                 <q-separator color="inherit" spaced="xs" />
                 <osSelect
@@ -234,6 +256,40 @@
                   emit-value
                   hide-bottom-space
                 >
+                  <template #after-options>
+                    <q-btn
+                      outline
+                      class="q-ma-xs"
+                      @click="
+                        $event.target?.focus();
+                        $event.currentTarget?.focus();
+                        $event.parentNode?.focus();
+                        onNewVariant(idScheduleInfo.toString());
+                      "
+                      >{{
+                        $t("coach.exercise_management.create_new_variant")
+                      }}</q-btn
+                    >
+                  </template>
+                  <template #no-option>
+                    <q-item>
+                      <!-- TODO: i18n -->
+                      <q-item-section> No results </q-item-section>
+                    </q-item>
+
+                    <q-item>
+                      <q-item-section>
+                        <q-btn
+                          outline
+                          class="q-ma-none"
+                          @click="onNewVariant(idScheduleInfo.toString())"
+                          >{{
+                            $t("coach.exercise_management.create_new_variant")
+                          }}</q-btn
+                        >
+                      </q-item-section>
+                    </q-item>
+                  </template>
                 </osSelect>
                 <q-separator color="inherit" spaced="xs" />
                 <osInput
@@ -259,6 +315,48 @@
                 />
               </div>
             </q-slide-transition>
+
+            <!-- Dialog to create or update variant -->
+            <q-dialog v-model="showDialogVariantForm" @hide="clearVariant">
+              <q-card>
+                <q-card-section class="row items-center q-pb-none">
+                  <h5>
+                    {{
+                      $t(
+                        "coach.exercise_management." +
+                          (addingNewVariant ? "add" : "update"),
+                      )
+                    }}
+                  </h5>
+
+                  <q-space />
+                  <q-btn
+                    icon="close"
+                    flat
+                    round
+                    dense
+                    color="button-negative"
+                    v-close-popup
+                  />
+                </q-card-section>
+
+                <q-card-section>
+                  <FormExerciseVariantLibrary
+                    ref="variantFormElement"
+                    v-if="selectedVariant"
+                    :variant="selectedVariant"
+                    @submit="
+                      (variant) =>
+                        onVariantSubmit(variant, idScheduleInfo.toString())
+                    "
+                    :options-muscle-groups="exerciseMuscleGroupsOptions"
+                    :options-equipment="exerciseEquipmentOptions"
+                    :insertExerciseName="addingNewExercise.value"
+                  />
+                </q-card-section>
+              </q-card>
+            </q-dialog>
+
             <q-slide-transition>
               <div
                 v-show="!exercisesInfoShowExpanded[idScheduleInfo]"
@@ -661,6 +759,8 @@ import {
 import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
 import { stringGetNext } from "@/helpers/scalar";
 import osButtonSupport from "../basic/osButtonSupport.vue";
+import { useCoachInfoStore } from "@/stores/coachInfo";
+import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLibrary.vue";
 
 // Init plugin
 const $q = useQuasar();
@@ -705,6 +805,11 @@ const storeChangesMethods: {
 } = {};
 
 // Set ref
+const addingNewExercise = ref(false);
+//const selectedExercise = ref<Exercise>();
+const addingNewVariant = ref(false);
+const selectedVariant = ref<ExerciseVariant>();
+
 const tableElements = ref<{
   [key: string]: HTMLElement | any;
 }>({});
@@ -739,6 +844,8 @@ const selectingReferenceLine = ref<{
 const exercisesInfoExpanded = ref<{
   [key: string]: boolean;
 }>({});
+
+const showDialogVariantForm = ref(false);
 
 // Get a subset of tables to show according to filters
 const filteredExercisesValues = computed(() => {
@@ -1584,6 +1691,111 @@ function updateProgramExercise(idScheduleInfo: string) {
 
   // Inform parent of update
   programCurrentValue.value = props.modelValue.duplicate();
+}
+
+//TODO: Check
+// Methods taken from LibraryView
+
+// Get exercises to display
+const coachInfo = useCoachInfoStore();
+const exercises = computed<Exercise[]>(() => coachInfo.exercises || []);
+
+// Get options to display on variant creation or update
+const exerciseMuscleGroupsOptions = computed(() => {
+  return arrayUniqueValues(
+    exercises.value.reduce(
+      (outList, exercise) => outList.concat(exercise.muscleGroups),
+      [] as string[],
+    ),
+  );
+});
+const exerciseEquipmentOptions = computed(() => {
+  return arrayUniqueValues(
+    exercises.value.reduce(
+      (outList, exercise) => outList.concat(exercise.equipment),
+      [] as string[],
+    ),
+  );
+});
+
+/**
+ * Show dialog to add a new variant.
+ */
+function onNewVariant(idScheduleInfo: string) {
+  clearVariant();
+  addingNewVariant.value = true;
+  showDialogVariantForm.value = true;
+  selectedVariant.value = new ExerciseVariant({
+    name: i18n.t("coach.exercise_management.fields.variant"),
+    exercise: selectedExercises.value[idScheduleInfo],
+    loadType: selectedExercises.value[idScheduleInfo]?.defaultVariant?.loadType,
+    muscleGroups:
+      selectedExercises.value[idScheduleInfo]?.defaultVariant?.muscleGroups,
+    equipment:
+      selectedExercises.value[idScheduleInfo]?.defaultVariant?.equipment,
+  });
+}
+
+/**
+ * Submit new variant.
+ */
+// in library veniva passata in input la variant
+function onVariantSubmit(variant: ExerciseVariant, idScheduleInfo: string) {
+  const exercise = selectedExercises.value[idScheduleInfo];
+
+  variant.saveNew({
+    onSuccess: () => {
+      exercise?.variants?.unshift(variant);
+
+      // Set variant of the q-select to the created variant
+      exercisesValues.value[idScheduleInfo].variant = variant.name;
+
+      clearVariant();
+      //nextTick(() => onNewVariant(idScheduleInfo));
+
+      $q.notify({
+        type: "positive",
+        message: i18n.t("coach.exercise_management.add_success", {
+          exercise: variant.name,
+        }),
+        position: "bottom",
+      });
+    },
+    onError: () =>
+      $q.notify({
+        type: "negative",
+        message: i18n.t("coach.exercise_management.add_error"),
+        position: "bottom",
+      }),
+  });
+}
+
+/**
+ * Show dialog to add a new exercise (default variant).
+ */
+/* function onNewExercise() {
+  clearExercise();
+  addingNewExercise.value = true;
+  showDialogVariantForm.value = true;
+  selectedVariant.value = new ExerciseVariant();
+} */
+
+/**
+ * Clear exercise form and hide it.
+ */
+/* function clearExercise() {
+  showDialogVariantForm.value = false;
+  addingNewExercise.value = false;
+  clearVariant();
+}
+ */
+/**
+ * Clear variant form and hide it.
+ */
+function clearVariant() {
+  showDialogVariantForm.value = false;
+  addingNewVariant.value = false;
+  //selectedVariant.value = undefined;
 }
 </script>
 

@@ -197,6 +197,8 @@
         "search_exercise": "Search exercise...",
         "search_variant": "Search variant..."
       },
+      "create_new_variant": "Create a new variant",
+      "create_new_exercise": "Create a new exercise",
       "no_selected_exercises": "Select or add an exercise to show its variants",
       "add": "Add a new exercise",
       "add_button": "Add new",

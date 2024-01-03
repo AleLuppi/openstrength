@@ -1,8 +1,10 @@
 <template>
   <q-form ref="formElement" @submit="onSubmit" @reset="onReset">
     <div class="row q-col-gutter-x-md">
+      <h6 v-if="props.insertExerciseName == true">Cacca</h6>
       <!-- Variant name with exercise name -->
       <os-input
+        v-else
         v-model="variantName"
         :label="$t('coach.exercise_management.fields.variant')"
         :rules="[
@@ -103,9 +105,6 @@ const props = defineProps({
     type: ExerciseVariant,
     required: true,
   },
-  onSubmit: {
-    type: Function,
-  },
   optionsMuscleGroups: {
     type: Array as PropType<ExerciseMuscleGroups[]>,
     default: undefined,
@@ -114,7 +113,13 @@ const props = defineProps({
     type: Array as PropType<ExerciseEquipment[]>,
     default: undefined,
   },
+  insertExerciseName: { type: Boolean, required: false, default: false },
 });
+
+// Define emits
+const emit = defineEmits<{
+  submit: [variant: ExerciseVariant];
+}>();
 
 // Set expose
 defineExpose({
@@ -199,7 +204,7 @@ function onSubmit() {
   variant.videoUrl = variantVideo.value;
   variant.description = variantDescription.value;
 
-  props.onSubmit?.(variant);
+  emit("submit", variant);
 }
 
 /**
