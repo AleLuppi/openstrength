@@ -27,8 +27,7 @@
     <q-card-section>
       <!-- Check if data is defined and not empty -->
       <div v-if="dataIsInvalid" class="text-h6 text-center">
-        <!-- TODO i18n -->
-        Check your data, then refresh the chart
+        {{ $t("coach.charts_management.list.chart_data_refresh") }}
       </div>
 
       <!-- Render chart canvas only if data is valid -->

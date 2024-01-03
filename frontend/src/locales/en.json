@@ -281,7 +281,7 @@
         "program": "Program",
         "program_title": "Your programs",
         "programs": "Programs",
-        "name": "Name",
+        "name": "Program name",
         "label": "Label",
         "description": "Description",
         "load": "Load",
@@ -316,7 +316,7 @@
         "line_duplicate_in_day": "Copy in another day",
         "line_delete": "Delete",
         "day_rename": "Rename",
-        "day_duplicate": "Duplicate day",
+        "day_duplicate": "Duplicate in another day of this week",
         "day_delete": "Delete day",
         "empty": "Start your program now by adding your first exercise!",
         "reference_select_line": "Select a line",
@@ -366,7 +366,15 @@
     },
     "charts_management": {
       "list": {
-        "charts_section": "Charts section"
+        "charts_section": "Charts section",
+        "refresh_tooltip": "Click to refresh charts data",
+        "tot_volume_title": "Total Volume varying weeks",
+        "tot_reps_title": "Total Reps varying weeks",
+        "tot_sets_title": "Total Sets varying weeks",
+        "tot_volume_desc": "Total sets x reps x load(kg) over week",
+        "tot_reps_desc": "Total sets x reps total over week",
+        "tot_sets_desc": "Total sets over week",
+        "chart_data_refresh" : "Check your data, then refresh the chart"
       }
     }
   },

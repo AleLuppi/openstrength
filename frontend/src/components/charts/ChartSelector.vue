@@ -2,7 +2,9 @@
   <!-- TODO: add i18n-->
   <div style="width: 100%">
     <div class="row justify-between">
-      <h6 class="text-margin-xs">Charts Section</h6>
+      <h6 class="text-margin-xs">
+        {{ $t("coach.charts_management.list.charts_section") }}
+      </h6>
       <q-btn
         @click="updateCharts()"
         icon="fa-solid fa-refresh"
@@ -10,7 +12,9 @@
         flat
         color="secondary"
       >
-        <q-tooltip :offset="[10, 10]"> Click to refresh charts data </q-tooltip>
+        <q-tooltip :offset="[10, 10]">
+          {{ $t("coach.charts_management.list.refresh_tooltip") }}
+        </q-tooltip>
       </q-btn>
     </div>
 
@@ -43,6 +47,9 @@ import {
   OSChartVersion,
 } from "@/helpers/charts/chartTypes";
 import { Program } from "@/helpers/programs/program";
+import { useI18n } from "vue-i18n";
+
+const i18n = useI18n();
 
 // Define props
 const props = defineProps({
@@ -77,22 +84,22 @@ const chartDescriptions: OSChartDescriptor[] = [
     chartType: OSChartType.Volume,
     chartVersion: OSChartVersion.TotalVolume,
     xAxisType: OSAvailableXType.Weeks,
-    chartTitle: "Total Volume varying weeks",
-    chartDescription: "Total sets x reps x load(kg) over week",
+    chartTitle: i18n.t("coach.charts_management.list.tot_volume_title"),
+    chartDescription: i18n.t("coach.charts_management.list.tot_volume_desc"),
   },
   {
     chartType: OSChartType.Volume,
     chartVersion: OSChartVersion.TotalReps,
     xAxisType: OSAvailableXType.Weeks,
-    chartTitle: "Total Reps varying weeks",
-    chartDescription: "Total sets x reps total over week",
+    chartTitle: i18n.t("coach.charts_management.list.tot_reps_title"),
+    chartDescription: i18n.t("coach.charts_management.list.tot_reps_desc"),
   },
   {
     chartType: OSChartType.Volume,
     chartVersion: OSChartVersion.TotalSets,
     xAxisType: OSAvailableXType.Weeks,
-    chartTitle: "Total Sets varying weeks",
-    chartDescription: "Total sets over week",
+    chartTitle: i18n.t("coach.charts_management.list.tot_sets_title"),
+    chartDescription: i18n.t("coach.charts_management.list.tot_sets_desc"),
   },
 
   /* TODO
