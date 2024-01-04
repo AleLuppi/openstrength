@@ -123,7 +123,8 @@
         <!-- Show table to build program on the left -->
         <TableProgramBuilder
           v-if="selectedProgram.athlete"
-          v-model="selectedProgram"
+          :model-value="selectedProgram"
+          @update:model-value="onProgramTableUpdate"
           :exercises="coachInfo.exercises"
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
@@ -439,7 +440,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, nextTick } from "vue";
-import { dom } from "quasar";
+import { debounce, dom } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import { Program } from "@/helpers/programs/program";
 import { useCoachInfoStore } from "@/stores/coachInfo";
@@ -635,6 +636,19 @@ function openProgram(program?: Program | string, force: boolean = false) {
 }
 
 /**
+ * Update selected program value and try autosave.
+ *
+ * @param program new program values that shall be stored.
+ */
+function onProgramTableUpdate(program: Program) {
+  // Update selected program
+  selectedProgram.value = program;
+
+  // Start autosave
+  autosaveProgram();
+}
+
+/**
  * Save current program instance.
  *
  * @param program optional program instance that shall be save.
@@ -672,6 +686,13 @@ function saveProgram(program?: Program) {
     },
   });
 }
+
+/**
+ * Autosave program with debounce.
+ */
+const autosaveProgram = debounce(() => {
+  if (!programSaved.value) saveProgram(selectedProgram.value);
+}, 30 * 1000 /* debounce 30 seconds */);
 
 /**
  * Assign a program to an athlete and save the update.

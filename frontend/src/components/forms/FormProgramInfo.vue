@@ -240,8 +240,6 @@ function onSubmit() {
     : undefined;
   program.description = programDescription.value;
 
-  console.log(program);
-
   emit("submit", program);
 }
 </script>
