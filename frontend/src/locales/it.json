@@ -135,7 +135,7 @@
     "athlete_management": {
       "list": {
         "title": "Atleti",
-        "add": "Aggiungi nuovo",
+        "add": "Nuovo atleta",
         "search": "Cerca tra gli atleti...",
         "add_proceed": "Procedi",
         "add_error": "Non è stato possibile aggiungere l'atleta, riprova",
@@ -201,7 +201,8 @@
       "create_new_exercise": "Crea un nuovo esercizio",
       "no_selected_exercises": "Seleziona o aggiungi un esercizio per mostrare le sue varianti",
       "add": "Aggiungi un nuovo esercizio",
-      "add_button": "Aggiungi nuovo",
+      "add_button_exercise": "Nuovo esercizio",
+      "add_button_variant": "Nuova variante",
       "add_proceed": "Salva",
       "add_error": "Impossibile salvare l'esercizio, riprova",
       "add_success": "Esercizio \"{ exercise }\" aggiunto alla libreria",
