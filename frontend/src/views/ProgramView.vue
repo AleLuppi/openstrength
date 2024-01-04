@@ -439,7 +439,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, nextTick } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { debounce, dom } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import { Program } from "@/helpers/programs/program";
@@ -561,11 +561,6 @@ const showChangeProgramDialog = computed({
   },
 });
 
-// Inform user that program is not saved upon changes.
-watch(selectedProgram, (currProgram, prevProgram) => {
-  if (currProgram.uid === prevProgram.uid) programSaved.value = false;
-});
-
 // Update selected program upon request from router
 watch(
   requestedProgram,
@@ -627,9 +622,6 @@ function openProgram(program?: Program | string, force: boolean = false) {
         params: { programId: program },
       });
 
-    // Make sure to keep saved program flag upon this kind of update
-    nextTick(() => (programSaved.value = true));
-
     // Clear any possible pending request
     substituteProgram.value = undefined;
   }
@@ -643,6 +635,7 @@ function openProgram(program?: Program | string, force: boolean = false) {
 function onProgramTableUpdate(program: Program) {
   // Update selected program
   selectedProgram.value = program;
+  programSaved.value = false;
 
   // Start autosave
   autosaveProgram();
@@ -691,7 +684,7 @@ function saveProgram(program?: Program) {
  * Autosave program with debounce.
  */
 const autosaveProgram = debounce(() => {
-  if (!programSaved.value) saveProgram(selectedProgram.value);
+  if (!programSaved.value) saveProgram();
 }, 30 * 1000 /* debounce 30 seconds */);
 
 /**
