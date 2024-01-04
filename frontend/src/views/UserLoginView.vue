@@ -16,7 +16,9 @@
       <!-- Redirect to registration -->
       <p>
         {{ $t("user.auth.without_account") }}
+
         <router-link
+          class="text-primary"
           :to="{ name: 'register', state: { insertedEmail: email } }"
         >
           {{ $t("user.auth.signin_to_signup") }}

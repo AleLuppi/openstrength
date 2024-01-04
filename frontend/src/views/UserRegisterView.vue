@@ -16,9 +16,11 @@
       <!-- Redirect to login -->
       <p>
         {{ $t("user.auth.already_registered") }}
-        <router-link :to="{ name: 'login', state: { insertedEmail: email } }">{{
-          $t("user.auth.signup_to_signin")
-        }}</router-link>
+        <router-link
+          class="text-primary"
+          :to="{ name: 'login', state: { insertedEmail: email } }"
+          >{{ $t("user.auth.signup_to_signin") }}</router-link
+        >
       </p>
     </div>
 
