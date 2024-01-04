@@ -10,7 +10,7 @@
       <template v-slot:before>
         <!-- Program management card -->
         <div
-          v-if="selectedProgram.uid"
+          v-if="selectedProgram"
           ref="programManagerElement"
           class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest"
         >
@@ -36,7 +36,7 @@
             <q-btn
               icon="add"
               :label="$t('coach.program_management.builder.new_program')"
-              @click="proposeNewProgram"
+              @click="openNewProgram"
               rounded
               outline
               class="q-mx-auto"
@@ -44,7 +44,7 @@
 
             <!-- Display and update assigned user -->
             <q-btn
-              @click="selectedProgram.athlete ? null : proposeNewProgram()"
+              @click="selectedProgram.athlete ? null : openNewProgram()"
               :label="
                 selectedProgram.athlete
                   ? ''
@@ -120,9 +120,9 @@
           ></q-btn>
         </div>
 
-        <!-- Show table to build program on the left -->
+        <!-- Show table to build program -->
         <TableProgramBuilder
-          v-if="selectedProgram.athlete"
+          v-if="selectedProgram?.athlete"
           :model-value="selectedProgram"
           @update:model-value="onProgramTableUpdate"
           :exercises="coachInfo.exercises"
@@ -148,7 +148,7 @@
             {{ $t("coach.program_management.builder.initialize_program") }}
           </h6>
           <q-btn
-            @click="proposeNewProgram"
+            @click="openNewProgram"
             :label="$t('coach.program_management.builder.new_program')"
             rounded
             unelevated
@@ -258,7 +258,7 @@
 
             <!-- Search status or temporary program -->
             <q-card>
-              <q-card-section v-if="selectedProgram.uid">
+              <q-card-section v-if="selectedProgram">
                 <div class="row justify-between">
                   <div class="column">
                     <p>
@@ -364,10 +364,10 @@
     <DialogProgramAssignAthlete
       v-model="showAthleteAssigningDialog"
       :athletes="coachInfo.athletes ?? []"
-      :selected="selectedProgram.athlete"
+      :selected="selectedProgram?.athlete"
       @update:selected="
         (athlete) => {
-          selectedProgram.athlete = athlete;
+          if (selectedProgram) selectedProgram.athlete = athlete;
           programSaved = false;
         }
       "
@@ -398,7 +398,7 @@
           <q-btn
             :label="$t('common.continue')"
             color="primary"
-            @click="openProgram(substituteProgram, true)"
+            @click="openProgram(substituteProgramId, true)"
             v-close-popup
           />
         </q-card-actions>
@@ -495,8 +495,8 @@ const showingUtils = ref(UtilsOptions.list);
 
 // Set ref related to program
 const programManagerElement = ref<HTMLElement>();
-const selectedProgram = ref<Program>(new Program());
-const substituteProgram = ref<Program | string>();
+const selectedProgram = ref<Program>();
+const substituteProgramId = ref<string>();
 const oldAthleteAssigned = ref<AthleteUser>();
 const programSaved = ref(true);
 const filterWeek = ref<string[]>();
@@ -547,37 +547,46 @@ const programFilter = computed({
 const athleteMaxlifts = computed(
   () =>
     coachInfo.maxlifts?.filter(
-      (maxlift) => maxlift.athleteId == selectedProgram.value.athleteId,
+      (maxlift) => maxlift.athleteId == selectedProgram.value?.athleteId,
     ),
 );
 
 // Decide whether to display warning dialog on new program
 const showChangeProgramDialog = computed({
   get() {
-    return Boolean(substituteProgram.value) && !programSaved.value;
+    return substituteProgramId.value != undefined && !programSaved.value;
   },
   set(newValue) {
-    if (!newValue) substituteProgram.value = undefined;
+    if (!newValue) substituteProgramId.value = undefined;
   },
 });
 
 // Update selected program upon request from router
 watch(
   requestedProgram,
-  (program?: Program) => (substituteProgram.value = program),
+  (program?: Program) => (selectedProgram.value = program),
   {
     immediate: true,
   },
 );
 
+// Show new program dialog when requested
+watch(
+  () => route.query.new,
+  (val) => {
+    if (val == "true") showNewProgramDialog.value = true;
+  },
+  { immediate: true },
+);
+
 // Try (but not force) to open a new program when requested
-watch(substituteProgram, (program?: Program | string) => openProgram(program));
+watch(substituteProgramId, (programId?: string) => openProgram(programId));
 
 // Save info on athlete currently assigned to program
 watch(
   programSaved,
   (isSaved) => {
-    if (isSaved) oldAthleteAssigned.value = selectedProgram.value.athlete;
+    if (isSaved) oldAthleteAssigned.value = selectedProgram.value?.athlete;
   },
   { immediate: true },
 );
@@ -608,23 +617,20 @@ watch(
 /**
  * Open a program and display in builder for modification.
  *
- * @param program program, or corresponding program ID, that shall be opened.
+ * @param programId ID of program that shall be opened.
  * @param force if true, force program loading even if unsaved changes are present.
  */
-function openProgram(program?: Program | string, force: boolean = false) {
+function openProgram(programId?: string, force: boolean = false) {
   // Update selected program if needed
-  if (program && (programSaved.value || force)) {
-    if (program instanceof Program) {
-      selectedProgram.value = program;
-      if (!program.athlete) showNewProgramDialog.value = true;
-    } else
-      router.replace({
-        params: { programId: program },
-      });
-
-    // Clear any possible pending request
-    substituteProgram.value = undefined;
+  if (programId != undefined && (programSaved.value || force)) {
+    router.replace({
+      params: { programId: programId },
+      query: { ...(programId ? {} : { new: "true" }) },
+    });
   }
+
+  // Clear any possible pending request
+  substituteProgramId.value = undefined;
 }
 
 /**
@@ -652,6 +658,7 @@ function saveProgram(program?: Program) {
 
   // Save current program instance
   const currProgram = program ?? selectedProgram.value;
+  if (!currProgram) return;
   currProgram.coach = user.baseUser;
   currProgram.save({
     onSuccess: () => {
@@ -668,6 +675,9 @@ function saveProgram(program?: Program) {
         currProgram.athlete,
         oldAthleteAssigned.value,
       );
+
+      // Open program by updating route params
+      openProgram(currProgram.uid);
     },
     onError: () => {
       $q.notify({
@@ -760,7 +770,7 @@ function saveMaxlift(newMaxLift: MaxLift) {
 
   // Update values
   if (isNew) {
-    newMaxLift.athleteId = selectedProgram.value.athlete?.uid;
+    newMaxLift.athleteId = selectedProgram.value?.athlete?.uid;
     newMaxLift.coachId = user.uid;
   }
 
@@ -787,15 +797,16 @@ function saveMaxlift(newMaxLift: MaxLift) {
 /**
  * Propose a new program as selected program.
  */
-function proposeNewProgram() {
-  substituteProgram.value = new Program();
+function openNewProgram() {
+  if (selectedProgram.value) substituteProgramId.value = "";
+  else showNewProgramDialog.value = true;
 }
 
 /**
  * Open temporary program in builder.
  */
 function onTemporaryProgramSelection() {
-  substituteProgram.value = temporaryProgram.value;
+  substituteProgramId.value = temporaryProgram.value?.uid;
 }
 
 /**
@@ -804,7 +815,7 @@ function onTemporaryProgramSelection() {
  * @param athlete athlete whose program should be opened.
  */
 function onAthleteProgramSelection(athlete?: AthleteUser) {
-  substituteProgram.value = athlete?.assignedProgramId;
+  substituteProgramId.value = athlete?.assignedProgramId;
 }
 
 /**
