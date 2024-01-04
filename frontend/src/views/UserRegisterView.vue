@@ -16,7 +16,7 @@
       <!-- Redirect to login -->
       <p>
         {{ $t("user.auth.already_registered") }}
-        <router-link :to="{ name: 'login' }">{{
+        <router-link :to="{ name: 'login', state: { insertedEmail: email } }">{{
           $t("user.auth.signup_to_signin")
         }}</router-link>
       </p>
@@ -135,7 +135,7 @@ const emailInput = ref<QInput>();
 const passwordInput = ref<QInput>();
 //const userName = ref("");
 //const userSurname = ref("");
-const email = ref("");
+const email = ref(history.state?.insertedEmail || "");
 const emailError = ref(false);
 const emailErrorMessage = ref("");
 const password = ref("");

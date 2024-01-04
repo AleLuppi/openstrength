@@ -16,9 +16,11 @@
       <!-- Redirect to registration -->
       <p>
         {{ $t("user.auth.without_account") }}
-        <router-link :to="{ name: 'register' }">{{
-          $t("user.auth.signin_to_signup")
-        }}</router-link>
+        <router-link
+          :to="{ name: 'register', state: { insertedEmail: email } }"
+        >
+          {{ $t("user.auth.signin_to_signup") }}
+        </router-link>
       </p>
     </div>
 
@@ -106,7 +108,7 @@ const i18n = useI18n();
 // Set ref
 const emailInput = ref<QInput>();
 const passwordInput = ref<QInput>();
-const email = ref("");
+const email = ref(history.state?.insertedEmail || "");
 const emailError = ref(false);
 const emailErrorMessage = ref("");
 const password = ref("");
