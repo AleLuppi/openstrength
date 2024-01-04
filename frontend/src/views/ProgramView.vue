@@ -439,7 +439,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { debounce, dom } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import { Program } from "@/helpers/programs/program";
@@ -564,7 +564,10 @@ const showChangeProgramDialog = computed({
 // Update selected program upon request from router
 watch(
   requestedProgram,
-  (program?: Program) => (selectedProgram.value = program),
+  (program?: Program) => {
+    selectedProgram.value = program;
+    setSavedValue();
+  },
   {
     immediate: true,
   },
@@ -586,7 +589,10 @@ watch(substituteProgramId, (programId?: string) => openProgram(programId));
 watch(
   programSaved,
   (isSaved) => {
-    if (isSaved) oldAthleteAssigned.value = selectedProgram.value?.athlete;
+    if (isSaved) {
+      oldAthleteAssigned.value = selectedProgram.value?.athlete;
+      coachActiveChanges.program = undefined;
+    } else coachActiveChanges.program = selectedProgram.value;
   },
   { immediate: true },
 );
@@ -615,6 +621,15 @@ watch(
 );
 
 /**
+ * Set saved info and ensure it is preserved.
+ */
+function setSavedValue() {
+  // Set saved value and ensure it is preserved at next tick
+  programSaved.value = true;
+  nextTick(() => (programSaved.value = true));
+}
+
+/**
  * Open a program and display in builder for modification.
  *
  * @param programId ID of program that shall be opened.
@@ -627,10 +642,10 @@ function openProgram(programId?: string, force: boolean = false) {
       params: { programId: programId },
       query: { ...(programId ? {} : { new: "true" }) },
     });
-  }
 
-  // Clear any possible pending request
-  substituteProgramId.value = undefined;
+    // Clear any possible pending request
+    substituteProgramId.value = undefined;
+  }
 }
 
 /**
@@ -663,7 +678,7 @@ function saveProgram(program?: Program) {
   currProgram.save({
     onSuccess: () => {
       // Inform user about saved program
-      programSaved.value = true;
+      setSavedValue();
       (coachInfo.programs =
         coachInfo.programs?.filter(
           (program) => program.uid != currProgram.uid,
