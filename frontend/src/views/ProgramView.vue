@@ -32,6 +32,15 @@
               flat
             ></q-btn>
 
+            <!-- View current program -->
+            <router-link
+              :to="{
+                name: 'visualizer',
+                state: { programId: selectedProgram.uid },
+              }"
+              >View Current Program</router-link
+            >
+
             <!-- Start a new program -->
             <q-btn
               icon="add"

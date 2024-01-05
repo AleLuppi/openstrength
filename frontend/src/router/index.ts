@@ -13,6 +13,7 @@ import HomeView from "@/views/HomeView.vue";
 const AthletesView = () => import("@/views/AthletesView.vue");
 const LibraryView = () => import("@/views/LibraryView.vue");
 const ProgramView = () => import("@/views/ProgramView.vue");
+const ProgramVisualizer = () => import("@/views/ProgramVisualizer.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
@@ -84,6 +85,16 @@ const routes = [
       restrictAccessByRole: [UserRole.coach],
       redirectNotAuthorized: "home",
       showRightDrawer: RightDrawerProgramElements,
+    },
+  },
+  {
+    path: "/program/visualizer",
+    name: "visualizer",
+    component: ProgramVisualizer,
+    meta: {
+      title: "Visualizer",
+      restrictAccessByRole: [UserRole.coach],
+      redirectNotAuthorized: "home",
     },
   },
   {
