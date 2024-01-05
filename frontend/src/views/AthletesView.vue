@@ -4,13 +4,34 @@
       <!-- Display athletes -->
       <div class="col-12 col-sm-5">
         <q-card>
-          <q-card-section>
-            <h6>
-              {{ $t("coach.athlete_management.list.title") }}
-            </h6>
+          <q-card-section class="q-pb-sm">
+            <div class="row justify-between q-mb-sm">
+              <h4 class="text-margin-xs">
+                {{ $t("coach.athlete_management.list.title") }}
+              </h4>
+
+              <!-- Add new athlete -->
+              <div class="column justify-center">
+                <q-btn
+                  icon="sym_o_person_add"
+                  :label="
+                    $q.screen.gt.sm
+                      ? $t('coach.athlete_management.list.add')
+                      : undefined
+                  "
+                  color="button-primary"
+                  :padding="$q.screen.gt.sm ? 'xs sm' : 'sm sm'"
+                  @click="
+                    updatingAthlete = undefined;
+                    showAthleteDialog = true;
+                  "
+                />
+              </div>
+            </div>
 
             <div class="row q-gutter-x-md items-center">
               <os-input
+                v-if="athletes.length > 0"
                 v-model="searchAthlete"
                 :placeholder="$t('coach.athlete_management.list.search')"
                 hide-bottom-space
@@ -21,21 +42,6 @@
                   <q-icon name="search" />
                 </template>
               </os-input>
-
-              <!-- Add new athlete -->
-              <q-btn
-                icon="add"
-                :label="
-                  $q.screen.gt.sm
-                    ? $t('coach.athlete_management.list.add')
-                    : undefined
-                "
-                color="button-primary"
-                @click="
-                  updatingAthlete = undefined;
-                  showAthleteDialog = true;
-                "
-              />
             </div>
           </q-card-section>
 

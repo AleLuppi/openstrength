@@ -5,11 +5,26 @@
       <!-- List exercises -->
       <div class="col-12 col-sm-6">
         <q-card>
-          <q-card-section>
-            <h6>
-              {{ $t("coach.exercise_management.list.title_exercise") }}
-            </h6>
+          <q-card-section class="q-pb-sm">
+            <div class="row justify-between q-mb-sm">
+              <h4 class="text-margin-xs">
+                {{ $t("coach.exercise_management.list.title_exercise") }}
+              </h4>
 
+              <div class="column justify-center">
+                <q-btn
+                  :icon="$q.screen.gt.sm ? 'sym_o_playlist_add' : 'add'"
+                  :label="
+                    $q.screen.gt.sm
+                      ? $t('coach.exercise_management.add_button_exercise')
+                      : undefined
+                  "
+                  :padding="$q.screen.gt.sm ? 'xs sm' : 'sm sm'"
+                  color="button-primary"
+                  @click="onNewExercise"
+                />
+              </div>
+            </div>
             <div class="row q-gutter-x-md items-center">
               <os-input
                 v-model="searchExercise"
@@ -24,17 +39,6 @@
                   <q-icon name="search" />
                 </template>
               </os-input>
-
-              <q-btn
-                :icon="$q.screen.gt.sm ? undefined : 'add'"
-                :label="
-                  $q.screen.gt.sm
-                    ? $t('coach.exercise_management.add_button')
-                    : undefined
-                "
-                color="button-primary"
-                @click="onNewExercise"
-              />
             </div>
           </q-card-section>
 
@@ -67,21 +71,37 @@
       >
         <!-- Show card when an exercise is selected -->
         <q-card>
-          <q-card-section>
-            <div class="row justify-between items-center">
-              <h6>
+          <q-card-section class="q-pb-sm">
+            <div class="row justify-between q-mb-sm">
+              <h4 class="text-margin-xs">
                 {{ $t("coach.exercise_management.list.title_variant") }}
-              </h6>
-              <q-btn
-                v-if="$q.screen.lt.sm"
-                icon="close"
-                outline
-                flat
-                round
-                color="light-dark"
-                class="q-pa-sm"
-                @click="clearExercise"
-              ></q-btn>
+              </h4>
+
+              <!-- Add new variant -->
+              <div class="column justify-center">
+                <q-btn
+                  :icon="$q.screen.gt.sm ? 'sym_o_playlist_add' : 'add'"
+                  :label="
+                    $q.screen.gt.sm
+                      ? $t('coach.exercise_management.add_button_variant')
+                      : undefined
+                  "
+                  :padding="$q.screen.gt.sm ? 'xs sm' : 'sm sm'"
+                  color="button-primary"
+                  @click="onNewVariant"
+                />
+
+                <q-btn
+                  v-if="$q.screen.lt.sm"
+                  icon="close"
+                  outline
+                  flat
+                  round
+                  color="light-dark"
+                  class="q-pa-sm"
+                  @click="clearExercise"
+                ></q-btn>
+              </div>
             </div>
 
             <div class="row q-gutter-x-md items-center">
@@ -98,17 +118,6 @@
                   <q-icon name="search" />
                 </template>
               </os-input>
-
-              <q-btn
-                :icon="$q.screen.gt.sm ? undefined : 'add'"
-                :label="
-                  $q.screen.gt.sm
-                    ? $t('coach.exercise_management.add_button')
-                    : undefined
-                "
-                color="button-primary"
-                @click="onNewVariant"
-              />
             </div>
           </q-card-section>
           <q-separator />
