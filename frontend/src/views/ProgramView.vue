@@ -295,19 +295,19 @@
                 </p>
               </q-card-section>
               <q-card-section
-                v-else-if="temporaryProgram"
+                v-else-if="coachActiveChanges.program"
                 class="cursor-pointer"
-                @click="onTemporaryProgramSelection"
+                @click="onUnsavedProgramRestore"
               >
                 <p class="text-primary">
                   {{ $t("coach.program_management.builder.open_temporary") }}
                 </p>
                 <p
                   class="text-italic text-xs"
-                  v-if="temporaryProgram.lastUpdated"
+                  v-if="coachActiveChanges.program.lastUpdated"
                 >
                   {{ $t("coach.program_management.builder.last_update") }}
-                  {{ $d(temporaryProgram.lastUpdated, "middle") }}
+                  {{ $d(coachActiveChanges.program.lastUpdated, "middle") }}
                 </p>
               </q-card-section>
               <q-card-section v-else>{{
@@ -406,7 +406,7 @@
     </q-dialog>
 
     <!-- Dialog to open temporary program -->
-    <q-dialog v-model="showTemporaryProgramRestoreDialog">
+    <q-dialog v-model="showUnsavedProgramRestoreDialog">
       <q-card>
         <q-card-section class="row items-center">
           <q-icon
@@ -429,7 +429,7 @@
           <q-btn
             :label="$t('common.open')"
             color="primary"
-            @click="onTemporaryProgramSelection"
+            @click="onUnsavedProgramRestore"
             v-close-popup
           />
         </q-card-actions>
@@ -439,15 +439,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, nextTick } from "vue";
+import {
+  ref,
+  computed,
+  watch,
+  onMounted,
+  nextTick,
+  onBeforeUnmount,
+} from "vue";
 import { debounce, dom } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import { Program } from "@/helpers/programs/program";
+import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
+import { useCoachActiveChangesStore } from "@/stores/coachActiveChanges";
 import ChartSelector from "@/components/charts/ChartSelector.vue";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
-import { useUserStore } from "@/stores/user";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
@@ -460,7 +468,7 @@ import {
   getProgramUniqueDays,
   getProgramUniqueExercises,
 } from "@/helpers/programs/linesManagement";
-import router from "@/router";
+import router, { NamedRoutes } from "@/router";
 import FormProgramInfo from "@/components/forms/FormProgramInfo.vue";
 
 // Define emits
@@ -480,6 +488,7 @@ const { height } = dom;
 // Get store
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
+const coachActiveChanges = useCoachActiveChangesStore();
 
 // Set constants
 const UtilsOptions = {
@@ -503,7 +512,7 @@ const filterWeek = ref<string[]>();
 const filterDay = ref<string[]>();
 const filterExercise = ref<string[]>();
 const showNewProgramDialog = ref(false);
-const showTemporaryProgramRestoreDialog = ref(false);
+const showUnsavedProgramRestoreDialog = ref(false);
 const showAthleteAssigningDialog = ref(false);
 const programManagerExpanded = ref(false);
 const programManagerHeight = ref(0);
@@ -520,11 +529,6 @@ const requestedProgram = computed(
     coachInfo.programs
       ?.find((program) => program.uid == route.params.programId)
       ?.duplicate(),
-);
-
-// Get temporary saved program
-const temporaryProgram = computed(
-  () => coachInfo.programs?.find((program) => !program.athleteId),
 );
 
 // Get complete program filter
@@ -565,6 +569,10 @@ const showChangeProgramDialog = computed({
 watch(
   requestedProgram,
   (program?: Program) => {
+    // Abort update if request comes while unmounting component
+    if (route.name != NamedRoutes.program) return;
+
+    // Set selected program
     selectedProgram.value = program;
     setSavedValue();
   },
@@ -585,24 +593,23 @@ watch(
 // Try (but not force) to open a new program when requested
 watch(substituteProgramId, (programId?: string) => openProgram(programId));
 
-// Save info on athlete currently assigned to program
+// Perform operations when program saved status change
 watch(
   programSaved,
   (isSaved) => {
     if (isSaved) {
+      // Save info on athlete currently assigned to program
       oldAthleteAssigned.value = selectedProgram.value?.athlete;
-      coachActiveChanges.program = undefined;
-    } else coachActiveChanges.program = selectedProgram.value;
+    }
   },
   { immediate: true },
 );
 
-// Open dialog to inform of a temporary program
-watch(
-  temporaryProgram,
-  (program) => (showTemporaryProgramRestoreDialog.value = Boolean(program)),
-  { immediate: true },
-);
+// Perform operations on program update
+watch(selectedProgram, (program) => {
+  // Active changes on current program
+  if (program) coachActiveChanges.program = program;
+});
 
 // Update drawer active item when splitter value changes
 watch(
@@ -666,10 +673,11 @@ function onProgramTableUpdate(program: Program) {
  * Save current program instance.
  *
  * @param program optional program instance that shall be save.
+ * @param checkUnsaved if true, only save if program shows active changes.
  */
-function saveProgram(program?: Program) {
-  // Currently, only one temporary program can exist
-  deleteTemporaryProgram();
+function saveProgram(program?: Program, checkUnsaved: boolean = false) {
+  // Check if program is unsaved
+  if (checkUnsaved && programSaved.value) return;
 
   // Save current program instance
   const currProgram = program ?? selectedProgram.value;
@@ -691,6 +699,9 @@ function saveProgram(program?: Program) {
         oldAthleteAssigned.value,
       );
 
+      // Clear active change on current program
+      coachActiveChanges.program = undefined;
+
       // Open program by updating route params
       openProgram(currProgram.uid);
     },
@@ -709,7 +720,7 @@ function saveProgram(program?: Program) {
  * Autosave program with debounce.
  */
 const autosaveProgram = debounce(() => {
-  if (!programSaved.value) saveProgram();
+  saveProgram(undefined, true);
 }, 30 * 1000 /* debounce 30 seconds */);
 
 /**
@@ -818,10 +829,10 @@ function openNewProgram() {
 }
 
 /**
- * Open temporary program in builder.
+ * Open unsaved modified program in builder.
  */
-function onTemporaryProgramSelection() {
-  substituteProgramId.value = temporaryProgram.value?.uid;
+function onUnsavedProgramRestore() {
+  substituteProgramId.value = coachActiveChanges.program?.uid;
 }
 
 /**
@@ -831,18 +842,6 @@ function onTemporaryProgramSelection() {
  */
 function onAthleteProgramSelection(athlete?: AthleteUser) {
   substituteProgramId.value = athlete?.assignedProgramId;
-}
-
-/**
- * Delete temporary program from database and programs list.
- */
-function deleteTemporaryProgram() {
-  if (temporaryProgram.value) {
-    temporaryProgram.value.remove();
-    coachInfo.programs = coachInfo.programs?.filter(
-      (program) => program != temporaryProgram.value,
-    );
-  }
 }
 
 /**
@@ -892,6 +891,13 @@ function handleDrawerClick(clickParam: number) {
 onMounted(() => {
   // Open top card on large screens
   if ($q.screen.gt.sm) programManagerExpanded.value = true;
+});
+
+// Define what to do before component unmount
+onBeforeUnmount(() => {
+  // Clear autosave, and save program if required
+  autosaveProgram.cancel();
+  saveProgram(undefined, true);
 });
 </script>
 
