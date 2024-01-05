@@ -294,8 +294,8 @@
       },
       "builder": {
         "save": "Save",
-        "saved": "Saved!",
-        "not_saved": "Save program!",
+        "saved": "program is saved",
+        "not_saved": "there are unsaved changes",
         "not_saved_prompt": "There are unsaved changes, do you really want to proceed?",
         "save_error": "Could not save program, please retry",
         "save_assignment_error": "Program has been saved, but it could not be assigned to athlete.",
@@ -325,6 +325,7 @@
         "show_charts_tooltip": "Charts",
         "show_maxlifts_tooltip": "Reference Table",
         "assign_to_athlete": "Assign to athlete",
+        "assigned_athlete": "Assigned to",
         "show_program_list": "List of Programs",
         "last_update": "Last update:",
         "open_temporary": "Open temporary program",
@@ -374,7 +375,7 @@
         "tot_volume_desc": "Total sets x reps x load(kg) over week",
         "tot_reps_desc": "Total sets x reps total over week",
         "tot_sets_desc": "Total sets over week",
-        "chart_data_refresh" : "Check your data, then refresh the chart"
+        "chart_data_refresh": "Check your data, then refresh the chart"
       }
     }
   },

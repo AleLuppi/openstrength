@@ -15,63 +15,61 @@
           class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest"
         >
           <!-- Utility buttons -->
-          <div class="row justify-between">
+          <div class="row justify-evenly">
             <!-- Save button -->
-            <q-btn
-              icon="save"
-              :label="
-                $t(
-                  programSaved
-                    ? 'coach.program_management.builder.saved'
-                    : 'coach.program_management.builder.not_saved',
-                )
-              "
-              :disable="programSaved"
-              :color="programSaved ? 'positive' : 'negative'"
+            <div
               @click="saveProgram()"
-              flat
-            ></q-btn>
-
-            <!-- Start a new program -->
-            <q-btn
-              icon="add"
-              :label="$t('coach.program_management.builder.new_program')"
-              @click="openNewProgram"
-              rounded
-              outline
-              class="q-mx-auto"
-            ></q-btn>
+              class="col-6 row items-center justify-center"
+              :class="{ 'cursor-pointer': !programSaved }"
+            >
+              <q-btn
+                icon="save"
+                :disable="programSaved"
+                flat
+                :class="{ 'animate-pulse-with-rotation-sm': !programSaved }"
+              ></q-btn>
+              <span
+                class="text-grey"
+                :class="{ 'text-grey-7 text-bold': !programSaved }"
+              >
+                {{
+                  $t(
+                    programSaved
+                      ? "coach.program_management.builder.saved"
+                      : "coach.program_management.builder.not_saved",
+                  )
+                }}
+              </span>
+            </div>
 
             <!-- Display and update assigned user -->
-            <q-btn
-              @click="selectedProgram.athlete ? null : openNewProgram()"
-              :label="
-                selectedProgram.athlete
-                  ? ''
-                  : $t('coach.program_management.builder.new_program')
-              "
-              :color="selectedProgram.athlete ? 'secondary' : 'primary'"
-              outline
-              :dense="Boolean(selectedProgram.athlete)"
+            <div
+              v-if="selectedProgram.athlete"
+              class="col-6 row items-center justify-center"
             >
-              <q-item
-                v-if="selectedProgram.athlete"
-                dense
-                class="q-py-none q-px-md"
+              <span class="text-black q-px-md">
+                {{ $t("coach.program_management.builder.assigned_athlete") }}
+              </span>
+              <q-btn
+                color="secondary"
+                outline
+                :dense="Boolean(selectedProgram.athlete)"
               >
-                <q-item-section
-                  avatar
-                  v-if="$q.screen.gt.xs && selectedProgram.athlete.photoUrl"
-                >
-                  <q-avatar size="md">
-                    <img :src="selectedProgram.athlete.photoUrl" />
-                  </q-avatar>
-                </q-item-section>
-                <q-item-section>{{
-                  selectedProgram.athlete.referenceName
-                }}</q-item-section>
-              </q-item>
-            </q-btn>
+                <q-item dense class="q-py-none q-px-md">
+                  <q-item-section
+                    avatar
+                    v-if="$q.screen.gt.xs && selectedProgram.athlete.photoUrl"
+                  >
+                    <q-avatar size="md">
+                      <img :src="selectedProgram.athlete.photoUrl" />
+                    </q-avatar>
+                  </q-item-section>
+                  <q-item-section>{{
+                    selectedProgram.athlete.referenceName
+                  }}</q-item-section>
+                </q-item>
+              </q-btn>
+            </div>
           </div>
 
           <!-- Filter by week, day, exercise -->
@@ -80,15 +78,30 @@
             @hide="updateProgramManagerHeight"
           >
             <div v-show="programManagerExpanded">
-              <div class="row items-end justify-evenly q-pt-md">
-                <h6>{{ $t("coach.program_management.filter.title") }}</h6>
+              <div
+                class="row items-end justify-between q-col-gutter-sm q-pt-md"
+              >
+                <!-- Start a new program -->
+                <div class="col-12 text-center">
+                  <q-btn
+                    icon="add"
+                    :label="$t('coach.program_management.builder.new_program')"
+                    @click="openNewProgram"
+                    rounded
+                    outline
+                  ></q-btn>
+                </div>
+
+                <h6 class="col-md-2 col-5">
+                  {{ $t("coach.program_management.filter.title") }}
+                </h6>
                 <os-select
                   v-model="filterWeek"
                   :options="getProgramUniqueWeeks(selectedProgram)"
                   :label="$t('coach.program_management.filter.filter_week')"
                   multiple
                   hide-bottom-space
-                  class="col-3"
+                  class="col-md-3 col-6"
                 ></os-select>
                 <os-select
                   v-model="filterDay"
@@ -96,7 +109,7 @@
                   :label="$t('coach.program_management.filter.filter_day')"
                   multiple
                   hide-bottom-space
-                  class="col-3"
+                  class="col-md-3 col-6"
                 ></os-select>
                 <os-select
                   v-model="filterExercise"
@@ -104,7 +117,7 @@
                   :label="$t('coach.program_management.filter.filter_exercise')"
                   multiple
                   hide-bottom-space
-                  class="col-3"
+                  class="col-md-3 col-6"
                 ></os-select>
               </div>
             </div>
@@ -902,6 +915,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
+.animate-pulse-with-rotation-sm {
+  --animation-delay: 10s;
+}
+
 .os-top-card {
   position: sticky;
   top: 0;
