@@ -43,6 +43,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  small: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // Define emits
@@ -51,60 +55,90 @@ const emit = defineEmits<{
 }>();
 
 // Set table columns
-const columns = computed(() => [
-  {
-    name: "name",
-    required: true,
-    label: i18n.t("coach.program_management.fields.program"),
-    align: "center",
-    field: "name",
-    sortable: true,
-  },
-  {
-    name: "athletename",
-    required: true,
-    label: i18n.t("coach.program_management.fields.athlete"),
-    align: "center",
-    field: "athletename",
-    sortable: true,
-  },
-  ...($q.screen.gt.sm
+const columns = computed(() =>
+  !props.small
     ? [
         {
-          name: "startdate",
+          name: "name",
           required: true,
-          label: i18n.t("common.start"),
+          label: i18n.t("coach.program_management.fields.program"),
           align: "center",
-          field: "startdate",
+          field: "name",
           sortable: true,
         },
         {
-          name: "enddate",
+          name: "athletename",
           required: true,
-          label: i18n.t("common.end"),
+          label: i18n.t("coach.program_management.fields.athlete"),
           align: "center",
-          field: "enddate",
+          field: "athletename",
           sortable: true,
         },
+        ...($q.screen.gt.sm
+          ? [
+              {
+                name: "startdate",
+                required: true,
+                label: i18n.t("common.start"),
+                align: "center",
+                field: "startdate",
+                sortable: true,
+              },
+              {
+                name: "enddate",
+                required: true,
+                label: i18n.t("common.end"),
+                align: "center",
+                field: "enddate",
+                sortable: true,
+              },
+              {
+                name: "lastmodification",
+                required: true,
+                label: i18n.t(
+                  "coach.program_management.fields.last_modification",
+                ),
+                align: "center",
+                field: "lastmodification",
+                sortable: true,
+              },
+            ]
+          : []),
+
         {
-          name: "lastmodification",
+          name: "open",
           required: true,
-          label: i18n.t("coach.program_management.fields.last_modification"),
+          label: "",
           align: "center",
-          field: "lastmodification",
-          sortable: true,
+          field: "open",
         },
       ]
-    : []),
-
-  {
-    name: "open",
-    required: true,
-    label: "",
-    align: "center",
-    field: "open",
-  },
-]);
+    : [
+        {
+          name: "name",
+          required: true,
+          label: i18n.t("coach.program_management.fields.program"),
+          align: "center",
+          field: "name",
+          sortable: true,
+        },
+        {
+          name: "athletename",
+          required: true,
+          label: i18n.t("coach.program_management.fields.athlete"),
+          align: "center",
+          field: "athletename",
+          sortable: true,
+        },
+        {
+          name: "open",
+          required: true,
+          label: "",
+          align: "center",
+          field: "open",
+        },
+      ],
+);
 
 // Set table rows
 const rows = computed(() => {

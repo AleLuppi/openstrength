@@ -333,15 +333,13 @@
 
             <!-- Select among assigned programs -->
             <q-card>
-              <TableManagedAthletes
-                ref="athletesTableElement"
-                :athletes="
-                  coachInfo.athletes?.filter(
-                    (athlete) => athlete.hasProgramAssigned,
-                  ) ?? []
-                "
-                @update:selected="onAthleteProgramSelection"
-                athletes-only
+              <!-- Show recently opened programs -->
+              <TableCreatedPrograms
+                v-if="selectedProgram.uid"
+                ref="createdProgramsTableElement"
+                :programs="coachPrograms"
+                @open="openProgram"
+                :small="true"
               />
             </q-card>
           </div>
@@ -469,7 +467,6 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
-import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
 import TableCreatedPrograms from "@/components/tables/TableCreatedPrograms.vue";
 import { AthleteUser } from "@/helpers/users/user";
 import {
@@ -802,15 +799,6 @@ function proposeNewProgram() {
  */
 function onTemporaryProgramSelection() {
   substituteProgram.value = temporaryProgram.value;
-}
-
-/**
- * Open the program that is assigned to selected athlete.
- *
- * @param athlete athlete whose program should be opened.
- */
-function onAthleteProgramSelection(athlete?: AthleteUser) {
-  substituteProgram.value = athlete?.assignedProgramId;
 }
 
 /**
