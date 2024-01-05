@@ -142,15 +142,32 @@
             />
           </template>
         </TableProgramBuilder>
+
+        <!-- Create a new program -->
         <div v-else class="q-pa-lg column items-center">
-          <h6>
+          <!-- TODO i18n-->
+
+          <h4 class="text-margin-xs">
             {{ $t("coach.program_management.builder.initialize_program") }}
-          </h6>
+          </h4>
           <q-btn
+            icon="sym_o_assignment_add"
             @click="proposeNewProgram"
             :label="$t('coach.program_management.builder.new_program')"
             rounded
             unelevated
+          />
+
+          <p class="q-ma-md">{{ $t("common.or2") }}</p>
+
+          <h6 class="text-margin-xs">
+            {{ $t("coach.program_management.builder.open_recent") }}
+          </h6>
+          <!-- Show recently opened programs -->
+          <TableCreatedPrograms
+            ref="createdProgramsTableElement"
+            :programs="coachPrograms"
+            @open="openProgram"
           />
         </div>
       </template>
@@ -453,6 +470,7 @@ import { useRoute } from "vue-router";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
 import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
+import TableCreatedPrograms from "@/components/tables/TableCreatedPrograms.vue";
 import { AthleteUser } from "@/helpers/users/user";
 import {
   getProgramUniqueWeeks,
@@ -489,7 +507,7 @@ const UtilsOptions = {
 const splitterThresholdValue = 15;
 
 // Set ref for generic use
-const splitterModel = ref(30);
+const splitterModel = ref(0);
 const showingUtils = ref(UtilsOptions.list);
 
 // Set ref related to program
@@ -521,6 +539,8 @@ const requestedProgram = computed(
       ?.duplicate(),
 );
 
+// Get all coach programs
+const coachPrograms = computed(() => coachInfo.programs || []);
 // Get temporary saved program
 const temporaryProgram = computed(
   () => coachInfo.programs?.find((program) => !program.athleteId),

@@ -280,6 +280,8 @@
       },
       "fields": {
         "program": "Program",
+        "athlete": "Atleta",
+        "last_modification": "Ultima modifica",
         "programs": "Programs",
         "name": "Program name",
         "label": "Label",
@@ -332,7 +334,8 @@
         "start_program": "Create or select a program to start",
         "new_program": "New program",
         "new_program_info": "Fill in the fields with the info of your new program",
-        "new_program_submit": "Proceed"
+        "new_program_submit": "Proceed",
+        "open_recent": "Your recent programs"
       },
       "filter": {
         "title": "Filter by...",
@@ -395,6 +398,7 @@
     "continue": "Continue",
     "finish": "Finish",
     "or": "or",
+    "or2": "or",
     "other": "Other",
     "submit": "Submit",
     "open": "Open",
@@ -406,6 +410,8 @@
     "note": "Note",
     "label": "Label",
     "update": "Update",
-    "no_results": "No results"
+    "no_results": "No results",
+    "start": "Inizio",
+    "end": "Fine"
   }
 }

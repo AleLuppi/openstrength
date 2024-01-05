@@ -280,6 +280,8 @@
           },
           "fields": {
             "program": "Programma",
+            "athlete": "Atleta",
+            "last_modification": "Ultima modifica",
             "program_title": "I tuoi programmi",
             "programs": "Programmi",
             "name": "Nome del programma",
@@ -293,6 +295,7 @@
             "start_date": "Data inizio",
             "end_date": "Data fine"
           },
+        
           "builder": {
             "save": "Salva",
             "saved": "Salvato!",
@@ -333,7 +336,8 @@
             "start_program": "Crea o seleziona un programma per iniziare",
             "new_program": "Nuovo programma",
             "new_program_info": "Compila i campi con le informazioni del tuo nuovo programma",
-            "new_program_submit": "Procedi"
+            "new_program_submit": "Procedi",
+            "open_recent": "I tuoi programmi recenti"
           },
           "filter": {
             "title": "Filtra per...",
@@ -397,6 +401,7 @@
           "continue": "Continua",
           "finish": "Fine",
           "or": "o",
+          "or2": "oppure",
           "other": "Altro",
           "submit": "Invia",
           "open": "Apri",
@@ -407,7 +412,9 @@
           "date": "Data",
           "note": "Nota",
           "label": "Etichetta",
-          "update": "Aggiorna"
+          "update": "Aggiorna",
+          "start": "Inizio",
+          "end": "Fine"
         }
       }
         
