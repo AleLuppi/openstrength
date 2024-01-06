@@ -18,6 +18,7 @@ import {
   matchNumberUnsignedFloatWithOptionalUnit,
   matchNumberUnsignedInteger,
 } from "@/helpers/regex";
+import { convertProgramToDayBlocks } from "@/helpers/programs/converters";
 
 /**
  * Training program properties.
@@ -131,6 +132,31 @@ export type ProgramLineProps = {
   rpeValue?: number;
   rpeSupposedValue?: number;
   rpeComputedValue?: number;
+};
+
+/**
+ * Frozen program object.
+ */
+export type ProgramForzenView = {
+  athlete: string;
+  name: string;
+  description: string | undefined;
+  startedOn: Date | undefined;
+  finishedOn: Date | undefined;
+  weekdays: {
+    weekName: string;
+    dayName: string;
+    exercises: {
+      exerciseName: string;
+      variantName: string;
+      note?: string;
+      schema: string[];
+      schemaNote: string[];
+      textFeedback: boolean[];
+      videoFeedback: boolean[];
+    }[];
+  }[];
+  frozenOn: Date;
 };
 
 /**
@@ -329,9 +355,9 @@ export class Program {
   }
 
   /**
-   * Get all lines of a program.
+   * Get all lines of the program.
    *
-   * @returns list of all lines in a program.
+   * @returns list of all lines in the program.
    */
   getLines() {
     return this.programExercises?.reduce(
@@ -341,6 +367,21 @@ export class Program {
           : allLines,
       [],
     );
+  }
+
+  /**
+   * Get a frozen view of the program.
+   */
+  freeze(): ProgramForzenView {
+    return {
+      athlete: this.athlete?.referenceName ?? "",
+      name: this.name ?? "",
+      description: this.description,
+      startedOn: this.startedOn,
+      finishedOn: this.finishedOn,
+      weekdays: convertProgramToDayBlocks(this),
+      frozenOn: new Date(),
+    };
   }
 }
 

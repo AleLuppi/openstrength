@@ -338,13 +338,17 @@
         "new_program_submit": "Procedi",
         "view_current": "Visualizza programma"
       },
-      "visualizer": {
-        "title": "Programma di ",
+      "viewer": {
+        "title": "Programma di",
         "back": "Ritorna in modifica",
-        "program_name": "Nome programma: ",
-        "description": "Descrizione: ",
-        "start_date": "Inizio: ",
-        "end_date": "Fine"
+        "program_name": "Nome programma:",
+        "description": "Descrizione:",
+        "frozen_date": "Preparato il:",
+        "start_date": "Inizio:",
+        "end_date": "Fine:",
+        "no_program_title": "Nessun programma trovato",
+        "no_program_explanation": "Controlla l'url a cui stai navigando. Oppure, esplora OpenStrength!",
+        "no_program_action": "Vai alla homepage"
       },
       "filter": {
         "title": "Filtra per...",
@@ -417,6 +421,8 @@
     "date": "Data",
     "note": "Nota",
     "label": "Etichetta",
-    "update": "Aggiorna"
+    "update": "Aggiorna",
+    "yes": "Sì",
+    "no": "No"
   }
 }

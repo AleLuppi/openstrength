@@ -337,13 +337,17 @@
         "new_program_submit": "Proceed",
         "view_current": "View current program"
       },
-      "visualizer": {
-        "title": "Program for ",
+      "viewer": {
+        "title": "Program for",
         "back": "Back to builder",
-        "program_name": "Program Name: ",
-        "description": "Description: ",
-        "start_date":"Start date: ",
-        "end_date": "End date"
+        "program_name": "Program Name:",
+        "description": "Description:",
+        "frozen_date": "Prepared on:",
+        "start_date": "Start date:",
+        "end_date": "End date:",
+        "no_program_title": "No program found",
+        "no_program_explanation": "Please, check the url you are navigating on. Alternatively, you may explore OpenStrength!",
+        "no_program_action": "Take me to homepage"
       },
       "filter": {
         "title": "Filter by...",
@@ -417,6 +421,8 @@
     "note": "Note",
     "label": "Label",
     "update": "Update",
-    "no_results": "No results"
+    "no_results": "No results",
+    "yes": "Yes",
+    "no": "No"
   }
 }

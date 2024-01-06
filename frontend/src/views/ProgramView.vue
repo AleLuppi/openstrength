@@ -160,6 +160,8 @@
             />
           </template>
         </TableProgramBuilder>
+
+        <!-- Show button to open a new program -->
         <div v-else class="q-pa-lg column items-center">
           <h6>
             {{ $t("coach.program_management.builder.initialize_program") }}
