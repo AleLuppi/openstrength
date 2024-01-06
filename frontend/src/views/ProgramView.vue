@@ -50,8 +50,8 @@
             <div class="column justify-center">
               <router-link
                 :to="{
-                  name: NamedRoutes.program_view,
-                  state: { programId: selectedProgram.uid },
+                  name: NamedRoutes.view_program,
+                  query: { id: selectedProgram.uid },
                 }"
                 >View Current Program</router-link
               >

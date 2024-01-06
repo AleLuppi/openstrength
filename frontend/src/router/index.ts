@@ -1,4 +1,9 @@
-import { createRouter, createWebHistory, RouteRecordName } from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  RouteRecordName,
+  RouteRecordRaw,
+} from "vue-router";
 import { useUserStore } from "@/stores/user";
 import { UserRole } from "@/helpers/users/user";
 import {
@@ -34,7 +39,8 @@ export enum NamedRoutes {
   athletes = "athletes",
   library = "library",
   program = "program",
-  program_view = "program_view",
+  view = "view",
+  view_program = "program_view",
   login = "login",
   register = "register",
   profile = "profile",
@@ -63,7 +69,7 @@ export enum NamedRoutes {
  *                               defined.
  */
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: "/",
     name: NamedRoutes.home,
@@ -104,14 +110,24 @@ const routes = [
     },
   },
   {
-    path: "/program/visualizer",
-    name: NamedRoutes.program_view,
-    component: ProgramViewerView,
+    path: "/view",
+    name: NamedRoutes.view,
     meta: {
-      title: "View program",
-      restrictAccessByRole: [UserRole.coach],
-      redirectNotAuthorized: "home",
+      title: "View",
+      showHeader: false,
+      showFooter: true,
+      showLeftDrawer: false,
     },
+    children: [
+      {
+        path: "program",
+        name: NamedRoutes.view_program,
+        component: ProgramViewerView,
+        meta: {
+          title: "View program",
+        },
+      },
+    ],
   },
   {
     path: "/login",

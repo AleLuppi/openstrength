@@ -106,20 +106,20 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useCoachInfoStore } from "@/stores/coachInfo";
+import { useRoute } from "vue-router";
 import { useUserStore } from "@/stores/user";
+import { useCoachInfoStore } from "@/stores/coachInfo";
 import { UserRole } from "@/helpers/users/user";
 import { convertProgramToDayBlocks } from "@/helpers/programs/converters";
 
+// Init plugin
+const route = useRoute();
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
 // Get correct program istance
 const program = computed(
-  () =>
-    coachInfo.programs?.find(
-      (program) => program.uid == history.state?.programId,
-    ),
+  () => coachInfo.programs?.find((program) => program.uid == route.query.id),
 );
 
 // Flatten program for visualization
