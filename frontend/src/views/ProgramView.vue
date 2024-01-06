@@ -39,7 +39,7 @@
                   $t(
                     programSaved
                       ? "coach.program_management.builder.saved"
-                      : "coach.program_management.builder.not_saved"
+                      : "coach.program_management.builder.not_saved",
                   )
                 }}
               </span>
@@ -50,7 +50,7 @@
             <div class="column justify-center">
               <router-link
                 :to="{
-                  name: 'visualizer',
+                  name: NamedRoutes.program_view,
                   state: { programId: selectedProgram.uid },
                 }"
                 >View Current Program</router-link
@@ -352,7 +352,7 @@
                 ref="athletesTableElement"
                 :athletes="
                   coachInfo.athletes?.filter(
-                    (athlete) => athlete.hasProgramAssigned
+                    (athlete) => athlete.hasProgramAssigned,
                   ) ?? []
                 "
                 @update:selected="onAthleteProgramSelection"
@@ -559,7 +559,7 @@ const requestedProgram = computed(
   () =>
     coachInfo.programs
       ?.find((program) => program.uid == route.params.programId)
-      ?.duplicate()
+      ?.duplicate(),
 );
 
 // Get complete program filter
@@ -582,8 +582,8 @@ const programFilter = computed({
 const athleteMaxlifts = computed(
   () =>
     coachInfo.maxlifts?.filter(
-      (maxlift) => maxlift.athleteId == selectedProgram.value?.athleteId
-    )
+      (maxlift) => maxlift.athleteId == selectedProgram.value?.athleteId,
+    ),
 );
 
 // Decide whether to display warning dialog on new program
@@ -609,7 +609,7 @@ watch(
   },
   {
     immediate: true,
-  }
+  },
 );
 
 // Show new program dialog when requested
@@ -618,7 +618,7 @@ watch(
   (val) => {
     if (val == "true") showNewProgramDialog.value = true;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Try (but not force) to open a new program when requested
@@ -633,7 +633,7 @@ watch(
       oldAthleteAssigned.value = selectedProgram.value?.athlete;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Perform operations on program update
@@ -650,12 +650,12 @@ watch(
       emit(
         "activateDrawerItem",
         Object.values(UtilsOptions).findIndex(
-          (val) => val == showingUtils.value
-        )
+          (val) => val == showingUtils.value,
+        ),
       );
     if (oldVal && oldVal > 0 && newVal === 0) emit("activateDrawerItem", -1);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 /**
@@ -720,14 +720,14 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
       setSavedValue();
       (coachInfo.programs =
         coachInfo.programs?.filter(
-          (program) => program.uid != currProgram.uid
+          (program) => program.uid != currProgram.uid,
         ) || []).push(currProgram);
 
       // Update athlete profile with new program
       assignProgramToAthlete(
         currProgram,
         currProgram.athlete,
-        oldAthleteAssigned.value
+        oldAthleteAssigned.value,
       );
 
       // Clear active change on current program
@@ -764,14 +764,14 @@ const autosaveProgram = debounce(() => {
 function assignProgramToAthlete(
   program: Program,
   athlete?: AthleteUser,
-  oldAthlete?: AthleteUser
+  oldAthlete?: AthleteUser,
 ) {
   // Update athlete info
   if (athlete) {
     athlete.assignedProgramId = program.uid;
     if (program.uid)
       (athlete.assignedPrograms = athlete.assignedPrograms || []).push(
-        program.uid
+        program.uid,
       );
 
     // Store changes
@@ -780,7 +780,7 @@ function assignProgramToAthlete(
         $q.notify({
           type: "negative",
           message: i18n.t(
-            "coach.program_management.builder.save_assignment_error"
+            "coach.program_management.builder.save_assignment_error",
           ),
           position: "bottom",
         });
@@ -797,7 +797,7 @@ function assignProgramToAthlete(
           type: "negative",
           message: i18n.t(
             "coach.program_management.builder.save_unassignment_error",
-            { name: oldAthlete.referenceName }
+            { name: oldAthlete.referenceName },
           ),
           position: "bottom",
         });
@@ -843,7 +843,7 @@ function saveMaxlift(newMaxLift: MaxLift) {
         type: "negative",
         message: i18n.t(
           "coach.maxlift_management.list." +
-            (isNew ? "add_error" : "update_error")
+            (isNew ? "add_error" : "update_error"),
         ),
         position: "bottom",
       }),

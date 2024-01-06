@@ -13,7 +13,7 @@ import HomeView from "@/views/HomeView.vue";
 const AthletesView = () => import("@/views/AthletesView.vue");
 const LibraryView = () => import("@/views/LibraryView.vue");
 const ProgramView = () => import("@/views/ProgramView.vue");
-const ProgramVisualizer = () => import("@/views/ProgramVisualizer.vue");
+const ProgramViewerView = () => import("@/views/ProgramViewerView.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
@@ -34,6 +34,7 @@ export enum NamedRoutes {
   athletes = "athletes",
   library = "library",
   program = "program",
+  program_view = "program_view",
   login = "login",
   register = "register",
   profile = "profile",
@@ -104,10 +105,10 @@ const routes = [
   },
   {
     path: "/program/visualizer",
-    name: "visualizer",
-    component: ProgramVisualizer,
+    name: NamedRoutes.program_view,
+    component: ProgramViewerView,
     meta: {
-      title: "Visualizer",
+      title: "View program",
       restrictAccessByRole: [UserRole.coach],
       redirectNotAuthorized: "home",
     },
