@@ -16,9 +16,12 @@
       <!-- Redirect to login -->
       <p>
         {{ $t("user.auth.already_registered") }}
-        <router-link :to="{ name: 'login' }">{{
-          $t("user.auth.signup_to_signin")
-        }}</router-link>
+        <router-link
+          class="text-primary"
+          :to="{ name: 'login', state: { insertedEmail: email } }"
+        >
+          {{ $t("user.auth.signup_to_signin") }}
+        </router-link>
       </p>
     </div>
 
@@ -114,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { useQuasar, QInput } from "quasar";
 import { useI18n } from "vue-i18n";
 import { User } from "firebase/auth";
@@ -133,8 +136,6 @@ const i18n = useI18n();
 // Set ref
 const emailInput = ref<QInput>();
 const passwordInput = ref<QInput>();
-//const userName = ref("");
-//const userSurname = ref("");
 const email = ref("");
 const emailError = ref(false);
 const emailErrorMessage = ref("");
@@ -236,4 +237,9 @@ function onSubmitFailure(authError: AuthError) {
       break;
   }
 }
+
+// Perform operations on component mount
+onMounted(() => {
+  email.value = history.state?.insertedEmail ?? "";
+});
 </script>

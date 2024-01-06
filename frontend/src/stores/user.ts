@@ -11,6 +11,12 @@ import {
 } from "@/helpers/users/user";
 import { objectAssignNotUndefined } from "@/helpers/object";
 
+/**
+ * Store current (logged) user information.
+ *
+ * Available params are those defined in User (and User-based) class interface.
+ * Additionally, "baseUser" object is available as a proxy to actual user instance.
+ */
 export const useUserStore = defineStore("user", () => {
   // Store user instance (private attribute)
   const user = ref<User | CoachUser | AthleteUser>();

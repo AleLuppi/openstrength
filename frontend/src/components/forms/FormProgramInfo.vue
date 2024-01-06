@@ -171,7 +171,6 @@ import { useCoachInfoStore } from "@/stores/coachInfo";
 const props = defineProps({
   program: {
     type: Program,
-    required: true,
   },
 });
 
@@ -207,6 +206,7 @@ const showAthleteProgramOverwiteDialog = ref(false);
 watch(
   () => props.program,
   (program) => {
+    if (!program) program = new Program();
     programName.value = program.name;
     programAthlete.value = program.athlete;
     programStartedOn.value = program.startedOn
@@ -229,7 +229,7 @@ watch(programAthlete, (athlete) => {
  * Perform operations on form submit.
  */
 function onSubmit() {
-  const program = props.program;
+  const program = props.program ?? new Program();
   program.name = programName.value;
   program.athlete = programAthlete.value;
   program.startedOn = programStartedOn.value
@@ -239,8 +239,6 @@ function onSubmit() {
     ? dateGetWithoutTimezone(programFinishedOn.value)
     : undefined;
   program.description = programDescription.value;
-
-  console.log(program);
 
   emit("submit", program);
 }

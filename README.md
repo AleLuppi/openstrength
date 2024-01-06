@@ -1,6 +1,6 @@
-# DBM project
+# OpenStrength
 
-For a smarter power routine 💪
+For a smarter and better workout planning 💪
 
 
 ## Project structure
