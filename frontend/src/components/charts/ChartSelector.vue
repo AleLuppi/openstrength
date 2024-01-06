@@ -55,7 +55,7 @@ const i18n = useI18n();
 const props = defineProps({
   program: {
     type: Program,
-    required: true,
+    required: false,
   },
   filterExercise: {
     type: Array as PropType<string[]>,
@@ -125,7 +125,7 @@ const chartDataRequests = computed<OSChartDataRequest[]>(() =>
   chartDescriptions.map((chartDescriptor) => {
     return {
       chartInfo: chartDescriptor,
-      program: props.program,
+      program: props.program ?? new Program(),
       selectedExercises: props.filterExercise,
       selectedDays: props.filterDay,
       selectedWeeks: props.filterWeek,

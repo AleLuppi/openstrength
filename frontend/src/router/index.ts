@@ -27,6 +27,21 @@ const RightDrawerProgramElements = defineAsyncComponent(
   () => import("@/components/layout/RightDrawerProgramElements.vue"),
 );
 
+/* Set routes names */
+export enum NamedRoutes {
+  home = "home",
+  athletes = "athletes",
+  library = "library",
+  program = "program",
+  login = "login",
+  register = "register",
+  profile = "profile",
+  privacy_policy = "privacy_policy",
+  cookie_policy = "cookie_policy",
+  terms_conditions = "terms_conditions",
+  not_found = "not_found",
+}
+
 /**
  * Currently available meta info in routes:
  *  - title : To set the page title in browser.
@@ -49,7 +64,7 @@ const RightDrawerProgramElements = defineAsyncComponent(
 const routes = [
   {
     path: "/",
-    name: "home",
+    name: NamedRoutes.home,
     component: HomeView,
     meta: {
       title: "Home",
@@ -57,7 +72,7 @@ const routes = [
   },
   {
     path: "/athletes",
-    name: "athletes",
+    name: NamedRoutes.athletes,
     component: AthletesView,
     meta: {
       title: "Athletes",
@@ -67,7 +82,7 @@ const routes = [
   },
   {
     path: "/library",
-    name: "library",
+    name: NamedRoutes.library,
     component: LibraryView,
     meta: {
       title: "Library",
@@ -77,7 +92,7 @@ const routes = [
   },
   {
     path: "/program/:programId?",
-    name: "program",
+    name: NamedRoutes.program,
     component: ProgramView,
     meta: {
       title: "Program",
@@ -88,7 +103,7 @@ const routes = [
   },
   {
     path: "/login",
-    name: "login",
+    name: NamedRoutes.login,
     component: UserLoginView,
     props: true,
     meta: {
@@ -98,7 +113,7 @@ const routes = [
   },
   {
     path: "/register",
-    name: "register",
+    name: NamedRoutes.register,
     component: UserRegisterView,
     meta: {
       title: "Register",
@@ -107,7 +122,7 @@ const routes = [
   },
   {
     path: "/profile",
-    name: "profile",
+    name: NamedRoutes.profile,
     component: UserProfileView,
     meta: {
       title: "Profile",
@@ -116,7 +131,7 @@ const routes = [
   },
   {
     path: "/privacy-policy",
-    name: "privacy_policy",
+    name: NamedRoutes.privacy_policy,
     component: PrivacyPolicyView,
     meta: {
       title: "Privacy Policy",
@@ -124,7 +139,7 @@ const routes = [
   },
   {
     path: "/cookie-policy",
-    name: "cookie_policy",
+    name: NamedRoutes.cookie_policy,
     component: CookiePolicyView,
     meta: {
       title: "Cookie Policy",
@@ -132,7 +147,7 @@ const routes = [
   },
   {
     path: "/terms-and-conditions",
-    name: "terms_conditions",
+    name: NamedRoutes.terms_conditions,
     component: TermsAndConditionView,
     meta: {
       title: "Terms and Conditions",
@@ -141,7 +156,7 @@ const routes = [
   {
     // page not found
     path: "/:pathMatch(.*)*",
-    name: "not_found",
+    name: NamedRoutes.not_found,
     component: PageNotFoundView,
     meta: {
       title: "Page not found",
