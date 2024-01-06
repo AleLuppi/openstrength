@@ -7,12 +7,7 @@ import {
   programsCollection,
   maxliftsCollection,
 } from "@/helpers/database/collections";
-import {
-  UserRole,
-  AthleteUser,
-  AthleteUserProps,
-  CoachUser,
-} from "@/helpers/users/user";
+import { UserRole, AthleteUser, AthleteUserProps } from "@/helpers/users/user";
 import {
   Exercise,
   ExerciseVariant,
@@ -31,6 +26,15 @@ import {
 } from "@/helpers/exercises/listManagement";
 import { MaxLift, MaxLiftProps } from "@/helpers/maxlifts/maxlift";
 
+/**
+ * Store all the info required for a coach to use the app.
+ *
+ * Currently stored info:
+ *  - athletes  : list of managed athletes.
+ *  - exercises : list of exercises in coach's library.
+ *  - programs  : list of programs for any managed athlete.
+ *  - maxlifts  : list of personal bests for any managed athlete.
+ */
 export const useCoachInfoStore = defineStore("coachInfo", () => {
   // Coach ID
   const coachId = ref<string>();

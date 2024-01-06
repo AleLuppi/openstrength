@@ -135,7 +135,7 @@
     "athlete_management": {
       "list": {
         "title": "Atleti",
-        "add": "Aggiungi nuovo",
+        "add": "Nuovo atleta",
         "search": "Cerca tra gli atleti...",
         "add_proceed": "Procedi",
         "add_error": "Non è stato possibile aggiungere l'atleta, riprova",
@@ -201,7 +201,8 @@
       "create_new_exercise": "Crea un nuovo esercizio",
       "no_selected_exercises": "Seleziona o aggiungi un esercizio per mostrare le sue varianti",
       "add": "Aggiungi un nuovo esercizio",
-      "add_button": "Aggiungi nuovo",
+      "add_button_exercise": "Nuovo esercizio",
+      "add_button_variant": "Nuova variante",
       "add_proceed": "Salva",
       "add_error": "Impossibile salvare l'esercizio, riprova",
       "add_success": "Esercizio \"{ exercise }\" aggiunto alla libreria",
@@ -265,158 +266,157 @@
         },
         "video": "Link al video",
         "description": "Descrizione"
-        }
-        },
-        "program_management": {
-          "list": {
-            "title": "Libreria programmi",
-            "title_program": "Programmi",
-            "program_section": "I tuoi programmi",
-            "add": "Aggiungi un nuovo programma",
-            "add_proceed": "Conferma",
-            "update": "Inserisci le informazioni del tuo programma",
-            "update_proceed": "Aggiorna programma",
-            "search_program": "Cerca programma..."      
-          },
-          "fields": {
-            "program": "Programma",
-            "program_title": "I tuoi programmi",
-            "programs": "Programmi",
-            "name": "Nome del programma",
-            "label": "Etichetta",
-            "description": "Descrizione",
-            "load": "load",
-            "reps": "reps",
-            "sets": "sets",
-            "rpe": "rpe",
-            "note": "Nota",
-            "start_date": "Data inizio",
-            "end_date": "Data fine"
-          },
-          "builder": {
-            "save": "Salva",
-            "saved": "Salvato!",
-            "not_saved": "Salva il programma!",
-            "not_saved_prompt": "Ci sono modifiche non salvate, vuoi davvero procedere?",
-            "save_error": "Impossibile salvare il programma, riprova per favore",
-            "save_assignment_error": "Il programma è stato salvato, ma non può essere assegnato all'atleta.",
-            "save_unassignment_error": "L'assegnazione del programma non può essere rimossa dall'atleta { name }.",
-            "not_assigned_prompt": "C'è un programma non assegnato, vuoi continuare la modifica?",
-            "warn_assignment": "{ name } ha già un programma assegnato, che verrà sovrascritto. Vuoi procedere?",
-            "week_name": "Week { week }",
-            "day_name": "Day { day }",
-            "new_week": "Week",
-            "new_week_tooltip": "Aggiunge una nuova settimana con il giorno corrente",
-            "new_day": "Day",
-            "new_day_tooltip": "Aggiunge un nuovo giorno vuoto alla settimana corrente",
-            "new_exercise": "Esercizio",
-            "new_exercise_tooltip": "Aggiunge un nuovo esercizio al giorno corrente",
-            "new_day_error": "Impossibile creare un giorno con il nome selezionato, riprova per favore",
-            "new_day_already_exists": "Un giorno con questo nome esiste già",
-            "line_duplicate": "Duplica esercizio",
-            "line_duplicate_in_day": "Copia in un altro giorno",
-            "line_delete": "Elimina",
-            "day_rename": "Rinomina",
-            "day_duplicate": "Duplica in un altro giorno di questa settimana",
-            "day_delete": "Elimina giorno",
-            "empty": "Inizia il tuo programma ora aggiungendo il tuo primo esercizio!",
-            "reference_select_line": "Seleziona una linea",
-            "reference_select_line_help": "Seleziona una linea come riferimento",
-            "reference_remove": "Scollega",
-            "show_charts_tooltip": "Grafici",
-            "show_maxlifts_tooltip": "Tabella di riferimento",
-            "assign_to_athlete": "Assegna all'atleta",
-            "show_program_list": "Lista dei programmi",
-            "last_update": "Ultimo aggiornamento:",
-            "open_temporary": "Apri programma temporaneo",
-            "initialize_program": "Crea un nuovo programma ora!",
-            "start_program": "Crea o seleziona un programma per iniziare",
-            "new_program": "Nuovo programma",
-            "new_program_info": "Compila i campi con le informazioni del tuo nuovo programma",
-            "new_program_submit": "Procedi",
-            "view_current": "Visualizza programma"
-          },
-          "visualizer": {
-            "title": "Programma di ",
-            "back": "Ritorna in modifica",
-            "program_name": "Nome programma: ",
-            "description": "Descrizione: ",
-            "start_date":"Inizio: ",
-            "end_date": "Fine"
-          },
-          "filter": {
-            "title": "Filtra per...",
-            "filter_week": "settimana",
-            "filter_day": "giorno",
-            "filter_exercise": "esercizio",
-            "clear_filters": "Rimuovi filtri",
-            "all_filtered_out": "Niente da mostrare"
-          }
-        
-        },
-        "maxlift_management": {
-          "list": {
-            "search_maxlift": "Cerca...",
-            "add": "Aggiungi un nuovo massimale",
-            "add_proceed": "Conferma",
-            "add_error": "Impossibile salvare il massimale, riprova per favore",
-            "update": "Inserisci le informazioni del massimale",
-            "update_proceed": "Aggiorna massimale",
-            "update_error": "Impossibile aggiornare il massimale, riprova per favore",
-            "no_maxlift": "Aggiungi un massimale per l'atleta attuale",
-            "no_athlete": "Seleziona un atleta per vedere i dati correlati",
-            "maxlift_section": "Massimali dell'atleta"
-          },
-          "fields": {
-            "exercise": "Esercizio",
-            "variant": "Variante",
-            "type": "Tipo",
-            "value": "Valore",
-            "date": "Data"
-          }
-        },
-        "charts_management": {
-          "list": {
-            "charts_section": "Grafici",
-            "refresh_tooltip": "Clicca per aggiornare i grafici",
-            "tot_volume_title": "Tonnellaggio nelle settimane",
-            "tot_reps_title": "Ripetizioni totali nelle settimane",           
-            "tot_sets_title": "Set totali nelle settimane",
-            "tot_volume_desc": "Tonnellaggio: sets x reps x load(kg) nelle settimane",
-            "tot_reps_desc": "Sets x reps total nelle settimane",
-            "tot_sets_desc": "Sets totali nelle settimane",
-            "chart_data_refresh" : "Controlla i dati e aggiorna i grafici"
-          }
-        }
-        },
-        "sport": {
-          "powerlifting": "Powerlifting",
-          "bodybuilding": "Bodybuilding",
-          "calisthenics": "Calisthenics",
-          "powerbuilding": "Powerbuilding",
-          "crossfit": "Crossfit",
-          "weightlifting": "Weightlifting",
-          "fitness": "Fitness",
-          "streetlifting": "Streetlifting"
-        },
-        "common": {
-          "back": "Indietro",
-          "cancel": "Annulla",
-          "default": "Default",
-          "continue": "Continua",
-          "finish": "Fine",
-          "or": "o",
-          "other": "Altro",
-          "submit": "Invia",
-          "open": "Apri",
-          "close": "Chiudi",
-          "name": "Nome",
-          "type": "Tipo",
-          "value": "Valore",
-          "date": "Data",
-          "note": "Nota",
-          "label": "Etichetta",
-          "update": "Aggiorna"
-        }
       }
-        
+    },
+    "program_management": {
+      "list": {
+        "title": "Libreria programmi",
+        "title_program": "Programmi",
+        "program_section": "I tuoi programmi",
+        "add": "Aggiungi un nuovo programma",
+        "add_proceed": "Conferma",
+        "update": "Inserisci le informazioni del tuo programma",
+        "update_proceed": "Aggiorna programma",
+        "search_program": "Cerca programma..."
+      },
+      "fields": {
+        "program": "Programma",
+        "program_title": "I tuoi programmi",
+        "programs": "Programmi",
+        "name": "Nome del programma",
+        "label": "Etichetta",
+        "description": "Descrizione",
+        "load": "load",
+        "reps": "reps",
+        "sets": "sets",
+        "rpe": "rpe",
+        "note": "Nota",
+        "start_date": "Data inizio",
+        "end_date": "Data fine"
+      },
+      "builder": {
+        "save": "Salva",
+        "saved": "programma salvato",
+        "not_saved": "modifiche non salvate",
+        "not_saved_prompt": "Ci sono modifiche non salvate, vuoi davvero procedere?",
+        "save_error": "Impossibile salvare il programma, riprova per favore",
+        "save_assignment_error": "Il programma è stato salvato, ma non può essere assegnato all'atleta.",
+        "save_unassignment_error": "L'assegnazione del programma non può essere rimossa dall'atleta { name }.",
+        "not_assigned_prompt": "C'è un programma non assegnato, vuoi continuare la modifica?",
+        "warn_assignment": "{ name } ha già un programma assegnato, che verrà sovrascritto. Vuoi procedere?",
+        "week_name": "Week { week }",
+        "day_name": "Day { day }",
+        "new_week": "Week",
+        "new_week_tooltip": "Aggiunge una nuova settimana con il giorno corrente",
+        "new_day": "Day",
+        "new_day_tooltip": "Aggiunge un nuovo giorno vuoto alla settimana corrente",
+        "new_exercise": "Esercizio",
+        "new_exercise_tooltip": "Aggiunge un nuovo esercizio al giorno corrente",
+        "new_day_error": "Impossibile creare un giorno con il nome selezionato, riprova per favore",
+        "new_day_already_exists": "Un giorno con questo nome esiste già",
+        "line_duplicate": "Duplica esercizio",
+        "line_duplicate_in_day": "Copia in un altro giorno",
+        "line_delete": "Elimina",
+        "day_rename": "Rinomina",
+        "day_duplicate": "Duplica in un altro giorno di questa settimana",
+        "day_delete": "Elimina giorno",
+        "empty": "Inizia il tuo programma ora aggiungendo il tuo primo esercizio!",
+        "reference_select_line": "Seleziona una linea",
+        "reference_select_line_help": "Seleziona una linea come riferimento",
+        "reference_remove": "Scollega",
+        "show_charts_tooltip": "Grafici",
+        "show_maxlifts_tooltip": "Tabella di riferimento",
+        "assign_to_athlete": "Assegna all'atleta",
+        "assigned_athlete": "Assegnato a",
+        "show_program_list": "Lista dei programmi",
+        "last_update": "Ultimo aggiornamento:",
+        "open_temporary": "Apri programma temporaneo",
+        "initialize_program": "Crea un nuovo programma ora!",
+        "start_program": "Crea o seleziona un programma per iniziare",
+        "new_program": "Nuovo programma",
+        "new_program_info": "Compila i campi con le informazioni del tuo nuovo programma",
+        "new_program_submit": "Procedi",
+        "view_current": "Visualizza programma"
+      },
+      "visualizer": {
+        "title": "Programma di ",
+        "back": "Ritorna in modifica",
+        "program_name": "Nome programma: ",
+        "description": "Descrizione: ",
+        "start_date": "Inizio: ",
+        "end_date": "Fine"
+      },
+      "filter": {
+        "title": "Filtra per...",
+        "filter_week": "settimana",
+        "filter_day": "giorno",
+        "filter_exercise": "esercizio",
+        "clear_filters": "Rimuovi filtri",
+        "all_filtered_out": "Niente da mostrare"
+      }
+    },
+    "maxlift_management": {
+      "list": {
+        "search_maxlift": "Cerca...",
+        "add": "Aggiungi un nuovo massimale",
+        "add_proceed": "Conferma",
+        "add_error": "Impossibile salvare il massimale, riprova per favore",
+        "update": "Inserisci le informazioni del massimale",
+        "update_proceed": "Aggiorna massimale",
+        "update_error": "Impossibile aggiornare il massimale, riprova per favore",
+        "no_maxlift": "Aggiungi un massimale per l'atleta attuale",
+        "no_athlete": "Seleziona un atleta per vedere i dati correlati",
+        "maxlift_section": "Massimali dell'atleta"
+      },
+      "fields": {
+        "exercise": "Esercizio",
+        "variant": "Variante",
+        "type": "Tipo",
+        "value": "Valore",
+        "date": "Data"
+      }
+    },
+    "charts_management": {
+      "list": {
+        "charts_section": "Grafici",
+        "refresh_tooltip": "Clicca per aggiornare i grafici",
+        "tot_volume_title": "Tonnellaggio nelle settimane",
+        "tot_reps_title": "Ripetizioni totali nelle settimane",
+        "tot_sets_title": "Set totali nelle settimane",
+        "tot_volume_desc": "Tonnellaggio: sets x reps x load(kg) nelle settimane",
+        "tot_reps_desc": "Sets x reps total nelle settimane",
+        "tot_sets_desc": "Sets totali nelle settimane",
+        "chart_data_refresh": "Controlla i dati e aggiorna i grafici"
+      }
+    }
+  },
+  "sport": {
+    "powerlifting": "Powerlifting",
+    "bodybuilding": "Bodybuilding",
+    "calisthenics": "Calisthenics",
+    "powerbuilding": "Powerbuilding",
+    "crossfit": "Crossfit",
+    "weightlifting": "Weightlifting",
+    "fitness": "Fitness",
+    "streetlifting": "Streetlifting"
+  },
+  "common": {
+    "back": "Indietro",
+    "cancel": "Annulla",
+    "default": "Default",
+    "continue": "Continua",
+    "finish": "Fine",
+    "or": "o",
+    "other": "Altro",
+    "submit": "Invia",
+    "open": "Apri",
+    "close": "Chiudi",
+    "name": "Nome",
+    "type": "Tipo",
+    "value": "Valore",
+    "date": "Data",
+    "note": "Nota",
+    "label": "Etichetta",
+    "update": "Aggiorna"
+  }
+}
