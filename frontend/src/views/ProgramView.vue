@@ -27,6 +27,7 @@
                 :disable="programSaved"
                 :outline="!programSaved"
                 :flat="programSaved"
+                :color="programSaved ? 'positive' : 'primary'"
                 :class="{ 'animate-pulse-with-rotation-sm': !programSaved }"
                 class="q-pa-sm q-mx-sm"
               ></q-btn>
