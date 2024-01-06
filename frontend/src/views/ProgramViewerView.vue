@@ -111,6 +111,7 @@ import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { UserRole } from "@/helpers/users/user";
 import { convertProgramToDayBlocks } from "@/helpers/programs/converters";
+import type { QTableProps } from "quasar";
 
 // Init plugin
 const route = useRoute();
@@ -128,7 +129,7 @@ const programDayBlocks = computed(() => {
 });
 
 //TODO i18n
-const columns = [
+const columns: QTableProps["columns"] = [
   {
     name: "exerciseFullInfo",
     label: "Esercizio",
