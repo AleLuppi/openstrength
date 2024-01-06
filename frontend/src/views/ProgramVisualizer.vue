@@ -1,7 +1,7 @@
 <template>
-  <div class="q-pa-md">
+  <div class="q-pa-md background-image" style="height: 100%">
+    <!-- Program infos -->
     <div class="q-mx-md">
-      <!-- TODO i18n -->
       <div class="row justify-between">
         <h3 class="text-margin-xs">
           {{ $t("coach.program_management.visualizer.title") }}
@@ -39,6 +39,7 @@
       </p>
     </div>
 
+    <!-- Visualized program days -->
     <q-table
       class="q-ma-md q-mb-lg"
       v-for="(block, index) in programDayBlocks"
@@ -95,6 +96,10 @@
         </q-td>
       </template>
     </q-table>
+
+    <!-- TODO: Personal records of reference -->
+
+    <!-- TODO: Exercise descriptions -->
   </div>
 </template>
 

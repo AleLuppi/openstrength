@@ -33,13 +33,15 @@
             ></q-btn>
 
             <!-- View current program -->
-            <router-link
-              :to="{
-                name: 'visualizer',
-                state: { programId: selectedProgram.uid },
-              }"
-              >View Current Program</router-link
-            >
+            <div class="column justify-center">
+              <router-link
+                :to="{
+                  name: 'visualizer',
+                  state: { programId: selectedProgram.uid },
+                }"
+                >View Current Program</router-link
+              >
+            </div>
 
             <!-- Start a new program -->
             <q-btn

@@ -333,7 +333,8 @@
             "start_program": "Crea o seleziona un programma per iniziare",
             "new_program": "Nuovo programma",
             "new_program_info": "Compila i campi con le informazioni del tuo nuovo programma",
-            "new_program_submit": "Procedi"
+            "new_program_submit": "Procedi",
+            "view_current": "Visualizza programma"
           },
           "visualizer": {
             "title": "Programma di ",

@@ -332,7 +332,8 @@
         "start_program": "Create or select a program to start",
         "new_program": "New program",
         "new_program_info": "Fill in the fields with the info of your new program",
-        "new_program_submit": "Proceed"
+        "new_program_submit": "Proceed",
+        "view_current": "View current program"
       },
       "visualizer": {
         "title": "Program for ",
