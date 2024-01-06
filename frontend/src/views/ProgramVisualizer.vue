@@ -10,6 +10,7 @@
         </h3>
         <div class="column justify-center">
           <q-btn
+            v-if="user.role == UserRole.coach"
             icon="sym_o_assignment_return"
             :to="{ name: 'program', params: { programId: program?.uid } }"
             >{{ $t("coach.program_management.visualizer.back") }}</q-btn
@@ -106,8 +107,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useCoachInfoStore } from "@/stores/coachInfo";
+import { useUserStore } from "@/stores/user";
+import { UserRole } from "@/helpers/users/user";
 import { convertProgramToDayBlocks } from "@/helpers/programs/converters";
 
+const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
 // Get correct program istance
