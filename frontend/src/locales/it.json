@@ -335,6 +335,14 @@
             "new_program_info": "Compila i campi con le informazioni del tuo nuovo programma",
             "new_program_submit": "Procedi"
           },
+          "visualizer": {
+            "title": "Programma di ",
+            "back": "Ritorna in modifica",
+            "program_name": "Nome programma: ",
+            "description": "Descrizione: ",
+            "start_date":"Inizio: ",
+            "end_date": "Fine"
+          },
           "filter": {
             "title": "Filtra per...",
             "filter_week": "settimana",

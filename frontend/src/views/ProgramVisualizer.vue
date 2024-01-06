@@ -1,5 +1,44 @@
 <template>
   <div class="q-pa-md">
+    <div class="q-mx-md">
+      <!-- TODO i18n -->
+      <div class="row justify-between">
+        <h3 class="text-margin-xs">
+          {{ $t("coach.program_management.visualizer.title") }}
+          {{ program?.athlete?.name }}
+          {{ program?.athlete?.surname }}
+        </h3>
+        <div class="column justify-center">
+          <q-btn
+            icon="sym_o_assignment_return"
+            :to="{ name: 'program', params: { programId: program?.uid } }"
+            >{{ $t("coach.program_management.visualizer.back") }}</q-btn
+          >
+        </div>
+      </div>
+
+      <p>
+        <b>{{ $t("coach.program_management.visualizer.program_name") }} </b>
+        {{ program?.name }}
+      </p>
+      <p v-if="program?.description">
+        <b>{{ $t("coach.program_management.visualizer.description") }}</b>
+        {{ program?.description }}
+      </p>
+      <p>
+        <b>{{ $t("coach.program_management.visualizer.start_date") }}</b>
+        {{
+          program?.startedOn?.toISOString().split("T")[0].replaceAll("-", "/")
+        }}
+      </p>
+      <p v-if="program?.finishedOn">
+        <b>{{ $t("coach.program_management.visualizer.end_date") }}</b>
+        {{
+          program?.finishedOn?.toISOString().split("T")[0].replaceAll("-", "/")
+        }}
+      </p>
+    </div>
+
     <q-table
       class="q-ma-md q-mb-lg"
       v-for="(block, index) in programDayBlocks"

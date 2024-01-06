@@ -334,6 +334,14 @@
         "new_program_info": "Fill in the fields with the info of your new program",
         "new_program_submit": "Proceed"
       },
+      "visualizer": {
+        "title": "Program for ",
+        "back": "Back to builder",
+        "program_name": "Program Name: ",
+        "description": "Description: ",
+        "start_date":"Start date: ",
+        "end_date": "End date"
+      },
       "filter": {
         "title": "Filter by...",
         "filter_week": "week",
