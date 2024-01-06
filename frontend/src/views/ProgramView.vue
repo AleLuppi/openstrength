@@ -23,10 +23,12 @@
               :class="{ 'cursor-pointer': !programSaved }"
             >
               <q-btn
-                icon="save"
+                :icon="programSaved ? 'done' : 'save'"
                 :disable="programSaved"
-                flat
+                :outline="!programSaved"
+                :flat="programSaved"
                 :class="{ 'animate-pulse-with-rotation-sm': !programSaved }"
+                class="q-pa-sm q-mx-sm"
               ></q-btn>
               <span
                 class="text-grey"
@@ -81,17 +83,6 @@
               <div
                 class="row items-end justify-between q-col-gutter-sm q-pt-md"
               >
-                <!-- Start a new program -->
-                <div class="col-12 text-center">
-                  <q-btn
-                    icon="add"
-                    :label="$t('coach.program_management.builder.new_program')"
-                    @click="openNewProgram"
-                    rounded
-                    outline
-                  ></q-btn>
-                </div>
-
                 <h6 class="col-md-2 col-5">
                   {{ $t("coach.program_management.filter.title") }}
                 </h6>
@@ -267,7 +258,21 @@
             v-else-if="showingUtils == UtilsOptions.list"
             class="column q-gutter-y-md"
           >
-            <h6>{{ $t("coach.program_management.list.program_section") }}</h6>
+            <div class="row justify-between q-mt-xs">
+              <h6>{{ $t("coach.program_management.list.program_section") }}</h6>
+
+              <!-- Start a new program -->
+              <div class="column justify-center">
+                <q-btn
+                  icon="add"
+                  :label="$t('coach.program_management.builder.new_program')"
+                  @click="openNewProgram"
+                  rounded
+                  outline
+                  padding="xs sm"
+                ></q-btn>
+              </div>
+            </div>
 
             <!-- Search status or temporary program -->
             <q-card>
