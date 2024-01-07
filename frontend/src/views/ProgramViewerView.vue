@@ -161,6 +161,8 @@ watch(
         numDocs: 1,
         onSuccess: (docVal: { [key: string]: ProgramForzenView }) => {
           programSnapshot.value = Object.values(docVal)[0];
+
+          // Hide loading spinner
           $q.loading.hide();
         },
       },
@@ -169,32 +171,31 @@ watch(
 );
 
 // Set table columns
-// TODO i18n in columns labels
 const columns: QTableProps["columns"] = [
   {
     name: "exerciseInfo",
-    label: "Esercizio",
+    label: i18n.t("coach.program_management.viewer.header_exercise_info"),
     align: "left",
     field: (row) => [`${row.exerciseName} ${row.variantName}`, row.note],
     style: "width: 30%",
   },
   {
     name: "schema",
-    label: "Schema",
+    label: i18n.t("coach.program_management.viewer.header_schema"),
     align: "left",
     field: "schema",
     style: "width: 20%",
   },
   {
     name: "schemaNote",
-    label: "Note",
+    label: i18n.t("coach.program_management.viewer.header_schema_note"),
     align: "left",
     field: "schemaNote",
     style: "width: 30%",
   },
   {
     name: "textFeedback",
-    label: "Feedback testuale",
+    label: i18n.t("coach.program_management.viewer.header_text_feedback"),
     align: "left",
     field: (row) =>
       row.textFeedback.map((val: boolean) =>
@@ -204,7 +205,7 @@ const columns: QTableProps["columns"] = [
   },
   {
     name: "videoFeedback",
-    label: "Feedback video",
+    label: i18n.t("coach.program_management.viewer.header_video_feedback"),
     align: "left",
     field: (row) =>
       row.videoFeedback.map((val: boolean) =>
@@ -216,6 +217,7 @@ const columns: QTableProps["columns"] = [
 
 // Operations to perform on component mount
 onMounted(() => {
+  // Show loading spinner
   $q.loading.show();
 });
 </script>

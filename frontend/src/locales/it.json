@@ -346,6 +346,11 @@
         "frozen_date": "Preparato il:",
         "start_date": "Inizio:",
         "end_date": "Fine:",
+        "header_exercise_info": "Esercizio",
+        "header_schema": "Schema",
+        "header_schema_note": "Note",
+        "header_text_feedback": "Richiesto feedback",
+        "header_video_feedback": "Richiesto video",
         "no_program_title": "Nessun programma trovato",
         "no_program_explanation": "Controlla l'url a cui stai navigando. Oppure, esplora OpenStrength!",
         "no_program_action": "Vai alla homepage"

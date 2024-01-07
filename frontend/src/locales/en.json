@@ -345,6 +345,11 @@
         "frozen_date": "Prepared on:",
         "start_date": "Start date:",
         "end_date": "End date:",
+        "header_exercise_info": "Exercise",
+        "header_schema": "Schema",
+        "header_schema_note": "Note",
+        "header_text_feedback": "Text feedback",
+        "header_video_feedback": "Video feedback",
         "no_program_title": "No program found",
         "no_program_explanation": "Please, check the url you are navigating on. Alternatively, you may explore OpenStrength!",
         "no_program_action": "Take me to homepage"
