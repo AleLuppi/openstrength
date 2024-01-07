@@ -125,12 +125,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { NamedRoutes } from "@/router";
 import { useUserStore } from "@/stores/user";
 import { UserRole } from "@/helpers/users/user";
+import { useQuasar } from "quasar";
 import type { QTableProps } from "quasar";
 import { doGetDocs } from "@/helpers/database/readwrite";
 import {
@@ -141,6 +142,7 @@ import { ProgramForzenView } from "@/helpers/programs/program";
 
 // Init plugin
 const route = useRoute();
+const $q = useQuasar();
 const i18n = useI18n();
 
 // Get store
@@ -159,6 +161,7 @@ watch(
         numDocs: 1,
         onSuccess: (docVal: { [key: string]: ProgramForzenView }) => {
           programSnapshot.value = Object.values(docVal)[0];
+          $q.loading.hide();
         },
       },
     ),
@@ -210,4 +213,9 @@ const columns: QTableProps["columns"] = [
     style: "width: 10%",
   },
 ];
+
+// Operations to perform on component mount
+onMounted(() => {
+  $q.loading.show();
+});
 </script>
