@@ -48,6 +48,7 @@
         emit-value
         map-options
         class="col-12 col-md-6"
+        required
       />
 
       <os-select
