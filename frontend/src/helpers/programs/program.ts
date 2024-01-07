@@ -403,8 +403,8 @@ export class Program {
     save = false,
   }: {
     program?: Program;
-    save: boolean;
-  }): ProgramForzenView {
+    save?: boolean;
+  } = {}): ProgramForzenView {
     const programToFreeze = program ?? this;
     const frozenView: ProgramForzenView = {
       athlete: programToFreeze.athlete?.referenceName ?? "",

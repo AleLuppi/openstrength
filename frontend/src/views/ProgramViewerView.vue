@@ -77,8 +77,10 @@
         <!-- Custom slot to render values as HTML content -->
         <template v-slot:body-cell="props">
           <q-td :props="props">
-            <div v-for="value in props.value" :key="props.col + '_' + value">
-              {{ value }}
+            <div class="q-gutter-y-sm">
+              <div v-for="value in props.value" :key="props.col + '_' + value">
+                {{ value }}
+              </div>
             </div>
           </q-td>
         </template>
@@ -123,14 +125,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { NamedRoutes } from "@/router";
 import { useUserStore } from "@/stores/user";
-import { useCoachInfoStore } from "@/stores/coachInfo";
 import { UserRole } from "@/helpers/users/user";
 import type { QTableProps } from "quasar";
+import { doGetDocs } from "@/helpers/database/readwrite";
+import {
+  dbCollections,
+  dbSubcollections,
+} from "@/helpers/database/collections";
+import { ProgramForzenView } from "@/helpers/programs/program";
 
 // Init plugin
 const route = useRoute();
@@ -138,14 +145,24 @@ const i18n = useI18n();
 
 // Get store
 const user = useUserStore();
-const coachInfo = useCoachInfoStore();
 
 // Get correct program istance
-const programSnapshot = computed(
-  () =>
-    coachInfo.programs
-      ?.find((program) => program.uid == route.query.id)
-      ?.freeze(),
+const programSnapshot = ref<ProgramForzenView>();
+watch(
+  () => route.query.id,
+  (docId) =>
+    doGetDocs(
+      `${dbCollections.programs}/${docId}/${dbSubcollections.programsSnapshots}`,
+      undefined,
+      {
+        ordering: ["-frozenOn"],
+        numDocs: 1,
+        onSuccess: (docVal: { [key: string]: ProgramForzenView }) => {
+          programSnapshot.value = Object.values(docVal)[0];
+        },
+      },
+    ),
+  { immediate: true },
 );
 
 // Set table columns
