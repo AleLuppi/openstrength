@@ -147,7 +147,8 @@ onBeforeMount(() => {
         router.replace(route.redirectedFrom);
       else
         router.replace({
-          params: { userId: user.uid },
+          ...route,
+          state: { ...history.state, userId: user.uid },
         });
 
       // Show onboarding dialog if required
