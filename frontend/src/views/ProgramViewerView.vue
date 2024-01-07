@@ -75,17 +75,29 @@
 
         <!-- Custom slot to render values as HTML content -->
         <template v-slot:body-cell="props">
-          <q-td :props="props" class="q-td-selected">
-            <div
-              v-html="
-                props.value instanceof Array
-                  ? props.value.join('<br/>')
-                  : props.value
-              "
-            ></div>
+          <q-td :props="props">
+            <div v-for="value in props.value" :key="props.col + '_' + value">
+              {{ value }}
+            </div>
+          </q-td>
+        </template>
+
+        <!-- Custom slot to render exercise title -->
+        <template v-slot:body-cell-exerciseInfo="props">
+          <q-td :props="props">
+            <div class="text-bold">
+              {{ props.value[0] }}
+            </div>
+            <div>
+              {{ props.value[1] }}
+            </div>
           </q-td>
         </template>
       </q-table>
+
+      <!-- TODO: Personal records of reference -->
+
+      <!-- TODO: Exercise descriptions -->
     </div>
 
     <!-- Show something else otherwise -->
@@ -106,10 +118,6 @@
         class="q-ma-lg"
       />
     </div>
-
-    <!-- TODO: Personal records of reference -->
-
-    <!-- TODO: Exercise descriptions -->
   </div>
 </template>
 
@@ -143,13 +151,10 @@ const programSnapshot = computed(
 // TODO i18n in columns labels
 const columns: QTableProps["columns"] = [
   {
-    name: "exerciseFullInfo",
+    name: "exerciseInfo",
     label: "Esercizio",
     align: "left",
-    field: (row) =>
-      `<b>${row.exerciseName} ${row.variantName}</b>${
-        row.note ? "<br/>" + row.note : ""
-      }`,
+    field: (row) => [`${row.exerciseName} ${row.variantName}`, row.note],
     style: "width: 30%",
   },
   {
