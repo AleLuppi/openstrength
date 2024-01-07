@@ -1,23 +1,14 @@
-import { Program, ProgramLine } from "@/helpers/programs/program";
-import { getProgramUniqueDays, getProgramUniqueWeeks } from "./linesManagement";
-
-// Single row of the program to be visualized by the athlete
-interface ProgramDayRow {
-  exerciseName: string;
-  variantName: string;
-  note?: string;
-  schema: string[];
-  schemaNote: string[];
-  textFeedback: boolean[];
-  videoFeedback: boolean[];
-}
-
-// Single day of the program to be visualized by the athlete
-export type ProgramDay = {
-  weekName: string;
-  dayName: string;
-  exercises: ProgramDayRow[];
-};
+import {
+  Program,
+  ProgramLine,
+  ProgramForzenView,
+} from "@/helpers/programs/program";
+import {
+  getProgramUniqueDays,
+  getProgramUniqueWeeks,
+  orderProgramExercises,
+} from "@/helpers/programs/linesManagement";
+import { objectDeepCompare } from "../object";
 
 /**
  * Converts a program line to a schema string (load reps x sets @rpe).
@@ -35,53 +26,60 @@ export function convertLineToSchema(line: ProgramLine): string {
 }
 
 /**
- * Converts program to an array of flat days
+ * Converts program to an array of flat days.
+ *
+ * @param program program that shall be converted.
+ * @returns list of flat days with relevant exercise info.
  */
-export function convertProgramToDayBlocks(program: Program): ProgramDay[] {
-  const days = getProgramUniqueDays(program);
-  const weeks = getProgramUniqueWeeks(program);
-  const result: ProgramDay[] = [];
+export function convertProgramToDayBlocks(
+  program: Program,
+): ProgramForzenView["weekdays"] {
+  // Check input
+  if (!program.programExercises) return [];
 
-  Array.from(weeks).forEach((week) => {
-    Array.from(days).forEach((day) => {
-      const dayRow: ProgramDayRow[] = [];
+  // Initialize interesting values
+  const programExercises = orderProgramExercises(
+    program.programExercises,
+    (week, day, order) => [week, day, order].join("."),
+  );
+  const out: ProgramForzenView["weekdays"] = [];
 
-      // Iterate through each exercise of the day for the specific week
-      program.programExercises?.forEach((exercise) => {
-        if (exercise.scheduleDay === day && exercise.scheduleWeek === week) {
-          const exerciseRow: ProgramDayRow = {
-            exerciseName:
-              exercise?.lines?.[0].programExercise?.exercise?.name ?? "",
-            variantName:
-              exercise?.lines?.[0].programExercise?.exerciseVariant?.name ?? "",
-            note: exercise?.lines?.[0].programExercise?.exerciseNote,
-            schema:
-              exercise.lines?.map((line) => convertLineToSchema(line)) ?? [],
-            schemaNote: exercise.lines?.map((line) => line.note ?? "") ?? [],
-            textFeedback:
-              exercise.lines?.map(
-                (line) => line.requestFeedbackText ?? false,
-              ) ?? [],
-            videoFeedback:
-              exercise.lines?.map(
-                (line) => line.requestFeedbackVideo ?? false,
-              ) ?? [],
-          };
+  Object.entries(programExercises).forEach(([key, programExercise]) => {
+    // Retrieve week and day values
+    const [week, day] = key.split(".");
 
-          dayRow.push(exerciseRow);
-        }
+    // Get interesting exercise info
+    const exerciseInfo: ProgramForzenView["weekdays"][number]["exercises"][number] =
+      {
+        exerciseName:
+          programExercise?.lines?.[0].programExercise?.exercise?.name ?? "",
+        variantName:
+          programExercise?.lines?.[0].programExercise?.exerciseVariant?.name ??
+          "",
+        note: programExercise?.lines?.[0].programExercise?.exerciseNote,
+        schema:
+          programExercise.lines?.map((line) => convertLineToSchema(line)) ?? [],
+        schemaNote: programExercise.lines?.map((line) => line.note ?? "") ?? [],
+        textFeedback:
+          programExercise.lines?.map(
+            (line) => line.requestFeedbackText ?? false,
+          ) ?? [],
+        videoFeedback:
+          programExercise.lines?.map(
+            (line) => line.requestFeedbackVideo ?? false,
+          ) ?? [],
+      };
+
+    // Store exercise info
+    if (out.at(-1)?.weekName === week && out.at(-1)?.dayName === day)
+      out.at(-1)!.exercises.push(exerciseInfo);
+    else
+      out.push({
+        weekName: week,
+        dayName: day,
+        exercises: [exerciseInfo],
       });
-
-      // Add further day data if there are exercise rows
-      if (dayRow.length > 0) {
-        result.push({
-          weekName: week,
-          dayName: day,
-          exercises: dayRow,
-        });
-      }
-    });
   });
 
-  return result;
+  return out;
 }
