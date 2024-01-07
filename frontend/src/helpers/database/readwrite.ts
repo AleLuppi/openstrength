@@ -237,7 +237,7 @@ export async function doGetDocs(
   const filteredConditions = conditions?.filter((val) => val.length >= 3) ?? [];
   const wheres = filteredConditions.map((val) => where(val[0], val[1], val[2]));
   const orderBys = (ordering ?? []).map((val) =>
-    val.startsWith("-") ? orderBy(val, "desc") : orderBy(val),
+    val.startsWith("-") ? orderBy(val.slice(1), "desc") : orderBy(val),
   );
   const limits = numDocs ? [limit(numDocs)] : [];
   const q = query(
