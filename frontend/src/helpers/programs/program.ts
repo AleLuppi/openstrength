@@ -7,7 +7,7 @@ import {
 import { programsCollection } from "@/helpers/database/collections";
 import { User, CoachUser, AthleteUser, UserRole } from "@/helpers/users/user";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
-import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import {
   matchNumberFractionInteger,
   matchNumberFractionPercentageFloat,
@@ -18,6 +18,11 @@ import {
   matchNumberUnsignedFloatWithOptionalUnit,
   matchNumberUnsignedInteger,
 } from "@/helpers/regex";
+import {
+  calculateRepsFromTable,
+  calculateRpeFromTable,
+  rpeRepsTable,
+} from "../charts/chartDatasetComputations";
 
 /**
  * Training program properties.
@@ -499,16 +504,59 @@ export class ProgramLine {
       }
     } else return undefined;
   }
-  //TODO: add case from rpe table (load and rpe present)
+  //TODO: check
   get repsComputedValue(): number | undefined {
+    // Computed from reference to other values
     if (this.repsReference && this.refRepsValue) {
       if (this.repsOperation && matchNumberSignedInteger(this.repsOperation)) {
         const operationValue = parseInt(this.repsOperation);
         return this.refRepsValue + operationValue;
       }
+    }
+    // Estimated from tables
+    else if (
+      (this.rpeValue || this.rpeComputedValue || this.rpeSupposedValue) &&
+      (this.loadValue || this.loadComputedValue || this.loadSupposedValue)
+    ) {
+      const load =
+        this.loadValue ?? this.loadComputedValue ?? this.loadSupposedValue;
+      const rpe =
+        this.rpeValue ?? this.rpeComputedValue ?? this.rpeSupposedValue;
+      // Case 1: load is already a %
+      if (this.loadBaseValue?.toString().includes("%") && load && rpe) {
+        return calculateRepsFromTable(load, rpe, rpeRepsTable);
+      }
+      // Case 2: load is not a % thus must be computed from load (kg) and 1RM/e1RM
+      else if (
+        !this.loadBaseValue?.toString().includes("%") &&
+        load &&
+        rpe &&
+        this.loadReference
+      ) {
+        // Check if load reference is actually an 1RM
+        if (this.loadReference && this.loadReference instanceof MaxLift) {
+          if (this.loadReference.type == MaxLiftType._1RM) {
+            // Compute load
+            const loadPercentage = load / Number(this.loadReference.value);
+            return calculateRepsFromTable(loadPercentage, rpe, rpeRepsTable);
+          } else if (
+            this.loadReference.type == MaxLiftType._3RM ||
+            this.loadReference.type == MaxLiftType._5RM ||
+            this.loadReference.type == MaxLiftType._6RM ||
+            this.loadReference.type == MaxLiftType._8RM ||
+            this.loadReference.type == MaxLiftType._10RM
+          ) {
+            // TODO: Estimate e1RM and compute (to be done when e1RM is available)
+            return undefined;
+          } else {
+            return undefined;
+          }
+        }
+      }
     } else return undefined;
   }
   get loadComputedValue(): number | undefined {
+    // Computed from reference
     if (this.loadReference && this.refLoadValue) {
       if (
         this.loadOperation?.trim() &&
@@ -523,10 +571,49 @@ export class ProgramLine {
           return this.refLoadValue + parseFloat(this.loadOperation);
       } else return undefined;
     }
+    // Estimated from table (only if a reference is selected, TODO: change structure)
+    else if (
+      (this.repsValue || this.repsComputedValue || this.repsSupposedValue) &&
+      (this.rpeValue || this.rpeComputedValue || this.rpeSupposedValue)
+    ) {
+      const reps =
+        this.repsValue ?? this.repsComputedValue ?? this.repsSupposedValue;
+      const rpe =
+        this.rpeValue ?? this.rpeComputedValue ?? this.rpeSupposedValue;
+      // Get load percentage from table
+      const loadPercentage = calculatePercentage1RM(reps, rpe, rpeRepsTable);
+
+      // Now to compute the value we have to use the 1RM or e1RM
+      if (this.loadReference && this.loadReference instanceof MaxLift) {
+        const maxliftValue = Number(this.loadReference.value);
+
+        if (
+          this.loadReference.type == MaxLiftType._1RM &&
+          maxliftValue &&
+          loadPercentage != undefined
+        ) {
+          return 0.01 * loadPercentage * maxliftValue;
+        } else if (
+          this.loadReference.type == MaxLiftType._3RM ||
+          this.loadReference.type == MaxLiftType._5RM ||
+          this.loadReference.type == MaxLiftType._6RM ||
+          this.loadReference.type == MaxLiftType._8RM ||
+          this.loadReference.type == MaxLiftType._10RM
+        ) {
+          // TODO: Estimate e1RM and compute (to be done when e1RM is available)
+          return undefined;
+        } else {
+          return undefined;
+        }
+      }
+
+      return undefined;
+    }
 
     return undefined;
   }
   get rpeComputedValue(): number | undefined {
+    // Computed from reference to other values
     if (this.rpeReference?.rpeValue) {
       if (this.rpeOperation && matchNumberSignedInteger(this.rpeOperation)) {
         const operationValue = parseInt(this.rpeOperation);
@@ -534,6 +621,48 @@ export class ProgramLine {
 
         // Ensure the computed value is between 0 and 10
         return Math.max(0, Math.min(10, computedValue));
+      }
+    }
+    //TODO: check
+    // Estimated from tables
+    else if (
+      (this.repsValue || this.repsComputedValue || this.repsSupposedValue) &&
+      (this.loadValue || this.loadComputedValue || this.loadSupposedValue)
+    ) {
+      const load =
+        this.loadValue ?? this.loadComputedValue ?? this.loadSupposedValue;
+      const reps =
+        this.repsValue ?? this.repsComputedValue ?? this.repsSupposedValue;
+      // Case 1: load is already a %
+      if (this.loadBaseValue?.toString().includes("%") && load && reps) {
+        return calculateRpeFromTable(load, reps, rpeRepsTable);
+      }
+      // Case 2: load is not a % thus must be computed from load (kg) and 1RM/e1RM
+      else if (
+        !this.loadBaseValue?.toString().includes("%") &&
+        load &&
+        reps &&
+        this.loadReference
+      ) {
+        // Check if load reference is actually an 1RM
+        if (this.loadReference && this.loadReference instanceof MaxLift) {
+          if (this.loadReference.type == MaxLiftType._1RM) {
+            // Compute load
+            const loadPercentage = load / Number(this.loadReference.value);
+            return calculateRpeFromTable(loadPercentage, reps, rpeRepsTable);
+          } else if (
+            this.loadReference.type == MaxLiftType._3RM ||
+            this.loadReference.type == MaxLiftType._5RM ||
+            this.loadReference.type == MaxLiftType._6RM ||
+            this.loadReference.type == MaxLiftType._8RM ||
+            this.loadReference.type == MaxLiftType._10RM
+          ) {
+            // TODO: Estimate e1RM and compute (to be done when e1RM is available)
+            return undefined;
+          } else {
+            return undefined;
+          }
+        }
       }
     } else return undefined;
   }
@@ -1241,4 +1370,11 @@ export function unflattenProgram(
   if (storeUnresolved && !outProgram.athlete && flatProgram.athleteId)
     storeUnresolved.athlete = [outProgram, flatProgram.athleteId];
   return outProgram;
+}
+function calculatePercentage1RM(
+  reps: number | undefined,
+  rpe: number | undefined,
+  rpeRepsTable: number[][],
+) {
+  throw new Error("Function not implemented.");
 }
