@@ -717,6 +717,7 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
   if (!currProgram) return;
   currProgram.coach = user.baseUser;
   currProgram.save({
+    saveFrozenView: true,
     onSuccess: () => {
       // Inform user about saved program
       setSavedValue();
