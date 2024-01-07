@@ -161,7 +161,8 @@ onBeforeMount(() => {
 
       // Refresh page to allow redirect if on unauthorized page
       router.replace({
-        params: { userId: "" },
+        ...route,
+        state: { ...history.state, userId: "" },
       });
     },
   });
