@@ -17,6 +17,7 @@
                 name: NamedRoutes.program,
                 params: { programId: route.query.id },
               }"
+              class="no-print"
               >{{ $t("coach.program_management.viewer.back") }}</q-btn
             >
           </div>
