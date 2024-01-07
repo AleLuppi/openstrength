@@ -1,12 +1,14 @@
+import { ExerciseLoadType } from "../exercises/exercise";
 import { MaxLift, MaxLiftType } from "../maxlifts/maxlift";
 import { ProgramLine } from "../programs/program";
+import { AthleteUser } from "../users/user";
 
 /**
  * Define RPE-reps table.
  * Each value is a percentage of 1RM
  * Column index define the reps, row index define the rpe
  */
-const rpeRepsTable: number[][] = [
+export const rpeRepsTable: number[][] = [
   //1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  reps
   [100, 96, 92, 89, 86, 84, 81, 79, 76, 74, 71, 69, 66, 64, 61], // 10
   [98, 94, 91, 88, 85, 82, 80, 77, 75, 72, 70, 67, 65, 62, 60], // 9.5
@@ -17,6 +19,60 @@ const rpeRepsTable: number[][] = [
   [89, 86, 84, 81, 79, 76, 74, 71, 68, 65, 62, 59, 56, 53, 50], // 7
   [88, 85, 82, 80, 77, 75, 72, 69, 67, 64, 62, 59, 57, 54, 52], // 6.5 rpe
 ];
+
+/**
+ * Estimates 1RM value based on exercise type and rpe table for a given maxlift
+ * @param maxlift maxlift to be used for the estimation
+ * @param athlete athlete whose 1RM should be estimated
+ * @param rpeTable actual table to use (NOTE: to keep as a variable as the coach could also potentially want to customize)
+ * @returns the estimated 1RM value
+ */
+export function estimate1RMfromNRM(
+  maxlift: MaxLift,
+  rpeTable: number[][],
+): number | undefined {
+  if (typeof maxlift.value != "number" || !maxlift.type || !rpeTable) {
+    console.error("Invalid value, maxlift type, or RPE table.");
+    return undefined;
+  }
+
+  let estimated1RMValue = undefined;
+  let bodyweight = undefined;
+
+  // Check based on load type
+  if (maxlift.exercise?.defaultVariant?.loadType == ExerciseLoadType.loaded) {
+    bodyweight = maxlift.athlete?.weight ? Number(maxlift.athlete.weight) : 75;
+  }
+
+  switch (maxlift.type) {
+    case MaxLiftType._1RM:
+      estimated1RMValue = maxlift.value;
+      break;
+    case MaxLiftType._3RM:
+      estimated1RMValue =
+        (bodyweight ?? 0 + maxlift.value) / (0.01 * rpeTable[0][2]);
+      break;
+    case MaxLiftType._5RM:
+      estimated1RMValue =
+        (bodyweight ?? 0 + maxlift.value) / (0.01 * rpeTable[0][4]);
+      break;
+    case MaxLiftType._6RM:
+      estimated1RMValue =
+        (bodyweight ?? 0 + maxlift.value) / (0.01 * rpeTable[0][5]);
+      break;
+    case MaxLiftType._8RM:
+      estimated1RMValue =
+        (bodyweight ?? 0 + maxlift.value) / (0.01 * rpeTable[0][7]);
+      break;
+    case MaxLiftType._10RM:
+      estimated1RMValue =
+        (bodyweight ?? 0 + maxlift.value) / (0.01 * rpeTable[0][9]);
+      break;
+  }
+  return estimated1RMValue
+    ? Math.round(estimated1RMValue * 10) / 10 - (bodyweight ?? 0)
+    : undefined;
+}
 
 /**
  * Method to compute the percentage of 1RM [%] from the rpe-reps table
