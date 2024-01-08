@@ -12,11 +12,13 @@ import quasarUserOptions from "./quasar-user-options";
 import i18n from "./i18n";
 
 // Custom components to register
-import osInput from "./components/basic/osInput.vue";
+import osButtonSupport from "./components/basic/osButtonSupport.vue";
 import osField from "./components/basic/osField.vue";
+import osInput from "./components/basic/osInput.vue";
 import osSelect from "./components/basic/osSelect.vue";
 import osTable from "./components/basic/osTable.vue";
 import osTableSheet from "./components/basic/osTableSheet.vue";
+import osTextCopyable from "./components/basic/osTextCopyable.vue";
 import osToggleButtons from "./components/basic/osToggleButtons.vue";
 import osVariableElement from "./components/basic/osVariableElement.vue";
 import osWrapWithLines from "./components/basic/osWrapWithLines.vue";
@@ -33,11 +35,13 @@ app.provide("globalProperties", globalProperties);
 app.config.globalProperties.$globalProperties = globalProperties;
 
 // Register components
-app.component("osInput", osInput);
+app.component("osButtonSupport", osButtonSupport);
 app.component("osField", osField);
+app.component("osInput", osInput);
 app.component("osSelect", osSelect);
 app.component("osTable", osTable);
 app.component("osTableSheet", osTableSheet);
+app.component("osTextCopyable", osTextCopyable);
 app.component("osToggleButtons", osToggleButtons);
 app.component("osVariableElement", osVariableElement);
 app.component("osWrapWithLines", osWrapWithLines);

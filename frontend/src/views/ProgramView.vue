@@ -19,7 +19,7 @@
             <!-- Save button -->
             <div
               @click="saveProgram()"
-              class="col-6 row items-center justify-center"
+              class="col-4 row items-center justify-center"
               :class="{ 'cursor-pointer': !programSaved }"
             >
               <q-btn
@@ -45,45 +45,50 @@
               </span>
             </div>
 
-            <!-- View current program -->
-            <!-- TODO i18n -->
-            <div class="column justify-center">
-              <router-link
-                :to="{
-                  name: NamedRoutes.view_program,
-                  query: { id: selectedProgram.uid },
-                }"
-                >View Current Program</router-link
-              >
-            </div>
-
             <!-- Display and update assigned user -->
             <div
               v-if="selectedProgram.athlete"
-              class="col-6 row items-center justify-center"
+              class="col-8 row items-center justify-center q-col-gutter-sm"
             >
-              <span class="text-black q-px-md">
+              <span class="text-black">
                 {{ $t("coach.program_management.builder.assigned_athlete") }}
               </span>
-              <q-btn
-                color="secondary"
-                outline
-                :dense="Boolean(selectedProgram.athlete)"
-              >
-                <q-item dense class="q-py-none q-px-md">
-                  <q-item-section
-                    avatar
-                    v-if="$q.screen.gt.xs && selectedProgram.athlete.photoUrl"
-                  >
-                    <q-avatar size="md">
-                      <img :src="selectedProgram.athlete.photoUrl" />
-                    </q-avatar>
-                  </q-item-section>
-                  <q-item-section>{{
-                    selectedProgram.athlete.referenceName
-                  }}</q-item-section>
-                </q-item>
-              </q-btn>
+              <div>
+                <q-btn
+                  color="secondary"
+                  outline
+                  :dense="Boolean(selectedProgram.athlete)"
+                >
+                  <q-item dense class="q-py-none q-px-md">
+                    <q-item-section
+                      avatar
+                      v-if="$q.screen.gt.xs && selectedProgram.athlete.photoUrl"
+                    >
+                      <q-avatar size="md">
+                        <img :src="selectedProgram.athlete.photoUrl" />
+                      </q-avatar>
+                    </q-item-section>
+                    <q-item-section>{{
+                      selectedProgram.athlete.referenceName
+                    }}</q-item-section>
+                  </q-item>
+                </q-btn>
+              </div>
+
+              <!-- Get shareable link to program -->
+              <!-- TODO i18n -->
+              <!-- TODO :to="{
+                    name: NamedRoutes.view_program,
+                    query: { id: selectedProgram.uid },
+                  }" -->
+              <div>
+                <q-btn
+                  @click="showShareProgramDialog = true"
+                  icon="fa-solid fa-arrow-up-right-from-square"
+                  :label="'Share program'"
+                >
+                </q-btn>
+              </div>
             </div>
           </div>
 
@@ -407,6 +412,13 @@
     >
     </DialogProgramAssignAthlete>
 
+    <!-- Dialog to share program with athlete -->
+    <DialogProgramShareWithAthlete
+      v-if="selectedProgram?.uid"
+      v-model="showShareProgramDialog"
+      :program-id="selectedProgram.uid"
+    ></DialogProgramShareWithAthlete>
+
     <!-- Dialog to change unsaved program -->
     <q-dialog v-model="showChangeProgramDialog">
       <q-card>
@@ -493,6 +505,7 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
+import DialogProgramShareWithAthlete from "@/components/dialogs/DialogProgramShareWithAthlete.vue";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
 import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
 import { AthleteUser } from "@/helpers/users/user";
@@ -547,6 +560,7 @@ const filterExercise = ref<string[]>();
 const showNewProgramDialog = ref(false);
 const showUnsavedProgramRestoreDialog = ref(false);
 const showAthleteAssigningDialog = ref(false);
+const showShareProgramDialog = ref(false);
 const programManagerExpanded = ref(false);
 const programManagerHeight = ref(0);
 
