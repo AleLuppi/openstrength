@@ -334,7 +334,30 @@
         "start_program": "Create or select a program to start",
         "new_program": "New program",
         "new_program_info": "Fill in the fields with the info of your new program",
-        "new_program_submit": "Proceed"
+        "new_program_submit": "Proceed",
+        "view_current": "View current program"
+      },
+      "viewer": {
+        "title": "Program for",
+        "back": "Back to builder",
+        "program_name": "Program Name:",
+        "description": "Description:",
+        "frozen_date": "Prepared on:",
+        "start_date": "Start date:",
+        "end_date": "End date:",
+        "header_exercise_info": "Exercise",
+        "header_schema": "Schema",
+        "header_schema_note": "Note",
+        "header_text_feedback": "Text feedback",
+        "header_video_feedback": "Video feedback",
+        "no_program_title": "No program found",
+        "no_program_explanation": "Please, check the url you are navigating on. Alternatively, you may explore OpenStrength!",
+        "no_program_action": "Take me to homepage",
+        "send_program": "Send program",
+        "send_program_title": "Your program is ready!",
+        "send_program_description": "You can see the details at this link.",
+        "dialog_title": "Send this link to your athlete",
+        "preview": "View preview"
       },
       "filter": {
         "title": "Filter by...",
@@ -408,6 +431,8 @@
     "note": "Note",
     "label": "Label",
     "update": "Update",
-    "no_results": "No results"
+    "no_results": "No results",
+    "yes": "Yes",
+    "no": "No"
   }
 }

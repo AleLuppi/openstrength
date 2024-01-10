@@ -4,7 +4,10 @@ import {
   doUpdateDoc,
   doDeleteDoc,
 } from "@/helpers/database/readwrite";
-import { programsCollection } from "@/helpers/database/collections";
+import {
+  dbCollections,
+  dbSubcollections,
+} from "@/helpers/database/collections";
 import { User, CoachUser, AthleteUser, UserRole } from "@/helpers/users/user";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
@@ -18,6 +21,7 @@ import {
   matchNumberUnsignedFloatWithOptionalUnit,
   matchNumberUnsignedInteger,
 } from "@/helpers/regex";
+import { convertProgramToDayBlocks } from "@/helpers/programs/converters";
 
 /**
  * Training program properties.
@@ -134,6 +138,31 @@ export type ProgramLineProps = {
 };
 
 /**
+ * Frozen program object.
+ */
+export type ProgramForzenView = {
+  athlete: string;
+  name: string;
+  description: string | undefined;
+  startedOn: Date | undefined;
+  finishedOn: Date | undefined;
+  weekdays: {
+    weekName: string;
+    dayName: string;
+    exercises: {
+      exerciseName: string;
+      variantName: string;
+      note?: string;
+      schema: string[];
+      schemaNote: string[];
+      textFeedback: boolean[];
+      videoFeedback: boolean[];
+    }[];
+  }[];
+  frozenOn: Date;
+};
+
+/**
  * Training program entity.
  *
  * @public
@@ -215,15 +244,18 @@ export class Program {
    * Store a new program on database.
    *
    * @param program element that shall be stored.
+   * @param saveFrozenView if true, create a snapshot of the program and save it.
    * @param onSuccess function to execute when operation is successful.
    * @param onError function to execute when operation fails.
    */
   saveNew({
     program,
+    saveFrozenView = false,
     onSuccess,
     onError,
   }: {
     program?: Program;
+    saveFrozenView?: boolean;
     onSuccess?: Function;
     onError?: Function;
   } = {}) {
@@ -231,21 +263,25 @@ export class Program {
     programToSave.createdOn = new Date();
     programToSave.lastUpdated = new Date();
     addDocProgram(programToSave, { onSuccess: onSuccess, onError: onError });
+    if (saveFrozenView) programToSave.freeze({ save: true });
   }
 
   /**
    * Update an existing program on database.
    *
    * @param program element that shall be updated.
+   * @param saveFrozenView if true, create a snapshot of the program and save it.
    * @param onSuccess function to execute when operation is successful.
    * @param onError function to execute when operation fails.
    */
   saveUpdate({
     program,
+    saveFrozenView = false,
     onSuccess,
     onError,
   }: {
     program?: Program;
+    saveFrozenView?: boolean;
     onSuccess?: Function;
     onError?: Function;
   } = {}) {
@@ -255,28 +291,41 @@ export class Program {
       onSuccess: onSuccess,
       onError: onError,
     });
+    if (saveFrozenView) programToUpdate.freeze({ save: true });
   }
 
   /**
    * Store a new program on database, or update if already exists.
    *
    * @param program element that shall be saved or updated.
+   * @param saveFrozenView if true, create a snapshot of the program and save it.
    * @param onSuccess function to execute when operation is successful.
    * @param onError function to execute when operation fails.
    */
   save({
     program,
+    saveFrozenView = false,
     onSuccess,
     onError,
   }: {
     program?: Program;
+    saveFrozenView?: boolean;
     onSuccess?: Function;
     onError?: Function;
   } = {}) {
     const programToSave = program || this;
     if (programToSave.uid)
-      programToSave.saveUpdate({ onSuccess: onSuccess, onError: onError });
-    else programToSave.saveNew({ onSuccess: onSuccess, onError: onError });
+      programToSave.saveUpdate({
+        saveFrozenView: saveFrozenView,
+        onSuccess: onSuccess,
+        onError: onError,
+      });
+    else
+      programToSave.saveNew({
+        saveFrozenView: saveFrozenView,
+        onSuccess: onSuccess,
+        onError: onError,
+      });
   }
 
   /**
@@ -322,16 +371,16 @@ export class Program {
     }
 
     // Delete the program
-    doDeleteDoc(programsCollection, programToDelete.uid, {
+    doDeleteDoc(dbCollections.programs, programToDelete.uid, {
       onSuccess: onSuccess,
       onError: onError,
     });
   }
 
   /**
-   * Get all lines of a program.
+   * Get all lines of the program.
    *
-   * @returns list of all lines in a program.
+   * @returns list of all lines in the program.
    */
   getLines() {
     return this.programExercises?.reduce(
@@ -341,6 +390,34 @@ export class Program {
           : allLines,
       [],
     );
+  }
+
+  /**
+   * Get a frozen view of the program.
+   *
+   * @param program element that shall be frozen.
+   * @param save if true, save frozen view to database.
+   */
+  freeze({
+    program,
+    save = false,
+  }: {
+    program?: Program;
+    save?: boolean;
+  } = {}): ProgramForzenView {
+    const programToFreeze = program ?? this;
+    const frozenView: ProgramForzenView = {
+      athlete: programToFreeze.athlete?.referenceName ?? "",
+      name: programToFreeze.name ?? "",
+      description: programToFreeze.description,
+      startedOn: programToFreeze.startedOn,
+      finishedOn: programToFreeze.finishedOn,
+      weekdays: convertProgramToDayBlocks(programToFreeze),
+      frozenOn: new Date(),
+    };
+    if (save && programToFreeze.uid)
+      addDocProgramFrozen(frozenView, programToFreeze.uid);
+    return frozenView;
   }
 }
 
@@ -977,13 +1054,36 @@ export function addDocProgram(
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
   const { uid, ...programObj } = flattenProgram(program);
-  doAddDoc(programsCollection, programObj, {
+  doAddDoc(dbCollections.programs, programObj, {
     onSuccess: (docRef: DocumentReference) => {
       program.uid = docRef.id;
       onSuccess?.(docRef);
     },
     onError: onError,
   });
+}
+
+/**
+ * Store frozen program on database.
+ *
+ * @param programView element to store on database.
+ * @param programId reference program id where frozen view should be saved.
+ * @param onSuccess function to execute when operation is successful.
+ * @param onError function to execute when operation fails.
+ */
+export function addDocProgramFrozen(
+  programView: ProgramForzenView,
+  programId: string,
+  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+) {
+  doAddDoc(
+    `${dbCollections.programs}/${programId}/${dbSubcollections.programsSnapshots}`,
+    programView,
+    {
+      onSuccess: onSuccess,
+      onError: onError,
+    },
+  );
 }
 
 /**
@@ -1000,7 +1100,7 @@ export function updateDocProgram(
   const { uid, ...programObj } = flattenProgram(program);
   const docId = program.uid;
   if (docId)
-    doUpdateDoc(programsCollection, docId, programObj, {
+    doUpdateDoc(dbCollections.programs, docId, programObj, {
       onSuccess: (docRef: DocumentReference) => {
         onSuccess?.(docRef);
       },

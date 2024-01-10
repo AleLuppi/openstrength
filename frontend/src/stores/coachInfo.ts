@@ -1,12 +1,7 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { doGetDocs } from "@/helpers/database/readwrite";
-import {
-  exercisesCollection,
-  usersCollection,
-  programsCollection,
-  maxliftsCollection,
-} from "@/helpers/database/collections";
+import { dbCollections } from "@/helpers/database/collections";
 import { UserRole, AthleteUser, AthleteUserProps } from "@/helpers/users/user";
 import {
   Exercise,
@@ -202,7 +197,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
 
     // Get documents
     doGetDocs(
-      usersCollection,
+      dbCollections.users,
       [
         ["coachId", "==", coachId],
         ["role", "==", UserRole.athlete],
@@ -248,7 +243,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     if (!coachId || (quiet && _exercises.value)) return;
 
     // Get documents
-    doGetDocs(exercisesCollection, [["userId", "==", coachId]], {
+    doGetDocs(dbCollections.exercises, [["userId", "==", coachId]], {
       onSuccess: (docs: { [key: string]: any }) => {
         const exercisesFromDoc: Exercise[] = [];
         Object.entries(docs).forEach(([uid, doc]) =>
@@ -290,7 +285,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
 
     // Get documents
     const unresolved: typeof _programsUnresolved.value = {};
-    doGetDocs(programsCollection, [["coachId", "==", coachId]], {
+    doGetDocs(dbCollections.programs, [["coachId", "==", coachId]], {
       onSuccess: (docs: { [key: string]: any }) => {
         const programsFromDoc: Program[] = [];
         const currUnresolved: {
@@ -367,7 +362,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     if (!coachId || (quiet && _maxlifts.value)) return;
 
     // Get documents
-    doGetDocs(maxliftsCollection, [["coachId", "==", coachId]], {
+    doGetDocs(dbCollections.maxlifts, [["coachId", "==", coachId]], {
       onSuccess: (docs: {
         [key: string]: Omit<MaxLiftProps, "exercise"> & { exercise: string };
       }) => {

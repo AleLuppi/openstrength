@@ -1,4 +1,9 @@
-import { createRouter, createWebHistory, RouteRecordName } from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  RouteRecordName,
+  RouteRecordRaw,
+} from "vue-router";
 import { useUserStore } from "@/stores/user";
 import { UserRole } from "@/helpers/users/user";
 import {
@@ -13,6 +18,7 @@ import HomeView from "@/views/HomeView.vue";
 const AthletesView = () => import("@/views/AthletesView.vue");
 const LibraryView = () => import("@/views/LibraryView.vue");
 const ProgramView = () => import("@/views/ProgramView.vue");
+const ProgramViewerView = () => import("@/views/ProgramViewerView.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
@@ -33,6 +39,8 @@ export enum NamedRoutes {
   athletes = "athletes",
   library = "library",
   program = "program",
+  view = "view",
+  view_program = "program_view",
   login = "login",
   register = "register",
   profile = "profile",
@@ -61,7 +69,7 @@ export enum NamedRoutes {
  *                               defined.
  */
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: "/",
     name: NamedRoutes.home,
@@ -100,6 +108,26 @@ const routes = [
       redirectNotAuthorized: "home",
       showRightDrawer: RightDrawerProgramElements,
     },
+  },
+  {
+    path: "/view",
+    name: NamedRoutes.view,
+    meta: {
+      title: "View",
+      showHeader: false,
+      showFooter: true,
+      showLeftDrawer: false,
+    },
+    children: [
+      {
+        path: "program",
+        name: NamedRoutes.view_program,
+        component: ProgramViewerView,
+        meta: {
+          title: "View program",
+        },
+      },
+    ],
   },
   {
     path: "/login",
