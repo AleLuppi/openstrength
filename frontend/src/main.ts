@@ -10,12 +10,14 @@ import VueGtag from "vue-gtag";
 import { Quasar } from "quasar";
 import quasarUserOptions from "./quasar-user-options";
 import i18n from "./i18n";
+import VueSocialSharing from "vue-social-sharing";
 
 // Custom components to register
 import osButtonSupport from "./components/basic/osButtonSupport.vue";
 import osField from "./components/basic/osField.vue";
 import osInput from "./components/basic/osInput.vue";
 import osSelect from "./components/basic/osSelect.vue";
+import osSocialSharingItems from "./components/basic/osSocialSharingItems.vue";
 import osTable from "./components/basic/osTable.vue";
 import osTableSheet from "./components/basic/osTableSheet.vue";
 import osTextCopyable from "./components/basic/osTextCopyable.vue";
@@ -39,6 +41,7 @@ app.component("osButtonSupport", osButtonSupport);
 app.component("osField", osField);
 app.component("osInput", osInput);
 app.component("osSelect", osSelect);
+app.component("osSocialSharingItems", osSocialSharingItems);
 app.component("osTable", osTable);
 app.component("osTableSheet", osTableSheet);
 app.component("osTextCopyable", osTextCopyable);
@@ -54,7 +57,8 @@ app
   .use(Quasar, quasarUserOptions)
   .use(VueGtag, {
     config: { id: "G-G8BLW1JL0M" },
-  });
+  })
+  .use(VueSocialSharing);
 
 // Mount the application
 app.mount("#app");

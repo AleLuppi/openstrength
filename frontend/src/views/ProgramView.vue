@@ -76,11 +76,7 @@
               </div>
 
               <!-- Get shareable link to program -->
-              <!-- TODO i18n -->
-              <!-- TODO :to="{
-                    name: NamedRoutes.view_program,
-                    query: { id: selectedProgram.uid },
-                  }" -->
+              <!-- TODO i18n on label -->
               <div>
                 <q-btn
                   @click="showShareProgramDialog = true"
