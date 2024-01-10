@@ -15,11 +15,11 @@
           class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest"
         >
           <!-- Utility buttons -->
-          <div class="row justify-evenly">
+          <div class="row justify-between">
             <!-- Save button -->
             <div
               @click="saveProgram()"
-              class="col-4 row items-center justify-center"
+              class="row items-center justify-center"
               :class="{ 'cursor-pointer': !programSaved }"
             >
               <q-btn
@@ -48,7 +48,7 @@
             <!-- Display and update assigned user -->
             <div
               v-if="selectedProgram.athlete"
-              class="col-8 row items-center justify-center q-col-gutter-sm"
+              class="row items-center justify-center q-col-gutter-sm"
             >
               <span class="text-black">
                 {{ $t("coach.program_management.builder.assigned_athlete") }}
@@ -74,17 +74,19 @@
                   </q-item>
                 </q-btn>
               </div>
+            </div>
 
-              <!-- Get shareable link to program -->
-              <!-- TODO i18n on label -->
-              <div>
-                <q-btn
-                  @click="showShareProgramDialog = true"
-                  icon="fa-solid fa-arrow-up-right-from-square"
-                  :label="'Share program'"
-                >
-                </q-btn>
-              </div>
+            <!-- Get shareable link to program -->
+            <!-- TODO i18n on label -->
+            <div>
+              <q-btn
+                @click="showShareProgramDialog = true"
+                outline
+                flat
+                icon="sym_o_share"
+                :label="$t('coach.program_management.viewer.send_program')"
+              >
+              </q-btn>
             </div>
           </div>
 

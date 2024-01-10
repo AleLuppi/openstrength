@@ -8,12 +8,13 @@
         <os-text-copyable :text="urlFullPath"></os-text-copyable>
       </q-card-section>
       <q-card-section>
-        <!-- TODO i18n title and description -->
         <os-social-sharing-items
           :url="urlFullPath"
           :networks="['whatsapp', 'telegram', 'email']"
-          title="Il tuo programma è pronto!"
-          description="Puoi vedere i dettagli sul tuo programma a questo link."
+          :title="$t('coach.program_management.viewer.send_program_title')"
+          :description="
+            $t('coach.program_management.viewer.send_program_description')
+          "
           padding="xs"
           class="row items-center q-gutter-x-sm"
         ></os-social-sharing-items>

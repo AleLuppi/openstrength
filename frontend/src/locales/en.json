@@ -352,7 +352,10 @@
         "header_video_feedback": "Video feedback",
         "no_program_title": "No program found",
         "no_program_explanation": "Please, check the url you are navigating on. Alternatively, you may explore OpenStrength!",
-        "no_program_action": "Take me to homepage"
+        "no_program_action": "Take me to homepage",
+        "send_program": "Send program",
+        "send_program_title": "Your program is ready!",
+        "send_program_description": "You can see the details at this link."
       },
       "filter": {
         "title": "Filter by...",

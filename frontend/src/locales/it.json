@@ -353,7 +353,11 @@
         "header_video_feedback": "Richiesto video",
         "no_program_title": "Nessun programma trovato",
         "no_program_explanation": "Controlla l'url a cui stai navigando. Oppure, esplora OpenStrength!",
-        "no_program_action": "Vai alla homepage"
+        "no_program_action": "Vai alla homepage",
+        "send_program": "Invia programma",
+        "send_program_title": "Il tuo programma è pronto!",
+        "send_program_description": "Puoi vedere i dettagli a questo link."
+
       },
       "filter": {
         "title": "Filtra per...",
