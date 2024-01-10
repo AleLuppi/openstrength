@@ -356,7 +356,9 @@
         "no_program_action": "Vai alla homepage",
         "send_program": "Invia programma",
         "send_program_title": "Il tuo programma è pronto!",
-        "send_program_description": "Puoi vedere i dettagli a questo link."
+        "send_program_description": "Puoi vedere i dettagli a questo link.",
+        "dialog_title": "Invia questo link al tuo atleta"
+
 
       },
       "filter": {

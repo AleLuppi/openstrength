@@ -5,9 +5,11 @@
   >
     <q-card>
       <q-card-section>
+        <h6>{{ $t("coach.program_management.viewer.dialog_title") }}</h6>
         <os-text-copyable :text="urlFullPath"></os-text-copyable>
       </q-card-section>
-      <q-card-section>
+      <!-- TODO: solve console errors -->
+      <!--   <q-card-section>
         <os-social-sharing-items
           :url="urlFullPath"
           :networks="['whatsapp', 'telegram', 'email']"
@@ -18,7 +20,7 @@
           padding="xs"
           class="row items-center q-gutter-x-sm"
         ></os-social-sharing-items>
-      </q-card-section>
+      </q-card-section> -->
     </q-card>
   </q-dialog>
 </template>

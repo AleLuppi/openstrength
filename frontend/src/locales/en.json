@@ -355,7 +355,8 @@
         "no_program_action": "Take me to homepage",
         "send_program": "Send program",
         "send_program_title": "Your program is ready!",
-        "send_program_description": "You can see the details at this link."
+        "send_program_description": "You can see the details at this link.",
+        "dialog_title": "Send this link to your athlete"
       },
       "filter": {
         "title": "Filter by...",
