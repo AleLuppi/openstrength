@@ -45,16 +45,6 @@ const emit = defineEmits<{
   "update:modelValue": [value: Boolean];
 }>();
 
-// Get full shareable path
-const urlFullPath = computed(
-  () =>
-    window.location.origin +
-    router.resolve({
-      name: NamedRoutes.view_program,
-      query: { id: props.programId },
-    }).fullPath,
-);
-
 // Get relative path for preview
 const urlRelativePath = computed(
   () =>
@@ -62,5 +52,10 @@ const urlRelativePath = computed(
       name: NamedRoutes.view_program,
       query: { id: props.programId },
     }).fullPath,
+);
+
+// Get full shareable path
+const urlFullPath = computed(
+  () => window.location.origin + urlRelativePath.value,
 );
 </script>

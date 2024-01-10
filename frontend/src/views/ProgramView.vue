@@ -77,7 +77,6 @@
             </div>
 
             <!-- Get shareable link to program -->
-            <!-- TODO i18n on label -->
             <div>
               <q-btn
                 @click="showShareProgramDialog = true"
