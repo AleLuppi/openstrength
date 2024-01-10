@@ -11,12 +11,7 @@
         <!-- TODO i18n title and description -->
         <os-social-sharing-items
           :url="urlFullPath"
-          :networks="[
-            'whatsapp',
-            'telegram',
-            $q.platform.is.mobile ? 'messenger' : 'facebook',
-            'email',
-          ]"
+          :networks="['whatsapp', 'telegram', 'email']"
           title="Il tuo programma è pronto!"
           description="Puoi vedere i dettagli sul tuo programma a questo link."
           padding="xs"
@@ -30,10 +25,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import router, { NamedRoutes } from "@/router";
-import { useQuasar } from "quasar";
-
-// Init plugin
-const $q = useQuasar();
 
 // Define props
 const props = defineProps<{
