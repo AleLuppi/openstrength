@@ -634,9 +634,7 @@
           :label="$t('coach.program_management.builder.new_exercise')"
           @click="addTable(idScheduleInfo.toString())"
           flat
-          outline
           rounded
-          unelevated
         >
           <q-tooltip :delay="500">
             {{ $t("coach.program_management.builder.new_exercise_tooltip") }}
@@ -647,9 +645,7 @@
           :label="$t('coach.program_management.builder.new_day')"
           @click="addWeekDayAfter(idScheduleInfo.toString(), true)"
           flat
-          outline
           rounded
-          unelevated
         >
           <q-tooltip :delay="500">
             {{ $t("coach.program_management.builder.new_day_tooltip") }}
@@ -660,9 +656,7 @@
           :label="$t('coach.program_management.builder.new_week')"
           @click="addWeekDayAfter(idScheduleInfo.toString(), false)"
           flat
-          outline
           rounded
-          unelevated
         >
           <q-tooltip :delay="500">
             {{ $t("coach.program_management.builder.new_week_tooltip") }}
@@ -681,20 +675,10 @@
       <q-btn
         icon="add"
         :label="$t('coach.program_management.builder.new_day')"
-        @click="editWeekDayName = ['', '']"
+        @click="renameWeekDay(['1', '1'], ['', ''])"
         rounded
         unelevated
-      >
-        <FormProgramNewWeekDay
-          v-model="editWeekDayName"
-          @save="renameWeekDay"
-          :cover="false"
-          anchor="bottom middle"
-          self="top middle"
-          :offset="[0, 5]"
-        >
-        </FormProgramNewWeekDay>
-      </q-btn>
+      ></q-btn>
     </div>
 
     <!-- Show something when filters remove any exercise -->
