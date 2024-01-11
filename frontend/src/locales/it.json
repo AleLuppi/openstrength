@@ -319,6 +319,7 @@
         "line_delete": "Elimina",
         "day_rename": "Rinomina",
         "day_duplicate": "Duplica in un altro giorno di questa settimana",
+        "day_duplicate_form": "Duplica giorno in...",
         "day_delete": "Elimina giorno",
         "empty": "Inizia il tuo programma ora aggiungendo il tuo primo esercizio!",
         "reference_select_line": "Seleziona una linea",

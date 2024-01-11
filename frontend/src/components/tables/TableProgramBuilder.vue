@@ -14,6 +14,7 @@
           'q-mt-lg': firstTablesInDay.indexOf(idScheduleInfo.toString()) > 0,
         }"
       >
+        <!-- Day and week names -->
         <h6 class="q-mt-none">
           <span class="underlined-dashed cursor-pointer text-h4 text-margin-xs">
             {{ getWeekDisplayName(idScheduleInfo, true) }}
@@ -91,6 +92,7 @@
           </span>
         </h6>
 
+        <!-- Management buttons -->
         <q-btn
           @click="
             editWeekDayName = splitScheduleInfoNames(idScheduleInfo.toString())
@@ -116,9 +118,8 @@
           >
           </FormProgramNewWeekDay>
         </q-btn>
-
         <q-btn
-          @click="duplicateWholeDay(idScheduleInfo.toString())"
+          @click="editWeekDayName = ['', '']"
           icon="fa-regular fa-clone"
           size="sm"
           color="dark-light"
@@ -129,8 +130,25 @@
           <q-tooltip>
             {{ $t("coach.program_management.builder.day_duplicate") }}
           </q-tooltip>
-        </q-btn>
 
+          <FormProgramNewWeekDay
+            v-model="editWeekDayName"
+            @save="
+              (val: string[] | undefined) => {
+                if (val)
+                  duplicateWholeDay(
+                    idScheduleInfo.toString(),
+                    mergeScheduleInfoNames(val[0], val[1], 1),
+                  );
+              }
+            "
+            :title="$t('coach.program_management.builder.day_duplicate_form')"
+            :cover="false"
+            anchor="center right"
+            self="center left"
+          >
+          </FormProgramNewWeekDay>
+        </q-btn>
         <q-btn
           @click="deleteWholeDay(idScheduleInfo.toString())"
           icon="fa-regular fa-trash-can"
@@ -420,8 +438,8 @@
                 "
                 :force-save="true"
                 :cover="false"
-                anchor="center left"
-                self="center right"
+                anchor="center right"
+                self="center left"
               >
               </FormProgramNewWeekDay>
             </template>
@@ -718,7 +736,11 @@ import { uid, debounce, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import FormProgramNewWeekDay from "@/components/forms/FormProgramNewWeekDay.vue";
 import { scrollToElementInParent } from "@/helpers/scroller";
-import { arrayCompare, arrayUniqueValues } from "@/helpers/array";
+import {
+  arrayCompare,
+  arrayFilterUndefined,
+  arrayUniqueValues,
+} from "@/helpers/array";
 import {
   Program,
   ProgramExercise,
@@ -1481,7 +1503,7 @@ function mergeScheduleInfoNames(
   orderId: string | number,
   sep: string = sepWekDay,
 ) {
-  return [weekId, dayId, orderId].filter(Boolean).join(sep);
+  return arrayFilterUndefined([weekId, dayId, orderId]).join(sep);
 }
 
 /**

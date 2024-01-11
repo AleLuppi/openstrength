@@ -319,6 +319,7 @@
         "line_delete": "Delete",
         "day_rename": "Rename",
         "day_duplicate": "Duplicate in another day of this week",
+        "day_duplicate_form": "Duplicate day in...",
         "day_delete": "Delete day",
         "empty": "Start your program now by adding your first exercise!",
         "reference_select_line": "Select a line",
