@@ -184,7 +184,8 @@
           </h6>
           <TableCreatedPrograms
             :programs="allAssignedPrograms"
-            @open="(program) => openProgram(program.uid)"
+            @update:selected="(program) => openProgram(program?.uid)"
+            :small="!$q.screen.gt.sm"
           />
         </div>
       </template>
@@ -367,7 +368,7 @@
               <TableCreatedPrograms
                 v-if="selectedProgram"
                 :programs="allAssignedPrograms"
-                @open="(program) => openProgram(program.uid)"
+                @update:selected="(program) => openProgram(program?.uid)"
                 :small="true"
               />
             </q-card>

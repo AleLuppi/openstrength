@@ -48,96 +48,57 @@ const props = defineProps({
 
 // Define emits
 const emit = defineEmits<{
-  open: [program: Program];
   selection: [evt: Event, row: Object, index: Number];
   "update:selected": [value?: Program];
 }>();
 
 // Set table columns
-const columns = computed(() =>
-  !props.small
+const columns = computed(() => [
+  {
+    name: "name",
+    required: true,
+    label: i18n.t("coach.program_management.fields.program"),
+    align: "center",
+    field: "name",
+    sortable: true,
+  },
+  {
+    name: "athletename",
+    required: true,
+    label: i18n.t("coach.program_management.fields.athlete"),
+    align: "center",
+    field: "athletename",
+    sortable: true,
+  },
+  ...(!props.small
     ? [
         {
-          name: "name",
+          name: "startdate",
           required: true,
-          label: i18n.t("coach.program_management.fields.program"),
+          label: i18n.t("common.start"),
           align: "center",
-          field: "name",
+          field: "startdate",
           sortable: true,
         },
         {
-          name: "athletename",
+          name: "enddate",
           required: true,
-          label: i18n.t("coach.program_management.fields.athlete"),
+          label: i18n.t("common.end"),
           align: "center",
-          field: "athletename",
+          field: "enddate",
           sortable: true,
         },
-        ...($q.screen.gt.sm
-          ? [
-              {
-                name: "startdate",
-                required: true,
-                label: i18n.t("common.start"),
-                align: "center",
-                field: "startdate",
-                sortable: true,
-              },
-              {
-                name: "enddate",
-                required: true,
-                label: i18n.t("common.end"),
-                align: "center",
-                field: "enddate",
-                sortable: true,
-              },
-              {
-                name: "lastmodification",
-                required: true,
-                label: i18n.t(
-                  "coach.program_management.fields.last_modification",
-                ),
-                align: "center",
-                field: "lastmodification",
-                sortable: true,
-              },
-            ]
-          : []),
-
         {
-          name: "open",
+          name: "lastmodification",
           required: true,
-          label: "",
+          label: i18n.t("coach.program_management.fields.last_modification"),
           align: "center",
-          field: "open",
+          field: "lastmodification",
+          sortable: true,
         },
       ]
-    : [
-        {
-          name: "name",
-          required: true,
-          label: i18n.t("coach.program_management.fields.program"),
-          align: "center",
-          field: "name",
-          sortable: true,
-        },
-        {
-          name: "athletename",
-          required: true,
-          label: i18n.t("coach.program_management.fields.athlete"),
-          align: "center",
-          field: "athletename",
-          sortable: true,
-        },
-        {
-          name: "open",
-          required: true,
-          label: "",
-          align: "center",
-          field: "open",
-        },
-      ],
-);
+    : []),
+]);
 
 // Set table rows
 const rows = computed(() => {
@@ -147,45 +108,16 @@ const rows = computed(() => {
   return props.programs.map((program) => ({
     uid: program.uid,
     name: program.name,
-    athletename:
-      program.athlete?.displayName ??
-      program.athlete?.name + " " + program.athlete?.surname ??
-      "Not assigned",
+    athletename: program.athlete?.referenceName ?? "Not assigned",
     startdate: program.startedOn
-      ? new Date(program.startedOn).toLocaleString("en-US", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        })
+      ? i18n.d(program.startedOn, "short")
       : "Not selected",
     enddate: program.finishedOn
-      ? new Date(program.finishedOn).toLocaleString("en-US", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        })
+      ? i18n.d(program.finishedOn, "short")
       : "Not selected",
     lastmodification: program.lastUpdated
-      ? new Date(program.lastUpdated).toLocaleString("en-US", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-          hour: "numeric",
-          minute: "numeric",
-          second: "numeric",
-          hour12: false,
-        })
+      ? i18n.d(program.lastUpdated, "middle")
       : "Not selected",
-    open: {
-      element: "button",
-      on: { click: () => emit("open", program) },
-      label: "",
-      icon: "sym_o_open_in_new",
-      rounded: true,
-      outline: true,
-      flat: true,
-      color: "button-primary",
-    },
   }));
 });
 
