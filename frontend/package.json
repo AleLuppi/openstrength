@@ -1,6 +1,7 @@
 {
   "name": "openstrength",
   "version": "0.1.5",
+  "description": "OpenStrength",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
