@@ -1,11 +1,7 @@
 {
   "hosting": {
     "public": "dist",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",
@@ -14,10 +10,21 @@
     ]
   },
   "firestore": {
-    "rules": "baas/firestore/firestore.rules",
-    "indexes": "baas/firestore/firestore.indexes.json"
+    "rules": "../backend/firebase/firestore/firestore.rules",
+    "indexes": "../backend/firebase/firestore/firestore.indexes.json"
   },
   "functions": {
-    "source": "baas/functions"
+    "source": "../backend/firebase/functions",
+    "codebase": "default",
+    "ignore": [
+      "node_modules",
+      ".git",
+      "firebase-debug.log",
+      "firebase-debug.*.log"
+    ],
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint",
+      "npm --prefix \"$RESOURCE_DIR\" run build"
+    ]
   }
 }
