@@ -163,16 +163,29 @@
           </template>
         </TableProgramBuilder>
 
-        <!-- Show button to open a new program -->
+        <!-- Create a new program or open one already assigned to athlete -->
         <div v-else class="q-pa-lg column items-center">
-          <h6>
+          <h4 class="text-margin-xs">
             {{ $t("coach.program_management.builder.initialize_program") }}
-          </h6>
+          </h4>
           <q-btn
+            icon="sym_o_assignment_add"
             @click="openNewProgram"
             :label="$t('coach.program_management.builder.new_program')"
             rounded
             unelevated
+          />
+
+          <p class="q-ma-md">{{ $t("common.or_long") }}</p>
+
+          <!-- Show recently opened programs -->
+          <h6 class="text-margin-xs">
+            {{ $t("coach.program_management.builder.open_recent") }}
+          </h6>
+          <TableExistingPrograms
+            :programs="allAssignedPrograms"
+            @update:selected="(program) => openProgram(program?.uid)"
+            :small="!$q.screen.gt.sm"
           />
         </div>
       </template>
@@ -352,15 +365,11 @@
 
             <!-- Select among assigned programs -->
             <q-card>
-              <TableManagedAthletes
-                ref="athletesTableElement"
-                :athletes="
-                  coachInfo.athletes?.filter(
-                    (athlete) => athlete.hasProgramAssigned,
-                  ) ?? []
-                "
-                @update:selected="onAthleteProgramSelection"
-                athletes-only
+              <TableExistingPrograms
+                v-if="selectedProgram"
+                :programs="allAssignedPrograms"
+                @update:selected="(program) => openProgram(program?.uid)"
+                :small="true"
               />
             </q-card>
           </div>
@@ -504,7 +513,7 @@ import { useRoute } from "vue-router";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 import DialogProgramShareWithAthlete from "@/components/dialogs/DialogProgramShareWithAthlete.vue";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
-import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
+import TableExistingPrograms from "@/components/tables/TableExistingPrograms.vue";
 import { AthleteUser } from "@/helpers/users/user";
 import {
   getProgramUniqueWeeks,
@@ -542,7 +551,7 @@ const UtilsOptions = {
 const splitterThresholdValue = 15;
 
 // Set ref for generic use
-const splitterModel = ref(30);
+const splitterModel = ref(0);
 const showingUtils = ref(UtilsOptions.list);
 
 // Set ref related to program
@@ -573,6 +582,14 @@ const requestedProgram = computed(
     coachInfo.programs
       ?.find((program) => program.uid == route.params.programId)
       ?.duplicate(),
+);
+
+// Get all coach programs
+const allAssignedPrograms = computed(
+  () =>
+    coachInfo.programs?.filter(
+      (program) => program.uid === program.athlete?.assignedProgramId,
+    ) || [],
 );
 
 // Get complete program filter
@@ -879,15 +896,6 @@ function openNewProgram() {
  */
 function onUnsavedProgramRestore() {
   substituteProgramId.value = coachActiveChanges.program?.uid;
-}
-
-/**
- * Open the program that is assigned to selected athlete.
- *
- * @param athlete athlete whose program should be opened.
- */
-function onAthleteProgramSelection(athlete?: AthleteUser) {
-  substituteProgramId.value = athlete?.assignedProgramId;
 }
 
 /**

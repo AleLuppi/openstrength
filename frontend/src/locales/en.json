@@ -282,7 +282,9 @@
       "fields": {
         "program": "Program",
         "programs": "Programs",
+        "program_title": "Your programs",
         "name": "Program name",
+        "athlete": "Athlete",
         "label": "Label",
         "description": "Description",
         "load": "Load",
@@ -290,6 +292,7 @@
         "sets": "Sets",
         "rpe": "RPE",
         "note": "Note",
+        "last_modification": "Last update",
         "start_date": "Start date",
         "end_date": "End date"
       },
@@ -335,6 +338,7 @@
         "new_program": "New program",
         "new_program_info": "Fill in the fields with the info of your new program",
         "new_program_submit": "Proceed",
+        "open_recent": "Your recent programs",
         "view_current": "View current program"
       },
       "viewer": {
@@ -420,6 +424,7 @@
     "continue": "Continue",
     "finish": "Finish",
     "or": "or",
+    "or_long": "or",
     "other": "Other",
     "submit": "Submit",
     "open": "Open",
@@ -433,6 +438,8 @@
     "update": "Update",
     "no_results": "No results",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "start": "Start",
+    "end": "End"
   }
 }
