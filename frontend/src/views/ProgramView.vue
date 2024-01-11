@@ -182,7 +182,7 @@
           <h6 class="text-margin-xs">
             {{ $t("coach.program_management.builder.open_recent") }}
           </h6>
-          <TableCreatedPrograms
+          <TableExistingPrograms
             :programs="allAssignedPrograms"
             @update:selected="(program) => openProgram(program?.uid)"
             :small="!$q.screen.gt.sm"
@@ -365,7 +365,7 @@
 
             <!-- Select among assigned programs -->
             <q-card>
-              <TableCreatedPrograms
+              <TableExistingPrograms
                 v-if="selectedProgram"
                 :programs="allAssignedPrograms"
                 @update:selected="(program) => openProgram(program?.uid)"
@@ -513,7 +513,7 @@ import { useRoute } from "vue-router";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 import DialogProgramShareWithAthlete from "@/components/dialogs/DialogProgramShareWithAthlete.vue";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
-import TableCreatedPrograms from "@/components/tables/TableCreatedPrograms.vue";
+import TableExistingPrograms from "@/components/tables/TableExistingPrograms.vue";
 import { AthleteUser } from "@/helpers/users/user";
 import {
   getProgramUniqueWeeks,
