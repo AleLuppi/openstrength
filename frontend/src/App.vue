@@ -93,7 +93,6 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
-import { useQuasar } from "quasar";
 import { User as FirebaseUser } from "firebase/auth";
 import router from "@/router";
 import setdefaults from "@/boot/setQuasarDefaultProps";
@@ -110,7 +109,6 @@ import { defaultExerciseCollection } from "@/utils/defaultExerciseCollection";
 
 // Init plugin
 const route = useRoute();
-const $q = useQuasar();
 
 // Get state
 const user = useUserStore();
