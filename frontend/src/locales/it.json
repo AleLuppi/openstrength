@@ -280,9 +280,9 @@
       },
       "fields": {
         "program": "Programma",
-        "program_title": "I tuoi programmi",
         "programs": "Programmi",
         "name": "Nome del programma",
+        "athlete": "Atleta",
         "label": "Etichetta",
         "description": "Descrizione",
         "load": "load",

@@ -282,6 +282,7 @@
         "program": "Program",
         "programs": "Programs",
         "name": "Program name",
+        "athlete": "Athlete",
         "label": "Label",
         "description": "Description",
         "load": "Load",
