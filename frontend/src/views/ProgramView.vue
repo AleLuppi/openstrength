@@ -15,11 +15,11 @@
           class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest"
         >
           <!-- Utility buttons -->
-          <div class="row justify-evenly">
+          <div class="row justify-between">
             <!-- Save button -->
             <div
               @click="saveProgram()"
-              class="col-6 row items-center justify-center"
+              class="row items-center justify-center"
               :class="{ 'cursor-pointer': !programSaved }"
             >
               <q-btn
@@ -48,29 +48,43 @@
             <!-- Display and update assigned user -->
             <div
               v-if="selectedProgram.athlete"
-              class="col-6 row items-center justify-center"
+              class="row items-center justify-center q-col-gutter-sm"
             >
-              <span class="text-black q-px-md">
+              <span class="text-black">
                 {{ $t("coach.program_management.builder.assigned_athlete") }}
               </span>
+              <div>
+                <q-btn
+                  color="secondary"
+                  outline
+                  :dense="Boolean(selectedProgram.athlete)"
+                >
+                  <q-item dense class="q-py-none q-px-md">
+                    <q-item-section
+                      avatar
+                      v-if="$q.screen.gt.xs && selectedProgram.athlete.photoUrl"
+                    >
+                      <q-avatar size="md">
+                        <img :src="selectedProgram.athlete.photoUrl" />
+                      </q-avatar>
+                    </q-item-section>
+                    <q-item-section>{{
+                      selectedProgram.athlete.referenceName
+                    }}</q-item-section>
+                  </q-item>
+                </q-btn>
+              </div>
+            </div>
+
+            <!-- Get shareable link to program -->
+            <div>
               <q-btn
-                color="secondary"
+                @click="showShareProgramDialog = true"
                 outline
-                :dense="Boolean(selectedProgram.athlete)"
+                flat
+                icon="sym_o_share"
+                :label="$t('coach.program_management.viewer.send_program')"
               >
-                <q-item dense class="q-py-none q-px-md">
-                  <q-item-section
-                    avatar
-                    v-if="$q.screen.gt.xs && selectedProgram.athlete.photoUrl"
-                  >
-                    <q-avatar size="md">
-                      <img :src="selectedProgram.athlete.photoUrl" />
-                    </q-avatar>
-                  </q-item-section>
-                  <q-item-section>{{
-                    selectedProgram.athlete.referenceName
-                  }}</q-item-section>
-                </q-item>
               </q-btn>
             </div>
           </div>
@@ -148,15 +162,30 @@
             />
           </template>
         </TableProgramBuilder>
+
+        <!-- Create a new program or open one already assigned to athlete -->
         <div v-else class="q-pa-lg column items-center">
-          <h6>
+          <h4 class="text-margin-xs">
             {{ $t("coach.program_management.builder.initialize_program") }}
-          </h6>
+          </h4>
           <q-btn
+            icon="sym_o_assignment_add"
             @click="openNewProgram"
             :label="$t('coach.program_management.builder.new_program')"
             rounded
             unelevated
+          />
+
+          <p class="q-ma-md">{{ $t("common.or_long") }}</p>
+
+          <!-- Show recently opened programs -->
+          <h6 class="text-margin-xs">
+            {{ $t("coach.program_management.builder.open_recent") }}
+          </h6>
+          <TableExistingPrograms
+            :programs="allAssignedPrograms"
+            @update:selected="(program) => openProgram(program?.uid)"
+            :small="!$q.screen.gt.sm"
           />
         </div>
       </template>
@@ -336,15 +365,11 @@
 
             <!-- Select among assigned programs -->
             <q-card>
-              <TableManagedAthletes
-                ref="athletesTableElement"
-                :athletes="
-                  coachInfo.athletes?.filter(
-                    (athlete) => athlete.hasProgramAssigned,
-                  ) ?? []
-                "
-                @update:selected="onAthleteProgramSelection"
-                athletes-only
+              <TableExistingPrograms
+                v-if="selectedProgram"
+                :programs="allAssignedPrograms"
+                @update:selected="(program) => openProgram(program?.uid)"
+                :small="true"
               />
             </q-card>
           </div>
@@ -392,6 +417,13 @@
       "
     >
     </DialogProgramAssignAthlete>
+
+    <!-- Dialog to share program with athlete -->
+    <DialogProgramShareWithAthlete
+      v-if="selectedProgram?.uid"
+      v-model="showShareProgramDialog"
+      :program-id="selectedProgram.uid"
+    ></DialogProgramShareWithAthlete>
 
     <!-- Dialog to change unsaved program -->
     <q-dialog v-model="showChangeProgramDialog">
@@ -479,8 +511,9 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
+import DialogProgramShareWithAthlete from "@/components/dialogs/DialogProgramShareWithAthlete.vue";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
-import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
+import TableExistingPrograms from "@/components/tables/TableExistingPrograms.vue";
 import { AthleteUser } from "@/helpers/users/user";
 import {
   getProgramUniqueWeeks,
@@ -518,7 +551,7 @@ const UtilsOptions = {
 const splitterThresholdValue = 15;
 
 // Set ref for generic use
-const splitterModel = ref(30);
+const splitterModel = ref(0);
 const showingUtils = ref(UtilsOptions.list);
 
 // Set ref related to program
@@ -533,6 +566,7 @@ const filterExercise = ref<string[]>();
 const showNewProgramDialog = ref(false);
 const showUnsavedProgramRestoreDialog = ref(false);
 const showAthleteAssigningDialog = ref(false);
+const showShareProgramDialog = ref(false);
 const programManagerExpanded = ref(false);
 const programManagerHeight = ref(0);
 
@@ -548,6 +582,14 @@ const requestedProgram = computed(
     coachInfo.programs
       ?.find((program) => program.uid == route.params.programId)
       ?.duplicate(),
+);
+
+// Get all coach programs
+const allAssignedPrograms = computed(
+  () =>
+    coachInfo.programs?.filter(
+      (program) => program.uid === program.athlete?.assignedProgramId,
+    ) || [],
 );
 
 // Get complete program filter
@@ -665,7 +707,8 @@ function openProgram(programId?: string, force: boolean = false) {
   // Update selected program if needed
   if (programId != undefined && (programSaved.value || force)) {
     router.replace({
-      params: { programId: programId },
+      ...route,
+      params: { ...route.params, programId: programId },
       query: { ...(programId ? {} : { new: "true" }) },
     });
 
@@ -703,6 +746,7 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
   if (!currProgram) return;
   currProgram.coach = user.baseUser;
   currProgram.save({
+    saveFrozenView: true,
     onSuccess: () => {
       // Inform user about saved program
       setSavedValue();
@@ -852,15 +896,6 @@ function openNewProgram() {
  */
 function onUnsavedProgramRestore() {
   substituteProgramId.value = coachActiveChanges.program?.uid;
-}
-
-/**
- * Open the program that is assigned to selected athlete.
- *
- * @param athlete athlete whose program should be opened.
- */
-function onAthleteProgramSelection(athlete?: AthleteUser) {
-  substituteProgramId.value = athlete?.assignedProgramId;
 }
 
 /**

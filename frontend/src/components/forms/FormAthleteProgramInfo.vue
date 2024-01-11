@@ -158,6 +158,7 @@ function onSubmit() {
   props.onSubmit?.(program);
 
   program.saveUpdate({
+    saveFrozenView: true,
     onSuccess: () => {
       $q.notify({
         type: "positive",

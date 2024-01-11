@@ -2,20 +2,20 @@ const datetimeFormats = {
   en: {
     short: {
       year: "numeric",
-      month: "short",
-      day: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     },
     middle: {
       year: "numeric",
-      month: "numeric",
-      day: "numeric",
+      month: "2-digit",
+      day: "2-digit",
       hour: "numeric",
       minute: "numeric",
     },
     long: {
       year: "numeric",
       month: "long",
-      day: "numeric",
+      day: "2-digit",
       weekday: "long",
       hour: "numeric",
       minute: "numeric",
@@ -24,20 +24,20 @@ const datetimeFormats = {
   it: {
     short: {
       year: "numeric",
-      month: "short",
-      day: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     },
     middle: {
       year: "numeric",
-      month: "numeric",
-      day: "numeric",
+      month: "2-digit",
+      day: "2-digit",
       hour: "numeric",
       minute: "numeric",
     },
     long: {
       year: "numeric",
       month: "long",
-      day: "numeric",
+      day: "2-digit",
       weekday: "long",
       hour: "numeric",
       minute: "numeric",

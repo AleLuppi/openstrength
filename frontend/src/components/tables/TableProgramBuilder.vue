@@ -214,7 +214,7 @@
           >
             <q-slide-transition>
               <div v-show="exercisesInfoShowExpanded[idScheduleInfo]">
-                <osSelect
+                <os-select
                   use-input
                   input-debounce="150"
                   :model-value="exerciseModelValue.exercise"
@@ -249,9 +249,9 @@
                       </q-item-section>
                     </q-item>
                   </template> -->
-                </osSelect>
+                </os-select>
                 <q-separator color="inherit" spaced="xs" />
-                <osSelect
+                <os-select
                   use-input
                   input-debounce="150"
                   :model-value="exerciseModelValue.variant"
@@ -308,9 +308,9 @@
                       </q-item-section>
                     </q-item>
                   </template>
-                </osSelect>
+                </os-select>
                 <q-separator color="inherit" spaced="xs" />
-                <osInput
+                <os-input
                   :model-value="exerciseModelValue.note"
                   @update:model-value="
                     (val: typeof exerciseModelValue.note) => {
@@ -321,7 +321,7 @@
                   type="textarea"
                   hide-bottom-space
                 >
-                </osInput>
+                </os-input>
                 <q-btn
                   icon="expand_less"
                   @click.stop="exercisesInfoExpanded[idScheduleInfo] = false"
@@ -761,7 +761,6 @@ import {
 } from "@/helpers/maxlifts/maxlift";
 import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
 import { stringGetNext } from "@/helpers/scalar";
-import osButtonSupport from "../basic/osButtonSupport.vue";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLibrary.vue";
 

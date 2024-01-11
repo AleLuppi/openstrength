@@ -135,7 +135,7 @@
     "athlete_management": {
       "list": {
         "title": "Atleti",
-        "add": "Aggiungi nuovo",
+        "add": "Nuovo atleta",
         "search": "Cerca tra gli atleti...",
         "add_proceed": "Procedi",
         "add_error": "Non è stato possibile aggiungere l'atleta, riprova",
@@ -201,7 +201,8 @@
       "create_new_exercise": "Crea un nuovo esercizio",
       "no_selected_exercises": "Seleziona o aggiungi un esercizio per mostrare le sue varianti",
       "add": "Aggiungi un nuovo esercizio",
-      "add_button": "Aggiungi nuovo",
+      "add_button_exercise": "Nuovo esercizio",
+      "add_button_variant": "Nuova variante",
       "add_proceed": "Salva",
       "add_error": "Impossibile salvare l'esercizio, riprova",
       "add_success": "Esercizio \"{ exercise }\" aggiunto alla libreria",
@@ -281,6 +282,7 @@
       "fields": {
         "program": "Programma",
         "programs": "Programmi",
+        "program_title": "I tuoi programmi",
         "name": "Nome del programma",
         "athlete": "Atleta",
         "label": "Etichetta",
@@ -290,6 +292,7 @@
         "sets": "sets",
         "rpe": "rpe",
         "note": "Nota",
+        "last_modification": "Ultima modifica",
         "start_date": "Data inizio",
         "end_date": "Data fine"
       },
@@ -336,7 +339,31 @@
         "start_program": "Crea o seleziona un programma per iniziare",
         "new_program": "Nuovo programma",
         "new_program_info": "Compila i campi con le informazioni del tuo nuovo programma",
-        "new_program_submit": "Procedi"
+        "new_program_submit": "Procedi",
+        "open_recent": "I tuoi programmi recenti",
+        "view_current": "Visualizza programma"
+      },
+      "viewer": {
+        "title": "Programma di",
+        "back": "Ritorna in modifica",
+        "program_name": "Nome programma:",
+        "description": "Descrizione:",
+        "frozen_date": "Preparato il:",
+        "start_date": "Inizio:",
+        "end_date": "Fine:",
+        "header_exercise_info": "Esercizio",
+        "header_schema": "Schema",
+        "header_schema_note": "Note",
+        "header_text_feedback": "Richiesto feedback",
+        "header_video_feedback": "Richiesto video",
+        "no_program_title": "Nessun programma trovato",
+        "no_program_explanation": "Controlla l'url a cui stai navigando. Oppure, esplora OpenStrength!",
+        "no_program_action": "Vai alla homepage",
+        "send_program": "Invia programma",
+        "send_program_title": "Il tuo programma è pronto!",
+        "send_program_description": "Puoi vedere i dettagli a questo link.",
+        "dialog_title": "Invia questo link al tuo atleta",
+        "preview": "Visualizza anteprima"
       },
       "filter": {
         "title": "Filtra per...",
@@ -399,6 +426,7 @@
     "continue": "Continua",
     "finish": "Fine",
     "or": "o",
+    "or_long": "oppure",
     "other": "Altro",
     "submit": "Invia",
     "open": "Apri",
@@ -409,6 +437,11 @@
     "date": "Data",
     "note": "Nota",
     "label": "Etichetta",
-    "update": "Aggiorna"
+    "update": "Aggiorna",
+    "no_results": "Nessun risultato",
+    "yes": "Sì",
+    "no": "No",
+    "start": "Inizio",
+    "end": "Fine"
   }
 }
