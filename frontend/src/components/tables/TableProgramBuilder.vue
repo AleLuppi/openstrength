@@ -377,15 +377,10 @@
             </q-slide-transition>
           </div>
           <osButtonSupport
-            :icons="[
-              'fa-regular fa-clone',
-              'exit_to_app',
-              'fa-regular fa-trash-can',
-            ]"
-            :colors="['lighter', 'lighter', 'lighter']"
-            :hover-colors="['info', 'info', 'negative']"
+            :icons="['fa-regular fa-clone', 'fa-regular fa-trash-can']"
+            :colors="['lighter', 'lighter']"
+            :hover-colors="['info', 'negative']"
             :tooltips="[
-              $t('coach.program_management.builder.line_duplicate'),
               $t('coach.program_management.builder.line_duplicate_in_day'),
               $t('coach.program_management.builder.line_delete'),
             ]"
@@ -393,13 +388,11 @@
               (idx) => {
                 switch (idx) {
                   case 0:
-                    duplicateTableInDay(idScheduleInfo.toString());
-                  case 1:
                     editWeekDayName = splitScheduleInfoNames(
                       idScheduleInfo.toString(),
                     );
                     break;
-                  case 2:
+                  case 1:
                     deleteTable(idScheduleInfo.toString());
                     break;
                   default:
@@ -410,7 +403,7 @@
             direction="b"
             class="q-mx-sm"
           >
-            <template #slot-1>
+            <template #slot-0>
               <FormProgramNewWeekDay
                 v-model="editWeekDayName"
                 @save="
@@ -419,6 +412,11 @@
                       idScheduleInfo.toString(),
                       mergeScheduleInfoNames(val[0], val[1], 1),
                     )
+                "
+                :title="
+                  $t(
+                    'coach.program_management.builder.line_duplicate_in_day_form',
+                  )
                 "
                 :force-save="true"
                 :cover="false"

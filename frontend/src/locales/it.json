@@ -315,6 +315,7 @@
         "new_day_already_exists": "Un giorno con questo nome esiste già",
         "line_duplicate": "Duplica esercizio",
         "line_duplicate_in_day": "Copia in un altro giorno",
+        "line_duplicate_in_day_form": "Duplica in...",
         "line_delete": "Elimina",
         "day_rename": "Rinomina",
         "day_duplicate": "Duplica in un altro giorno di questa settimana",
