@@ -38,7 +38,38 @@
         :suffix="maxliftValueSuffix"
         :label="$t('coach.maxlift_management.fields.estimated1RM')"
         readonly
-      ></os-input>
+      >
+        <!-- TODO: i18n-->
+        <template v-slot:after>
+          <q-icon name="sym_o_help" class="cursor-pointer">
+            <q-tooltip
+              v-if="
+                maxlift?.exercise?.variants?.at(0)?.loadType ==
+                (ExerciseLoadType.loaded || ExerciseLoadType.bodyweight)
+              "
+            >
+              {{
+                props.athlete?.weight
+                  ? "Stimato considerando il peso corporeo di " +
+                    props.athlete?.name +
+                    " cioè " +
+                    props.athlete?.weight +
+                    " kg"
+                  : props.athlete?.name +
+                    " non ha un peso corporeo definito, quindi è stato usato un valore di default di 75kg. Per avere calcoli piu precisi aggiorna i dati del tuo atleta. Se non vuoi considerare il peso corporeo nel calcolo, cambia il tipo di carico dell'esercizio."
+              }}
+            </q-tooltip>
+            <q-tooltip v-else>
+              {{
+                "Stimato senza considerare il peso corporeo di " +
+                props.athlete?.name +
+                ". " +
+                "Se vuoi considerare il peso corporeo nel calcolo, cambia il tipo di carico dell'esercizio."
+              }}
+            </q-tooltip>
+          </q-icon>
+        </template></os-input
+      >
 
       <!-- Performance date -->
       <os-input
@@ -83,7 +114,7 @@
 import { ref, computed, watch, PropType } from "vue";
 import { QForm } from "quasar";
 import { dateGetWithoutTimezone } from "@/helpers/scalar";
-import { Exercise } from "@/helpers/exercises/exercise";
+import { Exercise, ExerciseLoadType } from "@/helpers/exercises/exercise";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import {
   estimate1RMfromNRM,
@@ -100,7 +131,7 @@ const props = defineProps({
   },
   athlete: {
     type: AthleteUser,
-    required: false,
+    required: true,
   },
   exercises: {
     type: Array as PropType<Exercise[]>,
@@ -131,19 +162,17 @@ const maxliftType = ref<string>();
 const maxliftValue = ref<string>();
 const maxliftDate = ref<string>();
 const maxliftEstimated1RMValue = computed(() =>
-  maxliftValue.value && maxliftType.value
+  maxliftValue.value &&
+  (maxliftType.value == MaxLiftType._3RM ||
+    maxliftType.value == MaxLiftType._5RM ||
+    maxliftType.value == MaxLiftType._6RM ||
+    maxliftType.value == MaxLiftType._8RM ||
+    maxliftType.value == MaxLiftType._10RM)
     ? computeE1RM(maxliftValue.value, maxliftType.value)
     : undefined,
 );
 const isEstimated1RMVisibile = computed(
-  () =>
-    props.athlete &&
-    maxliftValue.value &&
-    (maxliftType.value == MaxLiftType._3RM ||
-      maxliftType.value == MaxLiftType._5RM ||
-      maxliftType.value == MaxLiftType._6RM ||
-      maxliftType.value == MaxLiftType._8RM ||
-      maxliftType.value == MaxLiftType._10RM),
+  () => props.athlete && maxliftEstimated1RMValue.value != undefined,
 );
 
 // Setup variables according to selected maxlift
@@ -189,6 +218,7 @@ const maxliftValueSuffix = computed(() => {
 function computeE1RM(value: string | undefined, type: string | undefined) {
   const maxliftObj = new MaxLift();
   maxliftObj.athlete = props.athlete;
+  maxliftObj.exercise = props.maxlift?.exercise;
   maxliftObj.value = value;
 
   switch (type) {
@@ -212,7 +242,7 @@ function computeE1RM(value: string | undefined, type: string | undefined) {
   }
 
   return maxliftObj.type
-    ? String(estimate1RMfromNRM(maxliftObj, rpeRepsTable))
+    ? String(estimate1RMfromNRM(maxliftObj, props.athlete, rpeRepsTable))
     : undefined;
 }
 

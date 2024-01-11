@@ -32,6 +32,7 @@ export const rpeRepsTable: number[][] = [
 //TODO mettere come default la tabella sopra
 export function estimate1RMfromNRM(
   maxlift: MaxLift,
+  athlete: AthleteUser,
   rpeTable: number[][],
 ): number | undefined {
   if (typeof Number(maxlift.value) != "number" || !maxlift.type || !rpeTable) {
@@ -43,8 +44,26 @@ export function estimate1RMfromNRM(
   let bodyweight = undefined;
 
   // Check based on load type
-  if (maxlift.exercise?.defaultVariant?.loadType == ExerciseLoadType.loaded) {
-    bodyweight = maxlift.athlete?.weight ? Number(maxlift.athlete.weight) : 75;
+  //TODO: solve issue of maxlift not correctly having defaultVariant field, defaultVariant field is always undefined
+  console.log("maxlift", maxlift);
+  console.log("maxlift value", maxlift.value);
+  console.log("maxlift exercise", maxlift.exercise);
+  console.log("maxlift exercise variants", maxlift.exercise?.variants);
+  console.log(
+    "maxlift exercise variants at 0 loadtype",
+    maxlift.exercise?.variants?.at(0)?.loadType,
+  );
+  console.log(
+    "maxlift exercise defaultvariant loadtype",
+    maxlift.exercise?.defaultVariant?.loadType,
+  );
+  if (
+    maxlift.exercise?.variants?.at(0)?.loadType ==
+    (ExerciseLoadType.loaded || ExerciseLoadType.bodyweight)
+  ) {
+    bodyweight = athlete?.weight ? Number(athlete.weight) : 75;
+  } else {
+    bodyweight = 0;
   }
 
   switch (maxlift.type) {
@@ -53,27 +72,27 @@ export function estimate1RMfromNRM(
       break;
     case MaxLiftType._3RM:
       estimated1RMValue =
-        (bodyweight ?? 0 + Number(maxlift.value)) / (0.01 * rpeTable[0][2]);
+        (bodyweight + Number(maxlift.value)) / (0.01 * rpeTable[0][2]);
       break;
     case MaxLiftType._5RM:
       estimated1RMValue =
-        (bodyweight ?? 0 + Number(maxlift.value)) / (0.01 * rpeTable[0][4]);
+        (bodyweight + Number(maxlift.value)) / (0.01 * rpeTable[0][4]);
       break;
     case MaxLiftType._6RM:
       estimated1RMValue =
-        (bodyweight ?? 0 + Number(maxlift.value)) / (0.01 * rpeTable[0][5]);
+        (bodyweight + Number(maxlift.value)) / (0.01 * rpeTable[0][5]);
       break;
     case MaxLiftType._8RM:
       estimated1RMValue =
-        (bodyweight ?? 0 + Number(maxlift.value)) / (0.01 * rpeTable[0][7]);
+        (bodyweight + Number(maxlift.value)) / (0.01 * rpeTable[0][7]);
       break;
     case MaxLiftType._10RM:
       estimated1RMValue =
-        (bodyweight ?? 0 + Number(maxlift.value)) / (0.01 * rpeTable[0][9]);
+        (bodyweight + Number(maxlift.value)) / (0.01 * rpeTable[0][9]);
       break;
   }
   return estimated1RMValue
-    ? Math.round(estimated1RMValue * 10) / 10 - (bodyweight ?? 0)
+    ? Math.round(estimated1RMValue * 10) / 10 - bodyweight
     : undefined;
 }
 
