@@ -1,22 +1,23 @@
 <template>
-  <div class="q-pa-md">
-    <os-table
-      :columns="columns"
-      :rows="rows"
-      row-key="uid"
-      virtual-scroll
-      flat
-      bordered
-      hide-pagination
-      :class="
-        $q.screen.lt.md
-          ? 'os-table-max-height-with-header justify-center'
-          : 'os-table-max-height justify-center'
-      "
-      selection="single"
-      v-model:selected="selectedRows"
-    ></os-table>
-  </div>
+  <os-table
+    :columns="columns"
+    :rows="rows"
+    row-key="uid"
+    virtual-scroll
+    flat
+    bordered
+    hide-pagination
+    :class="
+      $q.screen.lt.md
+        ? 'os-table-max-height-with-header justify-center'
+        : 'os-table-max-height justify-center'
+    "
+    @row-click="
+      (...params: [Event, Object, Number]) => emit('selection', ...params)
+    "
+    selection="single"
+    v-model:selected="selectedRows"
+  ></os-table>
 </template>
 
 <script setup lang="ts">
@@ -39,10 +40,6 @@ const props = defineProps({
     type: Program,
     required: false,
   },
-  programsOnly: {
-    type: Boolean,
-    default: false,
-  },
   small: {
     type: Boolean,
     default: false,
@@ -52,6 +49,8 @@ const props = defineProps({
 // Define emits
 const emit = defineEmits<{
   open: [program: Program];
+  selection: [evt: Event, row: Object, index: Number];
+  "update:selected": [value?: Program];
 }>();
 
 // Set table columns
@@ -205,7 +204,7 @@ watch(
   { immediate: true },
 );
 
-// Update selected athlete upon program row change
+// Update selected program upon program row change
 watch(selectedRows, (value) =>
   emit(
     "update:selected",

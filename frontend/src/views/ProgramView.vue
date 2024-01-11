@@ -39,7 +39,7 @@
                   $t(
                     programSaved
                       ? "coach.program_management.builder.saved"
-                      : "coach.program_management.builder.not_saved"
+                      : "coach.program_management.builder.not_saved",
                   )
                 }}
               </span>
@@ -163,10 +163,8 @@
           </template>
         </TableProgramBuilder>
 
-        <!-- Show button to open a new program -->
+        <!-- Create a new program or open one already assigned to athlete -->
         <div v-else class="q-pa-lg column items-center">
-          <!-- TODO i18n-->
-
           <h4 class="text-margin-xs">
             {{ $t("coach.program_management.builder.initialize_program") }}
           </h4>
@@ -178,16 +176,15 @@
             unelevated
           />
 
-          <p class="q-ma-md">{{ $t("common.or2") }}</p>
+          <p class="q-ma-md">{{ $t("common.or_long") }}</p>
 
+          <!-- Show recently opened programs -->
           <h6 class="text-margin-xs">
             {{ $t("coach.program_management.builder.open_recent") }}
           </h6>
-          <!-- Show recently opened programs -->
           <TableCreatedPrograms
-            ref="createdProgramsTableElement"
-            :programs="coachPrograms"
-            @open="openProgram"
+            :programs="allAssignedPrograms"
+            @open="(program) => openProgram(program.uid)"
           />
         </div>
       </template>
@@ -367,12 +364,10 @@
 
             <!-- Select among assigned programs -->
             <q-card>
-              <!-- Show recently opened programs -->
               <TableCreatedPrograms
-                v-if="selectedProgram.uid"
-                ref="createdProgramsTableElement"
-                :programs="coachPrograms"
-                @open="openProgram"
+                v-if="selectedProgram"
+                :programs="allAssignedPrograms"
+                @open="(program) => openProgram(program.uid)"
                 :small="true"
               />
             </q-card>
@@ -585,12 +580,15 @@ const requestedProgram = computed(
   () =>
     coachInfo.programs
       ?.find((program) => program.uid == route.params.programId)
-      ?.duplicate()
+      ?.duplicate(),
 );
 
-// Get temporary saved program
-const temporaryProgram = computed(
-  () => coachInfo.programs?.find((program) => !program.athleteId)
+// Get all coach programs
+const allAssignedPrograms = computed(
+  () =>
+    coachInfo.programs?.filter(
+      (program) => program.uid === program.athlete?.assignedProgramId,
+    ) || [],
 );
 
 // Get complete program filter
@@ -613,8 +611,8 @@ const programFilter = computed({
 const athleteMaxlifts = computed(
   () =>
     coachInfo.maxlifts?.filter(
-      (maxlift) => maxlift.athleteId == selectedProgram.value?.athleteId
-    )
+      (maxlift) => maxlift.athleteId == selectedProgram.value?.athleteId,
+    ),
 );
 
 // Decide whether to display warning dialog on new program
@@ -640,7 +638,7 @@ watch(
   },
   {
     immediate: true,
-  }
+  },
 );
 
 // Show new program dialog when requested
@@ -649,7 +647,7 @@ watch(
   (val) => {
     if (val == "true") showNewProgramDialog.value = true;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Try (but not force) to open a new program when requested
@@ -664,7 +662,7 @@ watch(
       oldAthleteAssigned.value = selectedProgram.value?.athlete;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Perform operations on program update
@@ -681,12 +679,12 @@ watch(
       emit(
         "activateDrawerItem",
         Object.values(UtilsOptions).findIndex(
-          (val) => val == showingUtils.value
-        )
+          (val) => val == showingUtils.value,
+        ),
       );
     if (oldVal && oldVal > 0 && newVal === 0) emit("activateDrawerItem", -1);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 /**
@@ -753,14 +751,14 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
       setSavedValue();
       (coachInfo.programs =
         coachInfo.programs?.filter(
-          (program) => program.uid != currProgram.uid
+          (program) => program.uid != currProgram.uid,
         ) || []).push(currProgram);
 
       // Update athlete profile with new program
       assignProgramToAthlete(
         currProgram,
         currProgram.athlete,
-        oldAthleteAssigned.value
+        oldAthleteAssigned.value,
       );
 
       // Clear active change on current program
@@ -797,14 +795,14 @@ const autosaveProgram = debounce(() => {
 function assignProgramToAthlete(
   program: Program,
   athlete?: AthleteUser,
-  oldAthlete?: AthleteUser
+  oldAthlete?: AthleteUser,
 ) {
   // Update athlete info
   if (athlete) {
     athlete.assignedProgramId = program.uid;
     if (program.uid)
       (athlete.assignedPrograms = athlete.assignedPrograms || []).push(
-        program.uid
+        program.uid,
       );
 
     // Store changes
@@ -813,7 +811,7 @@ function assignProgramToAthlete(
         $q.notify({
           type: "negative",
           message: i18n.t(
-            "coach.program_management.builder.save_assignment_error"
+            "coach.program_management.builder.save_assignment_error",
           ),
           position: "bottom",
         });
@@ -830,7 +828,7 @@ function assignProgramToAthlete(
           type: "negative",
           message: i18n.t(
             "coach.program_management.builder.save_unassignment_error",
-            { name: oldAthlete.referenceName }
+            { name: oldAthlete.referenceName },
           ),
           position: "bottom",
         });
@@ -876,7 +874,7 @@ function saveMaxlift(newMaxLift: MaxLift) {
         type: "negative",
         message: i18n.t(
           "coach.maxlift_management.list." +
-            (isNew ? "add_error" : "update_error")
+            (isNew ? "add_error" : "update_error"),
         ),
         position: "bottom",
       }),
@@ -897,27 +895,6 @@ function openNewProgram() {
  */
 function onUnsavedProgramRestore() {
   substituteProgramId.value = coachActiveChanges.program?.uid;
-}
-
-/**
- * Open the program that is assigned to selected athlete.
- *
- * @param athlete athlete whose program should be opened.
- */
-function onAthleteProgramSelection(athlete?: AthleteUser) {
-  substituteProgram.value = athlete?.assignedProgramId;
-}
-
-/**
- * Delete temporary program from database and programs list.
- */
-function deleteTemporaryProgram() {
-  if (temporaryProgram.value) {
-    temporaryProgram.value.remove();
-    coachInfo.programs = coachInfo.programs?.filter(
-      (program) => program != temporaryProgram.value
-    );
-  }
 }
 
 /**
