@@ -2,6 +2,7 @@ import { DocumentReference } from "firebase/firestore";
 import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
 import { Exercise, ExerciseVariant } from "../exercises/exercise";
 import { maxliftsCollection } from "@/helpers/database/collections";
+import { AthleteUser } from "../users/user";
 
 /**
  * Define available max lift types.
@@ -48,6 +49,7 @@ export type MaxLiftProps = {
   type?: MaxLiftType;
   exercise?: Exercise;
   value?: string; // TODO: add measurement unit
+  athlete?: AthleteUser;
 
   // Max lift status
   coachId?: string;
@@ -73,6 +75,7 @@ export class MaxLift {
   type?: MaxLiftType;
   exercise?: Exercise;
   variant?: ExerciseVariant;
+  athlete?: AthleteUser; //TODO: check
   value?: string; // TODO: add measurement unit
 
   // Max lift status
@@ -92,6 +95,7 @@ export class MaxLift {
     type,
     exercise,
     value,
+    athlete,
     coachId,
     athleteId,
     performedOn,
@@ -103,6 +107,7 @@ export class MaxLift {
     this.type = type;
     this.exercise = exercise;
     this.value = value;
+    this.athlete = athlete;
     this.coachId = coachId;
     this.athleteId = athleteId;
     this.performedOn = performedOn;

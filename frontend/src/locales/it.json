@@ -364,6 +364,7 @@
         "variant": "Variante",
         "type": "Tipo",
         "value": "Valore",
+        "estimated1RM": "1RM Stimato",
         "date": "Data"
       }
     },

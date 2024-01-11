@@ -363,6 +363,7 @@
         "variant": "Variant",
         "type": "Type",
         "value": "Value",
+        "estimated1RM": "Estimated 1RM",
         "date": "Date"
       }
     },

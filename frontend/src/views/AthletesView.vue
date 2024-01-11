@@ -294,6 +294,7 @@
                       <FormMaxLift
                         ref="maxliftFormElement"
                         :maxlift="updatingMaxLift"
+                        :athlete="selectedAthlete ?? updatingAthlete"
                         :exercises="exercises"
                         @submit="saveMaxlift"
                         @reset="showMaxLiftAddDialog = false"

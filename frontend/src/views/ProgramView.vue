@@ -246,6 +246,7 @@
                 <FormMaxLift
                   ref="maxliftFormElement"
                   :maxlift="updatingMaxlift"
+                  :athlete="selectedProgram?.athlete"
                   :exercises="coachInfo.exercises"
                   @submit="saveMaxlift"
                   @reset="showMaxliftAddDialog = false"

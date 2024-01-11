@@ -27,11 +27,14 @@ export const rpeRepsTable: number[][] = [
  * @param rpeTable actual table to use (NOTE: to keep as a variable as the coach could also potentially want to customize)
  * @returns the estimated 1RM value
  */
+
+//TODO: check athlete from maxlift
+//TODO mettere come default la tabella sopra
 export function estimate1RMfromNRM(
   maxlift: MaxLift,
   rpeTable: number[][],
 ): number | undefined {
-  if (typeof maxlift.value != "number" || !maxlift.type || !rpeTable) {
+  if (typeof Number(maxlift.value) != "number" || !maxlift.type || !rpeTable) {
     console.error("Invalid value, maxlift type, or RPE table.");
     return undefined;
   }
@@ -46,27 +49,27 @@ export function estimate1RMfromNRM(
 
   switch (maxlift.type) {
     case MaxLiftType._1RM:
-      estimated1RMValue = maxlift.value;
+      estimated1RMValue = Number(maxlift.value);
       break;
     case MaxLiftType._3RM:
       estimated1RMValue =
-        (bodyweight ?? 0 + maxlift.value) / (0.01 * rpeTable[0][2]);
+        (bodyweight ?? 0 + Number(maxlift.value)) / (0.01 * rpeTable[0][2]);
       break;
     case MaxLiftType._5RM:
       estimated1RMValue =
-        (bodyweight ?? 0 + maxlift.value) / (0.01 * rpeTable[0][4]);
+        (bodyweight ?? 0 + Number(maxlift.value)) / (0.01 * rpeTable[0][4]);
       break;
     case MaxLiftType._6RM:
       estimated1RMValue =
-        (bodyweight ?? 0 + maxlift.value) / (0.01 * rpeTable[0][5]);
+        (bodyweight ?? 0 + Number(maxlift.value)) / (0.01 * rpeTable[0][5]);
       break;
     case MaxLiftType._8RM:
       estimated1RMValue =
-        (bodyweight ?? 0 + maxlift.value) / (0.01 * rpeTable[0][7]);
+        (bodyweight ?? 0 + Number(maxlift.value)) / (0.01 * rpeTable[0][7]);
       break;
     case MaxLiftType._10RM:
       estimated1RMValue =
-        (bodyweight ?? 0 + maxlift.value) / (0.01 * rpeTable[0][9]);
+        (bodyweight ?? 0 + Number(maxlift.value)) / (0.01 * rpeTable[0][9]);
       break;
   }
   return estimated1RMValue

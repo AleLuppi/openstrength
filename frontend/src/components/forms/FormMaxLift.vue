@@ -32,6 +32,14 @@
         required
       ></os-input>
 
+      <os-input
+        v-if="isEstimated1RMVisibile"
+        v-model="maxliftEstimated1RMValue"
+        :suffix="maxliftValueSuffix"
+        :label="$t('coach.maxlift_management.fields.estimated1RM')"
+        readonly
+      ></os-input>
+
       <!-- Performance date -->
       <os-input
         v-model="maxliftDate"
@@ -77,11 +85,21 @@ import { QForm } from "quasar";
 import { dateGetWithoutTimezone } from "@/helpers/scalar";
 import { Exercise } from "@/helpers/exercises/exercise";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
+import {
+  estimate1RMfromNRM,
+  rpeRepsTable,
+} from "@/helpers/charts/chartDatasetComputations";
+import { AthleteUser } from "@/helpers/users/user";
 
 // Set props
+// TODO: set athlete from outside
 const props = defineProps({
   maxlift: {
     type: MaxLift,
+    required: false,
+  },
+  athlete: {
+    type: AthleteUser,
     required: false,
   },
   exercises: {
@@ -112,6 +130,21 @@ const maxliftExercise = ref<string>();
 const maxliftType = ref<string>();
 const maxliftValue = ref<string>();
 const maxliftDate = ref<string>();
+const maxliftEstimated1RMValue = computed(() =>
+  maxliftValue.value && maxliftType.value
+    ? computeE1RM(maxliftValue.value, maxliftType.value)
+    : undefined,
+);
+const isEstimated1RMVisibile = computed(
+  () =>
+    props.athlete &&
+    maxliftValue.value &&
+    (maxliftType.value == MaxLiftType._3RM ||
+      maxliftType.value == MaxLiftType._5RM ||
+      maxliftType.value == MaxLiftType._6RM ||
+      maxliftType.value == MaxLiftType._8RM ||
+      maxliftType.value == MaxLiftType._10RM),
+);
 
 // Setup variables according to selected maxlift
 watch(
@@ -127,6 +160,7 @@ watch(
           .replaceAll("-", "/")
       : undefined;
   },
+
   { immediate: true },
 );
 
@@ -148,6 +182,39 @@ const maxliftValueSuffix = computed(() => {
       return "";
   }
 });
+
+/**
+ * Wraps data to perform calculation of the estimated 1RM value.
+ */
+function computeE1RM(value: string | undefined, type: string | undefined) {
+  const maxliftObj = new MaxLift();
+  maxliftObj.athlete = props.athlete;
+  maxliftObj.value = value;
+
+  switch (type) {
+    case "3RM":
+      maxliftObj.type = MaxLiftType._3RM;
+      break;
+    case "5RM":
+      maxliftObj.type = MaxLiftType._5RM;
+      break;
+    case "6RM":
+      maxliftObj.type = MaxLiftType._6RM;
+      break;
+    case "8RM":
+      maxliftObj.type = MaxLiftType._8RM;
+      break;
+    case "10RM":
+      maxliftObj.type = MaxLiftType._10RM;
+      break;
+    default:
+      maxliftObj.type = undefined;
+  }
+
+  return maxliftObj.type
+    ? String(estimate1RMfromNRM(maxliftObj, rpeRepsTable))
+    : undefined;
+}
 
 /**
  * Perform operations on form submit.
