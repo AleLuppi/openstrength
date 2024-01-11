@@ -707,8 +707,8 @@ function openProgram(programId?: string, force: boolean = false) {
   // Update selected program if needed
   if (programId != undefined && (programSaved.value || force)) {
     router.replace({
-      ...router.currentRoute,
-      params: { programId: programId },
+      ...route,
+      params: { ...route.params, programId: programId },
       query: { ...(programId ? {} : { new: "true" }) },
     });
 
