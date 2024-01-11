@@ -3,12 +3,7 @@ import {
   ProgramLine,
   ProgramForzenView,
 } from "@/helpers/programs/program";
-import {
-  getProgramUniqueDays,
-  getProgramUniqueWeeks,
-  orderProgramExercises,
-} from "@/helpers/programs/linesManagement";
-import { objectDeepCompare } from "../object";
+import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 
 /**
  * Converts a program line to a schema string (load reps x sets @rpe).

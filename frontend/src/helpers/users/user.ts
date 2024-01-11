@@ -8,7 +8,6 @@ import {
   changeDocId,
 } from "@/helpers/database/readwrite";
 import { dbCollections } from "@/helpers/database/collections";
-import { Program } from "@/helpers/programs/program";
 
 /**
  * Define available user roles.
