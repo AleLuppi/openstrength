@@ -289,6 +289,14 @@ a {
   text-underline-offset: 0.3em;
 }
 
+// Exclude element from print
+@media print {
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+}
+
 /***** DOM element related classes *****/
 // Input
 .input-required:after {

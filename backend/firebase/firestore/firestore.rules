@@ -1,0 +1,76 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Check if user is signed in
+    function userSignedIn() {
+      return request.auth != null;
+    }
+
+    // Check if user has a doc with account details
+    function existsUserDoc() {
+      return userSignedIn()? exists(/databases/$(database)/documents/users/$(request.auth.uid)) : false;
+    }
+
+    // Get user role
+    function getUserRole() {
+      return userSignedIn()? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role : "unknown";
+    }
+
+    // Get user email
+    function getUserEmail() {
+      return userSignedIn()? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email : "";
+    }
+
+    // Get document data
+    function getDocData(path) {
+      return get(/databases/$(database)/documents/$(path)).data;
+    }
+
+    // Manage "users" collection
+    match /users/{userId} {
+      allow read: if true; // TODO only proprietary (by ID or email) or related person
+      allow create: if (userSignedIn() && (!('role' in request.resource.data) || request.resource.data.role != "admin")); // TODO user must be proprietary or coach, and ensure role is not assigned to admin
+      allow update: if (request.resource.data.role != "admin"); // TODO only proprietary if exist, otherwise related person, and ensure role is not assigned to admin
+      allow delete: if (existsUserDoc() && (userId != request.auth.uid) && ('email' in resource.data) && (resource.data.email == getUserEmail() && resource.data.email == request.auth.token.email)); // only duplicate documents (check by email field)
+    }
+
+    // Manage "exercises" collection
+    match /exercises/{exerciseId} {
+      allow read: if (userSignedIn() && (request.auth.uid == resource.data.userId)); // only proprietary
+      allow create: if (userSignedIn() && (getUserRole() == "coach")); // user must be coach
+      allow update: if (userSignedIn() && (request.auth.uid == resource.data.userId)); // only proprietary
+      allow delete: if (userSignedIn() && (request.auth.uid == resource.data.userId)); // only proprietary
+    }
+
+    // Manage "programs" collection
+    match /programs/{programId} {
+      allow read: if (userSignedIn() && (request.auth.uid == resource.data.coachId)); // TODO only proprietary or assigned athlete
+      allow create: if (userSignedIn() && (getUserRole() == "coach")); // user must be coach
+      allow update: if (userSignedIn() && (request.auth.uid == resource.data.coachId)); // only proprietary
+      allow delete: if (userSignedIn() && (request.auth.uid == resource.data.coachId)); // only proprietary
+
+      // Manage "snapshots" subcollection
+      match /snapshots/{snapshotId} {
+        allow read: if true; // anyone
+        allow create: if (userSignedIn() && (request.auth.uid == getDocData(/programs/$(programId)).coachId)); // only proprietary
+        allow update: if (userSignedIn() && (request.auth.uid == getDocData(/programs/$(programId)).coachId)); // only proprietary
+        allow delete: if (userSignedIn() && (request.auth.uid == getDocData(/programs/$(programId)).coachId)); // only proprietary
+      }
+    }
+
+    // Manage "maxlifts" collection
+    match /maxlifts/{maxliftId} {
+      allow read: if (userSignedIn() && (request.auth.uid == resource.data.coachId)); // TODO only proprietary or assigned athlete
+      allow create: if (userSignedIn() && (getUserRole() in ["coach", "athlete"])); // user must be coach or athlete
+      allow update: if (userSignedIn() && (request.auth.uid == resource.data.coachId)); // TODO only proprietary or assigned athlete
+      allow delete: if (userSignedIn() && (request.auth.uid == resource.data.coachId)); // only proprietary
+    }
+
+    // Avoid any other data manipulation
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

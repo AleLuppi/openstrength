@@ -4,7 +4,7 @@ import {
   doUpdateDoc,
   doDeleteDoc,
 } from "@/helpers/database/readwrite";
-import { exercisesCollection } from "@/helpers/database/collections";
+import { dbCollections } from "@/helpers/database/collections";
 
 /**
  * Define available load types.
@@ -369,7 +369,7 @@ export class ExerciseVariant {
     }
 
     // Delete the variant
-    doDeleteDoc(exercisesCollection, variantToDelete.uid, {
+    doDeleteDoc(dbCollections.exercises, variantToDelete.uid, {
       onSuccess: onSuccess,
       onError: onError,
     });
@@ -412,7 +412,7 @@ export function addDocExerciseVariant(
     exerciseVariant,
     exercise,
   );
-  doAddDoc(exercisesCollection, extendedVariantObj, {
+  doAddDoc(dbCollections.exercises, extendedVariantObj, {
     addUserId: true,
     onSuccess: (docRef: DocumentReference) => {
       exerciseVariant.uid = docRef.id;
@@ -467,7 +467,7 @@ export function updateDocExerciseVariant(
   );
   const docId = exerciseVariant.uid;
   if (docId)
-    doUpdateDoc(exercisesCollection, docId, extendedVariantObj, {
+    doUpdateDoc(dbCollections.exercises, docId, extendedVariantObj, {
       addUserId: true,
       onSuccess: (docRef: DocumentReference) => {
         onSuccess?.(docRef);

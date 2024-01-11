@@ -142,13 +142,10 @@ onBeforeMount(() => {
       await user.loadUser();
       if (user.locale) setLocale(user.locale);
 
-      // Try original page app is unused yet, otherwise just check for authorizations
+      // Try to move to original page if app has not been used yet, otherwise re-check current page
       if (route.redirectedFrom && !interacted)
         router.replace(route.redirectedFrom);
-      else
-        router.replace({
-          params: { userId: user.uid },
-        });
+      else router.replace({ ...route, force: true });
 
       // Show onboarding dialog if required
       if (!user.role || user.role == UserRole.unknown)
@@ -159,9 +156,7 @@ onBeforeMount(() => {
       coachInfo.$reset();
 
       // Refresh page to allow redirect if on unauthorized page
-      router.replace({
-        params: { userId: "" },
-      });
+      router.replace({ ...route, force: true });
     },
   });
 });
