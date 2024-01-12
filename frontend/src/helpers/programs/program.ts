@@ -512,8 +512,8 @@ export class ProgramLine {
         const operationValue = parseInt(this.repsOperation);
         return this.refRepsValue + operationValue;
       }
-    }
-    // Estimated from tables
+    } else return undefined;
+    /*  // Estimated from tables
     else if (
       (this.rpeValue || this.rpeComputedValue || this.rpeSupposedValue) &&
       (this.loadValue || this.loadComputedValue || this.loadSupposedValue)
@@ -553,7 +553,7 @@ export class ProgramLine {
           }
         }
       }
-    } else return undefined;
+    } */
   }
   get loadComputedValue(): number | undefined {
     // Computed from reference
@@ -572,7 +572,7 @@ export class ProgramLine {
       } else return undefined;
     }
     // Estimated from table (only if a reference is selected, TODO: change structure)
-    else if (
+    /*     else if (
       (this.repsValue || this.repsComputedValue || this.repsSupposedValue) &&
       (this.rpeValue || this.rpeComputedValue || this.rpeSupposedValue)
     ) {
@@ -608,7 +608,7 @@ export class ProgramLine {
       }
 
       return undefined;
-    }
+    } */
 
     return undefined;
   }
@@ -625,7 +625,7 @@ export class ProgramLine {
     }
     //TODO: check
     // Estimated from tables
-    else if (
+    /*     else if (
       (this.repsValue || this.repsComputedValue || this.repsSupposedValue) &&
       (this.loadValue || this.loadComputedValue || this.loadSupposedValue)
     ) {
@@ -664,7 +664,8 @@ export class ProgramLine {
           }
         }
       }
-    } else return undefined;
+    } */
+    else return undefined;
   }
 
   // Operations
