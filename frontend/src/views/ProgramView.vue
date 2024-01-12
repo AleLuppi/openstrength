@@ -714,7 +714,11 @@ function setSavedValue() {
  */
 function openProgram(programId?: string, force: boolean = false) {
   // Update selected program if needed
-  if (programId != undefined && (programSaved.value || force)) {
+  if (
+    route.name === NamedRoutes.program &&
+    programId != undefined &&
+    (programSaved.value || force)
+  ) {
     router.replace({
       ...route,
       params: { ...route.params, programId: programId },
