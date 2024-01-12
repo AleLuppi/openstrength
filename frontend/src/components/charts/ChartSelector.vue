@@ -80,6 +80,7 @@ const chartsKey = ref<string>("");
 // Set constants
 const chartDescriptions: OSChartDescriptor[] = [
   // TODO i18n
+
   {
     chartType: OSChartType.Volume,
     chartVersion: OSChartVersion.TotalVolume,
@@ -101,14 +102,12 @@ const chartDescriptions: OSChartDescriptor[] = [
     chartTitle: i18n.t("coach.charts_management.list.tot_sets_title"),
     chartDescription: i18n.t("coach.charts_management.list.tot_sets_desc"),
   },
-
-  /* TODO
   {
     chartType: OSChartType.Intensity,
-    chartVersion: OSChartVersion.MaxIntensity,
+    chartVersion: OSChartVersion.MaxIntensityKg,
     xAxisType: OSAvailableXType.Weeks,
-    chartTitle: "Total Volume varying weeks",
-    chartDescription: "Maximum intensity in the week (computed as load/1RM)",
+    chartTitle: "Maximum intensity [kg] varying weeks",
+    chartDescription: "Maximum intensity in the week [kg]]",
   },
   {
     chartType: OSChartType.Intensity,
@@ -117,7 +116,6 @@ const chartDescriptions: OSChartDescriptor[] = [
     chartTitle: "Total Volume varying weeks",
     chartDescription: "Mean intensity over the week (computed as load/1RM)",
   },
-  */
 ];
 
 // Get a list of data requests for program

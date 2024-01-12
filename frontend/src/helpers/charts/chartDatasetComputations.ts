@@ -1,3 +1,4 @@
+import { max } from "moment";
 import { MaxLift, MaxLiftType } from "../maxlifts/maxlift";
 import { ProgramLine } from "../programs/program";
 
@@ -264,4 +265,26 @@ export function calculateMeanIntensity(programLines: ProgramLine[]): number {
   // Compute and return the ratio
   const meanIntensity = cumulativeIntensity / totalSets;
   return meanIntensity;
+}
+
+////////////////////////////////////////////////
+/**
+ * This method compute the max intensity in kg
+ * @param programLines
+ * @returns
+ */
+export function calculateMaxIntensityKg(programLines: ProgramLine[]): number {
+  if (programLines.length === 0) {
+    return 0;
+  }
+
+  // Find the maximum load as [kg] value among the lines
+  const maxIntensity = programLines.reduce((max, line) => {
+    const load =
+      line.loadValue ?? line.loadComputedValue ?? line.loadSupposedValue ?? 0;
+    return isNaN(load) ? max : Math.max(max, load);
+  }, 0);
+
+  console.log(maxIntensity);
+  return maxIntensity;
 }
