@@ -106,15 +106,25 @@ const chartDescriptions: OSChartDescriptor[] = [
     chartType: OSChartType.Intensity,
     chartVersion: OSChartVersion.MaxIntensityKg,
     xAxisType: OSAvailableXType.Weeks,
-    chartTitle: "Maximum intensity [kg] varying weeks",
-    chartDescription: "Maximum intensity in the week [kg]]",
+    chartTitle: "Maximum intensity varying weeks",
+    chartDescription:
+      "Maximum load used in the week [kg]. Note: values set as % are computed only if referred to something",
   },
   {
     chartType: OSChartType.Intensity,
-    chartVersion: OSChartVersion.MeanIntensity,
+    chartVersion: OSChartVersion.AverageIntensityKg,
     xAxisType: OSAvailableXType.Weeks,
-    chartTitle: "Total Volume varying weeks",
-    chartDescription: "Mean intensity over the week (computed as load/1RM)",
+    chartTitle: "Average intensity varying weeks",
+    chartDescription:
+      "Average intensity used in the weeks [kg]. Note: values set as % are computed only if referred to something",
+  },
+  {
+    chartType: OSChartType.Intensity,
+    chartVersion: OSChartVersion.AverageIntensityKg,
+    xAxisType: OSAvailableXType.Weeks,
+    chartTitle: "Average intensity varying weeks",
+    chartDescription:
+      "Average intensity used in the weeks [kg]. Note: values set as % are computed only if referred to something",
   },
 ];
 

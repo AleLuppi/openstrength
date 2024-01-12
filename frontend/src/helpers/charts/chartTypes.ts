@@ -20,6 +20,7 @@ export enum OSChartVersion {
   TotalReps = "Total Reps",
   TotalSets = "Total Sets",
   MaxIntensityKg = "Max [kg]",
+  AverageIntensityKg = "Avg [kg]",
   MaxIntensityPercentage = "Max [%]",
   MeanIntensity = "Mean",
 }

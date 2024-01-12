@@ -285,6 +285,31 @@ export function calculateMaxIntensityKg(programLines: ProgramLine[]): number {
     return isNaN(load) ? max : Math.max(max, load);
   }, 0);
 
-  console.log(maxIntensity);
   return maxIntensity;
+}
+
+/**
+ * This method compute the max intensity in %
+ * @param programLines
+ * @returns
+ */
+export function calculateAverageIntensityKg(
+  programLines: ProgramLine[],
+): number {
+  if (programLines.length === 0) {
+    return 0;
+  }
+
+  const loadValues = programLines
+    .map(
+      (line) =>
+        line.loadValue ?? line.loadComputedValue ?? line.loadSupposedValue ?? 0,
+    )
+    .filter((value) => value !== null && !isNaN(value) && value !== 0);
+
+  const sum = loadValues.reduce((accumulator, value) => accumulator + value, 0);
+  const averageIntensity = loadValues.length > 0 ? sum / loadValues.length : 0;
+
+  console.log(averageIntensity);
+  return averageIntensity;
 }

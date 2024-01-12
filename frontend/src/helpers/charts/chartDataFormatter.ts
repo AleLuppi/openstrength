@@ -2,6 +2,7 @@ import { Program, ProgramLine } from "@/helpers/programs/program";
 import { ChartData } from "chart.js";
 import { colors } from "quasar";
 import {
+  calculateAverageIntensityKg,
   calculateMaxIntensityKg,
   calculateTotalReps,
   calculateTotalSets,
@@ -109,6 +110,11 @@ export function getCalculationFunction(
     chartInfo.chartType === OSChartType.Intensity
   ) {
     return calculateMaxIntensityKg;
+  } else if (
+    chartInfo.chartVersion === OSChartVersion.AverageIntensityKg &&
+    chartInfo.chartType === OSChartType.Intensity
+  ) {
+    return calculateAverageIntensityKg;
   }
 
   //TODO add other charts
