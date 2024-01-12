@@ -227,28 +227,6 @@
                   :options="exercises.map((exercise) => exercise.name)"
                   hide-bottom-space
                 >
-                  <!--                   <template #after-options>
-                    <q-btn outline class="q-ma-xs" @click="onNewExercise()">{{
-                      $t("coach.exercise_management.create_new_exercise")
-                    }}</q-btn>
-                  </template>
-                  <template #no-option>
-                    <q-item>
-                      <q-item-section> No results </q-item-section>
-                    </q-item>
-                    <q-item>
-                      <q-item-section>
-                        <q-btn
-                          outline
-                          class="q-ma-none"
-                          @click="onNewExercise()"
-                          >{{
-                            $t("coach.exercise_management.create_new_exercise")
-                          }}</q-btn
-                        >
-                      </q-item-section>
-                    </q-item>
-                  </template> -->
                 </os-select>
                 <q-separator color="inherit" spaced="xs" />
                 <os-select
@@ -258,6 +236,10 @@
                   @update:model-value="
                     (val: typeof exerciseModelValue.variant) => {
                       exerciseModelValue.variant = val;
+                      optionallyCreateNewExercise(
+                        exerciseModelValue.exercise,
+                        exerciseModelValue.variant,
+                      );
                       updateProgramExercise(idScheduleInfo.toString());
                     }
                   "
@@ -273,41 +255,18 @@
                   "
                   emit-value
                   hide-bottom-space
+                  new-value-mode="add-unique"
+                  :readonly="!exerciseModelValue.exercise"
+                  :after-options-add-new="true"
+                  :no-options-add-new="true"
+                  add-option-class="text-primary text-bold text-center"
+                  :add-option-format-text="
+                    (text: string) =>
+                      $t('coach.exercise_management.create_named_variant', {
+                        variant: text,
+                      })
+                  "
                 >
-                  <template #after-options>
-                    <q-btn
-                      outline
-                      class="q-ma-xs"
-                      @click="
-                        $event.target?.focus();
-                        $event.currentTarget?.focus();
-                        $event.parentNode?.focus();
-                        onNewVariant(idScheduleInfo.toString());
-                      "
-                      >{{
-                        $t("coach.exercise_management.create_new_variant")
-                      }}</q-btn
-                    >
-                  </template>
-                  <template #no-option>
-                    <q-item>
-                      <!-- TODO: i18n -->
-                      <q-item-section> No results </q-item-section>
-                    </q-item>
-
-                    <q-item>
-                      <q-item-section>
-                        <q-btn
-                          outline
-                          class="q-ma-none"
-                          @click="onNewVariant(idScheduleInfo.toString())"
-                          >{{
-                            $t("coach.exercise_management.create_new_variant")
-                          }}</q-btn
-                        >
-                      </q-item-section>
-                    </q-item>
-                  </template>
                 </os-select>
                 <q-separator color="inherit" spaced="xs" />
                 <os-input
@@ -333,47 +292,6 @@
                 />
               </div>
             </q-slide-transition>
-
-            <!-- Dialog to create or update variant -->
-            <q-dialog v-model="showDialogVariantForm" @hide="clearVariant">
-              <q-card>
-                <q-card-section class="row items-center q-pb-none">
-                  <h5>
-                    {{
-                      $t(
-                        "coach.exercise_management." +
-                          (addingNewVariant ? "add" : "update"),
-                      )
-                    }}
-                  </h5>
-
-                  <q-space />
-                  <q-btn
-                    icon="close"
-                    flat
-                    round
-                    dense
-                    color="button-negative"
-                    v-close-popup
-                  />
-                </q-card-section>
-
-                <q-card-section>
-                  <FormExerciseVariantLibrary
-                    ref="variantFormElement"
-                    v-if="selectedVariant"
-                    :variant="selectedVariant"
-                    @submit="
-                      (variant) =>
-                        onVariantSubmit(variant, idScheduleInfo.toString())
-                    "
-                    :options-muscle-groups="exerciseMuscleGroupsOptions"
-                    :options-equipment="exerciseEquipmentOptions"
-                    :insertExerciseName="addingNewExercise.value"
-                  />
-                </q-card-section>
-              </q-card>
-            </q-dialog>
 
             <q-slide-transition>
               <div
@@ -403,7 +321,7 @@
               $t('coach.program_management.builder.line_delete'),
             ]"
             @click="
-              (idx) => {
+              (idx: number) => {
                 switch (idx) {
                   case 0:
                     editWeekDayName = splitScheduleInfoNames(
@@ -761,8 +679,6 @@ import {
 } from "@/helpers/maxlifts/maxlift";
 import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
 import { stringGetNext } from "@/helpers/scalar";
-import { useCoachInfoStore } from "@/stores/coachInfo";
-import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLibrary.vue";
 
 // Init plugin
 const $q = useQuasar();
@@ -797,7 +713,11 @@ const props = defineProps({
 });
 
 // Define emits
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits<{
+  "update:modelValue": [program: Program | undefined];
+  newExercise: [exerciseName: string];
+  newVariant: [exerciseName: string, variantName: string];
+}>();
 
 // Set useful values
 const sepWekDay = ".";
@@ -807,11 +727,6 @@ const storeChangesMethods: {
 } = {};
 
 // Set ref
-const addingNewExercise = ref(false);
-//const selectedExercise = ref<Exercise>();
-const addingNewVariant = ref(false);
-const selectedVariant = ref<ExerciseVariant>();
-
 const tableElements = ref<{
   [key: string]: HTMLElement | any;
 }>({});
@@ -846,8 +761,6 @@ const selectingReferenceLine = ref<{
 const exercisesInfoExpanded = ref<{
   [key: string]: boolean;
 }>({});
-
-const showDialogVariantForm = ref(false);
 
 // Get a subset of tables to show according to filters
 const filteredExercisesValues = computed(() => {
@@ -1654,6 +1567,8 @@ function updateProgramWhole() {
 
 /**
  * Rebuild the whole program based on the current table values.
+ *
+ * @param idScheduleInfo schedule ID of exercise and variant that shall be updated.
  */
 function updateProgramExercise(idScheduleInfo: string) {
   // Get interesting program exercise
@@ -1695,109 +1610,38 @@ function updateProgramExercise(idScheduleInfo: string) {
   programCurrentValue.value = props.modelValue.duplicate();
 }
 
-//TODO: Check
-// Methods taken from LibraryView
+/**
+ * If there is the need, ask creation of new exercise or variant.
+ *
+ * @param exerciseName name of new exercise that might be created, or parent exercise of variant that might be created.
+ * @param variantName optional name of new variant that might be created.
+ */
+function optionallyCreateNewExercise(
+  exerciseName?: string,
+  variantName?: string,
+) {
+  // Exercise must be provided
+  if (!exerciseName) return;
 
-// Get exercises to display
-const coachInfo = useCoachInfoStore();
-const exercises = computed<Exercise[]>(() => coachInfo.exercises || []);
-
-// Get options to display on variant creation or update
-const exerciseMuscleGroupsOptions = computed(() => {
-  return arrayUniqueValues(
-    exercises.value.reduce(
-      (outList, exercise) => outList.concat(exercise.muscleGroups),
-      [] as string[],
-    ),
+  // Check if any exercise with requested name
+  const foundExercise = props.exercises.find(
+    (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
   );
-});
-const exerciseEquipmentOptions = computed(() => {
-  return arrayUniqueValues(
-    exercises.value.reduce(
-      (outList, exercise) => outList.concat(exercise.equipment),
-      [] as string[],
-    ),
-  );
-});
+  if (!foundExercise) {
+    emit("newExercise", exerciseName);
+    return;
+  }
 
-/**
- * Show dialog to add a new variant.
- */
-function onNewVariant(idScheduleInfo: string) {
-  clearVariant();
-  addingNewVariant.value = true;
-  showDialogVariantForm.value = true;
-  selectedVariant.value = new ExerciseVariant({
-    name: i18n.t("coach.exercise_management.fields.variant"),
-    exercise: selectedExercises.value[idScheduleInfo],
-    loadType: selectedExercises.value[idScheduleInfo]?.defaultVariant?.loadType,
-    muscleGroups:
-      selectedExercises.value[idScheduleInfo]?.defaultVariant?.muscleGroups,
-    equipment:
-      selectedExercises.value[idScheduleInfo]?.defaultVariant?.equipment,
-  });
-}
-
-/**
- * Submit new variant.
- */
-// in library veniva passata in input la variant
-function onVariantSubmit(variant: ExerciseVariant, idScheduleInfo: string) {
-  const exercise = selectedExercises.value[idScheduleInfo];
-
-  variant.saveNew({
-    onSuccess: () => {
-      exercise?.variants?.unshift(variant);
-
-      // Set variant of the q-select to the created variant
-      exercisesValues.value[idScheduleInfo].variant = variant.name;
-
-      clearVariant();
-      //nextTick(() => onNewVariant(idScheduleInfo));
-
-      $q.notify({
-        type: "positive",
-        message: i18n.t("coach.exercise_management.add_success", {
-          exercise: variant.name,
-        }),
-        position: "bottom",
-      });
-    },
-    onError: () =>
-      $q.notify({
-        type: "negative",
-        message: i18n.t("coach.exercise_management.add_error"),
-        position: "bottom",
-      }),
-  });
-}
-
-/**
- * Show dialog to add a new exercise (default variant).
- */
-/* function onNewExercise() {
-  clearExercise();
-  addingNewExercise.value = true;
-  showDialogVariantForm.value = true;
-  selectedVariant.value = new ExerciseVariant();
-} */
-
-/**
- * Clear exercise form and hide it.
- */
-/* function clearExercise() {
-  showDialogVariantForm.value = false;
-  addingNewExercise.value = false;
-  clearVariant();
-}
- */
-/**
- * Clear variant form and hide it.
- */
-function clearVariant() {
-  showDialogVariantForm.value = false;
-  addingNewVariant.value = false;
-  //selectedVariant.value = undefined;
+  // Check if any variant with requested name
+  if (
+    variantName &&
+    !foundExercise.variants?.some(
+      (variant) => variant.name?.toLowerCase() == variantName.toLowerCase(),
+    )
+  ) {
+    emit("newVariant", exerciseName, variantName);
+    return;
+  }
 }
 </script>
 

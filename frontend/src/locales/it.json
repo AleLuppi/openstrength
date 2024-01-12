@@ -198,7 +198,9 @@
         "search_variant": "Cerca variante..."
       },
       "create_new_variant": "Crea una nuova variante",
+      "create_named_variant": "Crea variante \"{ variant }\"",
       "create_new_exercise": "Crea un nuovo esercizio",
+      "create_named_exercise": "Crea esercizio \"{ exercise }\"",
       "no_selected_exercises": "Seleziona o aggiungi un esercizio per mostrare le sue varianti",
       "add": "Aggiungi un nuovo esercizio",
       "add_button_exercise": "Nuovo esercizio",
