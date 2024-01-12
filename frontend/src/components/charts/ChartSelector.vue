@@ -118,14 +118,6 @@ const chartDescriptions: OSChartDescriptor[] = [
     chartDescription:
       "Average intensity used in the weeks [kg]. Note: values set as % are computed only if referred to something",
   },
-  {
-    chartType: OSChartType.Intensity,
-    chartVersion: OSChartVersion.AverageIntensityKg,
-    xAxisType: OSAvailableXType.Weeks,
-    chartTitle: "Average intensity varying weeks",
-    chartDescription:
-      "Average intensity used in the weeks [kg]. Note: values set as % are computed only if referred to something",
-  },
 ];
 
 // Get a list of data requests for program

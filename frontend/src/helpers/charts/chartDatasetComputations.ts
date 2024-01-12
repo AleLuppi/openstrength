@@ -267,7 +267,6 @@ export function calculateMeanIntensity(programLines: ProgramLine[]): number {
   return meanIntensity;
 }
 
-////////////////////////////////////////////////
 /**
  * This method compute the max intensity in kg
  * @param programLines
@@ -310,6 +309,5 @@ export function calculateAverageIntensityKg(
   const sum = loadValues.reduce((accumulator, value) => accumulator + value, 0);
   const averageIntensity = loadValues.length > 0 ? sum / loadValues.length : 0;
 
-  console.log(averageIntensity);
   return averageIntensity;
 }
