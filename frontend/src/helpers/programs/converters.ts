@@ -51,12 +51,9 @@ export function convertProgramToDayBlocks(
     // Get interesting exercise info
     const exerciseInfo: ProgramForzenView["weekdays"][number]["exercises"][number] =
       {
-        exerciseName:
-          programExercise?.lines?.[0].programExercise?.exercise?.name ?? "",
-        variantName:
-          programExercise?.lines?.[0].programExercise?.exerciseVariant?.name ??
-          "",
-        note: programExercise?.lines?.[0].programExercise?.exerciseNote,
+        exerciseName: programExercise?.exercise?.name ?? "",
+        variantName: programExercise?.exerciseVariant?.name ?? "",
+        note: programExercise?.exerciseNote,
         schema:
           programExercise.lines?.map((line) => convertLineToSchema(line)) ?? [],
         schemaNote: programExercise.lines?.map((line) => line.note ?? "") ?? [],
