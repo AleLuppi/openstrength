@@ -1129,9 +1129,12 @@ function flattenProgram(program: Program) {
           ...exerciseObj,
           exercise: exerciseToSpread.exerciseVariant?.uid,
         };
+        let linesToStore = lines;
+        if (!linesToStore || !linesToStore.length)
+          linesToStore = [new ProgramLine()];
         return [
           ...out,
-          ...(exerciseToSpread.lines?.map((lineToSpread) => {
+          ...linesToStore.map((lineToSpread) => {
             const { programExercise, ...lineObj } = lineToSpread;
             const referenceAndType = {
               setsReference: lineToSpread.setsReference?.uid,
@@ -1154,7 +1157,7 @@ function flattenProgram(program: Program) {
               ...lineObj,
               ...referenceAndType,
             };
-          }) || []),
+          }),
         ];
       },
       [],
@@ -1228,14 +1231,16 @@ export function unflattenProgram(
         programExercise.scheduleDay == scheduleDay &&
         programExercise.scheduleOrder == scheduleOrder,
     );
-    if (currentExercise)
-      (currentExercise.lines = currentExercise.lines || []).push(
-        new ProgramLine({
-          programExercise: currentExercise,
-          ...lineInfo,
-        }),
-      );
-    else {
+    const anyLines = Object.values(lineInfo).some((val) => val != undefined);
+    if (currentExercise) {
+      if (anyLines)
+        (currentExercise.lines = currentExercise.lines || []).push(
+          new ProgramLine({
+            programExercise: currentExercise,
+            ...lineInfo,
+          }),
+        );
+    } else {
       const currentVariant = exercises
         ?.reduce(
           (out: ExerciseVariant[], oneExercise) =>
@@ -1251,7 +1256,7 @@ export function unflattenProgram(
           exerciseNote: exerciseNote,
           exercise: currentVariant?.exercise,
           exerciseVariant: currentVariant,
-          lines: [new ProgramLine({ ...lineInfo })],
+          lines: anyLines ? [new ProgramLine({ ...lineInfo })] : [],
         }),
       );
       if (storeUnresolved && !currentVariant && exercise)
