@@ -17,6 +17,7 @@
     "
     selection="single"
     v-model:selected="selectedRows"
+    :pagination="{ sortBy: 'lastmodification', descending: true }"
   ></os-table>
 </template>
 

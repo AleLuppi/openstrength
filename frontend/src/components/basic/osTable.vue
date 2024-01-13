@@ -13,6 +13,7 @@
     :hide-selected-banner="true"
     row-key="name"
     v-model:selected="selected"
+    binary-state-sort
     class="os-table-sticky-header"
   >
     <!-- Set header style -->
