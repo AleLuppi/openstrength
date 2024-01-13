@@ -148,7 +148,10 @@
               if (program) onProgramTableUpdate(program);
             }
           "
-          @new-exercise="onNewExercise"
+          @new-exercise="
+            (exerciseName, programExercise) =>
+              onNewExercise(exerciseName, undefined, programExercise)
+          "
           @new-variant="onNewExercise"
           :exercises="coachInfo.exercises"
           :filter="programFilter"
@@ -506,7 +509,7 @@ import {
 } from "vue";
 import { debounce, dom } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
-import { Program } from "@/helpers/programs/program";
+import { Program, ProgramExercise } from "@/helpers/programs/program";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { useCoachActiveChangesStore } from "@/stores/coachActiveChanges";
@@ -856,8 +859,13 @@ function assignProgramToAthlete(
  *
  * @param exerciseName name of new exercise that shall be created, or parent exercise of variant that shall be created.
  * @param variantName name of new variant that shall be created.
+ * @param programExercise optional program exercise that shall be updated with new exercise or variant.
  */
-function onNewExercise(exerciseName: string, variantName?: string) {
+function onNewExercise(
+  exerciseName: string,
+  variantName?: string,
+  programExercise?: ProgramExercise,
+) {
   // Check if creating new exercise of variant
   if (variantName) {
     // Creating new variant
@@ -880,10 +888,19 @@ function onNewExercise(exerciseName: string, variantName?: string) {
       name: variantName,
       exercise: exercise,
     });
-    console.log("saving", newVariant);
     newVariant.saveNew({
       onSuccess: () => {
+        // Store variant in local storages
         exercise.variants?.unshift(newVariant);
+        if (programExercise) programExercise.exerciseVariant = newVariant;
+
+        // Force update of program under modification
+        if (selectedProgram.value) {
+          const duplicteProgram = selectedProgram.value.duplicate();
+          nextTick(() => onProgramTableUpdate(duplicteProgram));
+        }
+
+        // Inform user
         $q.notify({
           type: "positive",
           message: i18n.t("coach.exercise_management.add_success", {
@@ -908,9 +925,20 @@ function onNewExercise(exerciseName: string, variantName?: string) {
     });
     newExercise.saveNew({
       onSuccess: () => {
+        // Store exercise in local storage
         coachInfo.exercises = reduceExercises(
           (coachInfo.exercises || []).concat([newExercise]),
         );
+        if (programExercise) {
+          programExercise.exercise = newExercise;
+          programExercise.exerciseVariant = newExercise.defaultVariant;
+        }
+
+        // Force update of program under modification
+        if (selectedProgram.value) {
+          const duplicteProgram = selectedProgram.value.duplicate();
+          nextTick(() => onProgramTableUpdate(duplicteProgram));
+        }
 
         // Inform user about exercise successfully saved
         $q.notify({

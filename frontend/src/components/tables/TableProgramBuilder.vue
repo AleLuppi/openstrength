@@ -226,6 +226,16 @@
                   "
                   :options="exercises.map((exercise) => exercise.name)"
                   hide-bottom-space
+                  new-value-mode="add-unique"
+                  :after-options-add-new="true"
+                  :no-options-add-new="true"
+                  add-option-class="text-primary text-bold text-center"
+                  :add-option-format-text="
+                    (text: string) =>
+                      $t('coach.exercise_management.create_named_exercise', {
+                        exercise: text,
+                      })
+                  "
                 >
                 </os-select>
                 <q-separator color="inherit" spaced="xs" />
@@ -236,10 +246,6 @@
                   @update:model-value="
                     (val: typeof exerciseModelValue.variant) => {
                       exerciseModelValue.variant = val;
-                      optionallyCreateNewExercise(
-                        exerciseModelValue.exercise,
-                        exerciseModelValue.variant,
-                      );
                       updateProgramExercise(idScheduleInfo.toString());
                     }
                   "
@@ -715,8 +721,12 @@ const props = defineProps({
 // Define emits
 const emit = defineEmits<{
   "update:modelValue": [program: Program | undefined];
-  newExercise: [exerciseName: string];
-  newVariant: [exerciseName: string, variantName: string];
+  newExercise: [exerciseName: string, programExercise?: ProgramExercise];
+  newVariant: [
+    exerciseName: string,
+    variantName: string,
+    programExercise?: ProgramExercise,
+  ];
 }>();
 
 // Set useful values
@@ -1606,6 +1616,17 @@ function updateProgramExercise(idScheduleInfo: string) {
       }),
   );
 
+  // See if new exercise or variant is required
+  if (
+    optionallyCreateNewExercise(
+      exercisesValues.value[idScheduleInfo].exercise,
+      exercisesValues.value[idScheduleInfo].variant,
+      programExercise,
+    )
+  )
+    // New exercise or variant: parent is in charge of updating program
+    return;
+
   // Inform parent of update
   programCurrentValue.value = props.modelValue.duplicate();
 }
@@ -1619,17 +1640,18 @@ function updateProgramExercise(idScheduleInfo: string) {
 function optionallyCreateNewExercise(
   exerciseName?: string,
   variantName?: string,
-) {
+  programExercise?: ProgramExercise,
+): boolean {
   // Exercise must be provided
-  if (!exerciseName) return;
+  if (!exerciseName) return false;
 
   // Check if any exercise with requested name
   const foundExercise = props.exercises.find(
     (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
   );
   if (!foundExercise) {
-    emit("newExercise", exerciseName);
-    return;
+    emit("newExercise", exerciseName, programExercise);
+    return true;
   }
 
   // Check if any variant with requested name
@@ -1639,9 +1661,11 @@ function optionallyCreateNewExercise(
       (variant) => variant.name?.toLowerCase() == variantName.toLowerCase(),
     )
   ) {
-    emit("newVariant", exerciseName, variantName);
-    return;
+    emit("newVariant", exerciseName, variantName, programExercise);
+    return true;
   }
+
+  return false;
 }
 </script>
 
