@@ -4,7 +4,10 @@
     flat
     wrap-cells
     separator="horizontal"
-    :pagination="{ rowsPerPage: 0 }"
+    :pagination="{
+      rowsPerPage: 0,
+      ...sortInfo,
+    }"
     :hide-pagination="
       Boolean($attrs.hidePagination) ||
       (($attrs.rows as any[]) ?? []).length < 10
@@ -77,7 +80,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, computed, watch } from "vue";
+
+// Define props
+const props = defineProps<{
+  sortBy: string;
+}>();
 
 // Set ref
 const selected = ref<{ [key: string]: any }[]>([]);
@@ -86,6 +94,14 @@ const selected = ref<{ [key: string]: any }[]>([]);
 const emit = defineEmits(["update:selected"]);
 watch(selected, (val) => {
   emit("update:selected", val);
+});
+
+// Get optional sorting
+const sortInfo = computed(() => {
+  if (!props.sortBy) return {};
+  if (props.sortBy.startsWith("-"))
+    return { sortBy: props.sortBy.slice(1), descending: true };
+  else return { sortBy: props.sortBy, descending: false };
 });
 
 /**
