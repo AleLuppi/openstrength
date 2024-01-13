@@ -79,7 +79,10 @@
             <!-- Get shareable link to program -->
             <div>
               <q-btn
-                @click="showShareProgramDialog = true"
+                @click="
+                  saveProgram();
+                  showShareProgramDialog = true;
+                "
                 outline
                 flat
                 icon="sym_o_share"
