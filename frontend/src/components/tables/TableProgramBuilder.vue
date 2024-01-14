@@ -225,6 +225,7 @@
                     }
                   "
                   :options="exercises.map((exercise) => exercise.name)"
+                  :placeholder="$t('coach.program_management.fields.exercise')"
                   hide-bottom-space
                   new-value-mode="add-unique"
                   :after-options-add-new="true"
@@ -260,6 +261,7 @@
                     )
                   "
                   emit-value
+                  :placeholder="$t('coach.program_management.fields.variant')"
                   hide-bottom-space
                   new-value-mode="add-unique"
                   :readonly="!exerciseModelValue.exercise"

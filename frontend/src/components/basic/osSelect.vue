@@ -22,6 +22,7 @@
       @input-value="onInputValue"
       @new-value="updateFromNewValue = Boolean(newOnExplicitRequest)"
       :label="undefined"
+      :placeholder="placeholder"
       :use-chips="multiple"
       new-value-mode="add-unique"
       :rules="
@@ -86,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { QSelect } from "quasar";
 import type { QSelectProps, QSelectSlots } from "quasar";
 
@@ -94,6 +95,9 @@ import type { QSelectProps, QSelectSlots } from "quasar";
 interface extendedInputProps extends QSelectProps {
   // whether a non-empty model value is required to validate a form
   required?: boolean;
+
+  // optional placeholder to be inserted in the select box
+  placeholder?: string;
 
   // if true, show after-options slot with a button to request a new element
   afterOptionsAddNew?: boolean;
@@ -153,6 +157,10 @@ defineExpose({
 const options = ref<any[]>();
 const inputValue = ref<string>("");
 const updateFromNewValue = ref<boolean>(false);
+
+const placeholder = computed(() =>
+  props.modelValue ? undefined : props.placeholder,
+);
 
 /**
  * Filter options according to input value.
