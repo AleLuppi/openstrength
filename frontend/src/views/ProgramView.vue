@@ -28,7 +28,6 @@
                 :outline="!programSaved"
                 :flat="programSaved"
                 :color="programSaved ? 'positive' : 'primary'"
-                :class="{ 'animate-pulse-with-rotation-sm': !programSaved }"
                 class="q-pa-sm q-mx-sm"
               ></q-btn>
               <span
@@ -803,7 +802,7 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
  */
 const autosaveProgram = debounce(() => {
   saveProgram(undefined, true);
-}, 30 * 1000 /* debounce 30 seconds */);
+}, 60 * 1000 /* debounce 60 seconds */);
 
 /**
  * Assign a program to an athlete and save the update.
