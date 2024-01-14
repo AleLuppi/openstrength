@@ -522,6 +522,7 @@ import {
 } from "@/helpers/programs/linesManagement";
 import router, { NamedRoutes } from "@/router";
 import FormProgramInfo from "@/components/forms/FormProgramInfo.vue";
+import { event } from "vue-gtag";
 
 // Define emits
 const emit = defineEmits<{
@@ -714,6 +715,13 @@ function openProgram(programId?: string, force: boolean = false) {
 
     // Clear any possible pending request
     substituteProgramId.value = undefined;
+
+    // Register GA4 event
+    event("programview_existingprogram_open", {
+      event_category: "documentation",
+      event_label: "Program opened in ProgramView for modification",
+      value: 1,
+    });
   }
 }
 
@@ -889,6 +897,13 @@ function saveMaxlift(newMaxLift: MaxLift) {
 function openNewProgram() {
   if (selectedProgram.value) substituteProgramId.value = "";
   else showNewProgramDialog.value = true;
+
+  // Register GA4 event
+  event("programview_newprogram_click", {
+    event_category: "documentation",
+    event_label: "A new program is created",
+    value: 1,
+  });
 }
 
 /**
@@ -896,6 +911,13 @@ function openNewProgram() {
  */
 function onUnsavedProgramRestore() {
   substituteProgramId.value = coachActiveChanges.program?.uid;
+
+  // Register GA4 event
+  event("programview_open_unsavedprog", {
+    event_category: "documentation",
+    event_label: "Unsaved program restore",
+    value: 1,
+  });
 }
 
 /**
