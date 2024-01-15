@@ -225,7 +225,9 @@
                     }
                   "
                   :options="exercises.map((exercise) => exercise.name)"
-                  :placeholder="$t('coach.program_management.fields.exercise')"
+                  :placeholder="
+                    $t('coach.program_management.builder.exercise_name')
+                  "
                   hide-bottom-space
                   new-value-mode="add-unique"
                   :after-options-add-new="true"
@@ -238,6 +240,18 @@
                       })
                   "
                 >
+                  <q-tooltip
+                    v-if="!exerciseModelValue.exercise"
+                    anchor="center right"
+                    self="center left"
+                    :offset="[-10, 0]"
+                  >
+                    {{
+                      $t(
+                        "coach.program_management.builder.exercise_name_tooltip",
+                      )
+                    }}
+                  </q-tooltip>
                 </os-select>
                 <q-separator color="inherit" spaced="xs" />
                 <os-select
@@ -261,7 +275,9 @@
                     )
                   "
                   emit-value
-                  :placeholder="$t('coach.program_management.fields.variant')"
+                  :placeholder="
+                    $t('coach.program_management.builder.variant_name')
+                  "
                   hide-bottom-space
                   new-value-mode="add-unique"
                   :readonly="!exerciseModelValue.exercise"
@@ -275,6 +291,20 @@
                       })
                   "
                 >
+                  <q-tooltip
+                    v-if="
+                      exerciseModelValue.exercise && !exerciseModelValue.variant
+                    "
+                    anchor="center right"
+                    self="center left"
+                    :offset="[-10, 0]"
+                  >
+                    {{
+                      $t(
+                        "coach.program_management.builder.variant_name_tooltip",
+                      )
+                    }}
+                  </q-tooltip>
                 </os-select>
                 <q-separator color="inherit" spaced="xs" />
                 <os-input
