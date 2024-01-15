@@ -536,6 +536,7 @@ import FormProgramInfo from "@/components/forms/FormProgramInfo.vue";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
 
 // Define emits
 const emit = defineEmits<{
@@ -739,6 +740,9 @@ function openProgram(programId?: string, force: boolean = false) {
       event_label: "Program opened in ProgramView for modification",
       value: 1,
     });
+
+    // Mixpanel tracking
+    mixpanel.track("Program opened in ProgramView for modification");
   }
 }
 
@@ -964,6 +968,9 @@ function onNewExercise(
           event_label: "New Exercise Added to Library",
           value: 1,
         });
+
+        // Mixpanel tracking
+        mixpanel.track("New exercise added to library");
       },
       onError: () => {
         // Inform user about error while saving exercise
@@ -1035,6 +1042,9 @@ function openNewProgram() {
     event_label: "A new program is created",
     value: 1,
   });
+
+  // Mixpanel tracking
+  mixpanel.track("New program created");
 }
 
 /**
@@ -1049,6 +1059,9 @@ function onUnsavedProgramRestore() {
     event_label: "Unsaved program restore",
     value: 1,
   });
+
+  // Mixpanel tracking
+  mixpanel.track("Unsaved program restore");
 }
 
 /**

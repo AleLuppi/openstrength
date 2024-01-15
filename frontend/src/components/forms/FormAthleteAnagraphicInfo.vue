@@ -89,6 +89,7 @@ import type { QForm } from "quasar";
 import { useQuasar } from "quasar";
 import { AthleteUser, UserGender } from "@/helpers/users/user";
 import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
 
 // Init plugin
 const $q = useQuasar();
@@ -188,6 +189,9 @@ function onSubmit() {
         event_label: "Update athlete anagraphic info from AthleteView",
         value: 1,
       });
+
+      // Mixpanel tracking
+      mixpanel.track("Update athlete anagraphic info from AthleteView");
     },
     onError: () => {
       $q.notify({

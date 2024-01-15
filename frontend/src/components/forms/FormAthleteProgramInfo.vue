@@ -99,6 +99,7 @@ import type { QForm } from "quasar";
 import { useQuasar } from "quasar";
 import { Program } from "@/helpers/programs/program";
 import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
 
 // Init plugin
 const $q = useQuasar();
@@ -174,6 +175,9 @@ function onSubmit() {
         event_label: "Program info updated in AthleteView",
         value: 1,
       });
+
+      // Mixpanel tracking
+      mixpanel.track("Program info updated in AthleteView");
     },
     onError: () => {
       $q.notify({
@@ -195,5 +199,8 @@ function registerProgramOpeningEvent() {
     event_label: "Program opened from AthleteView",
     value: 1,
   });
+
+  // Mixpanel tracking
+  mixpanel.track("Program opened from AthleteView");
 }
 </script>

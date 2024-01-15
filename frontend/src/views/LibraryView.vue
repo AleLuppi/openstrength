@@ -252,6 +252,7 @@ import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { arrayUniqueValues } from "@/helpers/array";
 import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
 
 // Use plugins
 const $q = useQuasar();
@@ -369,6 +370,9 @@ function onExerciseAdd(exerciseName: string) {
         event_label: "New Exercise Added to Library",
         value: 1,
       });
+
+      // Mixpanel tracking
+      mixpanel.track("New Exercise Added to Library");
     },
     onError: () => {
       // Inform user about error while saving exercise
@@ -468,6 +472,9 @@ function onVariantSubmit(variant: ExerciseVariant) {
           event_label: "Variant Added or Updated in Library",
           value: 1,
         });
+
+        // Mixpanel tracking
+        mixpanel.track("Variant Added or Updated in Library");
       },
       onError: () =>
         $q.notify({
@@ -524,6 +531,9 @@ function deleteExercise(exercise: Exercise) {
         event_label: "Exercise Deleted from Library",
         value: 1,
       });
+
+      // Mixpanel tracking
+      mixpanel.track("Exercise deleted from Library");
     },
   });
 }
@@ -559,6 +569,9 @@ function deleteVariant(variant: ExerciseVariant) {
         event_label: "Variant Deleted from Library",
         value: 1,
       });
+
+      // Mixpanel tracking
+      mixpanel.track("Variant Deleted from Library");
     },
   });
 }

@@ -346,14 +346,17 @@ import {
   getAllAssignedPrograms,
   getAssignedProgram,
 } from "@/helpers/programs/athleteAssignment";
+import mixpanel from "mixpanel-browser";
 
 // Init plugin
 const $q = useQuasar();
 const i18n = useI18n();
-
 // Get store
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
+
+//Get mixpanel tracking
+mixpanel.identify(user.uid);
 
 // Set tab navigation info
 const allTabs = [
@@ -473,6 +476,9 @@ function saveMaxlift(newMaxLift: MaxLift) {
         event_label: "New MaxLift Created in AthleteView",
         value: 1,
       });
+
+      //Mixpanel
+      mixpanel.track("Maxlift created in AthleteView");
     },
     onError: () =>
       $q.notify({
@@ -533,6 +539,9 @@ function createAthlete() {
         event_label: "New Athlete added to Athlete library",
         value: 1,
       });
+
+      // Mixpanel tracking
+      mixpanel.track("New athlete created in AthleteView");
     },
     onError: () =>
       $q.notify({

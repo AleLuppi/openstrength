@@ -107,6 +107,7 @@ import LeftDrawerElements from "@/components/layout/LeftDrawerElements.vue";
 import UserOnboarding from "@/components/forms/UserOnboarding.vue";
 import { defaultExerciseCollection } from "@/utils/defaultExerciseCollection";
 import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
 
 // Init plugin
 const route = useRoute();
@@ -202,6 +203,9 @@ function onRightDrawerClick(clickParam: any) {
     event_label: "The right drawer has been clicked in ProgramView",
     value: 1,
   });
+
+  // Mixpanel tracking
+  mixpanel.track("Right drawer has been clicked");
 }
 
 /**

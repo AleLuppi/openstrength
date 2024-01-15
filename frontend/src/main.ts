@@ -6,6 +6,14 @@ import router from "./router";
 import { createPinia } from "pinia";
 import VueGtag from "vue-gtag";
 import Hotjar from "vue-hotjar";
+import mixpanel from "mixpanel-browser";
+
+mixpanel.init("1132ec256586f264683f340260fca53a", {
+  debug: true,
+  ignore_dnt: true,
+  track_pageview: true,
+  persistence: "localStorage",
+});
 
 // Additional styling and frontend management
 import { Quasar } from "quasar";
