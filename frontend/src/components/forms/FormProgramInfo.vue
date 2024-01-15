@@ -13,7 +13,11 @@
 
       <!-- Assigned athlete -->
       <div class="col-5">
-        <os-field label="Athlete" required :model-value="programAthlete">
+        <os-field
+          :label="$t('coach.program_management.fields.athlete')"
+          required
+          :model-value="programAthlete"
+        >
           <template #control>
             <q-btn
               @click="showAthleteAssigningDialog = true"

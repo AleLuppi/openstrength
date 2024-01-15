@@ -58,7 +58,7 @@ app
   .use(Quasar, quasarUserOptions)
   .use(VueGtag, {
     config: { id: "G-G8BLW1JL0M" },
-    enabled: process.env.NODE_ENV == "production"
+    enabled: process.env.NODE_ENV == "production",
   })
   .use(VueSocialSharing)
   .use(Hotjar, {

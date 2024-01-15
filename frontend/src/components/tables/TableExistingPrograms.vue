@@ -17,6 +17,7 @@
     "
     selection="single"
     v-model:selected="selectedRows"
+    sort-by="-lastmodification"
   ></os-table>
 </template>
 

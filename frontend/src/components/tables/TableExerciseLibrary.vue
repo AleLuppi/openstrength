@@ -12,6 +12,7 @@
     @row-click="$props.onUpdate"
     :selection="isVariant ? 'none' : 'single'"
     v-model:selected="selected"
+    :sort-by="isVariant ? 'variant' : 'exercise'"
   ></os-table>
 </template>
 

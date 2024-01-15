@@ -28,7 +28,6 @@
                 :outline="!programSaved"
                 :flat="programSaved"
                 :color="programSaved ? 'positive' : 'primary'"
-                :class="{ 'animate-pulse-with-rotation-sm': !programSaved }"
                 class="q-pa-sm q-mx-sm"
               ></q-btn>
               <span
@@ -79,7 +78,10 @@
             <!-- Get shareable link to program -->
             <div>
               <q-btn
-                @click="showShareProgramDialog = true"
+                @click="
+                  saveProgram();
+                  showShareProgramDialog = true;
+                "
                 outline
                 flat
                 icon="sym_o_share"
@@ -143,7 +145,16 @@
         <TableProgramBuilder
           v-if="selectedProgram?.athlete"
           :model-value="selectedProgram"
-          @update:model-value="onProgramTableUpdate"
+          @update:model-value="
+            (program) => {
+              if (program) onProgramTableUpdate(program);
+            }
+          "
+          @new-exercise="
+            (exerciseName, programExercise) =>
+              onNewExercise(exerciseName, undefined, programExercise)
+          "
+          @new-variant="onNewExercise"
           :exercises="coachInfo.exercises"
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
@@ -500,7 +511,7 @@ import {
 } from "vue";
 import { debounce, dom } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
-import { Program } from "@/helpers/programs/program";
+import { Program, ProgramExercise } from "@/helpers/programs/program";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { useCoachActiveChangesStore } from "@/stores/coachActiveChanges";
@@ -522,6 +533,8 @@ import {
 } from "@/helpers/programs/linesManagement";
 import router, { NamedRoutes } from "@/router";
 import FormProgramInfo from "@/components/forms/FormProgramInfo.vue";
+import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { event } from "vue-gtag";
 
 // Define emits
@@ -706,7 +719,11 @@ function setSavedValue() {
  */
 function openProgram(programId?: string, force: boolean = false) {
   // Update selected program if needed
-  if (programId != undefined && (programSaved.value || force)) {
+  if (
+    route.name === NamedRoutes.program &&
+    programId != undefined &&
+    (programSaved.value || force)
+  ) {
     router.replace({
       ...route,
       params: { ...route.params, programId: programId },
@@ -792,7 +809,7 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
  */
 const autosaveProgram = debounce(() => {
   saveProgram(undefined, true);
-}, 30 * 1000 /* debounce 30 seconds */);
+}, 60 * 1000 /* debounce 60 seconds */);
 
 /**
  * Assign a program to an athlete and save the update.
@@ -839,6 +856,120 @@ function assignProgramToAthlete(
             "coach.program_management.builder.save_unassignment_error",
             { name: oldAthlete.referenceName },
           ),
+          position: "bottom",
+        });
+      },
+    });
+  }
+}
+
+/**
+ * Handle request of new exercise or variant from program table.
+ *
+ * @param exerciseName name of new exercise that shall be created, or parent exercise of variant that shall be created.
+ * @param variantName name of new variant that shall be created.
+ * @param programExercise optional program exercise that shall be updated with new exercise or variant.
+ */
+function onNewExercise(
+  exerciseName: string,
+  variantName?: string,
+  programExercise?: ProgramExercise,
+) {
+  // Check if creating new exercise of variant
+  if (variantName) {
+    // Creating new variant
+
+    // Get parent exercise
+    const exercise = coachInfo.exercises?.find(
+      (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
+    );
+    if (!exercise) {
+      $q.notify({
+        type: "negative",
+        message: i18n.t("coach.exercise_management.add_error"),
+        position: "bottom",
+      });
+      return;
+    }
+
+    // Create and save new variant
+    const newVariant = new ExerciseVariant({
+      name: variantName,
+      exercise: exercise,
+    });
+    newVariant.saveNew({
+      onSuccess: () => {
+        // Store variant in local storages
+        exercise.variants?.unshift(newVariant);
+        if (programExercise) programExercise.exerciseVariant = newVariant;
+
+        // Force update of program under modification
+        if (selectedProgram.value) {
+          const duplicteProgram = selectedProgram.value.duplicate();
+          nextTick(() => onProgramTableUpdate(duplicteProgram));
+        }
+
+        // Inform user
+        $q.notify({
+          type: "positive",
+          message: i18n.t("coach.exercise_management.add_success", {
+            exercise: newVariant.name,
+          }),
+          position: "bottom",
+        });
+      },
+      onError: () =>
+        $q.notify({
+          type: "negative",
+          message: i18n.t("coach.exercise_management.add_error"),
+          position: "bottom",
+        }),
+    });
+  } else {
+    // Creating new exercise
+
+    // Create and save new exercise
+    const newExercise = new Exercise({
+      name: exerciseName,
+    });
+    newExercise.saveNew({
+      onSuccess: () => {
+        // Store exercise in local storage
+        coachInfo.exercises = reduceExercises(
+          (coachInfo.exercises || []).concat([newExercise]),
+        );
+        if (programExercise) {
+          programExercise.exercise = newExercise;
+          programExercise.exerciseVariant = newExercise.defaultVariant;
+        }
+
+        // Force update of program under modification
+        if (selectedProgram.value) {
+          const duplicteProgram = selectedProgram.value.duplicate();
+          nextTick(() => onProgramTableUpdate(duplicteProgram));
+        }
+
+        // Inform user about exercise successfully saved
+        $q.notify({
+          type: "positive",
+          message: i18n.t("coach.exercise_management.add_success", {
+            exercise: newExercise?.name,
+          }),
+          position: "bottom",
+        });
+
+        // Register GA4 event
+        event("new_exercise_added", {
+          event_category: "documentation",
+          event_label: "New Exercise Added to Library",
+          value: 1,
+        });
+      },
+      onError: () => {
+        // Inform user about error while saving exercise
+        $q.notify({
+          type: "negative",
+          message: i18n.t("coach.exercise_management.add_error"),
           position: "bottom",
         });
       },
