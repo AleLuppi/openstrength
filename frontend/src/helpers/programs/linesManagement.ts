@@ -80,11 +80,11 @@ export function sortProgramLines(lines: ProgramLine[]) {
  */
 export function orderProgramExercises(
   exercises: ProgramExercise[],
-  getName: Function = (
+  getName: (
     week: string | number,
     day: string | number,
     order: string | number,
-  ) => [week, day, order].join(sep),
+  ) => string | number = (week, day, order) => [week, day, order].join(sep),
   sep: string = ".",
   sortLines: boolean = true,
 ): {

@@ -15,11 +15,11 @@
           class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest"
         >
           <!-- Utility buttons -->
-          <div class="row justify-evenly">
+          <div class="row justify-between">
             <!-- Save button -->
             <div
               @click="saveProgram()"
-              class="col-6 row items-center justify-center"
+              class="row items-center justify-center"
               :class="{ 'cursor-pointer': !programSaved }"
             >
               <q-btn
@@ -28,7 +28,6 @@
                 :outline="!programSaved"
                 :flat="programSaved"
                 :color="programSaved ? 'positive' : 'primary'"
-                :class="{ 'animate-pulse-with-rotation-sm': !programSaved }"
                 class="q-pa-sm q-mx-sm"
               ></q-btn>
               <span
@@ -48,29 +47,46 @@
             <!-- Display and update assigned user -->
             <div
               v-if="selectedProgram.athlete"
-              class="col-6 row items-center justify-center"
+              class="row items-center justify-center q-col-gutter-sm"
             >
-              <span class="text-black q-px-md">
+              <span class="text-black">
                 {{ $t("coach.program_management.builder.assigned_athlete") }}
               </span>
+              <div>
+                <q-btn
+                  color="secondary"
+                  outline
+                  :dense="Boolean(selectedProgram.athlete)"
+                >
+                  <q-item dense class="q-py-none q-px-md">
+                    <q-item-section
+                      avatar
+                      v-if="$q.screen.gt.xs && selectedProgram.athlete.photoUrl"
+                    >
+                      <q-avatar size="md">
+                        <img :src="selectedProgram.athlete.photoUrl" />
+                      </q-avatar>
+                    </q-item-section>
+                    <q-item-section>{{
+                      selectedProgram.athlete.referenceName
+                    }}</q-item-section>
+                  </q-item>
+                </q-btn>
+              </div>
+            </div>
+
+            <!-- Get shareable link to program -->
+            <div>
               <q-btn
-                color="secondary"
+                @click="
+                  saveProgram();
+                  showShareProgramDialog = true;
+                "
                 outline
-                :dense="Boolean(selectedProgram.athlete)"
+                flat
+                icon="sym_o_share"
+                :label="$t('coach.program_management.viewer.send_program')"
               >
-                <q-item dense class="q-py-none q-px-md">
-                  <q-item-section
-                    avatar
-                    v-if="$q.screen.gt.xs && selectedProgram.athlete.photoUrl"
-                  >
-                    <q-avatar size="md">
-                      <img :src="selectedProgram.athlete.photoUrl" />
-                    </q-avatar>
-                  </q-item-section>
-                  <q-item-section>{{
-                    selectedProgram.athlete.referenceName
-                  }}</q-item-section>
-                </q-item>
               </q-btn>
             </div>
           </div>
@@ -129,7 +145,16 @@
         <TableProgramBuilder
           v-if="selectedProgram?.athlete"
           :model-value="selectedProgram"
-          @update:model-value="onProgramTableUpdate"
+          @update:model-value="
+            (program) => {
+              if (program) onProgramTableUpdate(program);
+            }
+          "
+          @new-exercise="
+            (exerciseName, programExercise) =>
+              onNewExercise(exerciseName, undefined, programExercise)
+          "
+          @new-variant="onNewExercise"
           :exercises="coachInfo.exercises"
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
@@ -148,15 +173,30 @@
             />
           </template>
         </TableProgramBuilder>
+
+        <!-- Create a new program or open one already assigned to athlete -->
         <div v-else class="q-pa-lg column items-center">
-          <h6>
+          <h4 class="text-margin-xs">
             {{ $t("coach.program_management.builder.initialize_program") }}
-          </h6>
+          </h4>
           <q-btn
+            icon="sym_o_assignment_add"
             @click="openNewProgram"
             :label="$t('coach.program_management.builder.new_program')"
             rounded
             unelevated
+          />
+
+          <p class="q-ma-md">{{ $t("common.or_long") }}</p>
+
+          <!-- Show recently opened programs -->
+          <h6 class="text-margin-xs">
+            {{ $t("coach.program_management.builder.open_recent") }}
+          </h6>
+          <TableExistingPrograms
+            :programs="allAssignedPrograms"
+            @update:selected="(program) => openProgram(program?.uid)"
+            :small="!$q.screen.gt.sm"
           />
         </div>
       </template>
@@ -336,15 +376,11 @@
 
             <!-- Select among assigned programs -->
             <q-card>
-              <TableManagedAthletes
-                ref="athletesTableElement"
-                :athletes="
-                  coachInfo.athletes?.filter(
-                    (athlete) => athlete.hasProgramAssigned,
-                  ) ?? []
-                "
-                @update:selected="onAthleteProgramSelection"
-                athletes-only
+              <TableExistingPrograms
+                v-if="selectedProgram"
+                :programs="allAssignedPrograms"
+                @update:selected="(program) => openProgram(program?.uid)"
+                :small="true"
               />
             </q-card>
           </div>
@@ -392,6 +428,13 @@
       "
     >
     </DialogProgramAssignAthlete>
+
+    <!-- Dialog to share program with athlete -->
+    <DialogProgramShareWithAthlete
+      v-if="selectedProgram?.uid"
+      v-model="showShareProgramDialog"
+      :program-id="selectedProgram.uid"
+    ></DialogProgramShareWithAthlete>
 
     <!-- Dialog to change unsaved program -->
     <q-dialog v-model="showChangeProgramDialog">
@@ -468,7 +511,7 @@ import {
 } from "vue";
 import { debounce, dom } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
-import { Program } from "@/helpers/programs/program";
+import { Program, ProgramExercise } from "@/helpers/programs/program";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { useCoachActiveChangesStore } from "@/stores/coachActiveChanges";
@@ -479,8 +522,9 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
+import DialogProgramShareWithAthlete from "@/components/dialogs/DialogProgramShareWithAthlete.vue";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
-import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
+import TableExistingPrograms from "@/components/tables/TableExistingPrograms.vue";
 import { AthleteUser } from "@/helpers/users/user";
 import {
   getProgramUniqueWeeks,
@@ -489,6 +533,9 @@ import {
 } from "@/helpers/programs/linesManagement";
 import router, { NamedRoutes } from "@/router";
 import FormProgramInfo from "@/components/forms/FormProgramInfo.vue";
+import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+import { reduceExercises } from "@/helpers/exercises/listManagement";
+import { event } from "vue-gtag";
 
 // Define emits
 const emit = defineEmits<{
@@ -518,7 +565,7 @@ const UtilsOptions = {
 const splitterThresholdValue = 15;
 
 // Set ref for generic use
-const splitterModel = ref(30);
+const splitterModel = ref(0);
 const showingUtils = ref(UtilsOptions.list);
 
 // Set ref related to program
@@ -533,6 +580,7 @@ const filterExercise = ref<string[]>();
 const showNewProgramDialog = ref(false);
 const showUnsavedProgramRestoreDialog = ref(false);
 const showAthleteAssigningDialog = ref(false);
+const showShareProgramDialog = ref(false);
 const programManagerExpanded = ref(false);
 const programManagerHeight = ref(0);
 
@@ -548,6 +596,14 @@ const requestedProgram = computed(
     coachInfo.programs
       ?.find((program) => program.uid == route.params.programId)
       ?.duplicate(),
+);
+
+// Get all coach programs
+const allAssignedPrograms = computed(
+  () =>
+    coachInfo.programs?.filter(
+      (program) => program.uid === program.athlete?.assignedProgramId,
+    ) || [],
 );
 
 // Get complete program filter
@@ -663,14 +719,26 @@ function setSavedValue() {
  */
 function openProgram(programId?: string, force: boolean = false) {
   // Update selected program if needed
-  if (programId != undefined && (programSaved.value || force)) {
+  if (
+    route.name === NamedRoutes.program &&
+    programId != undefined &&
+    (programSaved.value || force)
+  ) {
     router.replace({
-      params: { programId: programId },
+      ...route,
+      params: { ...route.params, programId: programId },
       query: { ...(programId ? {} : { new: "true" }) },
     });
 
     // Clear any possible pending request
     substituteProgramId.value = undefined;
+
+    // Register GA4 event
+    event("programview_existingprogram_open", {
+      event_category: "documentation",
+      event_label: "Program opened in ProgramView for modification",
+      value: 1,
+    });
   }
 }
 
@@ -703,6 +771,7 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
   if (!currProgram) return;
   currProgram.coach = user.baseUser;
   currProgram.save({
+    saveFrozenView: true,
     onSuccess: () => {
       // Inform user about saved program
       setSavedValue();
@@ -740,7 +809,7 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
  */
 const autosaveProgram = debounce(() => {
   saveProgram(undefined, true);
-}, 30 * 1000 /* debounce 30 seconds */);
+}, 60 * 1000 /* debounce 60 seconds */);
 
 /**
  * Assign a program to an athlete and save the update.
@@ -787,6 +856,120 @@ function assignProgramToAthlete(
             "coach.program_management.builder.save_unassignment_error",
             { name: oldAthlete.referenceName },
           ),
+          position: "bottom",
+        });
+      },
+    });
+  }
+}
+
+/**
+ * Handle request of new exercise or variant from program table.
+ *
+ * @param exerciseName name of new exercise that shall be created, or parent exercise of variant that shall be created.
+ * @param variantName name of new variant that shall be created.
+ * @param programExercise optional program exercise that shall be updated with new exercise or variant.
+ */
+function onNewExercise(
+  exerciseName: string,
+  variantName?: string,
+  programExercise?: ProgramExercise,
+) {
+  // Check if creating new exercise of variant
+  if (variantName) {
+    // Creating new variant
+
+    // Get parent exercise
+    const exercise = coachInfo.exercises?.find(
+      (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
+    );
+    if (!exercise) {
+      $q.notify({
+        type: "negative",
+        message: i18n.t("coach.exercise_management.add_error"),
+        position: "bottom",
+      });
+      return;
+    }
+
+    // Create and save new variant
+    const newVariant = new ExerciseVariant({
+      name: variantName,
+      exercise: exercise,
+    });
+    newVariant.saveNew({
+      onSuccess: () => {
+        // Store variant in local storages
+        exercise.variants?.unshift(newVariant);
+        if (programExercise) programExercise.exerciseVariant = newVariant;
+
+        // Force update of program under modification
+        if (selectedProgram.value) {
+          const duplicteProgram = selectedProgram.value.duplicate();
+          nextTick(() => onProgramTableUpdate(duplicteProgram));
+        }
+
+        // Inform user
+        $q.notify({
+          type: "positive",
+          message: i18n.t("coach.exercise_management.add_success", {
+            exercise: newVariant.name,
+          }),
+          position: "bottom",
+        });
+      },
+      onError: () =>
+        $q.notify({
+          type: "negative",
+          message: i18n.t("coach.exercise_management.add_error"),
+          position: "bottom",
+        }),
+    });
+  } else {
+    // Creating new exercise
+
+    // Create and save new exercise
+    const newExercise = new Exercise({
+      name: exerciseName,
+    });
+    newExercise.saveNew({
+      onSuccess: () => {
+        // Store exercise in local storage
+        coachInfo.exercises = reduceExercises(
+          (coachInfo.exercises || []).concat([newExercise]),
+        );
+        if (programExercise) {
+          programExercise.exercise = newExercise;
+          programExercise.exerciseVariant = newExercise.defaultVariant;
+        }
+
+        // Force update of program under modification
+        if (selectedProgram.value) {
+          const duplicteProgram = selectedProgram.value.duplicate();
+          nextTick(() => onProgramTableUpdate(duplicteProgram));
+        }
+
+        // Inform user about exercise successfully saved
+        $q.notify({
+          type: "positive",
+          message: i18n.t("coach.exercise_management.add_success", {
+            exercise: newExercise?.name,
+          }),
+          position: "bottom",
+        });
+
+        // Register GA4 event
+        event("new_exercise_added", {
+          event_category: "documentation",
+          event_label: "New Exercise Added to Library",
+          value: 1,
+        });
+      },
+      onError: () => {
+        // Inform user about error while saving exercise
+        $q.notify({
+          type: "negative",
+          message: i18n.t("coach.exercise_management.add_error"),
           position: "bottom",
         });
       },
@@ -845,6 +1028,13 @@ function saveMaxlift(newMaxLift: MaxLift) {
 function openNewProgram() {
   if (selectedProgram.value) substituteProgramId.value = "";
   else showNewProgramDialog.value = true;
+
+  // Register GA4 event
+  event("programview_newprogram_click", {
+    event_category: "documentation",
+    event_label: "A new program is created",
+    value: 1,
+  });
 }
 
 /**
@@ -852,15 +1042,13 @@ function openNewProgram() {
  */
 function onUnsavedProgramRestore() {
   substituteProgramId.value = coachActiveChanges.program?.uid;
-}
 
-/**
- * Open the program that is assigned to selected athlete.
- *
- * @param athlete athlete whose program should be opened.
- */
-function onAthleteProgramSelection(athlete?: AthleteUser) {
-  substituteProgramId.value = athlete?.assignedProgramId;
+  // Register GA4 event
+  event("programview_open_unsavedprog", {
+    event_category: "documentation",
+    event_label: "Unsaved program restore",
+    value: 1,
+  });
 }
 
 /**

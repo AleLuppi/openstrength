@@ -2,23 +2,6 @@ import { MaxLift, MaxLiftType } from "../maxlifts/maxlift";
 import { ProgramLine } from "../programs/program";
 
 /**
- * Define RPE-reps table.
- * Each value is a percentage of 1RM
- * Column index define the reps, row index define the rpe
- */
-const rpeRepsTable: number[][] = [
-  //1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  reps
-  [100, 96, 92, 89, 86, 84, 81, 79, 76, 74, 71, 69, 66, 64, 61], // 10
-  [98, 94, 91, 88, 85, 82, 80, 77, 75, 72, 70, 67, 65, 62, 60], // 9.5
-  [96, 92, 89, 86, 84, 81, 79, 76, 74, 71, 69, 66, 64, 61, 59], // 9
-  [94, 91, 88, 85, 82, 80, 77, 75, 72, 69, 66, 63, 60, 57, 54], // 8.5
-  [92, 89, 86, 84, 81, 79, 76, 74, 71, 68, 65, 62, 59, 56, 53], // 8
-  [91, 88, 85, 82, 80, 77, 75, 72, 69, 67, 64, 62, 59, 57, 54], // 7.5
-  [89, 86, 84, 81, 79, 76, 74, 71, 68, 65, 62, 59, 56, 53, 50], // 7
-  [88, 85, 82, 80, 77, 75, 72, 69, 67, 64, 62, 59, 57, 54, 52], // 6.5 rpe
-];
-
-/**
  * Method to compute the percentage of 1RM [%] from the rpe-reps table
  * @param reps repetition number from 1 to 15
  * @param rpe rep from 6.5 to 10 at 0.5 increments
@@ -47,9 +30,7 @@ export function calculatePercentage1RM(
 /**
  * Fallback method when no available computational methods are present
  */
-export function computeUndefined(
-  programLines: ProgramLine[],
-): number | undefined {
+export function computeUndefined(): number | undefined {
   return undefined;
 }
 
