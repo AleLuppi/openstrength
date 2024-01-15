@@ -22,6 +22,7 @@
     "quasar": "^2.0.0",
     "vue": "^3.2.13",
     "vue-gtag": "^2.0.1",
+    "vue-hotjar": "^1.4.0",
     "vue-i18n": "^9.1.0",
     "vue-router": "^4.2.4",
     "vue-social-sharing": "^4.0.0-alpha4"
