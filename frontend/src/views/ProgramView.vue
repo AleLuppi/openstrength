@@ -38,7 +38,7 @@
                   $t(
                     programSaved
                       ? "coach.program_management.builder.saved"
-                      : "coach.program_management.builder.not_saved",
+                      : "coach.program_management.builder.not_saved"
                   )
                 }}
               </span>
@@ -595,15 +595,15 @@ const requestedProgram = computed(
   () =>
     coachInfo.programs
       ?.find((program) => program.uid == route.params.programId)
-      ?.duplicate(),
+      ?.duplicate()
 );
 
 // Get all coach programs
 const allAssignedPrograms = computed(
   () =>
     coachInfo.programs?.filter(
-      (program) => program.uid === program.athlete?.assignedProgramId,
-    ) || [],
+      (program) => program.uid === program.athlete?.assignedProgramId
+    ) || []
 );
 
 // Get complete program filter
@@ -626,8 +626,8 @@ const programFilter = computed({
 const athleteMaxlifts = computed(
   () =>
     coachInfo.maxlifts?.filter(
-      (maxlift) => maxlift.athleteId == selectedProgram.value?.athleteId,
-    ),
+      (maxlift) => maxlift.athleteId == selectedProgram.value?.athleteId
+    )
 );
 
 // Decide whether to display warning dialog on new program
@@ -653,7 +653,7 @@ watch(
   },
   {
     immediate: true,
-  },
+  }
 );
 
 // Show new program dialog when requested
@@ -662,7 +662,7 @@ watch(
   (val) => {
     if (val == "true") showNewProgramDialog.value = true;
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 // Try (but not force) to open a new program when requested
@@ -677,7 +677,7 @@ watch(
       oldAthleteAssigned.value = selectedProgram.value?.athlete;
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 // Perform operations on program update
@@ -694,12 +694,12 @@ watch(
       emit(
         "activateDrawerItem",
         Object.values(UtilsOptions).findIndex(
-          (val) => val == showingUtils.value,
-        ),
+          (val) => val == showingUtils.value
+        )
       );
     if (oldVal && oldVal > 0 && newVal === 0) emit("activateDrawerItem", -1);
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 /**
@@ -732,6 +732,13 @@ function openProgram(programId?: string, force: boolean = false) {
 
     // Clear any possible pending request
     substituteProgramId.value = undefined;
+
+    // Register GA4 event
+    event("programview_existingprogram_open", {
+      event_category: "documentation",
+      event_label: "Program opened in ProgramView for modification",
+      value: 1,
+    });
   }
 }
 
@@ -770,14 +777,14 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
       setSavedValue();
       (coachInfo.programs =
         coachInfo.programs?.filter(
-          (program) => program.uid != currProgram.uid,
+          (program) => program.uid != currProgram.uid
         ) || []).push(currProgram);
 
       // Update athlete profile with new program
       assignProgramToAthlete(
         currProgram,
         currProgram.athlete,
-        oldAthleteAssigned.value,
+        oldAthleteAssigned.value
       );
 
       // Clear active change on current program
@@ -814,14 +821,14 @@ const autosaveProgram = debounce(() => {
 function assignProgramToAthlete(
   program: Program,
   athlete?: AthleteUser,
-  oldAthlete?: AthleteUser,
+  oldAthlete?: AthleteUser
 ) {
   // Update athlete info
   if (athlete) {
     athlete.assignedProgramId = program.uid;
     if (program.uid)
       (athlete.assignedPrograms = athlete.assignedPrograms || []).push(
-        program.uid,
+        program.uid
       );
 
     // Store changes
@@ -830,7 +837,7 @@ function assignProgramToAthlete(
         $q.notify({
           type: "negative",
           message: i18n.t(
-            "coach.program_management.builder.save_assignment_error",
+            "coach.program_management.builder.save_assignment_error"
           ),
           position: "bottom",
         });
@@ -847,7 +854,7 @@ function assignProgramToAthlete(
           type: "negative",
           message: i18n.t(
             "coach.program_management.builder.save_unassignment_error",
-            { name: oldAthlete.referenceName },
+            { name: oldAthlete.referenceName }
           ),
           position: "bottom",
         });
@@ -866,7 +873,7 @@ function assignProgramToAthlete(
 function onNewExercise(
   exerciseName: string,
   variantName?: string,
-  programExercise?: ProgramExercise,
+  programExercise?: ProgramExercise
 ) {
   // Check if creating new exercise of variant
   if (variantName) {
@@ -874,7 +881,7 @@ function onNewExercise(
 
     // Get parent exercise
     const exercise = coachInfo.exercises?.find(
-      (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
+      (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase()
     );
     if (!exercise) {
       $q.notify({
@@ -929,7 +936,7 @@ function onNewExercise(
       onSuccess: () => {
         // Store exercise in local storage
         coachInfo.exercises = reduceExercises(
-          (coachInfo.exercises || []).concat([newExercise]),
+          (coachInfo.exercises || []).concat([newExercise])
         );
         if (programExercise) {
           programExercise.exercise = newExercise;
@@ -1007,7 +1014,7 @@ function saveMaxlift(newMaxLift: MaxLift) {
         type: "negative",
         message: i18n.t(
           "coach.maxlift_management.list." +
-            (isNew ? "add_error" : "update_error"),
+            (isNew ? "add_error" : "update_error")
         ),
         position: "bottom",
       }),
@@ -1021,6 +1028,13 @@ function saveMaxlift(newMaxLift: MaxLift) {
 function openNewProgram() {
   if (selectedProgram.value) substituteProgramId.value = "";
   else showNewProgramDialog.value = true;
+
+  // Register GA4 event
+  event("programview_newprogram_click", {
+    event_category: "documentation",
+    event_label: "A new program is created",
+    value: 1,
+  });
 }
 
 /**
@@ -1028,6 +1042,13 @@ function openNewProgram() {
  */
 function onUnsavedProgramRestore() {
   substituteProgramId.value = coachActiveChanges.program?.uid;
+
+  // Register GA4 event
+  event("programview_open_unsavedprog", {
+    event_category: "documentation",
+    event_label: "Unsaved program restore",
+    value: 1,
+  });
 }
 
 /**

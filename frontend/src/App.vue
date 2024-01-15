@@ -106,6 +106,7 @@ import { setLocale } from "@/helpers/locales";
 import LeftDrawerElements from "@/components/layout/LeftDrawerElements.vue";
 import UserOnboarding from "@/components/forms/UserOnboarding.vue";
 import { defaultExerciseCollection } from "@/utils/defaultExerciseCollection";
+import { event } from "vue-gtag";
 
 // Init plugin
 const route = useRoute();
@@ -194,6 +195,13 @@ async function onOnboardingSubmit(data: { [key: string]: any }) {
  */
 function onRightDrawerClick(clickParam: any) {
   viewComponent.value?.handleDrawerClick?.(clickParam);
+
+  // Register GA4 event
+  event("programview_rightdrawer_click", {
+    event_category: "documentation",
+    event_label: "The right drawer has been clicked in ProgramView",
+    value: 1,
+  });
 }
 
 /**

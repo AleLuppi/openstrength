@@ -9,6 +9,7 @@
           :to="{ name: 'program', params: { programId: props.program.uid } }"
           :label="$t('coach.athlete_management.call_to_action.modify_program')"
           class="q-mr-md"
+          @click="registerProgramOpeningEvent()"
         ></q-btn>
       </div>
 
@@ -97,6 +98,7 @@ import { useI18n } from "vue-i18n";
 import type { QForm } from "quasar";
 import { useQuasar } from "quasar";
 import { Program } from "@/helpers/programs/program";
+import { event } from "vue-gtag";
 
 // Init plugin
 const $q = useQuasar();
@@ -165,6 +167,13 @@ function onSubmit() {
         message: i18n.t("coach.athlete_management.list.add_succeed"),
         position: "bottom",
       });
+
+      // Register GA4 event
+      event("athleteview_programinfo_updated", {
+        event_category: "documentation",
+        event_label: "Program info updated in AthleteView",
+        value: 1,
+      });
     },
     onError: () => {
       $q.notify({
@@ -173,6 +182,18 @@ function onSubmit() {
         position: "bottom",
       });
     },
+  });
+}
+
+/**
+ * This method is only used to register the event related to button click
+ */
+function registerProgramOpeningEvent() {
+  // Register GA4 event
+  event("athleteview_program_open", {
+    event_category: "documentation",
+    event_label: "Program opened from AthleteView",
+    value: 1,
   });
 }
 </script>
