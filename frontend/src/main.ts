@@ -5,6 +5,7 @@ import App from "./App.vue";
 import router from "./router";
 import { createPinia } from "pinia";
 import VueGtag from "vue-gtag";
+import Hotjar from "vue-hotjar";
 
 // Additional styling and frontend management
 import { Quasar } from "quasar";
@@ -57,8 +58,13 @@ app
   .use(Quasar, quasarUserOptions)
   .use(VueGtag, {
     config: { id: "G-G8BLW1JL0M" },
+    enabled: process.env.NODE_ENV == "production"
   })
-  .use(VueSocialSharing);
+  .use(VueSocialSharing)
+  .use(Hotjar, {
+    id: "3825238",
+    isProduction: process.env.NODE_ENV == "production",
+  });
 
 // Mount the application
 app.mount("#app");
