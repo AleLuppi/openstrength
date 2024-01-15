@@ -12,6 +12,17 @@ export function arrayUniqueValues(array: any[], sorted: boolean = true) {
 }
 
 /**
+ * Remove undefined values from array.
+ *
+ * @param array input vector.
+ * @returns a new array with only values different from undefined.
+ */
+export function arrayFilterUndefined(array: any[]) {
+  const newArray = array.filter((val) => val != undefined);
+  return newArray;
+}
+
+/**
  * Check if the values inside two arrays are all equal (type not checked).
  *
  * @param arrayA first array to compare.

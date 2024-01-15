@@ -93,7 +93,6 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
-import { useQuasar } from "quasar";
 import { User as FirebaseUser } from "firebase/auth";
 import router from "@/router";
 import setdefaults from "@/boot/setQuasarDefaultProps";
@@ -107,10 +106,10 @@ import { setLocale } from "@/helpers/locales";
 import LeftDrawerElements from "@/components/layout/LeftDrawerElements.vue";
 import UserOnboarding from "@/components/forms/UserOnboarding.vue";
 import { defaultExerciseCollection } from "@/utils/defaultExerciseCollection";
+import { event } from "vue-gtag";
 
 // Init plugin
 const route = useRoute();
-const $q = useQuasar();
 
 // Get state
 const user = useUserStore();
@@ -142,13 +141,10 @@ onBeforeMount(() => {
       await user.loadUser();
       if (user.locale) setLocale(user.locale);
 
-      // Try original page app is unused yet, otherwise just check for authorizations
+      // Try to move to original page if app has not been used yet, otherwise re-check current page
       if (route.redirectedFrom && !interacted)
         router.replace(route.redirectedFrom);
-      else
-        router.replace({
-          params: { userId: user.uid },
-        });
+      else router.replace({ ...route, force: true });
 
       // Show onboarding dialog if required
       if (!user.role || user.role == UserRole.unknown)
@@ -159,9 +155,7 @@ onBeforeMount(() => {
       coachInfo.$reset();
 
       // Refresh page to allow redirect if on unauthorized page
-      router.replace({
-        params: { userId: "" },
-      });
+      router.replace({ ...route, force: true });
     },
   });
 });
@@ -201,6 +195,13 @@ async function onOnboardingSubmit(data: { [key: string]: any }) {
  */
 function onRightDrawerClick(clickParam: any) {
   viewComponent.value?.handleDrawerClick?.(clickParam);
+
+  // Register GA4 event
+  event("programview_rightdrawer_click", {
+    event_category: "documentation",
+    event_label: "The right drawer has been clicked in ProgramView",
+    value: 1,
+  });
 }
 
 /**

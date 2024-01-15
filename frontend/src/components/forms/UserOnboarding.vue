@@ -118,9 +118,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { QStepper } from "quasar";
-import OsInput from "@/components/basic/osInput.vue";
+import osInput from "@/components/basic/osInput.vue";
+import osToggleButtons from "@/components/basic/osToggleButtons.vue";
 import { logoFullImage } from "@/assets/sources";
-import OsToggleButtons from "@/components/basic/osToggleButtons.vue";
 import { UserRole } from "@/helpers/users/user";
 
 // Set props
@@ -133,11 +133,11 @@ const props = defineProps({
 
 // Set ref
 const stepperElement = ref<QStepper>();
-const userNameInputElement = ref<typeof OsInput>();
-const userSurnameInputElement = ref<typeof OsInput>();
-const rolesToggleElement = ref<typeof OsToggleButtons>();
-const sportsToggleElement = ref<typeof OsToggleButtons>();
-const athletesRangeToggleElement = ref<typeof OsToggleButtons>();
+const userNameInputElement = ref<typeof osInput>();
+const userSurnameInputElement = ref<typeof osInput>();
+const rolesToggleElement = ref<typeof osToggleButtons>();
+const sportsToggleElement = ref<typeof osToggleButtons>();
+const athletesRangeToggleElement = ref<typeof osToggleButtons>();
 const step = ref(1);
 const userName = ref("");
 const userSurname = ref("");

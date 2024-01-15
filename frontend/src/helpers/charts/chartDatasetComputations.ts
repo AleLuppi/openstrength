@@ -33,7 +33,7 @@ export const rpeRepsTable: number[][] = [
 export function estimate1RMfromNRM(
   maxlift: MaxLift,
   athlete: AthleteUser,
-  rpeTable: number[][],
+  rpeTable: number[][]
 ): number | undefined {
   if (typeof Number(maxlift.value) != "number" || !maxlift.type || !rpeTable) {
     console.error("Invalid value, maxlift type, or RPE table.");
@@ -51,11 +51,11 @@ export function estimate1RMfromNRM(
   console.log("maxlift exercise variants", maxlift.exercise?.variants);
   console.log(
     "maxlift exercise variants at 0 loadtype",
-    maxlift.exercise?.variants?.at(0)?.loadType,
+    maxlift.exercise?.variants?.at(0)?.loadType
   );
   console.log(
     "maxlift exercise defaultvariant loadtype",
-    maxlift.exercise?.defaultVariant?.loadType,
+    maxlift.exercise?.defaultVariant?.loadType
   );
   if (
     maxlift.exercise?.variants?.at(0)?.loadType ==
@@ -106,7 +106,7 @@ export function estimate1RMfromNRM(
 export function calculatePercentage1RM(
   reps: number,
   rpe: number,
-  rpeTable: number[][],
+  rpeTable: number[][]
 ): number | undefined {
   if (reps < 1 || reps > 15 || rpe < 6.5 || rpe > 10 || !rpeTable) {
     console.error("Invalid reps, RPE values, or RPE table.");
@@ -125,9 +125,7 @@ export function calculatePercentage1RM(
 /**
  * Fallback method when no available computational methods are present
  */
-export function computeUndefined(
-  programLines: ProgramLine[],
-): number | undefined {
+export function computeUndefined(): number | undefined {
   return undefined;
 }
 
@@ -191,11 +189,11 @@ export function calculateTotalVolume(programLines: ProgramLine[]): number {
 export function calculateMaxIntensity(programLines: ProgramLine[]): number;
 export function calculateMaxIntensity(
   programLines: ProgramLine[],
-  maxLift: MaxLift,
+  maxLift: MaxLift
 ): number;
 export function calculateMaxIntensity(
   programLines: ProgramLine[],
-  maxLift?: MaxLift,
+  maxLift?: MaxLift
 ): number {
   if (programLines.length === 0) {
     return 0;
@@ -204,7 +202,7 @@ export function calculateMaxIntensity(
   // Find the maximum loadBaseValue among the lines
   const maxLoadBaseValue = programLines.reduce((max, line) => {
     const loadBaseValue = parseFloat(
-      (line.loadBaseValue || "0").replace(/[^0-9.]/g, ""),
+      (line.loadBaseValue || "0").replace(/[^0-9.]/g, "")
     );
 
     return isNaN(loadBaseValue) ? max : Math.max(max, loadBaseValue);
@@ -228,7 +226,7 @@ export function calculateMaxIntensity(
  * @returns
  */
 export function calculateCumulativeIntensity(
-  programLines: ProgramLine[],
+  programLines: ProgramLine[]
 ): number {
   if (programLines.length === 0) {
     return 0;
@@ -237,7 +235,7 @@ export function calculateCumulativeIntensity(
   const cumulativeIntensity = programLines.reduce(
     (totalCumulatedIntensity, line) => {
       const load = parseFloat(
-        (line.loadBaseValue || "0").replace(/[^0-9.]/g, ""),
+        (line.loadBaseValue || "0").replace(/[^0-9.]/g, "")
       );
       const sets = parseInt(line.setsBaseValue || "0", 10);
 
@@ -249,7 +247,7 @@ export function calculateCumulativeIntensity(
         return totalCumulatedIntensity;
       }
     },
-    0,
+    0
   );
 
   return cumulativeIntensity;

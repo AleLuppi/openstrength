@@ -88,6 +88,7 @@ import { useI18n } from "vue-i18n";
 import type { QForm } from "quasar";
 import { useQuasar } from "quasar";
 import { AthleteUser, UserGender } from "@/helpers/users/user";
+import { event } from "vue-gtag";
 
 // Init plugin
 const $q = useQuasar();
@@ -179,6 +180,13 @@ function onSubmit() {
         type: "positive",
         message: i18n.t("coach.athlete_management.list.add_succeed"),
         position: "bottom",
+      });
+
+      // Register GA4 event
+      event("athleteview_anagraphic_update", {
+        event_category: "documentation",
+        event_label: "Update athlete anagraphic info from AthleteView",
+        value: 1,
       });
     },
     onError: () => {
