@@ -193,8 +193,8 @@ function onSubmit() {
       // Mixpanel tracking
       mixpanel.track("Update Athlete", {
         Type: "Anagraphic Info",
-        isWeightSet: athlete.weight ? true : false,
-        isNoteSet: athlete.coachNote ? true : false,
+        IsWeightSet: athlete.weight ? true : false,
+        IsNoteSet: athlete.coachNote ? true : false,
       });
     },
     onError: () => {

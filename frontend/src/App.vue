@@ -51,7 +51,7 @@
 
     <!-- Optional right drawer, customizible by route view -->
     <q-drawer
-      v-if="rightDrawerElement"
+      v-if="rightDrawerElement && $q.screen.gt.sm"
       v-model="rightDrawerOpen"
       side="right"
       show-if-above

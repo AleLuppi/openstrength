@@ -181,7 +181,7 @@ function onSubmit() {
       // Mixpanel tracking
       mixpanel.track("Program Info Updated", {
         Page: "AthleteView",
-        isProgramDescriptionSet: program.description ? true : false,
+        IsProgramDescriptionSet: program.description ? true : false,
       });
     },
     onError: () => {
