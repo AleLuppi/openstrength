@@ -717,7 +717,7 @@ import {
 } from "@/helpers/maxlifts/maxlift";
 import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
 import { stringGetNext } from "@/helpers/scalar";
-
+import mixpanel from "mixpanel-browser";
 // Init plugin
 const $q = useQuasar();
 const i18n = useI18n();
@@ -818,8 +818,23 @@ const filteredExercisesValues = computed(() => {
       (!currExercise || !props.filter.exercise.includes(currExercise))
     )
       return false;
+
     return true;
   }, {});
+
+  // Register mixpanel events. Note: put here so that only one event is generated per filter.
+  if (
+    props.filter.week.length > 0 ||
+    props.filter.day.length > 0 ||
+    props.filter.exercise.length > 0
+  ) {
+    mixpanel.track("Filter Used in Program", {
+      DaysSelected: props.filter.day.length,
+      WeeksSelected: props.filter.week.length,
+      ExercisesSelected: props.filter.week.length,
+    });
+  }
+
   return Object.fromEntries(
     filteredKeys.map((key) => [key, exercisesValues.value[key]]),
   );
@@ -1067,6 +1082,13 @@ function onReferenceClick(
   )
     tableRef[refField] = parsedReference;
 
+  // Mixpanel
+  mixpanel.track("Reference Added in Program", {
+    Page: "ProgramView",
+    Type: type,
+    Variable: refField,
+  });
+
   // Update program
   updateProgramExercise(lineInfo.schedule);
 }
@@ -1210,6 +1232,9 @@ function deleteTable(idScheduleInfo: string) {
   reorderTable(idScheduleInfo, tmpScheduleInfo);
   delete exercisesValues.value[tmpScheduleInfo];
 
+  // Mixpanel
+  mixpanel.track("Delete Exercise from Program");
+
   // Update program with new structure
   updateProgramWhole();
 }
@@ -1263,6 +1288,9 @@ function duplicateTableInDay(idScheduleInfo: string, destWeekDay?: string) {
     destWeekDay ?? idScheduleInfo,
     exercisesValues.value[idScheduleInfo],
   );
+
+  // Mixpanel
+  mixpanel.track("Duplicate Exercise in Program");
 }
 
 /**
@@ -1279,6 +1307,9 @@ function deleteWholeDay(idScheduleInfo: string) {
       if (arrayCompare(splitScheduleInfoNames(key).slice(0, 2), [week, day]))
         deleteTable(key);
     });
+
+  // Mixpanel
+  mixpanel.track("Delete Whole Day in Program");
 }
 
 /**
@@ -1316,6 +1347,9 @@ function duplicateWholeDay(
         props.scrollOffset,
       ),
     );
+
+  // Mixpanel
+  mixpanel.track("Duplicate Program Day");
 }
 
 /**
@@ -1397,6 +1431,8 @@ function renameWeekDay(
   // Update program with new naming
   updateProgramWhole();
 
+  // Mixpanel
+  mixpanel.track("Day Week Renamed", { Page: "ProgramView" });
   // Inform about successful update
   return outSchedule;
 }
@@ -1437,6 +1473,9 @@ function addWeekDayAfter(
             props.scrollOffset,
           ),
         );
+
+      // Mixpanel
+      mixpanel.track("New Week Created in Program");
       return creationResult;
     }
   }

@@ -372,7 +372,10 @@ function onExerciseAdd(exerciseName: string) {
       });
 
       // Mixpanel tracking
-      mixpanel.track("New Exercise Added to Library");
+      mixpanel.track("New Exercise to Library", {
+        Page: "LibraryView",
+        Name: newExercise.name,
+      });
     },
     onError: () => {
       // Inform user about error while saving exercise
@@ -444,6 +447,12 @@ function onVariantSubmit(variant: ExerciseVariant) {
           }),
           position: "bottom",
         });
+
+        // Mixpanel
+        mixpanel.track("New Variant to Library", {
+          Page: "LibraryView",
+          Name: variant.name,
+        });
       },
       onError: () =>
         $q.notify({
@@ -474,7 +483,10 @@ function onVariantSubmit(variant: ExerciseVariant) {
         });
 
         // Mixpanel tracking
-        mixpanel.track("Variant Added or Updated in Library");
+        mixpanel.track("Updated Variant to Library", {
+          Page: "LibraryView",
+          Name: variant.name,
+        });
       },
       onError: () =>
         $q.notify({
@@ -533,7 +545,10 @@ function deleteExercise(exercise: Exercise) {
       });
 
       // Mixpanel tracking
-      mixpanel.track("Exercise deleted from Library");
+      mixpanel.track("Exercise Deleted from Library", {
+        Page: "LibraryView",
+        Name: exercise.name,
+      });
     },
   });
 }
@@ -571,7 +586,10 @@ function deleteVariant(variant: ExerciseVariant) {
       });
 
       // Mixpanel tracking
-      mixpanel.track("Variant Deleted from Library");
+      mixpanel.track("Variant Deleted from Library", {
+        Page: "LibraryView",
+        Name: variant.name,
+      });
     },
   });
 }

@@ -150,6 +150,9 @@ onBeforeMount(() => {
       // Show onboarding dialog if required
       if (!user.role || user.role == UserRole.unknown)
         showDialogOnboarding.value = true;
+
+      // Identify user for proper Mixpanel tracking
+      mixpanel.identify(user.uid);
     },
     onUserOut: () => {
       user.$reset();
@@ -205,7 +208,7 @@ function onRightDrawerClick(clickParam: any) {
   });
 
   // Mixpanel tracking
-  mixpanel.track("Right drawer has been clicked");
+  mixpanel.track("Right drawer clicked");
 }
 
 /**

@@ -170,6 +170,7 @@ import { dateGetWithoutTimezone } from "@/helpers/scalar";
 import { AthleteUser } from "@/helpers/users/user";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 import { useCoachInfoStore } from "@/stores/coachInfo";
+import mixpanel from "mixpanel-browser";
 
 // Define props
 const props = defineProps({
@@ -243,6 +244,12 @@ function onSubmit() {
     ? dateGetWithoutTimezone(programFinishedOn.value)
     : undefined;
   program.description = programDescription.value;
+
+  // Mixpanel tracking
+  mixpanel.track("Program Info Updated", {
+    Page: "ProgramView",
+    isProgramDescriptionSet: program.description ? true : false,
+  });
 
   emit("submit", program);
 }

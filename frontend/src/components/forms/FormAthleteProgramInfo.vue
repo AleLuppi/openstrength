@@ -177,7 +177,10 @@ function onSubmit() {
       });
 
       // Mixpanel tracking
-      mixpanel.track("Program info updated in AthleteView");
+      mixpanel.track("Program Info Updated", {
+        Page: "AthleteView",
+        isProgramDescriptionSet: program.description ? true : false,
+      });
     },
     onError: () => {
       $q.notify({
@@ -201,6 +204,8 @@ function registerProgramOpeningEvent() {
   });
 
   // Mixpanel tracking
-  mixpanel.track("Program opened from AthleteView");
+  mixpanel.track("Program Opened", {
+    Page: "AthleteView",
+  });
 }
 </script>

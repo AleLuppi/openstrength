@@ -8,7 +8,12 @@
         <div class="column justify-center items-center">
           <h6>{{ $t("coach.program_management.viewer.dialog_title") }}</h6>
           <os-text-copyable :text="urlFullPath"></os-text-copyable>
-          <router-link :to="urlRelativePath" target="_blank" class="q-mt-sm">
+          <router-link
+            :to="urlRelativePath"
+            @click="registerEvent()"
+            target="_blank"
+            class="q-mt-sm"
+          >
             {{ $t("coach.program_management.viewer.preview") }}
           </router-link>
         </div>
@@ -33,6 +38,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import router, { NamedRoutes } from "@/router";
+import mixpanel from "mixpanel-browser";
 
 // Define props
 const props = defineProps<{
@@ -58,4 +64,11 @@ const urlRelativePath = computed(
 const urlFullPath = computed(
   () => window.location.origin + urlRelativePath.value,
 );
+
+/**
+ * Register event of user opening program link
+ */
+function registerEvent() {
+  mixpanel.track("Program Preview Opened");
+}
 </script>

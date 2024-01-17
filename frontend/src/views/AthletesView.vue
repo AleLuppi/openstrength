@@ -355,9 +355,6 @@ const i18n = useI18n();
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
-//Get mixpanel tracking
-mixpanel.identify(user.uid);
-
 // Set tab navigation info
 const allTabs = [
   {
@@ -478,7 +475,11 @@ function saveMaxlift(newMaxLift: MaxLift) {
       });
 
       //Mixpanel
-      mixpanel.track("Maxlift created in AthleteView");
+      mixpanel.track(isNew ? "Maxlift Created" : "Maxlift Updated", {
+        Page: "AthleteView",
+        Exercise: newMaxLift.exercise?.name,
+        Type: newMaxLift.type?.toString(),
+      });
     },
     onError: () =>
       $q.notify({
@@ -541,7 +542,9 @@ function createAthlete() {
       });
 
       // Mixpanel tracking
-      mixpanel.track("New athlete created in AthleteView");
+      mixpanel.track("New Athlete", {
+        Page: "AthleteView",
+      });
     },
     onError: () =>
       $q.notify({

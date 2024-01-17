@@ -191,7 +191,11 @@ function onSubmit() {
       });
 
       // Mixpanel tracking
-      mixpanel.track("Update athlete anagraphic info from AthleteView");
+      mixpanel.track("Update Athlete", {
+        Type: "Anagraphic Info",
+        isWeightSet: athlete.weight ? true : false,
+        isNoteSet: athlete.coachNote ? true : false,
+      });
     },
     onError: () => {
       $q.notify({

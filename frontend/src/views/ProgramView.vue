@@ -742,7 +742,9 @@ function openProgram(programId?: string, force: boolean = false) {
     });
 
     // Mixpanel tracking
-    mixpanel.track("Program opened in ProgramView for modification");
+    mixpanel.track("Program Opened", {
+      Page: "ProgramView",
+    });
   }
 }
 
@@ -793,6 +795,11 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
 
       // Clear active change on current program
       coachActiveChanges.program = undefined;
+
+      // Mixpanel tracking
+      mixpanel.track("Program Saved", {
+        ExerciseNumber: currProgram?.programExercises?.length,
+      });
 
       // Open program by updating route params
       openProgram(currProgram.uid);
@@ -921,6 +928,12 @@ function onNewExercise(
           }),
           position: "bottom",
         });
+
+        // Mixpanel tracking
+        mixpanel.track("New Variant to Library", {
+          Page: "ProgramView",
+          Name: newVariant.name,
+        });
       },
       onError: () =>
         $q.notify({
@@ -970,7 +983,10 @@ function onNewExercise(
         });
 
         // Mixpanel tracking
-        mixpanel.track("New exercise added to library");
+        mixpanel.track("New Exercise to Library", {
+          Page: "ProgramView",
+          Name: newExercise.name,
+        });
       },
       onError: () => {
         // Inform user about error while saving exercise
@@ -1015,6 +1031,13 @@ function saveMaxlift(newMaxLift: MaxLift) {
       if (isNew)
         (coachInfo.maxlifts = coachInfo.maxlifts || []).push(newMaxLift);
       maxliftFormElement.value?.reset();
+
+      //Mixpanel
+      mixpanel.track(isNew ? "Maxlift Created" : "Maxlift Updated", {
+        Page: "ProgramView",
+        Exercise: newMaxLift.exercise?.name,
+        Type: newMaxLift.type?.toString(),
+      });
     },
     onError: () =>
       $q.notify({
@@ -1044,7 +1067,9 @@ function openNewProgram() {
   });
 
   // Mixpanel tracking
-  mixpanel.track("New program created");
+  mixpanel.track("New Program", {
+    Page: "ProgramView",
+  });
 }
 
 /**
@@ -1061,7 +1086,7 @@ function onUnsavedProgramRestore() {
   });
 
   // Mixpanel tracking
-  mixpanel.track("Unsaved program restore");
+  mixpanel.track("Unsaved Program Restore");
 }
 
 /**
