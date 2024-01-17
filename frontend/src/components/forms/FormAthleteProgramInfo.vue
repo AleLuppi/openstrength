@@ -13,68 +13,70 @@
         ></q-btn>
       </div>
 
-      <div class="row q-col-gutter-x-md">
+      <div>
         <!-- Program name -->
         <os-input
           v-model="programName"
           :label="$t('coach.athlete_management.fields.program_name')"
         />
 
-        <!-- Start date -->
-        <os-input
-          v-model="programStartedOn"
-          :label="$t('coach.athlete_management.fields.program_start')"
-          class="col-3"
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy
-                cover
-                transition-show="scale"
-                transition-hide="scale"
-              >
-                <q-date v-model="programStartedOn">
-                  <div class="row items-center justify-end">
-                    <q-btn
-                      v-close-popup
-                      :label="$t('common.close')"
-                      color="primary"
-                      flat
-                    />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </os-input>
+        <div class="row q-col-gutter-x-md">
+          <!-- Start date -->
+          <os-input
+            v-model="programStartedOn"
+            :label="$t('coach.athlete_management.fields.program_start')"
+            class="col-6"
+          >
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date v-model="programStartedOn">
+                    <div class="row items-center justify-end">
+                      <q-btn
+                        v-close-popup
+                        :label="$t('common.close')"
+                        color="primary"
+                        flat
+                      />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </os-input>
 
-        <!-- End date -->
-        <os-input
-          v-model="programFinishedOn"
-          :label="$t('coach.athlete_management.fields.program_finish')"
-          class="col-3"
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy
-                cover
-                transition-show="scale"
-                transition-hide="scale"
-              >
-                <q-date v-model="programFinishedOn">
-                  <div class="row items-center justify-end">
-                    <q-btn
-                      v-close-popup
-                      :label="$t('common.close')"
-                      color="primary"
-                      flat
-                    />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </os-input>
+          <!-- End date -->
+          <os-input
+            v-model="programFinishedOn"
+            :label="$t('coach.athlete_management.fields.program_finish')"
+            class="col-6"
+          >
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date v-model="programFinishedOn">
+                    <div class="row items-center justify-end">
+                      <q-btn
+                        v-close-popup
+                        :label="$t('common.close')"
+                        color="primary"
+                        flat
+                      />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </os-input>
+        </div>
       </div>
 
       <!-- Program description -->
@@ -129,8 +131,8 @@ defineExpose({
 // Set ref
 const formElement = ref<QForm>();
 const programName = ref<string>();
-const programStartedOn = ref<Date>();
-const programFinishedOn = ref<Date>();
+const programStartedOn = ref<string>();
+const programFinishedOn = ref<string>();
 const programDescription = ref<string>();
 
 // Update shown info according to selected variant
@@ -139,8 +141,14 @@ watch(
   (program: Program | undefined) => {
     if (program) {
       programName.value = program.name;
-      programStartedOn.value = program.startedOn;
-      programFinishedOn.value = program.finishedOn;
+      programStartedOn.value = program.startedOn
+        ?.toISOString()
+        .split("T")[0]
+        .replaceAll("-", "/");
+      programFinishedOn.value = program.finishedOn
+        ?.toISOString()
+        .split("T")[0]
+        .replaceAll("-", "/");
       programDescription.value = program.description;
     }
   },
