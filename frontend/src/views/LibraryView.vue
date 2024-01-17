@@ -78,29 +78,32 @@
               </h4>
 
               <!-- Add new variant -->
-              <div class="column justify-center">
-                <q-btn
-                  :icon="$q.screen.gt.sm ? 'sym_o_playlist_add' : 'add'"
-                  :label="
-                    $q.screen.gt.sm
-                      ? $t('coach.exercise_management.add_button_variant')
-                      : undefined
-                  "
-                  :padding="$q.screen.gt.sm ? 'xs sm' : 'sm sm'"
-                  color="button-primary"
-                  @click="onNewVariant"
-                />
+              <div class="row justify-center">
+                <div>
+                  <q-btn
+                    :icon="$q.screen.gt.sm ? 'sym_o_playlist_add' : 'add'"
+                    :label="
+                      $q.screen.gt.sm
+                        ? $t('coach.exercise_management.add_button_variant')
+                        : undefined
+                    "
+                    :padding="$q.screen.gt.sm ? 'xs sm' : 'sm sm'"
+                    color="button-primary"
+                    @click="onNewVariant"
+                  />
+                </div>
 
-                <q-btn
-                  v-if="$q.screen.lt.sm"
-                  icon="close"
-                  outline
-                  flat
-                  round
-                  color="light-dark"
-                  class="q-pa-sm"
-                  @click="clearExercise"
-                ></q-btn>
+                <div v-if="$q.screen.lt.sm">
+                  <q-btn
+                    icon="close"
+                    outline
+                    flat
+                    round
+                    color="light-dark"
+                    class="q-pa-sm"
+                    @click="clearExercise"
+                  ></q-btn>
+                </div>
               </div>
             </div>
 
