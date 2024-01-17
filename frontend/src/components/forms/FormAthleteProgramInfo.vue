@@ -131,8 +131,8 @@ defineExpose({
 // Set ref
 const formElement = ref<QForm>();
 const programName = ref<string>();
-const programStartedOn = ref<string>();
-const programFinishedOn = ref<string>();
+const programStartedOn = ref<Date>();
+const programFinishedOn = ref<Date>();
 const programDescription = ref<string>();
 
 // Update shown info according to selected variant
@@ -141,14 +141,8 @@ watch(
   (program: Program | undefined) => {
     if (program) {
       programName.value = program.name;
-      programStartedOn.value = program.startedOn
-        ?.toISOString()
-        .split("T")[0]
-        .replaceAll("-", "/");
-      programFinishedOn.value = program.finishedOn
-        ?.toISOString()
-        .split("T")[0]
-        .replaceAll("-", "/");
+      programStartedOn.value = program.startedOn;
+      programFinishedOn.value = program.finishedOn;
       programDescription.value = program.description;
     }
   },
