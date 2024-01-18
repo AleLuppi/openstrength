@@ -78,7 +78,7 @@
               </h4>
 
               <!-- Add new variant -->
-              <div class="column justify-center">
+              <div class="row justify-center">
                 <q-btn
                   :icon="$q.screen.gt.sm ? 'sym_o_playlist_add' : 'add'"
                   :label="
@@ -252,6 +252,7 @@ import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { arrayUniqueValues } from "@/helpers/array";
 import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
 
 // Use plugins
 const $q = useQuasar();
@@ -369,6 +370,12 @@ function onExerciseAdd(exerciseName: string) {
         event_label: "New Exercise Added to Library",
         value: 1,
       });
+
+      // Mixpanel tracking
+      mixpanel.track("New Exercise to Library", {
+        Page: "LibraryView",
+        Name: newExercise.name,
+      });
     },
     onError: () => {
       // Inform user about error while saving exercise
@@ -376,6 +383,12 @@ function onExerciseAdd(exerciseName: string) {
         type: "negative",
         message: i18n.t("coach.exercise_management.add_error"),
         position: "bottom",
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("ERROR New Exercise to Library", {
+        Page: "LibraryView",
+        Name: newExercise.name,
       });
     },
   });
@@ -440,13 +453,26 @@ function onVariantSubmit(variant: ExerciseVariant) {
           }),
           position: "bottom",
         });
+
+        // Mixpanel tracking
+        mixpanel.track("New Variant to Library", {
+          Page: "LibraryView",
+          Name: variant.name,
+        });
       },
-      onError: () =>
+      onError: () => {
         $q.notify({
           type: "negative",
           message: i18n.t("coach.exercise_management.add_error"),
           position: "bottom",
-        }),
+        });
+
+        // Mixpanel tracking
+        mixpanel.track("ERROR New Variant to Library", {
+          Page: "LibraryView",
+          Name: variant.name,
+        });
+      },
     });
   else
     variant.saveUpdate({
@@ -468,13 +494,26 @@ function onVariantSubmit(variant: ExerciseVariant) {
           event_label: "Variant Added or Updated in Library",
           value: 1,
         });
+
+        // Mixpanel tracking
+        mixpanel.track("Updated Variant to Library", {
+          Page: "LibraryView",
+          Name: variant.name,
+        });
       },
-      onError: () =>
+      onError: () => {
         $q.notify({
           type: "negative",
           message: i18n.t("coach.exercise_management.update_error"),
           position: "bottom",
-        }),
+        });
+
+        // Mixpanel tracking
+        mixpanel.track("ERROR Updated Variant to Library", {
+          Page: "LibraryView",
+          Name: variant.name,
+        });
+      },
     });
 }
 
@@ -524,6 +563,12 @@ function deleteExercise(exercise: Exercise) {
         event_label: "Exercise Deleted from Library",
         value: 1,
       });
+
+      // Mixpanel tracking
+      mixpanel.track("Exercise Deleted from Library", {
+        Page: "LibraryView",
+        Name: exercise.name,
+      });
     },
   });
 }
@@ -558,6 +603,12 @@ function deleteVariant(variant: ExerciseVariant) {
         event_category: "documentation",
         event_label: "Variant Deleted from Library",
         value: 1,
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("Variant Deleted from Library", {
+        Page: "LibraryView",
+        Name: variant.name,
       });
     },
   });

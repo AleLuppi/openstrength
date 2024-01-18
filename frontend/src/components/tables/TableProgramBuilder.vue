@@ -1,5 +1,10 @@
 <template>
-  <div class="q-pa-md q-ma-md shadow-2" style="border-radius: 24px">
+  <div
+    :class="
+      dense ? 'q-pl-sm q-pr-none q-ml-sm q-mr-none' : 'q-pa-md q-ma-md shadow-2'
+    "
+    style="border-radius: 24px"
+  >
     <!-- Program exercise element -->
     <div
       :ref="(el) => (tableElements[idScheduleInfo] = el)"
@@ -104,7 +109,7 @@
           round
           :ripple="false"
         >
-          <q-tooltip>
+          <q-tooltip anchor="top middle" :offset="[0, 40]">
             {{ $t("coach.program_management.builder.day_rename") }}
           </q-tooltip>
 
@@ -127,7 +132,7 @@
           round
           :ripple="false"
         >
-          <q-tooltip>
+          <q-tooltip anchor="top middle" :offset="[0, 40]">
             {{ $t("coach.program_management.builder.day_duplicate") }}
           </q-tooltip>
 
@@ -158,7 +163,7 @@
           round
           :ripple="false"
         >
-          <q-tooltip>
+          <q-tooltip anchor="top middle" :offset="[0, 40]">
             {{ $t("coach.program_management.builder.day_delete") }}
           </q-tooltip>
         </q-btn>
@@ -167,9 +172,16 @@
       </div>
 
       <!-- Exercise element -->
-      <div class="row items-start justify-evenly q-mb-md">
+      <div
+        class="justify-evenly q-mb-md"
+        :class="dense ? 'column items-stretch' : 'row items-start'"
+      >
         <!-- Reordering arrows -->
-        <div class="self-center column justify-center">
+        <div
+          v-if="!dense"
+          class="self-center justify-center"
+          :class="dense ? 'row' : 'column'"
+        >
           <q-btn
             @click="reorderTableRelative(idScheduleInfo.toString(), -1)"
             icon="arrow_drop_up"
@@ -197,11 +209,13 @@
         </div>
 
         <!-- Exercise info -->
-        <div class="col-3">
+        <div :class="dense ? 'row justify-between items-end col-12' : 'col-3'">
           <div
-            class="q-pa-sm bg-lighter os-exercise-form os-light-border"
+            class="q-pa-sm bg-lighter os-light-border col-8"
             :class="{
               'cursor-pointer': !exercisesInfoShowExpanded[idScheduleInfo],
+              'os-exercise-form': !dense,
+              'os-exercise-form-dense': dense,
             }"
             @click="
               exercisesInfoExpanded = objectMapValues(
@@ -332,11 +346,11 @@
             </q-slide-transition>
 
             <q-slide-transition>
-              <div
-                v-show="!exercisesInfoShowExpanded[idScheduleInfo]"
-                class="text-ellipsis"
-              >
-                <p class="text-secondary text-bold">
+              <div v-show="!exercisesInfoShowExpanded[idScheduleInfo]">
+                <p
+                  class="text-secondary text-bold text-ellipsis"
+                  style="max-width: 50vw"
+                >
                   {{ exerciseModelValue.exercise }}
                   {{
                     exerciseModelValue.variant
@@ -344,7 +358,10 @@
                       : ""
                   }}
                 </p>
-                <p class="text-xs text-italic">
+                <p
+                  class="text-xs text-italic text-ellipsis"
+                  style="max-width: 50vw"
+                >
                   {{ exerciseModelValue.note }}
                 </p>
               </div>
@@ -374,7 +391,7 @@
                 }
               }
             "
-            direction="b"
+            :direction="dense ? 't' : 'b'"
             class="q-mx-sm"
           >
             <template #slot-0>
@@ -434,15 +451,27 @@
               'unchecked-icon': 'fa-solid fa-video-slash',
             },
           }"
-          :widths="{
-            load: '10%',
-            reps: '10%',
-            sets: '10%',
-            rpe: '10%',
-            note: '46%',
-            requestText: '7%',
-            requestVideo: '7%',
-          }"
+          :widths="
+            dense
+              ? {
+                  load: '19%',
+                  reps: '13%',
+                  sets: '13%',
+                  rpe: '13%',
+                  note: '28%',
+                  requestText: '7%',
+                  requestVideo: '7%',
+                }
+              : {
+                  load: '10%',
+                  reps: '10%',
+                  sets: '10%',
+                  rpe: '10%',
+                  note: '46%',
+                  requestText: '7%',
+                  requestVideo: '7%',
+                }
+          "
           :placeholders="{
             load: $t(
               'coach.program_management.fields.load',
@@ -599,7 +628,7 @@
       <!-- New element button -->
       <div
         v-if="lastTablesInDay.includes(idScheduleInfo.toString())"
-        class="row items-center justify-center q-gutter-md"
+        class="row items-center justify-center q-gutter-xs"
       >
         <q-btn
           icon="add"
@@ -608,7 +637,7 @@
           flat
           rounded
         >
-          <q-tooltip :delay="500">
+          <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
             {{ $t("coach.program_management.builder.new_exercise_tooltip") }}
           </q-tooltip>
         </q-btn>
@@ -619,7 +648,7 @@
           flat
           rounded
         >
-          <q-tooltip :delay="500">
+          <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
             {{ $t("coach.program_management.builder.new_day_tooltip") }}
           </q-tooltip>
         </q-btn>
@@ -630,7 +659,7 @@
           flat
           rounded
         >
-          <q-tooltip :delay="500">
+          <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
             {{ $t("coach.program_management.builder.new_week_tooltip") }}
           </q-tooltip></q-btn
         >
@@ -717,7 +746,7 @@ import {
 } from "@/helpers/maxlifts/maxlift";
 import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
 import { stringGetNext } from "@/helpers/scalar";
-
+import mixpanel from "mixpanel-browser";
 // Init plugin
 const $q = useQuasar();
 const i18n = useI18n();
@@ -743,6 +772,10 @@ const props = defineProps({
       exercise: string[];
     }>,
     default: () => ({}),
+  },
+  dense: {
+    type: Boolean,
+    default: false,
   },
   scrollOffset: {
     type: Number,
@@ -820,6 +853,20 @@ const filteredExercisesValues = computed(() => {
       return false;
     return true;
   }, {});
+
+  // Register mixpanel event
+  if (
+    props.filter.week.length > 0 ||
+    props.filter.day.length > 0 ||
+    props.filter.exercise.length > 0
+  ) {
+    mixpanel.track("Filter Used in Program", {
+      DaysSelected: props.filter.day.length,
+      WeeksSelected: props.filter.week.length,
+      ExercisesSelected: props.filter.week.length,
+    });
+  }
+
   return Object.fromEntries(
     filteredKeys.map((key) => [key, exercisesValues.value[key]]),
   );
@@ -1067,6 +1114,13 @@ function onReferenceClick(
   )
     tableRef[refField] = parsedReference;
 
+  // Mixpanel tracking
+  mixpanel.track("Reference Added in Program", {
+    Page: "ProgramView",
+    Type: type,
+    Variable: refField,
+  });
+
   // Update program
   updateProgramExercise(lineInfo.schedule);
 }
@@ -1210,6 +1264,9 @@ function deleteTable(idScheduleInfo: string) {
   reorderTable(idScheduleInfo, tmpScheduleInfo);
   delete exercisesValues.value[tmpScheduleInfo];
 
+  // Mixpanel tracking
+  mixpanel.track("Delete Exercise from Program");
+
   // Update program with new structure
   updateProgramWhole();
 }
@@ -1263,6 +1320,9 @@ function duplicateTableInDay(idScheduleInfo: string, destWeekDay?: string) {
     destWeekDay ?? idScheduleInfo,
     exercisesValues.value[idScheduleInfo],
   );
+
+  // Mixpanel tracking
+  mixpanel.track("Duplicate Exercise in Program");
 }
 
 /**
@@ -1279,6 +1339,9 @@ function deleteWholeDay(idScheduleInfo: string) {
       if (arrayCompare(splitScheduleInfoNames(key).slice(0, 2), [week, day]))
         deleteTable(key);
     });
+
+  // Mixpanel tracking
+  mixpanel.track("Delete Whole Day in Program");
 }
 
 /**
@@ -1316,6 +1379,9 @@ function duplicateWholeDay(
         props.scrollOffset,
       ),
     );
+
+  // Mixpanel tracking
+  mixpanel.track("Duplicate Program Day");
 }
 
 /**
@@ -1397,6 +1463,8 @@ function renameWeekDay(
   // Update program with new naming
   updateProgramWhole();
 
+  // Mixpanel tracking
+  mixpanel.track("Day Week Renamed", { Page: "ProgramView" });
   // Inform about successful update
   return outSchedule;
 }
@@ -1437,6 +1505,9 @@ function addWeekDayAfter(
             props.scrollOffset,
           ),
         );
+
+      // Mixpanel tracking
+      mixpanel.track("New Week Created in Program");
       return creationResult;
     }
   }
@@ -1709,5 +1780,10 @@ function optionallyCreateNewExercise(
 .os-exercise-form {
   border-radius: 10px 0 0 10px;
   margin-inline-end: -1px;
+}
+
+.os-exercise-form-dense {
+  border-radius: 10px 10px 0 0;
+  margin-block-end: -1px;
 }
 </style>

@@ -522,6 +522,7 @@ export class ProgramLine {
   /***** Computed Properties *****/
   // Reference values when reference can be line or max lift
   public get refLoadValue() {
+    if (this == this.loadReference) return undefined;
     return this.loadReference instanceof ProgramLine
       ? this.loadReference.loadValue ??
           this.loadReference.loadComputedValue ??
@@ -529,6 +530,7 @@ export class ProgramLine {
       : Number(this.loadReference?.value);
   }
   public get refRepsValue() {
+    if (this == this.repsReference) return undefined;
     return this.repsReference instanceof ProgramLine
       ? this.repsReference.repsValue ??
           this.repsReference.repsComputedValue ??

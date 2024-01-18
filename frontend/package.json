@@ -1,6 +1,6 @@
 {
   "name": "openstrength",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "OpenStrength",
   "private": true,
   "scripts": {
@@ -17,12 +17,12 @@
     "chart.js": "^3.9.1",
     "core-js": "^3.8.3",
     "firebase": "^10.3.1",
+    "mixpanel-browser": "^2.48.1",
     "moment": "^2.29.4",
     "pinia": "^2.1.6",
     "quasar": "^2.0.0",
     "vue": "^3.2.13",
     "vue-gtag": "^2.0.1",
-    "vue-hotjar": "^1.4.0",
     "vue-i18n": "^9.1.0",
     "vue-router": "^4.2.4",
     "vue-social-sharing": "^4.0.0-alpha4"
@@ -31,6 +31,8 @@
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
     "@intlify/vue-i18n-loader": "^3.0.0",
+    "@types/mixpanel": "^2.14.8",
+    "@types/mixpanel-browser": "^2.48.1",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",

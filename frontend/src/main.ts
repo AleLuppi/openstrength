@@ -4,14 +4,16 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { createPinia } from "pinia";
-import VueGtag from "vue-gtag";
-import Hotjar from "vue-hotjar";
 
-// Additional styling and frontend management
+// Frontend management and styling
 import { Quasar } from "quasar";
 import quasarUserOptions from "./quasar-user-options";
 import i18n from "./i18n";
 import VueSocialSharing from "vue-social-sharing";
+
+// Analytics modules
+import VueGtag from "vue-gtag";
+import mixpanel from "mixpanel-browser";
 
 // Custom components to register
 import osButtonSupport from "./components/basic/osButtonSupport.vue";
@@ -28,6 +30,15 @@ import osWrapWithLines from "./components/basic/osWrapWithLines.vue";
 
 /***** Set constant global properties *****/
 export const globalProperties = {};
+
+/***** Initialize plugins *****/
+// Initialize mixpanel
+mixpanel.init("1132ec256586f264683f340260fca53a", {
+  debug: process.env.NODE_ENV != "production",
+  ignore_dnt: true,
+  track_pageview: true,
+  persistence: "localStorage",
+});
 
 /***** Build and start the application *****/
 // Create the app
@@ -60,11 +71,7 @@ app
     config: { id: "G-G8BLW1JL0M" },
     enabled: process.env.NODE_ENV == "production",
   })
-  .use(VueSocialSharing)
-  .use(Hotjar, {
-    id: "3825238",
-    isProduction: process.env.NODE_ENV == "production",
-  });
+  .use(VueSocialSharing);
 
 // Mount the application
 app.mount("#app");

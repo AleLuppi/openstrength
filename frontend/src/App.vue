@@ -1,101 +1,113 @@
 <template>
-  <q-layout
-    view="lHh LpR lFf"
-    @mousedown="interacted = true"
-    @scroll="interacted = true"
-    @touchstart="interacted = true"
-  >
-    <!-- Header -->
-    <q-header v-if="showHeader" bordered class="bg-lightest text-light">
-      <q-toolbar v-if="$q.screen.lt.md">
-        <q-btn
-          v-if="!leftDrawerOpen || $q.screen.lt.md"
-          flat
-          dense
-          round
-          @click="leftDrawerOpen = !leftDrawerOpen"
-          aria-label="Menu"
-          icon="menu"
-        />
-
-        <q-space />
-
-        <!-- Action buttons -->
-        <q-btn
-          icon="person"
-          flat
-          round
-          :to="{ name: 'profile' }"
-          color="text-light"
-        />
-      </q-toolbar>
-    </q-header>
-
-    <!-- Left drawer -->
-    <q-drawer
-      v-if="showLeftDrawer"
-      v-model="leftDrawerOpen"
-      side="left"
-      show-if-above
-      bordered
-      mini
-      :mini-width="100"
-      class="bg-lightest"
+  <main>
+    <transition name="fade">
+      <osSplashScreen v-if="isLoading" />
+    </transition>
+    <q-layout
+      view="lHh LpR lFf"
+      @mousedown="interacted = true"
+      @scroll="interacted = true"
+      @touchstart="interacted = true"
     >
-      <LeftDrawerElements />
+      <!-- Header -->
+      <q-header v-if="showHeader" bordered class="bg-lightest text-light">
+        <q-toolbar v-if="$q.screen.lt.md">
+          <q-btn
+            v-if="!leftDrawerOpen || $q.screen.lt.md"
+            flat
+            dense
+            round
+            @click="leftDrawerOpen = !leftDrawerOpen"
+            aria-label="Menu"
+            icon="menu"
+          />
 
-      <template v-slot:mini>
-        <LeftDrawerElements :mini="true" />
-      </template>
-    </q-drawer>
+          <q-space />
 
-    <!-- Optional right drawer, customizible by route view -->
-    <q-drawer
-      v-if="rightDrawerElement"
-      v-model="rightDrawerOpen"
-      side="right"
-      show-if-above
-      bordered
-      :width="50"
-      class="bg-lightest"
-    >
-      <component
-        :is="rightDrawerElement"
-        @drawerClick="onRightDrawerClick"
-        :active="rightDrawerActive"
-      ></component>
-    </q-drawer>
+          <!-- Action buttons -->
+          <q-btn
+            icon="person"
+            flat
+            round
+            :to="{ name: 'profile' }"
+            color="text-light"
+          />
+        </q-toolbar>
+      </q-header>
 
-    <!-- Actual page content -->
-    <q-page-container>
-      <RouterView v-slot="{ Component }">
+      <!-- Left drawer -->
+      <q-drawer
+        v-if="showLeftDrawer"
+        v-model="leftDrawerOpen"
+        side="left"
+        show-if-above
+        bordered
+        mini
+        :mini-width="100"
+        class="bg-lightest"
+      >
+        <LeftDrawerElements />
+
+        <template v-slot:mini>
+          <LeftDrawerElements :mini="true" />
+        </template>
+      </q-drawer>
+
+      <!-- Optional right drawer, customizible by route view -->
+      <q-drawer
+        v-if="rightDrawerElement && $q.screen.gt.sm"
+        v-model="rightDrawerOpen"
+        side="right"
+        show-if-above
+        bordered
+        :width="50"
+        class="bg-lightest"
+      >
         <component
-          ref="viewComponent"
-          :is="Component"
-          @request-global-dialog="onShowGlobalDialog"
-          @activateDrawerItem="(item: number) => (rightDrawerActive = item)"
-        />
-      </RouterView>
-    </q-page-container>
+          :is="rightDrawerElement"
+          @drawerClick="onRightDrawerClick"
+          :active="rightDrawerActive"
+        ></component>
+      </q-drawer>
 
-    <!-- Footer -->
-    <q-footer v-if="showFooter">
-      <!-- TODO -->
-    </q-footer>
+      <!-- Actual page content -->
+      <q-page-container>
+        <RouterView v-slot="{ Component }">
+          <component
+            ref="viewComponent"
+            :is="Component"
+            @request-global-dialog="onShowGlobalDialog"
+            @activateDrawerItem="(item: number) => (rightDrawerActive = item)"
+          />
+        </RouterView>
+      </q-page-container>
 
-    <!-- Show optional global dialogs -->
-    <q-dialog v-model="showDialogOnboarding">
-      <UserOnboarding :on-submit="onOnboardingSubmit"></UserOnboarding>
-    </q-dialog>
-  </q-layout>
+      <!-- Footer -->
+      <q-footer v-if="showFooter">
+        <!-- TODO -->
+      </q-footer>
+
+      <!-- Show optional global dialogs -->
+      <q-dialog v-model="showDialogOnboarding">
+        <UserOnboarding :on-submit="onOnboardingSubmit"></UserOnboarding>
+      </q-dialog>
+    </q-layout>
+  </main>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onBeforeMount } from "vue";
+import {
+  ref,
+  computed,
+  onBeforeMount,
+  onMounted,
+  defineAsyncComponent,
+} from "vue";
 import { useRoute } from "vue-router";
 import { User as FirebaseUser } from "firebase/auth";
 import router from "@/router";
 import setdefaults from "@/boot/setQuasarDefaultProps";
+import { auth } from "@/firebase";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { addCallbackOnAuthStateChanged } from "@/helpers/users/auth";
@@ -103,10 +115,20 @@ import { User, UserRole } from "@/helpers/users/user";
 import { ProgramExercise } from "@/helpers/programs/program";
 import { sortExercises } from "@/helpers/exercises/listManagement";
 import { setLocale } from "@/helpers/locales";
-import LeftDrawerElements from "@/components/layout/LeftDrawerElements.vue";
-import UserOnboarding from "@/components/forms/UserOnboarding.vue";
 import { defaultExerciseCollection } from "@/utils/defaultExerciseCollection";
 import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
+
+// Import async components
+const osSplashScreen = defineAsyncComponent(
+  () => import("@/components/layout/SplashScreen.vue"),
+);
+const LeftDrawerElements = defineAsyncComponent(
+  () => import("@/components/layout/LeftDrawerElements.vue"),
+);
+const UserOnboarding = defineAsyncComponent(
+  () => import("@/components/forms/UserOnboarding.vue"),
+);
 
 // Init plugin
 const route = useRoute();
@@ -125,14 +147,26 @@ const showHeader = computed(() => route.meta?.showHeader ?? true);
 const showFooter = computed(() => route.meta?.showFooter ?? true);
 const showLeftDrawer = computed(() => route.meta?.showLeftDrawer ?? true);
 const showDialogOnboarding = ref(false);
+const isLoading = ref(true);
 
 // Check if any interaction with the app has ever occurred
 let interacted = false;
 
 // Run few useful things before app starts rendering
 onBeforeMount(() => {
+  // Set loading state for splashscreen
+  isLoading.value = true;
+
   // Set default props of components
   setdefaults();
+
+  // React to auth state ready
+  auth.authStateReady().then(() => {
+    // Reduce delay to hide splash screen
+    setTimeout(() => {
+      isLoading.value = false;
+    }, 500);
+  });
 
   // Ensure user storage is up to date with auth
   addCallbackOnAuthStateChanged({
@@ -149,6 +183,9 @@ onBeforeMount(() => {
       // Show onboarding dialog if required
       if (!user.role || user.role == UserRole.unknown)
         showDialogOnboarding.value = true;
+
+      // Identify user for proper Mixpanel tracking
+      mixpanel.identify(user.uid);
     },
     onUserOut: () => {
       user.$reset();
@@ -158,6 +195,14 @@ onBeforeMount(() => {
       router.replace({ ...route, force: true });
     },
   });
+});
+
+// Run few useful things when app is ready to be displayed
+onMounted(() => {
+  // Set a maximum splash screen duration
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 2000);
 });
 
 /**
@@ -202,6 +247,11 @@ function onRightDrawerClick(clickParam: any) {
     event_label: "The right drawer has been clicked in ProgramView",
     value: 1,
   });
+
+  // Mixpanel tracking
+  mixpanel.track("Right drawer clicked", {
+    ClickParameters: String(clickParam),
+  });
 }
 
 /**
@@ -220,3 +270,15 @@ function onShowGlobalDialog(which: string) {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

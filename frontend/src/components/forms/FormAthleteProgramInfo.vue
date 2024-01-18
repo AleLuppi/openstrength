@@ -18,13 +18,14 @@
         <os-input
           v-model="programName"
           :label="$t('coach.athlete_management.fields.program_name')"
+          class="col-12"
         />
 
         <!-- Start date -->
         <os-input
           v-model="programStartedOn"
           :label="$t('coach.athlete_management.fields.program_start')"
-          class="col-3"
+          class="col-6"
         >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
@@ -52,7 +53,7 @@
         <os-input
           v-model="programFinishedOn"
           :label="$t('coach.athlete_management.fields.program_finish')"
-          class="col-3"
+          class="col-6"
         >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
@@ -99,6 +100,7 @@ import type { QForm } from "quasar";
 import { useQuasar } from "quasar";
 import { Program } from "@/helpers/programs/program";
 import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
 
 // Init plugin
 const $q = useQuasar();
@@ -174,6 +176,12 @@ function onSubmit() {
         event_label: "Program info updated in AthleteView",
         value: 1,
       });
+
+      // Mixpanel tracking
+      mixpanel.track("Program Info Updated", {
+        Page: "AthleteView",
+        IsProgramDescriptionSet: program.description ? true : false,
+      });
     },
     onError: () => {
       $q.notify({
@@ -194,6 +202,11 @@ function registerProgramOpeningEvent() {
     event_category: "documentation",
     event_label: "Program opened from AthleteView",
     value: 1,
+  });
+
+  // Mixpanel tracking
+  mixpanel.track("Program Opened", {
+    Page: "AthleteView",
   });
 }
 </script>

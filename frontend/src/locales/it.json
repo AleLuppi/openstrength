@@ -264,7 +264,7 @@
           "bar": "Barra per trazioni",
           "parallettes": "Parallele",
           "rings": "Anelli",
-          "box": "Scatola"
+          "box": "Box"
         },
         "video": "Link al video",
         "description": "Descrizione"
@@ -349,6 +349,7 @@
         "new_program_info": "Compila i campi con le informazioni del tuo nuovo programma",
         "new_program_submit": "Procedi",
         "open_recent": "I tuoi programmi recenti",
+        "open_from_recent": "oppure apri recente",
         "view_current": "Visualizza programma"
       },
       "viewer": {
