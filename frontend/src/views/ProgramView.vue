@@ -1,13 +1,14 @@
 <template>
-  <q-page style="height: 0">
+  <q-page style="height: 0" :class="{ 'overflow-hidden': denseView }">
     <!-- Program table -->
     <q-splitter
       v-model="splitterModel"
       reverse
-      :limits="[0, 50]"
+      :limits="denseView ? [0, 0] : [0, 50]"
       style="height: 100%"
+      :after-class="{ 'overflow-hidden': denseView }"
     >
-      <template v-slot:before>
+      <template #before>
         <!-- Program management card -->
         <div
           v-if="selectedProgram"
@@ -30,7 +31,9 @@
                 :color="programSaved ? 'positive' : 'primary'"
                 class="q-pa-sm q-mx-sm"
               ></q-btn>
+
               <span
+                v-if="!denseView"
                 class="text-grey"
                 :class="{ 'text-grey-7 text-bold': !programSaved }"
               >
@@ -46,7 +49,7 @@
 
             <!-- Display and update assigned user -->
             <div
-              v-if="selectedProgram.athlete"
+              v-if="selectedProgram.athlete && !denseView"
               class="row items-center justify-center q-col-gutter-sm"
             >
               <span class="text-black">
@@ -75,6 +78,62 @@
               </div>
             </div>
 
+            <!-- Maxlift and Charts -->
+            <div v-if="denseView" class="row">
+              <!-- Program info and open new -->
+              <q-btn
+                icon="fa-solid fa-bars-staggered"
+                class="q-pa-sm"
+                :color="
+                  showUtilsDialog && showingUtils == UtilsOptions.list
+                    ? 'primary'
+                    : 'light-dark'
+                "
+                @click="
+                  showingUtils = UtilsOptions.list;
+                  showUtilsDialog = true;
+                "
+                flat
+              >
+              </q-btn>
+
+              <!-- Show Charts -->
+              <q-btn
+                icon="fa-solid fa-chart-line"
+                outline
+                flat
+                class="q-pa-sm"
+                :color="
+                  showUtilsDialog && showingUtils == UtilsOptions.charts
+                    ? 'primary'
+                    : 'light-dark'
+                "
+                @click="
+                  showingUtils = UtilsOptions.charts;
+                  showUtilsDialog = true;
+                "
+              >
+              </q-btn>
+
+              <!-- Show Maxlifts -->
+              <q-btn
+                icon="fa-solid fa-table-list"
+                class="q-pa-sm"
+                outline
+                flat
+                :color="
+                  showUtilsDialog && showingUtils == UtilsOptions.maxlifts
+                    ? 'primary'
+                    : 'light-dark'
+                "
+                @click="
+                  showingUtils = UtilsOptions.maxlifts;
+                  showUtilsDialog = true;
+                "
+              >
+              </q-btn>
+            </div>
+
             <!-- Get shareable link to program -->
             <div>
               <q-btn
@@ -85,7 +144,11 @@
                 outline
                 flat
                 icon="sym_o_share"
-                :label="$t('coach.program_management.viewer.send_program')"
+                :label="
+                  denseView
+                    ? undefined
+                    : i18n.t('coach.program_management.viewer.send_program')
+                "
               >
               </q-btn>
             </div>
@@ -100,7 +163,7 @@
               <div
                 class="row items-end justify-between q-col-gutter-sm q-pt-md"
               >
-                <h6 class="col-md-2 col-5">
+                <h6 :class="denseView ? 'col-3' : 'col-2'">
                   {{ $t("coach.program_management.filter.title") }}
                 </h6>
                 <os-select
@@ -109,7 +172,7 @@
                   :label="$t('coach.program_management.filter.filter_week')"
                   multiple
                   hide-bottom-space
-                  class="col-md-3 col-6"
+                  class="col-3"
                 ></os-select>
                 <os-select
                   v-model="filterDay"
@@ -117,7 +180,7 @@
                   :label="$t('coach.program_management.filter.filter_day')"
                   multiple
                   hide-bottom-space
-                  class="col-md-3 col-6"
+                  class="col-3"
                 ></os-select>
                 <os-select
                   v-model="filterExercise"
@@ -125,7 +188,7 @@
                   :label="$t('coach.program_management.filter.filter_exercise')"
                   multiple
                   hide-bottom-space
-                  class="col-md-3 col-6"
+                  :class="denseView ? 'col-3' : 'col-4'"
                 ></os-select>
               </div>
             </div>
@@ -158,6 +221,7 @@
           :exercises="coachInfo.exercises"
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
+          :dense="denseView"
           :scroll-offset="programManagerHeight + 15"
           class="q-pa-sm"
         >
@@ -196,198 +260,231 @@
           <TableExistingPrograms
             :programs="allAssignedPrograms"
             @update:selected="(program) => openProgram(program?.uid)"
-            :small="!$q.screen.gt.sm"
+            :small="denseView"
           />
         </div>
       </template>
 
-      <template v-slot:after>
+      <template #after>
         <!-- Show charts on the right -->
-        <div class="q-pa-sm" style="min-width: 100px; overflow: hidden">
-          <!-- Charts display section -->
-          <div v-if="showingUtils == UtilsOptions.charts">
-            <ChartSelector
-              :program="selectedProgram"
-              :filter-week="filterWeek"
-              :filter-day="filterDay"
-              :filter-exercise="filterExercise"
-            ></ChartSelector>
-          </div>
+        <component
+          :is="denseView ? QDialog : 'div'"
+          v-model="showUtilsDialog"
+          class="q-pa-sm"
+          style="min-width: 100px; overflow: hidden"
+        >
+          <component
+            :is="denseView ? QCard : 'div'"
+            :class="{ 'q-pa-md full-width': denseView }"
+          >
+            <!-- Charts display section -->
+            <div v-if="showingUtils == UtilsOptions.charts">
+              <ChartSelector
+                :program="selectedProgram"
+                :filter-week="filterWeek"
+                :filter-day="filterDay"
+                :filter-exercise="filterExercise"
+              ></ChartSelector>
+            </div>
 
-          <!-- Max Lifts section -->
-          <q-card v-else-if="showingUtils == UtilsOptions.maxlifts">
-            <q-card-section>
+            <!-- Max Lifts section -->
+            <div v-else-if="showingUtils == UtilsOptions.maxlifts">
               <h6 class="text-margin-xs">
                 {{ $t("coach.maxlift_management.list.maxlift_section") }}
               </h6>
 
-              <div class="row q-gutter-x-md items-center">
-                <os-input
-                  v-model="searchMaxLift"
-                  :placeholder="
-                    $t('coach.maxlift_management.list.search_maxlift')
-                  "
-                  hide-bottom-space
-                  debounce="500"
-                  class="col"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="search" />
-                  </template>
-                </os-input>
+              <q-card>
+                <q-card-section>
+                  <div class="row q-gutter-x-md items-center">
+                    <os-input
+                      v-model="searchMaxLift"
+                      :placeholder="
+                        $t('coach.maxlift_management.list.search_maxlift')
+                      "
+                      hide-bottom-space
+                      debounce="500"
+                      class="col"
+                    >
+                      <template v-slot:prepend>
+                        <q-icon name="search" />
+                      </template>
+                    </os-input>
 
-                <!-- Add new maxlift -->
-                <q-btn
-                  icon="add"
-                  outline
-                  @click="
-                    updatingMaxlift = undefined;
-                    showMaxliftAddDialog = true;
-                  "
-                />
-              </div>
-            </q-card-section>
-
-            <q-separator />
-
-            <TableMaxLifts
-              :maxlifts="athleteMaxlifts ?? []"
-              @update="onUpdateMaxLift"
-              :filter="searchMaxLift"
-              :no-data-label="$t('coach.maxlift_management.list.no_maxlift')"
-            />
-
-            <!-- Dialog to add a new max lift -->
-            <q-dialog
-              v-model="showMaxliftAddDialog"
-              @hide="maxliftFormElement?.reset"
-            >
-              <q-card class="q-pa-sm dialog-min-width">
-                <q-card-section class="row items-center q-pb-none">
-                  <h5>
-                    {{
-                      updatingMaxlift
-                        ? $t("coach.maxlift_management.list.update")
-                        : $t("coach.maxlift_management.list.add")
-                    }}
-                  </h5>
-
-                  <q-space />
-                  <q-btn
-                    icon="close"
-                    flat
-                    round
-                    dense
-                    color="button-negative"
-                    v-close-popup
-                  />
+                    <!-- Add new maxlift -->
+                    <q-btn
+                      icon="add"
+                      outline
+                      @click="
+                        updatingMaxlift = undefined;
+                        showMaxliftAddDialog = true;
+                      "
+                    />
+                  </div>
                 </q-card-section>
 
-                <FormMaxLift
-                  ref="maxliftFormElement"
-                  :maxlift="updatingMaxlift"
-                  :exercises="coachInfo.exercises"
-                  @submit="saveMaxlift"
-                  @reset="showMaxliftAddDialog = false"
-                ></FormMaxLift>
-              </q-card>
-            </q-dialog>
-          </q-card>
+                <q-separator />
 
-          <!-- Program list section -->
-          <div
-            v-else-if="showingUtils == UtilsOptions.list"
-            class="column q-gutter-y-md"
-          >
-            <div class="row justify-between q-mt-xs">
-              <h6>{{ $t("coach.program_management.list.program_section") }}</h6>
+                <TableMaxLifts
+                  :maxlifts="athleteMaxlifts ?? []"
+                  @update="onUpdateMaxLift"
+                  :filter="searchMaxLift"
+                  :no-data-label="
+                    $t('coach.maxlift_management.list.no_maxlift')
+                  "
+                />
+
+                <!-- Dialog to add a new max lift -->
+                <q-dialog
+                  v-model="showMaxliftAddDialog"
+                  @hide="maxliftFormElement?.reset"
+                >
+                  <q-card class="q-pa-sm dialog-min-width">
+                    <q-card-section class="row items-center q-pb-none">
+                      <h5>
+                        {{
+                          updatingMaxlift
+                            ? $t("coach.maxlift_management.list.update")
+                            : $t("coach.maxlift_management.list.add")
+                        }}
+                      </h5>
+
+                      <q-space />
+                      <q-btn
+                        icon="close"
+                        flat
+                        round
+                        dense
+                        color="button-negative"
+                        v-close-popup
+                      />
+                    </q-card-section>
+
+                    <FormMaxLift
+                      ref="maxliftFormElement"
+                      :maxlift="updatingMaxlift"
+                      :exercises="coachInfo.exercises"
+                      @submit="saveMaxlift"
+                      @reset="showMaxliftAddDialog = false"
+                    ></FormMaxLift>
+                  </q-card>
+                </q-dialog>
+              </q-card>
+            </div>
+
+            <!-- Program list section -->
+            <div
+              v-else-if="showingUtils == UtilsOptions.list"
+              class="column q-gutter-y-md"
+            >
+              <div class="row justify-between q-mt-xs">
+                <h6>
+                  {{ $t("coach.program_management.list.program_section") }}
+                </h6>
+              </div>
+
+              <!-- Search status or temporary program -->
+              <q-card>
+                <q-card-section v-if="selectedProgram">
+                  <div class="row justify-between">
+                    <div class="column">
+                      <p>
+                        {{
+                          selectedProgram.name ??
+                          $t("coach.program_management.fields.program")
+                        }}
+                      </p>
+                      <p
+                        class="text-italic text-xs"
+                        v-if="selectedProgram.lastUpdated"
+                      >
+                        {{ $t("coach.program_management.builder.last_update") }}
+                        {{ $d(selectedProgram.lastUpdated, "middle") }}
+                      </p>
+                    </div>
+
+                    <q-btn
+                      icon="edit"
+                      outline
+                      flat
+                      rounded
+                      size="0.8em"
+                      color="light-dark"
+                      @click="showNewProgramDialog = true"
+                    ></q-btn>
+                  </div>
+
+                  <p
+                    class="q-mt-md text-italic"
+                    v-if="selectedProgram.description"
+                  >
+                    {{ selectedProgram.description }}
+                  </p>
+                </q-card-section>
+                <q-card-section
+                  v-else-if="coachActiveChanges.program"
+                  class="cursor-pointer"
+                  @click="onUnsavedProgramRestore"
+                >
+                  <p class="text-primary">
+                    {{ $t("coach.program_management.builder.open_temporary") }}
+                  </p>
+                  <p
+                    class="text-italic text-xs"
+                    v-if="coachActiveChanges.program.lastUpdated"
+                  >
+                    {{ $t("coach.program_management.builder.last_update") }}
+                    {{ $d(coachActiveChanges.program.lastUpdated, "middle") }}
+                  </p>
+                </q-card-section>
+                <q-card-section v-else>{{
+                  $t("coach.program_management.builder.start_program")
+                }}</q-card-section>
+              </q-card>
+
+              <q-separator></q-separator>
 
               <!-- Start a new program -->
-              <div class="column justify-center">
-                <q-btn
-                  icon="add"
-                  :label="$t('coach.program_management.builder.new_program')"
-                  @click="openNewProgram"
-                  rounded
-                  outline
-                  padding="xs sm"
-                ></q-btn>
+              <q-btn
+                icon="add"
+                :label="$t('coach.program_management.builder.new_program')"
+                @click="openNewProgram"
+                rounded
+                outline
+                padding="xs sm"
+              ></q-btn>
+
+              <!-- Select among assigned programs -->
+              <div v-if="selectedProgram">
+                <p class="q-mt-sm text-center">
+                  {{ $t("coach.program_management.builder.open_from_recent") }}
+                </p>
+                <q-card>
+                  <TableExistingPrograms
+                    :programs="allAssignedPrograms"
+                    @update:selected="(program) => openProgram(program?.uid)"
+                    :small="true"
+                  />
+                </q-card>
               </div>
             </div>
 
-            <!-- Search status or temporary program -->
-            <q-card>
-              <q-card-section v-if="selectedProgram">
-                <div class="row justify-between">
-                  <div class="column">
-                    <p>
-                      {{
-                        selectedProgram.name ??
-                        $t("coach.program_management.fields.program")
-                      }}
-                    </p>
-                    <p
-                      class="text-italic text-xs"
-                      v-if="selectedProgram.lastUpdated"
-                    >
-                      {{ $t("coach.program_management.builder.last_update") }}
-                      {{ $d(selectedProgram.lastUpdated, "middle") }}
-                    </p>
-                  </div>
-
-                  <q-btn
-                    icon="edit"
-                    outline
-                    flat
-                    rounded
-                    size="0.8em"
-                    color="light-dark"
-                    @click="showNewProgramDialog = true"
-                  ></q-btn>
-                </div>
-
-                <p
-                  class="q-mt-md text-italic"
-                  v-if="selectedProgram.description"
-                >
-                  {{ selectedProgram.description }}
-                </p>
-              </q-card-section>
-              <q-card-section
-                v-else-if="coachActiveChanges.program"
-                class="cursor-pointer"
-                @click="onUnsavedProgramRestore"
-              >
-                <p class="text-primary">
-                  {{ $t("coach.program_management.builder.open_temporary") }}
-                </p>
-                <p
-                  class="text-italic text-xs"
-                  v-if="coachActiveChanges.program.lastUpdated"
-                >
-                  {{ $t("coach.program_management.builder.last_update") }}
-                  {{ $d(coachActiveChanges.program.lastUpdated, "middle") }}
-                </p>
-              </q-card-section>
-              <q-card-section v-else>{{
-                $t("coach.program_management.builder.start_program")
-              }}</q-card-section>
-            </q-card>
-
-            <!-- Select among assigned programs -->
-            <q-card>
-              <TableExistingPrograms
-                v-if="selectedProgram"
-                :programs="allAssignedPrograms"
-                @update:selected="(program) => openProgram(program?.uid)"
-                :small="true"
-              />
-            </q-card>
-          </div>
-        </div>
+            <!-- Close button in dialog mode -->
+            <q-btn
+              v-if="denseView"
+              icon="close"
+              flat
+              round
+              dense
+              color="button-negative"
+              class="q-mt-sm"
+              v-close-popup
+              style="position: absolute; top: 0; right: 0"
+            />
+          </component>
+        </component>
       </template>
 
-      <template v-slot:separator>
+      <template #separator v-if="!denseView">
         <!-- Add a middle separator -->
         <q-avatar
           color="secondary"
@@ -509,7 +606,7 @@ import {
   nextTick,
   onBeforeUnmount,
 } from "vue";
-import { debounce, dom } from "quasar";
+import { debounce, dom, QDialog, QCard } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import { Program, ProgramExercise } from "@/helpers/programs/program";
 import { useUserStore } from "@/stores/user";
@@ -536,6 +633,7 @@ import FormProgramInfo from "@/components/forms/FormProgramInfo.vue";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
 
 // Define emits
 const emit = defineEmits<{
@@ -589,6 +687,10 @@ const updatingMaxlift = ref<MaxLift>();
 const searchMaxLift = ref<string>();
 const showMaxliftAddDialog = ref(false);
 const maxliftFormElement = ref<typeof FormMaxLift>();
+
+// Set ref for responsiveness
+const denseView = computed(() => !$q.screen.gt.sm);
+const showUtilsDialog = ref(false);
 
 // Get program requested from router
 const requestedProgram = computed(
@@ -739,6 +841,11 @@ function openProgram(programId?: string, force: boolean = false) {
       event_label: "Program opened in ProgramView for modification",
       value: 1,
     });
+
+    // Mixpanel tracking
+    mixpanel.track("Program Opened", {
+      Page: "ProgramView",
+    });
   }
 }
 
@@ -790,6 +897,11 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
       // Clear active change on current program
       coachActiveChanges.program = undefined;
 
+      // Mixpanel tracking
+      mixpanel.track("Program Saved", {
+        ExerciseNumber: currProgram?.programExercises?.length,
+      });
+
       // Open program by updating route params
       openProgram(currProgram.uid);
     },
@@ -800,6 +912,11 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
         position: "bottom",
       });
       programSaved.value = false;
+
+      // Mixpanel tracking
+      mixpanel.track("ERROR Program Saved", {
+        ExerciseNumber: currProgram?.programExercises?.length,
+      });
     },
   });
 }
@@ -917,13 +1034,26 @@ function onNewExercise(
           }),
           position: "bottom",
         });
+
+        // Mixpanel tracking
+        mixpanel.track("New Variant to Library", {
+          Page: "ProgramView",
+          Name: newVariant.name,
+        });
       },
-      onError: () =>
+      onError: () => {
         $q.notify({
           type: "negative",
           message: i18n.t("coach.exercise_management.add_error"),
           position: "bottom",
-        }),
+        });
+
+        // Mixpanel tracking
+        mixpanel.track("ERROR New Variant to Library", {
+          Page: "ProgramView",
+          Name: newVariant.name,
+        });
+      },
     });
   } else {
     // Creating new exercise
@@ -964,6 +1094,12 @@ function onNewExercise(
           event_label: "New Exercise Added to Library",
           value: 1,
         });
+
+        // Mixpanel tracking
+        mixpanel.track("New Exercise to Library", {
+          Page: "ProgramView",
+          Name: newExercise.name,
+        });
       },
       onError: () => {
         // Inform user about error while saving exercise
@@ -971,6 +1107,12 @@ function onNewExercise(
           type: "negative",
           message: i18n.t("coach.exercise_management.add_error"),
           position: "bottom",
+        });
+
+        // Mixpanel tracking
+        mixpanel.track("ERROR New Exercise to Library", {
+          Page: "ProgramView",
+          Name: newExercise.name,
         });
       },
     });
@@ -1008,8 +1150,15 @@ function saveMaxlift(newMaxLift: MaxLift) {
       if (isNew)
         (coachInfo.maxlifts = coachInfo.maxlifts || []).push(newMaxLift);
       maxliftFormElement.value?.reset();
+
+      // Mixpanel tracking
+      mixpanel.track(isNew ? "Maxlift Created" : "Maxlift Updated", {
+        Page: "ProgramView",
+        Exercise: newMaxLift.exercise?.name,
+        Type: newMaxLift.type?.toString(),
+      });
     },
-    onError: () =>
+    onError: () => {
       $q.notify({
         type: "negative",
         message: i18n.t(
@@ -1017,7 +1166,18 @@ function saveMaxlift(newMaxLift: MaxLift) {
             (isNew ? "add_error" : "update_error"),
         ),
         position: "bottom",
-      }),
+      });
+
+      // Mixpanel tracking
+      mixpanel.track(
+        "ERROR" + (isNew ? "Maxlift Created" : "Maxlift Updated"),
+        {
+          Page: "ProgramView",
+          Exercise: newMaxLift.exercise?.name,
+          Type: newMaxLift.type?.toString(),
+        },
+      );
+    },
   });
   showMaxliftAddDialog.value = false;
 }
@@ -1035,6 +1195,11 @@ function openNewProgram() {
     event_label: "A new program is created",
     value: 1,
   });
+
+  // Mixpanel tracking
+  mixpanel.track("New Program", {
+    Page: "ProgramView",
+  });
 }
 
 /**
@@ -1049,6 +1214,9 @@ function onUnsavedProgramRestore() {
     event_label: "Unsaved program restore",
     value: 1,
   });
+
+  // Mixpanel tracking
+  mixpanel.track("Unsaved Program Restore");
 }
 
 /**
