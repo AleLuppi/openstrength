@@ -13,7 +13,6 @@ import VueSocialSharing from "vue-social-sharing";
 
 // Analytics modules
 import VueGtag from "vue-gtag";
-import Hotjar from "vue-hotjar";
 import mixpanel from "mixpanel-browser";
 
 // Custom components to register
@@ -72,11 +71,7 @@ app
     config: { id: "G-G8BLW1JL0M" },
     enabled: process.env.NODE_ENV == "production",
   })
-  .use(VueSocialSharing)
-  .use(Hotjar, {
-    id: "3825238",
-    isProduction: process.env.NODE_ENV == "production",
-  });
+  .use(VueSocialSharing);
 
 // Mount the application
 app.mount("#app");
