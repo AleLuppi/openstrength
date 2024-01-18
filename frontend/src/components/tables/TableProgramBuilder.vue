@@ -1,9 +1,7 @@
 <template>
   <div
     :class="
-      $q.screen.gt.sm
-        ? 'q-pa-md q-ma-md shadow-2'
-        : 'q-pl-sm q-pr-none q-ml-sm q-mr-none'
+      dense ? 'q-pl-sm q-pr-none q-ml-sm q-mr-none' : 'q-pa-md q-ma-md shadow-2'
     "
     style="border-radius: 24px"
   >
@@ -175,19 +173,13 @@
 
       <!-- Exercise element -->
       <div
-        :class="
-          $q.screen.gt.sm
-            ? 'row items-start justify-evenly q-mb-md'
-            : 'column items-stretch justify-evenly q-mb-md'
-        "
+        class="justify-evenly q-mb-md"
+        :class="dense ? 'column items-stretch' : 'row items-start'"
       >
         <!-- Reordering arrows -->
         <div
-          :class="
-            $q.screen.gt.sm
-              ? 'self-center column justify-center'
-              : 'self-center row justify-center'
-          "
+          class="self-center justify-center"
+          :class="dense ? 'row' : 'column'"
         >
           <q-btn
             @click="reorderTableRelative(idScheduleInfo.toString(), -1)"
@@ -216,11 +208,13 @@
         </div>
 
         <!-- Exercise info -->
-        <div :class="$q.screen.gt.sm ? 'col-3' : 'row justify-between col-12'">
+        <div :class="dense ? 'row justify-between items-end col-12' : 'col-3'">
           <div
-            class="q-pa-sm bg-lighter os-exercise-form os-light-border"
+            class="q-pa-sm bg-lighter os-light-border col-8"
             :class="{
               'cursor-pointer': !exercisesInfoShowExpanded[idScheduleInfo],
+              'os-exercise-form': !dense,
+              'os-exercise-form-dense': dense,
             }"
             @click="
               exercisesInfoExpanded = objectMapValues(
@@ -351,11 +345,11 @@
             </q-slide-transition>
 
             <q-slide-transition>
-              <div
-                v-show="!exercisesInfoShowExpanded[idScheduleInfo]"
-                class="text-ellipsis"
-              >
-                <p class="text-secondary text-bold">
+              <div v-show="!exercisesInfoShowExpanded[idScheduleInfo]">
+                <p
+                  class="text-secondary text-bold text-ellipsis"
+                  style="max-width: 50vw"
+                >
                   {{ exerciseModelValue.exercise }}
                   {{
                     exerciseModelValue.variant
@@ -363,7 +357,10 @@
                       : ""
                   }}
                 </p>
-                <p class="text-xs text-italic">
+                <p
+                  class="text-xs text-italic text-ellipsis"
+                  style="max-width: 50vw"
+                >
                   {{ exerciseModelValue.note }}
                 </p>
               </div>
@@ -393,7 +390,7 @@
                 }
               }
             "
-            direction="b"
+            :direction="dense ? 't' : 'b'"
             class="q-mx-sm"
           >
             <template #slot-0>
@@ -454,22 +451,22 @@
             },
           }"
           :widths="
-            $q.screen.gt.xs
+            dense
               ? {
-                  load: '10%',
-                  reps: '10%',
-                  sets: '10%',
-                  rpe: '10%',
-                  note: '46%',
-                  requestText: '7%',
-                  requestVideo: '7%',
-                }
-              : {
                   load: '19%',
                   reps: '13%',
                   sets: '13%',
                   rpe: '13%',
                   note: '28%',
+                  requestText: '7%',
+                  requestVideo: '7%',
+                }
+              : {
+                  load: '10%',
+                  reps: '10%',
+                  sets: '10%',
+                  rpe: '10%',
+                  note: '46%',
                   requestText: '7%',
                   requestVideo: '7%',
                 }
@@ -775,6 +772,10 @@ const props = defineProps({
     }>,
     default: () => ({}),
   },
+  dense: {
+    type: Boolean,
+    default: false,
+  },
   scrollOffset: {
     type: Number,
     default: 0,
@@ -849,11 +850,10 @@ const filteredExercisesValues = computed(() => {
       (!currExercise || !props.filter.exercise.includes(currExercise))
     )
       return false;
-
     return true;
   }, {});
 
-  // Register mixpanel events. Note: put here so that only one event is generated per filter.
+  // Register mixpanel event
   if (
     props.filter.week.length > 0 ||
     props.filter.day.length > 0 ||
@@ -1113,7 +1113,7 @@ function onReferenceClick(
   )
     tableRef[refField] = parsedReference;
 
-  // Mixpanel
+  // Mixpanel tracking
   mixpanel.track("Reference Added in Program", {
     Page: "ProgramView",
     Type: type,
@@ -1263,7 +1263,7 @@ function deleteTable(idScheduleInfo: string) {
   reorderTable(idScheduleInfo, tmpScheduleInfo);
   delete exercisesValues.value[tmpScheduleInfo];
 
-  // Mixpanel
+  // Mixpanel tracking
   mixpanel.track("Delete Exercise from Program");
 
   // Update program with new structure
@@ -1320,7 +1320,7 @@ function duplicateTableInDay(idScheduleInfo: string, destWeekDay?: string) {
     exercisesValues.value[idScheduleInfo],
   );
 
-  // Mixpanel
+  // Mixpanel tracking
   mixpanel.track("Duplicate Exercise in Program");
 }
 
@@ -1339,7 +1339,7 @@ function deleteWholeDay(idScheduleInfo: string) {
         deleteTable(key);
     });
 
-  // Mixpanel
+  // Mixpanel tracking
   mixpanel.track("Delete Whole Day in Program");
 }
 
@@ -1379,7 +1379,7 @@ function duplicateWholeDay(
       ),
     );
 
-  // Mixpanel
+  // Mixpanel tracking
   mixpanel.track("Duplicate Program Day");
 }
 
@@ -1462,7 +1462,7 @@ function renameWeekDay(
   // Update program with new naming
   updateProgramWhole();
 
-  // Mixpanel
+  // Mixpanel tracking
   mixpanel.track("Day Week Renamed", { Page: "ProgramView" });
   // Inform about successful update
   return outSchedule;
@@ -1505,7 +1505,7 @@ function addWeekDayAfter(
           ),
         );
 
-      // Mixpanel
+      // Mixpanel tracking
       mixpanel.track("New Week Created in Program");
       return creationResult;
     }
@@ -1779,5 +1779,10 @@ function optionallyCreateNewExercise(
 .os-exercise-form {
   border-radius: 10px 0 0 10px;
   margin-inline-end: -1px;
+}
+
+.os-exercise-form-dense {
+  border-radius: 10px 10px 0 0;
+  margin-block-end: -1px;
 }
 </style>
