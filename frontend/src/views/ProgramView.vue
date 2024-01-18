@@ -47,20 +47,11 @@
                     )
                   }}
                 </span>
-
-                <!-- Open program button -->
-                <q-btn
-                  v-if="!$q.screen.gt.sm"
-                  icon="open_in_new"
-                  @click="showMobileOverlayRecentPrograms = true"
-                  flat
-                >
-                </q-btn>
               </div>
 
               <!-- Display and update assigned user -->
               <div
-                v-if="selectedProgram.athlete"
+                v-if="selectedProgram.athlete && $q.screen.gt.sm"
                 class="row items-center justify-center q-col-gutter-sm"
               >
                 <span class="text-black">
@@ -89,6 +80,44 @@
                     </q-item>
                   </q-btn>
                 </div>
+              </div>
+
+              <!-- Maxlift and Charts -->
+              <div class="row">
+                <!-- Program info and open new -->
+                <q-btn
+                  v-if="!$q.screen.gt.sm"
+                  icon="fa-solid fa-bars-staggered"
+                  class="q-pa-sm"
+                  :color="showMobileRecentPrograms ? 'primary' : 'light-dark'"
+                  @click="showMobileRecentPrograms = true"
+                  flat
+                >
+                </q-btn>
+
+                <!-- Show Charts -->
+                <q-btn
+                  v-if="!$q.screen.gt.sm"
+                  icon="fa-solid fa-chart-line"
+                  outline
+                  flat
+                  class="q-pa-sm"
+                  :color="showMobileCharts ? 'primary' : 'light-dark'"
+                  @click="showMobileCharts = true"
+                >
+                </q-btn>
+
+                <!-- Show Maxlifts -->
+                <q-btn
+                  v-if="!$q.screen.gt.sm"
+                  icon="fa-solid fa-table-list"
+                  class="q-pa-sm"
+                  outline
+                  flat
+                  :color="showMobileMaxlift ? 'primary' : 'light-dark'"
+                  @click="showMobileMaxlift = true"
+                >
+                </q-btn>
               </div>
 
               <!-- Get shareable link to program -->
@@ -122,7 +151,7 @@
                 <div
                   class="row items-end justify-between q-col-gutter-sm q-pt-md"
                 >
-                  <h6 class="col-md-2 col-5">
+                  <h6 :class="$q.screen.gt.sm ? 'col-2' : 'col-3'">
                     {{ $t("coach.program_management.filter.title") }}
                   </h6>
                   <os-select
@@ -131,7 +160,7 @@
                     :label="$t('coach.program_management.filter.filter_week')"
                     multiple
                     hide-bottom-space
-                    class="col-md-3 col-6"
+                    :class="$q.screen.gt.sm ? 'col-3' : 'col-3'"
                   ></os-select>
                   <os-select
                     v-model="filterDay"
@@ -139,7 +168,7 @@
                     :label="$t('coach.program_management.filter.filter_day')"
                     multiple
                     hide-bottom-space
-                    class="col-md-3 col-6"
+                    :class="$q.screen.gt.sm ? 'col-3' : 'col-3'"
                   ></os-select>
                   <os-select
                     v-model="filterExercise"
@@ -149,7 +178,7 @@
                     "
                     multiple
                     hide-bottom-space
-                    class="col-md-3 col-6"
+                    :class="$q.screen.gt.sm ? 'col-4' : 'col-3'"
                   ></os-select>
                 </div>
               </div>
@@ -529,30 +558,205 @@
     </q-dialog>
 
     <!-- Dialog to open a recent program on mobile -->
-    <q-dialog v-model="showMobileOverlayRecentPrograms">
-      <q-card>
+    <q-dialog v-model="showMobileRecentPrograms">
+      <q-card style="width: 100%">
         <q-card-section>
-          <!-- Show recently opened programs -->
-          <div class="row justify-between">
-            <h6 class="text-margin-xs">
-              {{ $t("coach.program_management.builder.open_recent") }}
-            </h6>
-            <q-btn
-              icon="close"
-              outline
-              flat
-              color="light-dark"
-              class="q-pa-sm"
-              @click="showMobileOverlayRecentPrograms = false"
-            ></q-btn>
-          </div>
+          <div class="column q-gutter-y-md">
+            <div class="row justify-between q-mt-xs">
+              <h6>{{ $t("coach.program_management.list.program_section") }}</h6>
 
-          <TableExistingPrograms
-            :programs="allAssignedPrograms"
-            @update:selected="(program) => openProgram(program?.uid)"
-            :small="!$q.screen.gt.sm"
-          />
+              <div>
+                <q-btn
+                  icon="close"
+                  flat
+                  round
+                  dense
+                  color="button-negative"
+                  class="q-mt-sm"
+                  v-close-popup
+                />
+              </div>
+            </div>
+
+            <!-- Search status or temporary program -->
+            <q-card>
+              <q-card-section v-if="selectedProgram">
+                <div class="row justify-between">
+                  <div class="column">
+                    <p>
+                      {{
+                        selectedProgram.name ??
+                        $t("coach.program_management.fields.program")
+                      }}
+                    </p>
+                    <p
+                      class="text-italic text-xs"
+                      v-if="selectedProgram.lastUpdated"
+                    >
+                      {{ $t("coach.program_management.builder.last_update") }}
+                      {{ $d(selectedProgram.lastUpdated, "middle") }}
+                    </p>
+                  </div>
+
+                  <q-btn
+                    icon="edit"
+                    outline
+                    flat
+                    rounded
+                    size="0.8em"
+                    color="light-dark"
+                    @click="showNewProgramDialog = true"
+                  ></q-btn>
+                </div>
+
+                <p
+                  class="q-mt-md text-italic"
+                  v-if="selectedProgram.description"
+                >
+                  {{ selectedProgram.description }}
+                </p>
+              </q-card-section>
+              <q-card-section
+                v-else-if="coachActiveChanges.program"
+                class="cursor-pointer"
+                @click="onUnsavedProgramRestore"
+              >
+                <p class="text-primary">
+                  {{ $t("coach.program_management.builder.open_temporary") }}
+                </p>
+                <p
+                  class="text-italic text-xs"
+                  v-if="coachActiveChanges.program.lastUpdated"
+                >
+                  {{ $t("coach.program_management.builder.last_update") }}
+                  {{ $d(coachActiveChanges.program.lastUpdated, "middle") }}
+                </p>
+              </q-card-section>
+              <q-card-section v-else>{{
+                $t("coach.program_management.builder.start_program")
+              }}</q-card-section>
+            </q-card>
+
+            <!-- Start a new program -->
+            <div class="column justify-center items-center">
+              <q-btn
+                icon="add"
+                :label="$t('coach.program_management.builder.new_program')"
+                @click="openNewProgram"
+                rounded
+                outline
+                padding="xs sm"
+              ></q-btn>
+
+              <!-- TODO: i18n -->
+              <p class="q-mt-sm">oppure apri tra i recenti</p>
+            </div>
+
+            <!-- Select among assigned programs -->
+            <q-card>
+              <TableExistingPrograms
+                v-if="selectedProgram"
+                :programs="allAssignedPrograms"
+                @update:selected="(program) => openProgram(program?.uid)"
+                :small="true"
+              />
+            </q-card>
+          </div>
         </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- Dialog for charts -->
+    <q-dialog v-model="showMobileCharts">
+      <q-card style="width: 100%">
+        <q-card-section>
+          <ChartSelector
+            :program="selectedProgram"
+            :filter-week="filterWeek"
+            :filter-day="filterDay"
+            :filter-exercise="filterExercise"
+          ></ChartSelector>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- Dialog for Maxlifts -->
+    <q-dialog v-model="showMobileMaxlift">
+      <q-card style="width: 100%">
+        <q-card-section>
+          <h6 class="text-margin-xs">
+            {{ $t("coach.maxlift_management.list.maxlift_section") }}
+          </h6>
+
+          <div class="row q-gutter-x-md items-center">
+            <os-input
+              v-model="searchMaxLift"
+              :placeholder="$t('coach.maxlift_management.list.search_maxlift')"
+              hide-bottom-space
+              debounce="500"
+              class="col"
+            >
+              <template v-slot:prepend>
+                <q-icon name="search" />
+              </template>
+            </os-input>
+
+            <!-- Add new maxlift -->
+            <q-btn
+              icon="add"
+              outline
+              @click="
+                updatingMaxlift = undefined;
+                showMaxliftAddDialog = true;
+              "
+            />
+          </div>
+        </q-card-section>
+
+        <q-separator />
+
+        <TableMaxLifts
+          :maxlifts="athleteMaxlifts ?? []"
+          @update="onUpdateMaxLift"
+          :filter="searchMaxLift"
+          :no-data-label="$t('coach.maxlift_management.list.no_maxlift')"
+        />
+
+        <!-- Dialog to add a new max lift -->
+        <q-dialog
+          v-model="showMaxliftAddDialog"
+          @hide="maxliftFormElement?.reset"
+        >
+          <q-card class="q-pa-sm dialog-min-width">
+            <q-card-section class="row items-center q-pb-none">
+              <h5>
+                {{
+                  updatingMaxlift
+                    ? $t("coach.maxlift_management.list.update")
+                    : $t("coach.maxlift_management.list.add")
+                }}
+              </h5>
+
+              <q-space />
+              <q-btn
+                icon="close"
+                flat
+                round
+                dense
+                color="button-negative"
+                v-close-popup
+              />
+            </q-card-section>
+
+            <FormMaxLift
+              ref="maxliftFormElement"
+              :maxlift="updatingMaxlift"
+              :exercises="coachInfo.exercises"
+              @submit="saveMaxlift"
+              @reset="showMaxliftAddDialog = false"
+            ></FormMaxLift>
+          </q-card>
+        </q-dialog>
       </q-card>
     </q-dialog>
   </q-page>
@@ -650,7 +854,9 @@ const showMaxliftAddDialog = ref(false);
 const maxliftFormElement = ref<typeof FormMaxLift>();
 
 // Set ref for responsiveness
-const showMobileOverlayRecentPrograms = ref(false);
+const showMobileRecentPrograms = ref(false);
+const showMobileCharts = ref(false);
+const showMobileMaxlift = ref(false);
 
 // Get program requested from router
 const requestedProgram = computed(

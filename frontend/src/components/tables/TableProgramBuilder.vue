@@ -1,5 +1,12 @@
 <template>
-  <div class="q-pa-md q-ma-md shadow-2" style="border-radius: 24px">
+  <div
+    :class="
+      $q.screen.gt.sm
+        ? 'q-pa-md q-ma-md shadow-2'
+        : 'q-pl-sm q-pr-none q-ml-sm q-mr-none'
+    "
+    style="border-radius: 24px"
+  >
     <!-- Program exercise element -->
     <div
       :ref="(el) => (tableElements[idScheduleInfo] = el)"
@@ -104,7 +111,7 @@
           round
           :ripple="false"
         >
-          <q-tooltip>
+          <q-tooltip anchor="top middle" :offset="[0, 40]">
             {{ $t("coach.program_management.builder.day_rename") }}
           </q-tooltip>
 
@@ -127,7 +134,7 @@
           round
           :ripple="false"
         >
-          <q-tooltip>
+          <q-tooltip anchor="top middle" :offset="[0, 40]">
             {{ $t("coach.program_management.builder.day_duplicate") }}
           </q-tooltip>
 
@@ -158,7 +165,7 @@
           round
           :ripple="false"
         >
-          <q-tooltip>
+          <q-tooltip anchor="top middle" :offset="[0, 40]">
             {{ $t("coach.program_management.builder.day_delete") }}
           </q-tooltip>
         </q-btn>
@@ -167,9 +174,21 @@
       </div>
 
       <!-- Exercise element -->
-      <div class="row items-start justify-evenly q-mb-md">
+      <div
+        :class="
+          $q.screen.gt.sm
+            ? 'row items-start justify-evenly q-mb-md'
+            : 'column items-stretch justify-evenly q-mb-md'
+        "
+      >
         <!-- Reordering arrows -->
-        <div class="self-center column justify-center">
+        <div
+          :class="
+            $q.screen.gt.sm
+              ? 'self-center column justify-center'
+              : 'self-center row justify-center'
+          "
+        >
           <q-btn
             @click="reorderTableRelative(idScheduleInfo.toString(), -1)"
             icon="arrow_drop_up"
@@ -197,7 +216,7 @@
         </div>
 
         <!-- Exercise info -->
-        <div class="col-3">
+        <div :class="$q.screen.gt.sm ? 'col-3' : 'row justify-between col-12'">
           <div
             class="q-pa-sm bg-lighter os-exercise-form os-light-border"
             :class="{
@@ -434,15 +453,27 @@
               'unchecked-icon': 'fa-solid fa-video-slash',
             },
           }"
-          :widths="{
-            load: '10%',
-            reps: '10%',
-            sets: '10%',
-            rpe: '10%',
-            note: '46%',
-            requestText: '7%',
-            requestVideo: '7%',
-          }"
+          :widths="
+            $q.screen.gt.xs
+              ? {
+                  load: '10%',
+                  reps: '10%',
+                  sets: '10%',
+                  rpe: '10%',
+                  note: '46%',
+                  requestText: '7%',
+                  requestVideo: '7%',
+                }
+              : {
+                  load: '19%',
+                  reps: '13%',
+                  sets: '13%',
+                  rpe: '13%',
+                  note: '28%',
+                  requestText: '7%',
+                  requestVideo: '7%',
+                }
+          "
           :placeholders="{
             load: $t(
               'coach.program_management.fields.load',
@@ -599,7 +630,7 @@
       <!-- New element button -->
       <div
         v-if="lastTablesInDay.includes(idScheduleInfo.toString())"
-        class="row items-center justify-center q-gutter-md"
+        class="row items-center justify-center q-gutter-xs"
       >
         <q-btn
           icon="add"
@@ -608,7 +639,7 @@
           flat
           rounded
         >
-          <q-tooltip :delay="500">
+          <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
             {{ $t("coach.program_management.builder.new_exercise_tooltip") }}
           </q-tooltip>
         </q-btn>
@@ -619,7 +650,7 @@
           flat
           rounded
         >
-          <q-tooltip :delay="500">
+          <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
             {{ $t("coach.program_management.builder.new_day_tooltip") }}
           </q-tooltip>
         </q-btn>
@@ -630,7 +661,7 @@
           flat
           rounded
         >
-          <q-tooltip :delay="500">
+          <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
             {{ $t("coach.program_management.builder.new_week_tooltip") }}
           </q-tooltip></q-btn
         >
