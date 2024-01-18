@@ -139,28 +139,34 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
 
   // Max lifts of managed athletes
   const _maxlifts = ref<MaxLift[]>(); // private
-  const _maxliftsUnresolved = ref<[MaxLift, { exerciseName: string }][]>([]); // private
+  const _maxliftsUnresolved = ref<{
+    athletes?: [MaxLift, string][];
+    exercises?: [MaxLift, string][];
+  }>({}); // private
   const maxlifts = computed({
     get: () => {
       if (!_maxlifts.value) loadMaxLifts(coachId.value, true);
 
       // Solve unresolved references
-      if (exercises.value && _maxliftsUnresolved.value.length > 0) {
-        _maxliftsUnresolved.value = _maxliftsUnresolved.value?.reduce(
-          (
-            updatedUnresolved: typeof _maxliftsUnresolved.value,
-            maxliftUnresolved,
-          ) => {
-            maxliftUnresolved[0].exercise = exercises.value?.find(
-              (exercise) => exercise.name == maxliftUnresolved[1].exerciseName,
+      if (athletes.value && _maxliftsUnresolved.value.athletes) {
+        // Solve athletes references
+        _maxliftsUnresolved.value.athletes.forEach(([maxlift, athleteId]) => {
+          maxlift.athlete = athletes.value?.find(
+            (athlete) => athlete.uid == athleteId,
+          );
+        });
+        _maxliftsUnresolved.value.athletes = undefined;
+      }
+      if (exercises.value && _maxliftsUnresolved.value.exercises) {
+        // Solve exercises references
+        _maxliftsUnresolved.value.exercises.forEach(
+          ([maxlift, exerciseName]) => {
+            maxlift.exercise = exercises.value?.find(
+              (exercise) => exercise.name == exerciseName,
             );
-            return [
-              ...updatedUnresolved,
-              ...(maxliftUnresolved[0].exercise ? [] : [maxliftUnresolved]),
-            ];
           },
-          [],
         );
+        _maxliftsUnresolved.value.exercises = undefined;
       }
       return _maxlifts.value;
     },
@@ -362,29 +368,43 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     if (!coachId || (quiet && _maxlifts.value)) return;
 
     // Get documents
+    const unresolved: typeof _maxliftsUnresolved.value = {};
     doGetDocs(dbCollections.maxlifts, [["coachId", "==", coachId]], {
       onSuccess: (docs: {
-        [key: string]: Omit<MaxLiftProps, "exercise"> & { exercise: string };
+        [key: string]: Omit<MaxLiftProps, "exercise" | "athlete"> & {
+          exercise: string;
+          athleteId: string;
+        };
       }) => {
         const maxliftsFromDoc: MaxLift[] = [];
         Object.entries(docs).forEach(([uid, doc]) => {
-          const { exercise, ...docData } = doc;
+          const { exercise, athleteId, ...docData } = doc;
           const exerciseInstance = exercises.value?.find(
             (exerciseFromList) => exerciseFromList.name == exercise,
+          );
+          const athleteInstance = athletes.value?.find(
+            (athleteFromList) => athleteFromList.uid == athleteId,
           );
           maxliftsFromDoc.push(
             new MaxLift({
               ...docData,
               uid: uid,
               exercise: exerciseInstance,
+              athlete: athleteInstance,
             }),
           );
           if (!exerciseInstance)
-            (_maxliftsUnresolved.value = _maxliftsUnresolved.value || []).push([
+            (unresolved.exercises = unresolved.exercises || []).push([
               maxliftsFromDoc.at(-1)!,
-              { exerciseName: exercise },
+              exercise,
+            ]);
+          if (!athleteInstance)
+            (unresolved.athletes = unresolved.athletes || []).push([
+              maxliftsFromDoc.at(-1)!,
+              athleteId,
             ]);
         });
+        _maxliftsUnresolved.value = unresolved;
         _maxlifts.value = maxliftsFromDoc;
         onSuccess?.(maxliftsFromDoc);
       },

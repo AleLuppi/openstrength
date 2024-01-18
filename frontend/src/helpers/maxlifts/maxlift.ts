@@ -1,8 +1,8 @@
 import { DocumentReference } from "firebase/firestore";
 import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
-import { Exercise, ExerciseVariant } from "../exercises/exercise";
+import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { dbCollections } from "@/helpers/database/collections";
-import { AthleteUser } from "../users/user";
+import { AthleteUser } from "@/helpers/users/user";
 
 /**
  * Define available max lift types.
@@ -49,11 +49,10 @@ export type MaxLiftProps = {
   type?: MaxLiftType;
   exercise?: Exercise;
   value?: string; // TODO: add measurement unit
-  athlete?: AthleteUser;
 
   // Max lift status
   coachId?: string;
-  athleteId?: string;
+  athlete?: AthleteUser;
   performedOn?: Date;
 
   // App specific info
@@ -75,12 +74,11 @@ export class MaxLift {
   type?: MaxLiftType;
   exercise?: Exercise;
   variant?: ExerciseVariant;
-  athlete?: AthleteUser; //TODO: check
   value?: string; // TODO: add measurement unit
 
   // Max lift status
   coachId?: string;
-  athleteId?: string;
+  athlete?: AthleteUser;
   performedOn?: Date;
 
   // App specific info
@@ -95,9 +93,8 @@ export class MaxLift {
     type,
     exercise,
     value,
-    athlete,
     coachId,
-    athleteId,
+    athlete,
     performedOn,
     createdOn,
     lastUpdated,
@@ -107,9 +104,8 @@ export class MaxLift {
     this.type = type;
     this.exercise = exercise;
     this.value = value;
-    this.athlete = athlete;
     this.coachId = coachId;
-    this.athleteId = athleteId;
+    this.athlete = athlete;
     this.performedOn = performedOn;
     this.createdOn = createdOn;
     this.lastUpdated = lastUpdated;
@@ -194,11 +190,12 @@ export class MaxLift {
  */
 export function addDocMaxLift(
   maxlift: MaxLift,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {}
+  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
-  const { uid: _, ...maxliftObj } = maxlift;
+  const { uid: _, athlete: athlete, ...maxliftObj } = maxlift;
   const flatMaxliftObj = {
     ...maxliftObj,
+    athleteId: athlete?.uid,
     exercise: maxlift.exercise?.name,
   };
   doAddDoc(dbCollections.maxlifts, flatMaxliftObj, {
@@ -219,11 +216,12 @@ export function addDocMaxLift(
  */
 export function updateDocMaxLift(
   maxlift: MaxLift,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {}
+  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
-  const { uid: docId, ...maxliftObj } = maxlift;
+  const { uid: docId, athlete: athlete, ...maxliftObj } = maxlift;
   const flatMaxliftObj = {
     ...maxliftObj,
+    athleteId: athlete?.uid,
     exercise: maxlift.exercise?.name,
   };
   if (docId)

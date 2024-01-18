@@ -443,7 +443,7 @@ const athleteFormProgram = computed(
 // Get maxlifts for the selected athlete
 const athleteMaxlifts = computed(() =>
   maxlifts.value.filter(
-    (maxlift) => maxlift.athleteId === selectedAthlete.value?.uid,
+    (maxlift) => maxlift.athlete?.uid === selectedAthlete.value?.uid,
   ),
 );
 
@@ -458,7 +458,7 @@ function saveMaxlift(newMaxLift: MaxLift) {
 
   // Update values
   if (isNew) {
-    newMaxLift.athleteId = selectedAthlete.value?.uid;
+    newMaxLift.athlete = selectedAthlete.value;
     newMaxLift.coachId = user.uid;
   }
 
