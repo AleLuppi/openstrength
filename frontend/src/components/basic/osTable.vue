@@ -84,7 +84,7 @@ import { ref, computed, watch } from "vue";
 
 // Define props
 const props = defineProps<{
-  sortBy: string;
+  sortBy?: string;
 }>();
 
 // Set ref
