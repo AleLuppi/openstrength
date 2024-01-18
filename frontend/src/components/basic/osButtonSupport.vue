@@ -20,8 +20,8 @@
       >
         <q-tooltip
           v-if="tooltips?.[idx]"
-          anchor="top middle"
-          :offset="[0, 40]"
+          :anchor="$q.platform.is.mobile ? 'top middle' : undefined"
+          :offset="$q.platform.is.mobile ? [0, 40] : undefined"
           :delay="250"
         >
           {{ tooltips[idx] }}

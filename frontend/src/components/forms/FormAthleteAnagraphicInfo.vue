@@ -193,8 +193,8 @@ function onSubmit() {
       // Mixpanel tracking
       mixpanel.track("Update Athlete", {
         Type: "Anagraphic Info",
-        IsWeightSet: athlete.weight ? true : false,
-        IsNoteSet: athlete.coachNote ? true : false,
+        IsWeightSet: Boolean(athlete.weight),
+        IsNoteSet: Boolean(athlete.coachNote),
       });
     },
     onError: () => {
@@ -202,6 +202,11 @@ function onSubmit() {
         type: "negative",
         message: i18n.t("coach.athlete_management.list.add_error"),
         position: "bottom",
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("ERROR Update Athlete", {
+        Type: "Anagraphic Info",
       });
     },
   });

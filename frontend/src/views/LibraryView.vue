@@ -79,31 +79,28 @@
 
               <!-- Add new variant -->
               <div class="row justify-center">
-                <div>
-                  <q-btn
-                    :icon="$q.screen.gt.sm ? 'sym_o_playlist_add' : 'add'"
-                    :label="
-                      $q.screen.gt.sm
-                        ? $t('coach.exercise_management.add_button_variant')
-                        : undefined
-                    "
-                    :padding="$q.screen.gt.sm ? 'xs sm' : 'sm sm'"
-                    color="button-primary"
-                    @click="onNewVariant"
-                  />
-                </div>
+                <q-btn
+                  :icon="$q.screen.gt.sm ? 'sym_o_playlist_add' : 'add'"
+                  :label="
+                    $q.screen.gt.sm
+                      ? $t('coach.exercise_management.add_button_variant')
+                      : undefined
+                  "
+                  :padding="$q.screen.gt.sm ? 'xs sm' : 'sm sm'"
+                  color="button-primary"
+                  @click="onNewVariant"
+                />
 
-                <div v-if="$q.screen.lt.sm">
-                  <q-btn
-                    icon="close"
-                    outline
-                    flat
-                    round
-                    color="light-dark"
-                    class="q-pa-sm"
-                    @click="clearExercise"
-                  ></q-btn>
-                </div>
+                <q-btn
+                  v-if="$q.screen.lt.sm"
+                  icon="close"
+                  outline
+                  flat
+                  round
+                  color="light-dark"
+                  class="q-pa-sm"
+                  @click="clearExercise"
+                ></q-btn>
               </div>
             </div>
 
@@ -387,6 +384,12 @@ function onExerciseAdd(exerciseName: string) {
         message: i18n.t("coach.exercise_management.add_error"),
         position: "bottom",
       });
+
+      // Mixpanel tracking
+      mixpanel.track("ERROR New Exercise to Library", {
+        Page: "LibraryView",
+        Name: newExercise.name,
+      });
     },
   });
 }
@@ -451,18 +454,25 @@ function onVariantSubmit(variant: ExerciseVariant) {
           position: "bottom",
         });
 
-        // Mixpanel
+        // Mixpanel tracking
         mixpanel.track("New Variant to Library", {
           Page: "LibraryView",
           Name: variant.name,
         });
       },
-      onError: () =>
+      onError: () => {
         $q.notify({
           type: "negative",
           message: i18n.t("coach.exercise_management.add_error"),
           position: "bottom",
-        }),
+        });
+
+        // Mixpanel tracking
+        mixpanel.track("ERROR New Variant to Library", {
+          Page: "LibraryView",
+          Name: variant.name,
+        });
+      },
     });
   else
     variant.saveUpdate({
@@ -491,12 +501,19 @@ function onVariantSubmit(variant: ExerciseVariant) {
           Name: variant.name,
         });
       },
-      onError: () =>
+      onError: () => {
         $q.notify({
           type: "negative",
           message: i18n.t("coach.exercise_management.update_error"),
           position: "bottom",
-        }),
+        });
+
+        // Mixpanel tracking
+        mixpanel.track("ERROR Updated Variant to Library", {
+          Page: "LibraryView",
+          Name: variant.name,
+        });
+      },
     });
 }
 

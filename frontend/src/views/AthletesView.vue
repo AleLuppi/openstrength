@@ -351,6 +351,7 @@ import mixpanel from "mixpanel-browser";
 // Init plugin
 const $q = useQuasar();
 const i18n = useI18n();
+
 // Get store
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
@@ -474,14 +475,14 @@ function saveMaxlift(newMaxLift: MaxLift) {
         value: 1,
       });
 
-      //Mixpanel
+      // Mixpanel tracking
       mixpanel.track(isNew ? "Maxlift Created" : "Maxlift Updated", {
         Page: "AthleteView",
         Exercise: newMaxLift.exercise?.name,
         Type: newMaxLift.type?.toString(),
       });
     },
-    onError: () =>
+    onError: () => {
       $q.notify({
         type: "negative",
         message: i18n.t(
@@ -489,7 +490,18 @@ function saveMaxlift(newMaxLift: MaxLift) {
             (isNew ? "add_error" : "update_error"),
         ),
         position: "bottom",
-      }),
+      });
+
+      // Mixpanel tracking
+      mixpanel.track(
+        "ERROR " + (isNew ? "Maxlift Created" : "Maxlift Updated"),
+        {
+          Page: "AthleteView",
+          Exercise: newMaxLift.exercise?.name,
+          Type: newMaxLift.type?.toString(),
+        },
+      );
+    },
   });
   showMaxLiftAddDialog.value = false;
 }
@@ -546,12 +558,18 @@ function createAthlete() {
         Page: "AthleteView",
       });
     },
-    onError: () =>
+    onError: () => {
       $q.notify({
         type: "negative",
         message: i18n.t("coach.athlete_management.list.add_error"),
         position: "bottom",
-      }),
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("ERROR New Athlete", {
+        Page: "AthleteView",
+      });
+    },
   });
   showAthleteDialog.value = false;
 }

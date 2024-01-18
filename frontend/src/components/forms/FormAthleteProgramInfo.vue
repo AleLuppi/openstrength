@@ -13,70 +13,69 @@
         ></q-btn>
       </div>
 
-      <div>
+      <div class="row q-col-gutter-x-md">
         <!-- Program name -->
         <os-input
           v-model="programName"
           :label="$t('coach.athlete_management.fields.program_name')"
+          class="col-12"
         />
 
-        <div class="row q-col-gutter-x-md">
-          <!-- Start date -->
-          <os-input
-            v-model="programStartedOn"
-            :label="$t('coach.athlete_management.fields.program_start')"
-            class="col-6"
-          >
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date v-model="programStartedOn">
-                    <div class="row items-center justify-end">
-                      <q-btn
-                        v-close-popup
-                        :label="$t('common.close')"
-                        color="primary"
-                        flat
-                      />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </os-input>
+        <!-- Start date -->
+        <os-input
+          v-model="programStartedOn"
+          :label="$t('coach.athlete_management.fields.program_start')"
+          class="col-6"
+        >
+          <template v-slot:append>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy
+                cover
+                transition-show="scale"
+                transition-hide="scale"
+              >
+                <q-date v-model="programStartedOn">
+                  <div class="row items-center justify-end">
+                    <q-btn
+                      v-close-popup
+                      :label="$t('common.close')"
+                      color="primary"
+                      flat
+                    />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </os-input>
 
-          <!-- End date -->
-          <os-input
-            v-model="programFinishedOn"
-            :label="$t('coach.athlete_management.fields.program_finish')"
-            class="col-6"
-          >
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date v-model="programFinishedOn">
-                    <div class="row items-center justify-end">
-                      <q-btn
-                        v-close-popup
-                        :label="$t('common.close')"
-                        color="primary"
-                        flat
-                      />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </os-input>
-        </div>
+        <!-- End date -->
+        <os-input
+          v-model="programFinishedOn"
+          :label="$t('coach.athlete_management.fields.program_finish')"
+          class="col-6"
+        >
+          <template v-slot:append>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy
+                cover
+                transition-show="scale"
+                transition-hide="scale"
+              >
+                <q-date v-model="programFinishedOn">
+                  <div class="row items-center justify-end">
+                    <q-btn
+                      v-close-popup
+                      :label="$t('common.close')"
+                      color="primary"
+                      flat
+                    />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </os-input>
       </div>
 
       <!-- Program description -->

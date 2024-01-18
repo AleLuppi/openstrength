@@ -66,7 +66,7 @@ const urlFullPath = computed(
 );
 
 /**
- * Register event of user opening program link
+ * Register event of user opening program link.
  */
 function registerEvent() {
   mixpanel.track("Program Preview Opened");
