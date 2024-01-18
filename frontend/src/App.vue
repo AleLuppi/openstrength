@@ -1,5 +1,7 @@
 <template>
+  <osSplashScreen :isLoading="isLoading" />
   <q-layout
+    v-if="!isLoading"
     view="lHh LpR lFf"
     @mousedown="interacted = true"
     @scroll="interacted = true"
@@ -91,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { User as FirebaseUser } from "firebase/auth";
 import router from "@/router";
@@ -108,6 +110,7 @@ import UserOnboarding from "@/components/forms/UserOnboarding.vue";
 import { defaultExerciseCollection } from "@/utils/defaultExerciseCollection";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
+import osSplashScreen from "@/components/basic/osSplashScreen.vue";
 
 // Init plugin
 const route = useRoute();
@@ -126,12 +129,16 @@ const showHeader = computed(() => route.meta?.showHeader ?? true);
 const showFooter = computed(() => route.meta?.showFooter ?? true);
 const showLeftDrawer = computed(() => route.meta?.showLeftDrawer ?? true);
 const showDialogOnboarding = ref(false);
+const isLoading = ref(true);
 
 // Check if any interaction with the app has ever occurred
 let interacted = false;
 
 // Run few useful things before app starts rendering
 onBeforeMount(() => {
+  // Set loading state for splashscreen
+  isLoading.value = true;
+
   // Set default props of components
   setdefaults();
 
@@ -162,6 +169,12 @@ onBeforeMount(() => {
       router.replace({ ...route, force: true });
     },
   });
+});
+
+onMounted(() => {
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 2000);
 });
 
 /**
