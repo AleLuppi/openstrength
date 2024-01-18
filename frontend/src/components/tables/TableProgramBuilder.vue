@@ -178,6 +178,7 @@
       >
         <!-- Reordering arrows -->
         <div
+          v-if="!dense"
           class="self-center justify-center"
           :class="dense ? 'row' : 'column'"
         >
