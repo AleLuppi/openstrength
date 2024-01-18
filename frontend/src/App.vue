@@ -121,7 +121,7 @@ import mixpanel from "mixpanel-browser";
 
 // Import async components
 const osSplashScreen = defineAsyncComponent(
-  () => import("@/components/basic/osSplashScreen.vue"),
+  () => import("@/components/layout/SplashScreen.vue"),
 );
 const LeftDrawerElements = defineAsyncComponent(
   () => import("@/components/layout/LeftDrawerElements.vue"),
