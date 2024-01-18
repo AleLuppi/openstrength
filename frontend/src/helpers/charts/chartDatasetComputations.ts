@@ -1,11 +1,10 @@
-import { ExerciseLoadType } from "../exercises/exercise";
-import { MaxLift, MaxLiftType } from "../maxlifts/maxlift";
-import { ProgramLine } from "../programs/program";
-import { AthleteUser } from "../users/user";
+import { ExerciseLoadType } from "@/helpers/exercises/exercise";
+import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
+import { ProgramLine } from "@/helpers/programs/program";
 
 /**
  * Define RPE-reps table.
- * Each value is a percentage of 1RM
+ * Each value is a percentage of 1RM.
  * Column index define the reps, row index define the rpe
  */
 export const rpeRepsTable: number[][] = [
@@ -21,76 +20,56 @@ export const rpeRepsTable: number[][] = [
 ];
 
 /**
- * Estimates 1RM value based on exercise type and rpe table for a given maxlift
- * @param maxlift maxlift to be used for the estimation
- * @param athlete athlete whose 1RM should be estimated
- * @param rpeTable actual table to use (NOTE: to keep as a variable as the coach could also potentially want to customize)
+ * Estimate 1RM value based on exercise type and rpe table for a given maxlift.
+ *
+ * @param maxlift max lift to be used for the estimation.
+ * @param rpeTable optional rpe-reps table to override default one.
  * @returns the estimated 1RM value
  */
-
-//TODO: check athlete from maxlift
-//TODO mettere come default la tabella sopra
 export function estimate1RMfromNRM(
   maxlift: MaxLift,
-  athlete: AthleteUser,
-  rpeTable: number[][]
+  rpeTable: number[][] = rpeRepsTable,
 ): number | undefined {
-  if (typeof Number(maxlift.value) != "number" || !maxlift.type || !rpeTable) {
-    console.error("Invalid value, maxlift type, or RPE table.");
-    return undefined;
-  }
+  // Check inputs
+  if (typeof Number(maxlift.value) != "number" || !maxlift.type || !rpeTable)
+    return;
 
-  let estimated1RMValue = undefined;
+  // Set body weigth
   let bodyweight = undefined;
-
-  // Check based on load type
-  //TODO: solve issue of maxlift not correctly having defaultVariant field, defaultVariant field is always undefined
-  console.log("maxlift", maxlift);
-  console.log("maxlift value", maxlift.value);
-  console.log("maxlift exercise", maxlift.exercise);
-  console.log("maxlift exercise variants", maxlift.exercise?.variants);
-  console.log(
-    "maxlift exercise variants at 0 loadtype",
-    maxlift.exercise?.variants?.at(0)?.loadType
-  );
-  console.log(
-    "maxlift exercise defaultvariant loadtype",
-    maxlift.exercise?.defaultVariant?.loadType
-  );
   if (
-    maxlift.exercise?.variants?.at(0)?.loadType ==
-    (ExerciseLoadType.loaded || ExerciseLoadType.bodyweight)
+    maxlift.exercise?.defaultVariant?.loadType &&
+    [ExerciseLoadType.loaded || ExerciseLoadType.bodyweight].includes(
+      maxlift.exercise?.defaultVariant?.loadType,
+    )
   ) {
-    bodyweight = athlete?.weight ? Number(athlete.weight) : 75;
+    bodyweight = maxlift.athlete?.weight ? Number(maxlift.athlete?.weight) : 75;
   } else {
     bodyweight = 0;
   }
 
+  // Compute estimated 1RM value
+  let usefulRpeRepstableValue = undefined;
   switch (maxlift.type) {
-    case MaxLiftType._1RM:
-      estimated1RMValue = Number(maxlift.value);
-      break;
     case MaxLiftType._3RM:
-      estimated1RMValue =
-        (bodyweight + Number(maxlift.value)) / (0.01 * rpeTable[0][2]);
+      usefulRpeRepstableValue = rpeTable[0][2];
       break;
     case MaxLiftType._5RM:
-      estimated1RMValue =
-        (bodyweight + Number(maxlift.value)) / (0.01 * rpeTable[0][4]);
+      usefulRpeRepstableValue = rpeTable[0][4];
       break;
     case MaxLiftType._6RM:
-      estimated1RMValue =
-        (bodyweight + Number(maxlift.value)) / (0.01 * rpeTable[0][5]);
+      usefulRpeRepstableValue = rpeTable[0][5];
       break;
     case MaxLiftType._8RM:
-      estimated1RMValue =
-        (bodyweight + Number(maxlift.value)) / (0.01 * rpeTable[0][7]);
+      usefulRpeRepstableValue = rpeTable[0][7];
       break;
     case MaxLiftType._10RM:
-      estimated1RMValue =
-        (bodyweight + Number(maxlift.value)) / (0.01 * rpeTable[0][9]);
+      usefulRpeRepstableValue = rpeTable[0][9];
       break;
   }
+  const estimated1RMValue =
+    Number(maxlift.value) && usefulRpeRepstableValue
+      ? (bodyweight + Number(maxlift.value)) / (0.01 * usefulRpeRepstableValue)
+      : undefined;
   return estimated1RMValue
     ? Math.round(estimated1RMValue * 10) / 10 - bodyweight
     : undefined;
@@ -106,7 +85,7 @@ export function estimate1RMfromNRM(
 export function calculatePercentage1RM(
   reps: number,
   rpe: number,
-  rpeTable: number[][]
+  rpeTable: number[][] = rpeRepsTable,
 ): number | undefined {
   if (reps < 1 || reps > 15 || rpe < 6.5 || rpe > 10 || !rpeTable) {
     console.error("Invalid reps, RPE values, or RPE table.");
@@ -189,11 +168,11 @@ export function calculateTotalVolume(programLines: ProgramLine[]): number {
 export function calculateMaxIntensity(programLines: ProgramLine[]): number;
 export function calculateMaxIntensity(
   programLines: ProgramLine[],
-  maxLift: MaxLift
+  maxLift: MaxLift,
 ): number;
 export function calculateMaxIntensity(
   programLines: ProgramLine[],
-  maxLift?: MaxLift
+  maxLift?: MaxLift,
 ): number {
   if (programLines.length === 0) {
     return 0;
@@ -202,7 +181,7 @@ export function calculateMaxIntensity(
   // Find the maximum loadBaseValue among the lines
   const maxLoadBaseValue = programLines.reduce((max, line) => {
     const loadBaseValue = parseFloat(
-      (line.loadBaseValue || "0").replace(/[^0-9.]/g, "")
+      (line.loadBaseValue || "0").replace(/[^0-9.]/g, ""),
     );
 
     return isNaN(loadBaseValue) ? max : Math.max(max, loadBaseValue);
@@ -226,7 +205,7 @@ export function calculateMaxIntensity(
  * @returns
  */
 export function calculateCumulativeIntensity(
-  programLines: ProgramLine[]
+  programLines: ProgramLine[],
 ): number {
   if (programLines.length === 0) {
     return 0;
@@ -235,7 +214,7 @@ export function calculateCumulativeIntensity(
   const cumulativeIntensity = programLines.reduce(
     (totalCumulatedIntensity, line) => {
       const load = parseFloat(
-        (line.loadBaseValue || "0").replace(/[^0-9.]/g, "")
+        (line.loadBaseValue || "0").replace(/[^0-9.]/g, ""),
       );
       const sets = parseInt(line.setsBaseValue || "0", 10);
 
@@ -247,7 +226,7 @@ export function calculateCumulativeIntensity(
         return totalCumulatedIntensity;
       }
     },
-    0
+    0,
   );
 
   return cumulativeIntensity;
