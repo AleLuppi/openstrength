@@ -401,7 +401,13 @@
         "variant": "Variant",
         "type": "Type",
         "value": "Value",
+        "estimated1rm": "Estimated 1RM",
         "date": "Date"
+      },
+      "computation": {
+        "estimated1rm_with_weight": "Estimated using { athlete }'s weight, that is { weight } kg.",
+        "estimated1rm_with_default_weight": "{ athlete } doesn't currently have a specified weight, thus 75kg was used. To see accurate numbers, please update athlete's weight. If you want to ignore athlete's weight in computation, you may change exercise load type.",
+        "estimated1rm_no_weight": "Estimated ignoring { athlete }'s weight. If you want to compute it considering weight too, you may change exercise load type."
       }
     },
     "charts_management": {

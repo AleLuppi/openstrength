@@ -362,6 +362,7 @@
                     <FormMaxLift
                       ref="maxliftFormElement"
                       :maxlift="updatingMaxlift"
+                      :athlete="selectedProgram?.athlete"
                       :exercises="coachInfo.exercises"
                       @submit="saveMaxlift"
                       @reset="showMaxliftAddDialog = false"
@@ -728,7 +729,7 @@ const programFilter = computed({
 const athleteMaxlifts = computed(
   () =>
     coachInfo.maxlifts?.filter(
-      (maxlift) => maxlift.athleteId == selectedProgram.value?.athleteId,
+      (maxlift) => maxlift.athlete?.uid == selectedProgram.value?.athleteId,
     ),
 );
 
@@ -1140,7 +1141,7 @@ function saveMaxlift(newMaxLift: MaxLift) {
 
   // Update values
   if (isNew) {
-    newMaxLift.athleteId = selectedProgram.value?.athlete?.uid;
+    newMaxLift.athlete = selectedProgram.value?.athlete;
     newMaxLift.coachId = user.uid;
   }
 
