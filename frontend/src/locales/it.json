@@ -244,7 +244,7 @@
           "forearms": "Avambracci",
           "glutes": "Glutei",
           "quads": "Quadricipiti",
-          "hamstrings": "Ischiocrurali",
+          "harmstrings": "Ischiocrurali",
           "calves": "Polpacci"
         },
         "equipment": "Attrezzatura",
@@ -401,7 +401,13 @@
         "variant": "Variante",
         "type": "Tipo",
         "value": "Valore",
+        "estimated1rm": "1RM Stimato",
         "date": "Data"
+      },
+      "computation": {
+        "estimated1rm_with_weight": "Stimato considerando il peso corporeo di { athlete }, cioè { weight } kg.",
+        "estimated1rm_with_default_weight": "{ athlete } non ha un peso corporeo definito, quindi è stato usato un valore di 75kg. Per avere calcoli più precisi, aggiorna i dati del tuo atleta. Se non vuoi considerare il peso corporeo nel calcolo, cambia il tipo di carico dell'esercizio.",
+        "estimated1rm_no_weight": "Stimato senza considerare il peso corporeo di { athlete }. Se vuoi considerare il peso corporeo nel calcolo, cambia il tipo di carico dell'esercizio."
       }
     },
     "charts_management": {
