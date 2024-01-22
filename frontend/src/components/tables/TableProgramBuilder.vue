@@ -1053,7 +1053,8 @@ function resetTableData() {
   // Empty changes
   if (
     props.modelValue.uid == undefined ||
-    programCurrentValue.value?.uid != props.modelValue.uid
+    programCurrentValue.value?.uid != props.modelValue.uid ||
+    programHistory.value.length <= 1
   ) {
     programHistory.value.length = 0;
     storeChanges();
