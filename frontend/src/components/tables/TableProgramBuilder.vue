@@ -717,7 +717,7 @@
 
 <script setup lang="ts">
 import { ref, computed, PropType, watch, nextTick } from "vue";
-import { uid, debounce, useQuasar } from "quasar";
+import { uid, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import FormProgramNewWeekDay from "@/components/forms/FormProgramNewWeekDay.vue";
 import { scrollToElementInParent } from "@/helpers/scroller";
@@ -735,7 +735,6 @@ import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import {
   objectIsEmpty,
-  objectDeepCopy,
   objectMapKeys,
   objectMapValues,
 } from "@/helpers/object";
@@ -777,6 +776,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  historyMaxLength: {
+    type: Number,
+    default: 50,
+  },
   scrollOffset: {
     type: Number,
     default: 0,
@@ -792,14 +795,18 @@ const emit = defineEmits<{
     variantName: string,
     programExercise?: ProgramExercise,
   ];
+  undo: [canUndo: boolean, canRedo: boolean];
+  redo: [canRedo: boolean, canUndo: boolean];
 }>();
+
+// Define expose
+defineExpose({
+  undo: undo,
+  redo: redo,
+});
 
 // Set useful values
 const sepWekDay = ".";
-const changes = ref<any[]>([]);
-const storeChangesMethods: {
-  [key: string]: Function;
-} = {};
 
 // Set ref
 const tableElements = ref<{
@@ -836,6 +843,8 @@ const selectingReferenceLine = ref<{
 const exercisesInfoExpanded = ref<{
   [key: string]: boolean;
 }>({});
+const programHistory = ref<(typeof exercisesValues.value)[]>([]);
+const programHistoryPointer = ref<number>(0);
 
 // Get a subset of tables to show according to filters
 const filteredExercisesValues = computed(() => {
@@ -977,9 +986,6 @@ watch(
 // Reorder exercises upon update
 watch(exercisesValues, () => sortExerciseValues());
 
-// Inform parent of program update
-watch(programCurrentValue, (program) => emit("update:modelValue", program));
-
 /**
  * Get a random uid.
  *
@@ -993,12 +999,6 @@ function getRandomUid() {
  * Update table data according to input data.
  */
 function resetTableData() {
-  // Set current value to be equal to input one
-  programCurrentValue.value = props.modelValue;
-
-  // Epmty changes
-  changes.value.length = 0;
-
   // Delete previously stored values
   exercisesValues.value = {};
 
@@ -1043,6 +1043,29 @@ function resetTableData() {
         }) ?? [];
     },
   );
+
+  // Empty changes
+  if (
+    props.modelValue.uid == undefined ||
+    programCurrentValue.value?.uid != props.modelValue.uid
+  ) {
+    programHistory.value.length = 0;
+    storeChanges();
+  }
+
+  // Set current value to be equal to input one
+  programCurrentValue.value = props.modelValue;
+}
+
+/**
+ * Inform parent about updated program and store new changes.
+ *
+ * @param program instance that shall be propagated to parent.
+ */
+function emitUpdatedProgram(program: Program) {
+  programCurrentValue.value = program;
+  emit("update:modelValue", programCurrentValue.value);
+  storeChanges();
 }
 
 /**
@@ -1617,19 +1640,68 @@ function getReferenceDisplayName(reference: ProgramLine | MaxLift | undefined) {
 }
 
 /**
- * Define debounce method for each table to store changes.
+ * Get a duplicate of current exercise values.
  *
- * @param key id of the exercise that is being updated.
- * @param changeData actual data value.
+ * @returns duplicate of current exercise values.
  */
+function duplicateExerciseValues() {
+  return objectMapValues(exercisesValues.value, (value) => {
+    return {
+      ...value,
+      data: value.data.map((data) => {
+        return { ...data };
+      }),
+    };
+  });
+}
+
+/**
+ * Store changes in data for successive undo/redo.
+ *
+ * @param data changed data value to store.
+ */
+function storeChanges() {
+  // Store data from current pointer position
+  if (programHistoryPointer.value + 1 < programHistory.value.length)
+    programHistory.value.length = programHistoryPointer.value + 1;
+
+  // Add new element up to max length
+  programHistory.value.push(duplicateExerciseValues());
+  if (programHistory.value.length > props.historyMaxLength)
+    programHistory.value = programHistory.value.slice(
+      programHistory.value.length - props.historyMaxLength,
+    );
+
+  // Update pointer position
+  programHistoryPointer.value = programHistory.value.length - 1;
+}
+
+/**
+ * Undo latest modification.
+ *
+ * @returns true if more undos are possible, false otherwise.
+ */
+function undo(): boolean {
+  // Restore program from last pointer position
+  if (programHistoryPointer.value > 0) {
+    programHistoryPointer.value -= 1;
+    exercisesValues.value = programHistory.value.at(
+      programHistoryPointer.value,
+    )!;
+  }
+
+  // Inform about undo operation
+  emit(
+    "undo",
+    programHistoryPointer.value > 0,
+    programHistoryPointer.value < programHistory.value.length,
+  );
+  return programHistoryPointer.value > 0;
+}
+
 // TODO
-// eslint-disable-next-line
-function storeChanges(key: string, changeData: any) {
-  if (!(key in storeChangesMethods))
-    storeChangesMethods[key] = debounce((newValue: any) => {
-      changes.value.push({ value: objectDeepCopy(newValue) });
-    }, 1000);
-  storeChangesMethods[key](changeData);
+function redo(): boolean {
+  return false;
 }
 
 /**
@@ -1637,7 +1709,7 @@ function storeChanges(key: string, changeData: any) {
  */
 function updateProgramWhole() {
   // Update program
-  const program = props.modelValue.duplicate();
+  const program = props.modelValue;
   program.programExercises = [];
   Object.entries(exercisesValues.value).forEach(
     ([scheduleId, exerciseInfo]) => {
@@ -1675,7 +1747,7 @@ function updateProgramWhole() {
   );
 
   // Inform parent of update
-  programCurrentValue.value = program;
+  emitUpdatedProgram(program);
 }
 
 /**
@@ -1731,7 +1803,7 @@ function updateProgramExercise(idScheduleInfo: string) {
     return;
 
   // Inform parent of update
-  programCurrentValue.value = props.modelValue.duplicate();
+  emitUpdatedProgram(props.modelValue);
 }
 
 /**
