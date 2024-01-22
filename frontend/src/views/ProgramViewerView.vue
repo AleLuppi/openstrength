@@ -9,7 +9,7 @@
             {{ $t("coach.program_management.viewer.title") }}
             {{ programSnapshot.athlete }}
           </h3>
-          <div class="column justify-center">
+          <!-- <div class="column justify-center">
             <q-btn
               v-if="user.role == UserRole.coach"
               icon="sym_o_assignment_return"
@@ -20,7 +20,7 @@
               class="no-print"
               >{{ $t("coach.program_management.viewer.back") }}</q-btn
             >
-          </div>
+          </div> -->
         </div>
 
         <p>
@@ -129,8 +129,6 @@ import { ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { NamedRoutes } from "@/router";
-import { useUserStore } from "@/stores/user";
-import { UserRole } from "@/helpers/users/user";
 import { useQuasar } from "quasar";
 import type { QTableProps } from "quasar";
 import { doGetDocs } from "@/helpers/database/readwrite";
@@ -144,9 +142,6 @@ import { ProgramForzenView } from "@/helpers/programs/program";
 const route = useRoute();
 const $q = useQuasar();
 const i18n = useI18n();
-
-// Get store
-const user = useUserStore();
 
 // Get correct program istance
 const programSnapshot = ref<ProgramForzenView>();
