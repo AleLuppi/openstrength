@@ -206,6 +206,7 @@
 
         <!-- Show table to build program -->
         <TableProgramBuilder
+          ref="programBuilderElement"
           v-if="selectedProgram?.athlete"
           :model-value="selectedProgram"
           @update:model-value="
@@ -669,6 +670,7 @@ const showingUtils = ref(UtilsOptions.list);
 
 // Set ref related to program
 const programManagerElement = ref<HTMLElement>();
+const programBuilderElement = ref<typeof TableProgramBuilder>();
 const selectedProgram = ref<Program>();
 const substituteProgramId = ref<string>();
 const oldAthleteAssigned = ref<AthleteUser>();
