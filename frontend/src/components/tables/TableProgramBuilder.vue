@@ -1070,9 +1070,9 @@ function resetTableData() {
  * @param [saveChange=true] if true, save changes in history, otherwise ignore it.
  */
 function emitUpdatedProgram(program: Program, saveChange: boolean = true) {
+  if (saveChange) storeChanges();
   programCurrentValue.value = program;
   emit("update:modelValue", programCurrentValue.value);
-  if (saveChange) storeChanges();
 }
 
 /**
@@ -1649,10 +1649,11 @@ function getReferenceDisplayName(reference: ProgramLine | MaxLift | undefined) {
 /**
  * Get a duplicate of current exercise values.
  *
+ * @param values if provided, duplicate supplied values, otherwise duplicate known reference.
  * @returns duplicate of current exercise values.
  */
-function duplicateExerciseValues() {
-  return objectMapValues(exercisesValues.value, (value) => {
+function duplicateExerciseValues(values?: typeof exercisesValues.value) {
+  return objectMapValues(values ?? exercisesValues.value, (value) => {
     return {
       ...value,
       data: value.data.map((data) => {
@@ -1692,9 +1693,9 @@ function undo(): boolean {
   // Restore program from last pointer position
   if (programHistoryPointer.value > 0) {
     programHistoryPointer.value -= 1;
-    exercisesValues.value =
-      programHistory.value.at(programHistoryPointer.value) ??
-      exercisesValues.value;
+    exercisesValues.value = duplicateExerciseValues(
+      programHistory.value.at(programHistoryPointer.value),
+    );
   }
 
   // Inform about undo operation
@@ -1719,9 +1720,9 @@ function redo(): boolean {
   // Try to force next program modification
   if (programHistoryPointer.value + 1 < programHistory.value.length) {
     programHistoryPointer.value += 1;
-    exercisesValues.value =
-      programHistory.value.at(programHistoryPointer.value) ??
-      exercisesValues.value;
+    exercisesValues.value = duplicateExerciseValues(
+      programHistory.value.at(programHistoryPointer.value),
+    );
   }
 
   // Inform about redo operation
