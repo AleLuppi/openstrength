@@ -803,6 +803,12 @@ const emit = defineEmits<{
 defineExpose({
   undo: undo,
   redo: redo,
+  getHistorySteps: () => {
+    return [
+      programHistoryPointer.value,
+      programHistory.value.length - programHistoryPointer.value - 1,
+    ];
+  },
 });
 
 // Set useful values
@@ -1061,11 +1067,12 @@ function resetTableData() {
  * Inform parent about updated program and store new changes.
  *
  * @param program instance that shall be propagated to parent.
+ * @param [saveChange=true] if true, save changes in history, otherwise ignore it.
  */
-function emitUpdatedProgram(program: Program) {
+function emitUpdatedProgram(program: Program, saveChange: boolean = true) {
   programCurrentValue.value = program;
   emit("update:modelValue", programCurrentValue.value);
-  storeChanges();
+  if (saveChange) storeChanges();
 }
 
 /**
@@ -1685,29 +1692,57 @@ function undo(): boolean {
   // Restore program from last pointer position
   if (programHistoryPointer.value > 0) {
     programHistoryPointer.value -= 1;
-    exercisesValues.value = programHistory.value.at(
-      programHistoryPointer.value,
-    )!;
+    exercisesValues.value =
+      programHistory.value.at(programHistoryPointer.value) ??
+      exercisesValues.value;
   }
 
   // Inform about undo operation
   emit(
     "undo",
     programHistoryPointer.value > 0,
-    programHistoryPointer.value < programHistory.value.length,
+    programHistoryPointer.value + 1 < programHistory.value.length,
   );
+
+  // Inform parent of update
+  updateProgramWhole(false);
+
   return programHistoryPointer.value > 0;
 }
 
-// TODO
+/**
+ * Redo next modification.
+ *
+ * @returns true if more redos are possible, false otherwise.
+ */
 function redo(): boolean {
-  return false;
+  // Try to force next program modification
+  if (programHistoryPointer.value + 1 < programHistory.value.length) {
+    programHistoryPointer.value += 1;
+    exercisesValues.value =
+      programHistory.value.at(programHistoryPointer.value) ??
+      exercisesValues.value;
+  }
+
+  // Inform about redo operation
+  emit(
+    "redo",
+    programHistoryPointer.value + 1 < programHistory.value.length,
+    programHistoryPointer.value > 0,
+  );
+
+  // Inform parent of update
+  updateProgramWhole(false);
+
+  return programHistoryPointer.value + 1 < programHistory.value.length;
 }
 
 /**
  * Rebuild the whole program based on the current table values.
+ *
+ * @param [saveChange=true] if true, save changes in history, otherwise ignore it.
  */
-function updateProgramWhole() {
+function updateProgramWhole(saveChange: boolean = true) {
   // Update program
   const program = props.modelValue;
   program.programExercises = [];
@@ -1747,7 +1782,7 @@ function updateProgramWhole() {
   );
 
   // Inform parent of update
-  emitUpdatedProgram(program);
+  emitUpdatedProgram(program, saveChange);
 }
 
 /**
