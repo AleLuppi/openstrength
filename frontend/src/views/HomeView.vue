@@ -66,6 +66,75 @@
         </q-card>
       </router-link>
     </div>
+
+    <!-- Show dialog for 12Feb deadline -->
+    <q-dialog v-model="showDialogPresaleDeadline">
+      <q-card class="q-pa-sm">
+        <q-card-section class="items-center q-pb-none">
+          <div class="row items-start justify-between">
+            <h4>Stiamo per chiudere gli accessi!</h4>
+            <div>
+              <q-btn
+                flat
+                round
+                dense
+                icon="close"
+                color="light-dark"
+                v-close-popup
+              />
+            </div>
+          </div>
+
+          <p>
+            La piattaforma rimarrà aperta fino al 12 Febbraio, poi gli accessi
+            verranno chiusi per qualche mese.
+          </p>
+          <br />
+          <p>
+            Se non sei già dei nostri, contattaci dove preferisci per ulteriori
+            informazioni:
+          </p>
+
+          <div class="row justify-between items-start">
+            <div class="column justify-center items-center q-ma-sm">
+              <h6>Email</h6>
+              <a
+                href="mailto:lorenzo.boffa06@gmail.com,lorenzo.amadori1996@gmail.com,aleluppi23@gmail.com?subject=OpenStrength: informazioni accesso piattaforma&body=Ciao, vorrei avere più informazioni."
+              >
+                lorenzo.amadori1996@gmail.com <br />
+                lorenzo.boffa06@gmail.com <br />
+                aleluppi23@gmail.com</a
+              >
+            </div>
+
+            <div class="column justify-center items-center q-ma-sm">
+              <div class="row">
+                <q-icon> </q-icon>
+              </div>
+              <h6>Whatsapp</h6>
+              <a
+                href="https://wa.me/393405489016?text=Ciao%20vorrei%20più%20informazioni%20per%20l'accesso%20a%20OpenStrength"
+              >
+                Lorenzo Amadori
+              </a>
+              <a
+                href="https://wa.me/393468660263?text=Ciao%20vorrei%20più%20informazioni%20per%20l'accesso%20a%20OpenStrength"
+              >
+                Lorenzo Boffa
+              </a>
+            </div>
+
+            <div class="column justify-center items-center q-ma-sm">
+              <h6>Instagram</h6>
+
+              <p><i>amalo96</i></p>
+              <p><i>loreboffa</i></p>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+    <div></div>
   </q-page>
 
   <q-page
@@ -157,6 +226,7 @@
 import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
 import { UserRole } from "@/helpers/users/user";
+import { onMounted, ref } from "vue";
 
 // Define emits
 defineEmits<{
@@ -165,6 +235,14 @@ defineEmits<{
 
 // Get user state
 const user = useUserStore();
+
+// Show deadline dialog
+const showDialogPresaleDeadline = ref(false);
+onMounted(() => {
+  setTimeout(() => {
+    showDialogPresaleDeadline.value = true;
+  }, 3000);
+});
 
 // Set coach action buttons
 const buttonsCoachAction = [
