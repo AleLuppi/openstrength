@@ -294,6 +294,7 @@
                       <FormMaxLift
                         ref="maxliftFormElement"
                         :maxlift="updatingMaxLift"
+                        :athlete="selectedAthlete ?? updatingAthlete"
                         :exercises="exercises"
                         @submit="saveMaxlift"
                         @reset="showMaxLiftAddDialog = false"
@@ -346,6 +347,7 @@ import {
   getAllAssignedPrograms,
   getAssignedProgram,
 } from "@/helpers/programs/athleteAssignment";
+import mixpanel from "mixpanel-browser";
 
 // Init plugin
 const $q = useQuasar();
@@ -441,7 +443,7 @@ const athleteFormProgram = computed(
 // Get maxlifts for the selected athlete
 const athleteMaxlifts = computed(() =>
   maxlifts.value.filter(
-    (maxlift) => maxlift.athleteId === selectedAthlete.value?.uid,
+    (maxlift) => maxlift.athlete?.uid === selectedAthlete.value?.uid,
   ),
 );
 
@@ -456,7 +458,7 @@ function saveMaxlift(newMaxLift: MaxLift) {
 
   // Update values
   if (isNew) {
-    newMaxLift.athleteId = selectedAthlete.value?.uid;
+    newMaxLift.athlete = selectedAthlete.value;
     newMaxLift.coachId = user.uid;
   }
 
@@ -473,8 +475,15 @@ function saveMaxlift(newMaxLift: MaxLift) {
         event_label: "New MaxLift Created in AthleteView",
         value: 1,
       });
+
+      // Mixpanel tracking
+      mixpanel.track(isNew ? "Maxlift Created" : "Maxlift Updated", {
+        Page: "AthleteView",
+        Exercise: newMaxLift.exercise?.name,
+        Type: newMaxLift.type?.toString(),
+      });
     },
-    onError: () =>
+    onError: () => {
       $q.notify({
         type: "negative",
         message: i18n.t(
@@ -482,7 +491,18 @@ function saveMaxlift(newMaxLift: MaxLift) {
             (isNew ? "add_error" : "update_error"),
         ),
         position: "bottom",
-      }),
+      });
+
+      // Mixpanel tracking
+      mixpanel.track(
+        "ERROR " + (isNew ? "Maxlift Created" : "Maxlift Updated"),
+        {
+          Page: "AthleteView",
+          Exercise: newMaxLift.exercise?.name,
+          Type: newMaxLift.type?.toString(),
+        },
+      );
+    },
   });
   showMaxLiftAddDialog.value = false;
 }
@@ -533,13 +553,24 @@ function createAthlete() {
         event_label: "New Athlete added to Athlete library",
         value: 1,
       });
+
+      // Mixpanel tracking
+      mixpanel.track("New Athlete", {
+        Page: "AthleteView",
+      });
     },
-    onError: () =>
+    onError: () => {
       $q.notify({
         type: "negative",
         message: i18n.t("coach.athlete_management.list.add_error"),
         position: "bottom",
-      }),
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("ERROR New Athlete", {
+        Page: "AthleteView",
+      });
+    },
   });
   showAthleteDialog.value = false;
 }

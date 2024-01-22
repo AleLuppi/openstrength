@@ -1,5 +1,10 @@
 <template>
-  <div class="q-pa-md q-ma-md shadow-2" style="border-radius: 24px">
+  <div
+    :class="
+      dense ? 'q-pl-sm q-pr-none q-ml-sm q-mr-none' : 'q-pa-md q-ma-md shadow-2'
+    "
+    style="border-radius: 24px"
+  >
     <!-- Program exercise element -->
     <div
       :ref="(el) => (tableElements[idScheduleInfo] = el)"
@@ -14,6 +19,7 @@
           'q-mt-lg': firstTablesInDay.indexOf(idScheduleInfo.toString()) > 0,
         }"
       >
+        <!-- Day and week names -->
         <h6 class="q-mt-none">
           <span class="underlined-dashed cursor-pointer text-h4 text-margin-xs">
             {{ getWeekDisplayName(idScheduleInfo, true) }}
@@ -91,6 +97,7 @@
           </span>
         </h6>
 
+        <!-- Management buttons -->
         <q-btn
           @click="
             editWeekDayName = splitScheduleInfoNames(idScheduleInfo.toString())
@@ -102,7 +109,7 @@
           round
           :ripple="false"
         >
-          <q-tooltip>
+          <q-tooltip anchor="top middle" :offset="[0, 40]">
             {{ $t("coach.program_management.builder.day_rename") }}
           </q-tooltip>
 
@@ -116,9 +123,8 @@
           >
           </FormProgramNewWeekDay>
         </q-btn>
-
         <q-btn
-          @click="duplicateWholeDay(idScheduleInfo.toString())"
+          @click="editWeekDayName = ['', '']"
           icon="fa-regular fa-clone"
           size="sm"
           color="dark-light"
@@ -126,11 +132,28 @@
           round
           :ripple="false"
         >
-          <q-tooltip>
+          <q-tooltip anchor="top middle" :offset="[0, 40]">
             {{ $t("coach.program_management.builder.day_duplicate") }}
           </q-tooltip>
-        </q-btn>
 
+          <FormProgramNewWeekDay
+            v-model="editWeekDayName"
+            @save="
+              (val: string[] | undefined) => {
+                if (val)
+                  duplicateWholeDay(
+                    idScheduleInfo.toString(),
+                    mergeScheduleInfoNames(val[0], val[1], 1),
+                  );
+              }
+            "
+            :title="$t('coach.program_management.builder.day_duplicate_form')"
+            :cover="false"
+            anchor="center right"
+            self="center left"
+          >
+          </FormProgramNewWeekDay>
+        </q-btn>
         <q-btn
           @click="deleteWholeDay(idScheduleInfo.toString())"
           icon="fa-regular fa-trash-can"
@@ -140,7 +163,7 @@
           round
           :ripple="false"
         >
-          <q-tooltip>
+          <q-tooltip anchor="top middle" :offset="[0, 40]">
             {{ $t("coach.program_management.builder.day_delete") }}
           </q-tooltip>
         </q-btn>
@@ -149,9 +172,16 @@
       </div>
 
       <!-- Exercise element -->
-      <div class="row items-start justify-evenly q-mb-md">
+      <div
+        class="justify-evenly q-mb-md"
+        :class="dense ? 'column items-stretch' : 'row items-start'"
+      >
         <!-- Reordering arrows -->
-        <div class="self-center column justify-center">
+        <div
+          v-if="!dense"
+          class="self-center justify-center"
+          :class="dense ? 'row' : 'column'"
+        >
           <q-btn
             @click="reorderTableRelative(idScheduleInfo.toString(), -1)"
             icon="arrow_drop_up"
@@ -179,11 +209,13 @@
         </div>
 
         <!-- Exercise info -->
-        <div class="col-3">
+        <div :class="dense ? 'row justify-between items-end col-12' : 'col-3'">
           <div
-            class="q-pa-sm bg-lighter os-exercise-form os-light-border"
+            class="q-pa-sm bg-lighter os-light-border col-8"
             :class="{
               'cursor-pointer': !exercisesInfoShowExpanded[idScheduleInfo],
+              'os-exercise-form': !dense,
+              'os-exercise-form-dense': dense,
             }"
             @click="
               exercisesInfoExpanded = objectMapValues(
@@ -196,7 +228,7 @@
           >
             <q-slide-transition>
               <div v-show="exercisesInfoShowExpanded[idScheduleInfo]">
-                <osSelect
+                <os-select
                   use-input
                   input-debounce="150"
                   :model-value="exerciseModelValue.exercise"
@@ -207,33 +239,36 @@
                     }
                   "
                   :options="exercises.map((exercise) => exercise.name)"
+                  :placeholder="
+                    $t('coach.program_management.builder.exercise_name')
+                  "
                   hide-bottom-space
+                  new-value-mode="add-unique"
+                  :after-options-add-new="true"
+                  :no-options-add-new="true"
+                  add-option-class="text-primary text-bold text-center"
+                  :add-option-format-text="
+                    (text: string) =>
+                      $t('coach.exercise_management.create_named_exercise', {
+                        exercise: text,
+                      })
+                  "
                 >
-                  <!--                   <template #after-options>
-                    <q-btn outline class="q-ma-xs" @click="onNewExercise()">{{
-                      $t("coach.exercise_management.create_new_exercise")
-                    }}</q-btn>
-                  </template>
-                  <template #no-option>
-                    <q-item>
-                      <q-item-section> No results </q-item-section>
-                    </q-item>
-                    <q-item>
-                      <q-item-section>
-                        <q-btn
-                          outline
-                          class="q-ma-none"
-                          @click="onNewExercise()"
-                          >{{
-                            $t("coach.exercise_management.create_new_exercise")
-                          }}</q-btn
-                        >
-                      </q-item-section>
-                    </q-item>
-                  </template> -->
-                </osSelect>
+                  <q-tooltip
+                    v-if="!exerciseModelValue.exercise"
+                    anchor="center right"
+                    self="center left"
+                    :offset="[-10, 0]"
+                  >
+                    {{
+                      $t(
+                        "coach.program_management.builder.exercise_name_tooltip",
+                      )
+                    }}
+                  </q-tooltip>
+                </os-select>
                 <q-separator color="inherit" spaced="xs" />
-                <osSelect
+                <os-select
                   use-input
                   input-debounce="150"
                   :model-value="exerciseModelValue.variant"
@@ -254,45 +289,39 @@
                     )
                   "
                   emit-value
+                  :placeholder="
+                    $t('coach.program_management.builder.variant_name')
+                  "
                   hide-bottom-space
+                  new-value-mode="add-unique"
+                  :readonly="!exerciseModelValue.exercise"
+                  :after-options-add-new="true"
+                  :no-options-add-new="true"
+                  add-option-class="text-primary text-bold text-center"
+                  :add-option-format-text="
+                    (text: string) =>
+                      $t('coach.exercise_management.create_named_variant', {
+                        variant: text,
+                      })
+                  "
                 >
-                  <template #after-options>
-                    <q-btn
-                      outline
-                      class="q-ma-xs"
-                      @click="
-                        $event.target?.focus();
-                        $event.currentTarget?.focus();
-                        $event.parentNode?.focus();
-                        onNewVariant(idScheduleInfo.toString());
-                      "
-                      >{{
-                        $t("coach.exercise_management.create_new_variant")
-                      }}</q-btn
-                    >
-                  </template>
-                  <template #no-option>
-                    <q-item>
-                      <!-- TODO: i18n -->
-                      <q-item-section> No results </q-item-section>
-                    </q-item>
-
-                    <q-item>
-                      <q-item-section>
-                        <q-btn
-                          outline
-                          class="q-ma-none"
-                          @click="onNewVariant(idScheduleInfo.toString())"
-                          >{{
-                            $t("coach.exercise_management.create_new_variant")
-                          }}</q-btn
-                        >
-                      </q-item-section>
-                    </q-item>
-                  </template>
-                </osSelect>
+                  <q-tooltip
+                    v-if="
+                      exerciseModelValue.exercise && !exerciseModelValue.variant
+                    "
+                    anchor="center right"
+                    self="center left"
+                    :offset="[-10, 0]"
+                  >
+                    {{
+                      $t(
+                        "coach.program_management.builder.variant_name_tooltip",
+                      )
+                    }}
+                  </q-tooltip>
+                </os-select>
                 <q-separator color="inherit" spaced="xs" />
-                <osInput
+                <os-input
                   :model-value="exerciseModelValue.note"
                   @update:model-value="
                     (val: typeof exerciseModelValue.note) => {
@@ -303,7 +332,7 @@
                   type="textarea"
                   hide-bottom-space
                 >
-                </osInput>
+                </os-input>
                 <q-btn
                   icon="expand_less"
                   @click.stop="exercisesInfoExpanded[idScheduleInfo] = false"
@@ -316,53 +345,12 @@
               </div>
             </q-slide-transition>
 
-            <!-- Dialog to create or update variant -->
-            <q-dialog v-model="showDialogVariantForm" @hide="clearVariant">
-              <q-card>
-                <q-card-section class="row items-center q-pb-none">
-                  <h5>
-                    {{
-                      $t(
-                        "coach.exercise_management." +
-                          (addingNewVariant ? "add" : "update"),
-                      )
-                    }}
-                  </h5>
-
-                  <q-space />
-                  <q-btn
-                    icon="close"
-                    flat
-                    round
-                    dense
-                    color="button-negative"
-                    v-close-popup
-                  />
-                </q-card-section>
-
-                <q-card-section>
-                  <FormExerciseVariantLibrary
-                    ref="variantFormElement"
-                    v-if="selectedVariant"
-                    :variant="selectedVariant"
-                    @submit="
-                      (variant) =>
-                        onVariantSubmit(variant, idScheduleInfo.toString())
-                    "
-                    :options-muscle-groups="exerciseMuscleGroupsOptions"
-                    :options-equipment="exerciseEquipmentOptions"
-                    :insertExerciseName="addingNewExercise.value"
-                  />
-                </q-card-section>
-              </q-card>
-            </q-dialog>
-
             <q-slide-transition>
-              <div
-                v-show="!exercisesInfoShowExpanded[idScheduleInfo]"
-                class="text-ellipsis"
-              >
-                <p class="text-secondary text-bold">
+              <div v-show="!exercisesInfoShowExpanded[idScheduleInfo]">
+                <p
+                  class="text-secondary text-bold text-ellipsis"
+                  style="max-width: 50vw"
+                >
                   {{ exerciseModelValue.exercise }}
                   {{
                     exerciseModelValue.variant
@@ -370,36 +358,32 @@
                       : ""
                   }}
                 </p>
-                <p class="text-xs text-italic">
+                <p
+                  class="text-xs text-italic text-ellipsis"
+                  style="max-width: 50vw"
+                >
                   {{ exerciseModelValue.note }}
                 </p>
               </div>
             </q-slide-transition>
           </div>
           <osButtonSupport
-            :icons="[
-              'fa-regular fa-clone',
-              'exit_to_app',
-              'fa-regular fa-trash-can',
-            ]"
-            :colors="['lighter', 'lighter', 'lighter']"
-            :hover-colors="['info', 'info', 'negative']"
+            :icons="['fa-regular fa-clone', 'fa-regular fa-trash-can']"
+            :colors="['lighter', 'lighter']"
+            :hover-colors="['info', 'negative']"
             :tooltips="[
-              $t('coach.program_management.builder.line_duplicate'),
               $t('coach.program_management.builder.line_duplicate_in_day'),
               $t('coach.program_management.builder.line_delete'),
             ]"
             @click="
-              (idx) => {
+              (idx: number) => {
                 switch (idx) {
                   case 0:
-                    duplicateTableInDay(idScheduleInfo.toString());
-                  case 1:
                     editWeekDayName = splitScheduleInfoNames(
                       idScheduleInfo.toString(),
                     );
                     break;
-                  case 2:
+                  case 1:
                     deleteTable(idScheduleInfo.toString());
                     break;
                   default:
@@ -407,10 +391,10 @@
                 }
               }
             "
-            direction="b"
+            :direction="dense ? 't' : 'b'"
             class="q-mx-sm"
           >
-            <template #slot-1>
+            <template #slot-0>
               <FormProgramNewWeekDay
                 v-model="editWeekDayName"
                 @save="
@@ -420,10 +404,15 @@
                       mergeScheduleInfoNames(val[0], val[1], 1),
                     )
                 "
+                :title="
+                  $t(
+                    'coach.program_management.builder.line_duplicate_in_day_form',
+                  )
+                "
                 :force-save="true"
                 :cover="false"
-                anchor="center left"
-                self="center right"
+                anchor="center right"
+                self="center left"
               >
               </FormProgramNewWeekDay>
             </template>
@@ -462,15 +451,27 @@
               'unchecked-icon': 'fa-solid fa-video-slash',
             },
           }"
-          :widths="{
-            load: '10%',
-            reps: '10%',
-            sets: '10%',
-            rpe: '10%',
-            note: '46%',
-            requestText: '7%',
-            requestVideo: '7%',
-          }"
+          :widths="
+            dense
+              ? {
+                  load: '19%',
+                  reps: '13%',
+                  sets: '13%',
+                  rpe: '13%',
+                  note: '28%',
+                  requestText: '7%',
+                  requestVideo: '7%',
+                }
+              : {
+                  load: '10%',
+                  reps: '10%',
+                  sets: '10%',
+                  rpe: '10%',
+                  note: '46%',
+                  requestText: '7%',
+                  requestVideo: '7%',
+                }
+          "
           :placeholders="{
             load: $t(
               'coach.program_management.fields.load',
@@ -627,18 +628,16 @@
       <!-- New element button -->
       <div
         v-if="lastTablesInDay.includes(idScheduleInfo.toString())"
-        class="row items-center justify-center q-gutter-md"
+        class="row items-center justify-center q-gutter-xs"
       >
         <q-btn
           icon="add"
           :label="$t('coach.program_management.builder.new_exercise')"
           @click="addTable(idScheduleInfo.toString())"
           flat
-          outline
           rounded
-          unelevated
         >
-          <q-tooltip :delay="500">
+          <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
             {{ $t("coach.program_management.builder.new_exercise_tooltip") }}
           </q-tooltip>
         </q-btn>
@@ -647,11 +646,9 @@
           :label="$t('coach.program_management.builder.new_day')"
           @click="addWeekDayAfter(idScheduleInfo.toString(), true)"
           flat
-          outline
           rounded
-          unelevated
         >
-          <q-tooltip :delay="500">
+          <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
             {{ $t("coach.program_management.builder.new_day_tooltip") }}
           </q-tooltip>
         </q-btn>
@@ -660,11 +657,9 @@
           :label="$t('coach.program_management.builder.new_week')"
           @click="addWeekDayAfter(idScheduleInfo.toString(), false)"
           flat
-          outline
           rounded
-          unelevated
         >
-          <q-tooltip :delay="500">
+          <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
             {{ $t("coach.program_management.builder.new_week_tooltip") }}
           </q-tooltip></q-btn
         >
@@ -681,20 +676,10 @@
       <q-btn
         icon="add"
         :label="$t('coach.program_management.builder.new_day')"
-        @click="editWeekDayName = ['', '']"
+        @click="renameWeekDay(['1', '1'], ['', ''])"
         rounded
         unelevated
-      >
-        <FormProgramNewWeekDay
-          v-model="editWeekDayName"
-          @save="renameWeekDay"
-          :cover="false"
-          anchor="bottom middle"
-          self="top middle"
-          :offset="[0, 5]"
-        >
-        </FormProgramNewWeekDay>
-      </q-btn>
+      ></q-btn>
     </div>
 
     <!-- Show something when filters remove any exercise -->
@@ -736,7 +721,11 @@ import { uid, debounce, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import FormProgramNewWeekDay from "@/components/forms/FormProgramNewWeekDay.vue";
 import { scrollToElementInParent } from "@/helpers/scroller";
-import { arrayCompare, arrayUniqueValues } from "@/helpers/array";
+import {
+  arrayCompare,
+  arrayFilterUndefined,
+  arrayUniqueValues,
+} from "@/helpers/array";
 import {
   Program,
   ProgramExercise,
@@ -757,10 +746,7 @@ import {
 } from "@/helpers/maxlifts/maxlift";
 import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
 import { stringGetNext } from "@/helpers/scalar";
-import osButtonSupport from "../basic/osButtonSupport.vue";
-import { useCoachInfoStore } from "@/stores/coachInfo";
-import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLibrary.vue";
-
+import mixpanel from "mixpanel-browser";
 // Init plugin
 const $q = useQuasar();
 const i18n = useI18n();
@@ -787,6 +773,10 @@ const props = defineProps({
     }>,
     default: () => ({}),
   },
+  dense: {
+    type: Boolean,
+    default: false,
+  },
   scrollOffset: {
     type: Number,
     default: 0,
@@ -794,7 +784,15 @@ const props = defineProps({
 });
 
 // Define emits
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits<{
+  "update:modelValue": [program: Program | undefined];
+  newExercise: [exerciseName: string, programExercise?: ProgramExercise];
+  newVariant: [
+    exerciseName: string,
+    variantName: string,
+    programExercise?: ProgramExercise,
+  ];
+}>();
 
 // Set useful values
 const sepWekDay = ".";
@@ -804,11 +802,6 @@ const storeChangesMethods: {
 } = {};
 
 // Set ref
-const addingNewExercise = ref(false);
-//const selectedExercise = ref<Exercise>();
-const addingNewVariant = ref(false);
-const selectedVariant = ref<ExerciseVariant>();
-
 const tableElements = ref<{
   [key: string]: HTMLElement | any;
 }>({});
@@ -844,8 +837,6 @@ const exercisesInfoExpanded = ref<{
   [key: string]: boolean;
 }>({});
 
-const showDialogVariantForm = ref(false);
-
 // Get a subset of tables to show according to filters
 const filteredExercisesValues = computed(() => {
   const filteredKeys = Object.keys(exercisesValues.value).filter((key) => {
@@ -862,6 +853,20 @@ const filteredExercisesValues = computed(() => {
       return false;
     return true;
   }, {});
+
+  // Register mixpanel event
+  if (
+    props.filter.week.length > 0 ||
+    props.filter.day.length > 0 ||
+    props.filter.exercise.length > 0
+  ) {
+    mixpanel.track("Filter Used in Program", {
+      DaysSelected: props.filter.day.length,
+      WeeksSelected: props.filter.week.length,
+      ExercisesSelected: props.filter.week.length,
+    });
+  }
+
   return Object.fromEntries(
     filteredKeys.map((key) => [key, exercisesValues.value[key]]),
   );
@@ -1109,6 +1114,13 @@ function onReferenceClick(
   )
     tableRef[refField] = parsedReference;
 
+  // Mixpanel tracking
+  mixpanel.track("Reference Added in Program", {
+    Page: "ProgramView",
+    Type: type,
+    Variable: refField,
+  });
+
   // Update program
   updateProgramExercise(lineInfo.schedule);
 }
@@ -1252,6 +1264,9 @@ function deleteTable(idScheduleInfo: string) {
   reorderTable(idScheduleInfo, tmpScheduleInfo);
   delete exercisesValues.value[tmpScheduleInfo];
 
+  // Mixpanel tracking
+  mixpanel.track("Delete Exercise from Program");
+
   // Update program with new structure
   updateProgramWhole();
 }
@@ -1305,6 +1320,9 @@ function duplicateTableInDay(idScheduleInfo: string, destWeekDay?: string) {
     destWeekDay ?? idScheduleInfo,
     exercisesValues.value[idScheduleInfo],
   );
+
+  // Mixpanel tracking
+  mixpanel.track("Duplicate Exercise in Program");
 }
 
 /**
@@ -1321,6 +1339,9 @@ function deleteWholeDay(idScheduleInfo: string) {
       if (arrayCompare(splitScheduleInfoNames(key).slice(0, 2), [week, day]))
         deleteTable(key);
     });
+
+  // Mixpanel tracking
+  mixpanel.track("Delete Whole Day in Program");
 }
 
 /**
@@ -1358,6 +1379,9 @@ function duplicateWholeDay(
         props.scrollOffset,
       ),
     );
+
+  // Mixpanel tracking
+  mixpanel.track("Duplicate Program Day");
 }
 
 /**
@@ -1439,6 +1463,8 @@ function renameWeekDay(
   // Update program with new naming
   updateProgramWhole();
 
+  // Mixpanel tracking
+  mixpanel.track("Day Week Renamed", { Page: "ProgramView" });
   // Inform about successful update
   return outSchedule;
 }
@@ -1479,6 +1505,9 @@ function addWeekDayAfter(
             props.scrollOffset,
           ),
         );
+
+      // Mixpanel tracking
+      mixpanel.track("New Week Created in Program");
       return creationResult;
     }
   }
@@ -1499,7 +1528,7 @@ function mergeScheduleInfoNames(
   orderId: string | number,
   sep: string = sepWekDay,
 ) {
-  return [weekId, dayId, orderId].filter(Boolean).join(sep);
+  return arrayFilterUndefined([weekId, dayId, orderId]).join(sep);
 }
 
 /**
@@ -1651,6 +1680,8 @@ function updateProgramWhole() {
 
 /**
  * Rebuild the whole program based on the current table values.
+ *
+ * @param idScheduleInfo schedule ID of exercise and variant that shall be updated.
  */
 function updateProgramExercise(idScheduleInfo: string) {
   // Get interesting program exercise
@@ -1688,113 +1719,56 @@ function updateProgramExercise(idScheduleInfo: string) {
       }),
   );
 
+  // See if new exercise or variant is required
+  if (
+    optionallyCreateNewExercise(
+      exercisesValues.value[idScheduleInfo].exercise,
+      exercisesValues.value[idScheduleInfo].variant,
+      programExercise,
+    )
+  )
+    // New exercise or variant: parent is in charge of updating program
+    return;
+
   // Inform parent of update
   programCurrentValue.value = props.modelValue.duplicate();
 }
 
-//TODO: Check
-// Methods taken from LibraryView
+/**
+ * If there is the need, ask creation of new exercise or variant.
+ *
+ * @param exerciseName name of new exercise that might be created, or parent exercise of variant that might be created.
+ * @param variantName optional name of new variant that might be created.
+ */
+function optionallyCreateNewExercise(
+  exerciseName?: string,
+  variantName?: string,
+  programExercise?: ProgramExercise,
+): boolean {
+  // Exercise must be provided
+  if (!exerciseName) return false;
 
-// Get exercises to display
-const coachInfo = useCoachInfoStore();
-const exercises = computed<Exercise[]>(() => coachInfo.exercises || []);
-
-// Get options to display on variant creation or update
-const exerciseMuscleGroupsOptions = computed(() => {
-  return arrayUniqueValues(
-    exercises.value.reduce(
-      (outList, exercise) => outList.concat(exercise.muscleGroups),
-      [] as string[],
-    ),
+  // Check if any exercise with requested name
+  const foundExercise = props.exercises.find(
+    (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
   );
-});
-const exerciseEquipmentOptions = computed(() => {
-  return arrayUniqueValues(
-    exercises.value.reduce(
-      (outList, exercise) => outList.concat(exercise.equipment),
-      [] as string[],
-    ),
-  );
-});
+  if (!foundExercise) {
+    emit("newExercise", exerciseName, programExercise);
+    return true;
+  }
 
-/**
- * Show dialog to add a new variant.
- */
-function onNewVariant(idScheduleInfo: string) {
-  clearVariant();
-  addingNewVariant.value = true;
-  showDialogVariantForm.value = true;
-  selectedVariant.value = new ExerciseVariant({
-    name: i18n.t("coach.exercise_management.fields.variant"),
-    exercise: selectedExercises.value[idScheduleInfo],
-    loadType: selectedExercises.value[idScheduleInfo]?.defaultVariant?.loadType,
-    muscleGroups:
-      selectedExercises.value[idScheduleInfo]?.defaultVariant?.muscleGroups,
-    equipment:
-      selectedExercises.value[idScheduleInfo]?.defaultVariant?.equipment,
-  });
-}
+  // Check if any variant with requested name
+  if (
+    variantName &&
+    !foundExercise.variants?.some(
+      (variant) => variant.name?.toLowerCase() == variantName.toLowerCase(),
+    )
+  ) {
+    emit("newVariant", exerciseName, variantName, programExercise);
+    return true;
+  }
 
-/**
- * Submit new variant.
- */
-// in library veniva passata in input la variant
-function onVariantSubmit(variant: ExerciseVariant, idScheduleInfo: string) {
-  const exercise = selectedExercises.value[idScheduleInfo];
-
-  variant.saveNew({
-    onSuccess: () => {
-      exercise?.variants?.unshift(variant);
-
-      // Set variant of the q-select to the created variant
-      exercisesValues.value[idScheduleInfo].variant = variant.name;
-
-      clearVariant();
-      //nextTick(() => onNewVariant(idScheduleInfo));
-
-      $q.notify({
-        type: "positive",
-        message: i18n.t("coach.exercise_management.add_success", {
-          exercise: variant.name,
-        }),
-        position: "bottom",
-      });
-    },
-    onError: () =>
-      $q.notify({
-        type: "negative",
-        message: i18n.t("coach.exercise_management.add_error"),
-        position: "bottom",
-      }),
-  });
-}
-
-/**
- * Show dialog to add a new exercise (default variant).
- */
-/* function onNewExercise() {
-  clearExercise();
-  addingNewExercise.value = true;
-  showDialogVariantForm.value = true;
-  selectedVariant.value = new ExerciseVariant();
-} */
-
-/**
- * Clear exercise form and hide it.
- */
-/* function clearExercise() {
-  showDialogVariantForm.value = false;
-  addingNewExercise.value = false;
-  clearVariant();
-}
- */
-/**
- * Clear variant form and hide it.
- */
-function clearVariant() {
-  showDialogVariantForm.value = false;
-  addingNewVariant.value = false;
-  //selectedVariant.value = undefined;
+  return false;
 }
 </script>
 
@@ -1806,5 +1780,10 @@ function clearVariant() {
 .os-exercise-form {
   border-radius: 10px 0 0 10px;
   margin-inline-end: -1px;
+}
+
+.os-exercise-form-dense {
+  border-radius: 10px 10px 0 0;
+  margin-block-end: -1px;
 }
 </style>

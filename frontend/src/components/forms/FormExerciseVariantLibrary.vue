@@ -1,10 +1,8 @@
 <template>
   <q-form ref="formElement" @submit="onSubmit" @reset="onReset">
     <div class="row q-col-gutter-x-md">
-      <h6 v-if="props.insertExerciseName == true">Cacca</h6>
       <!-- Variant name with exercise name -->
       <os-input
-        v-else
         v-model="variantName"
         :label="$t('coach.exercise_management.fields.variant')"
         :rules="[
@@ -48,6 +46,7 @@
         emit-value
         map-options
         class="col-12 col-md-6"
+        required
       />
 
       <os-select
@@ -113,7 +112,6 @@ const props = defineProps({
     type: Array as PropType<ExerciseEquipment[]>,
     default: undefined,
   },
-  insertExerciseName: { type: Boolean, required: false, default: false },
 });
 
 // Define emits

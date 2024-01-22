@@ -36,7 +36,7 @@ export function stringGetNext(text: string) {
   if (!matchedText) return undefined;
 
   // Keep only interesting part
-  const [_, textBeginning, textEnding] = matchedText;
+  const [, textBeginning, textEnding] = matchedText;
   let replacedEnding = "";
 
   // Handle differently text ending with number or text

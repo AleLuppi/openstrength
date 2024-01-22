@@ -1,4 +1,13 @@
-export const usersCollection = "users";
-export const exercisesCollection = "exercises";
-export const programsCollection = "programs";
-export const maxliftsCollection = "maxlifts";
+// Collections
+export enum dbCollections {
+  users = "users",
+  exercises = "exercises",
+  programs = "programs",
+  maxlifts = "maxlifts",
+}
+
+// Subcollections
+export enum dbSubcollections {
+  // Under "programs"
+  programsSnapshots = "snapshots",
+}

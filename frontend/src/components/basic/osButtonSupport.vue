@@ -18,7 +18,12 @@
         class="support-btn q-pa-sm"
         :class="`support-btn-${direction}`"
       >
-        <q-tooltip v-if="tooltips?.[idx]" :delay="250">
+        <q-tooltip
+          v-if="tooltips?.[idx]"
+          :anchor="$q.platform.is.mobile ? 'top middle' : undefined"
+          :offset="$q.platform.is.mobile ? [0, 40] : undefined"
+          :delay="250"
+        >
           {{ tooltips[idx] }}
         </q-tooltip>
 

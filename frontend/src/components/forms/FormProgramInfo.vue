@@ -13,7 +13,11 @@
 
       <!-- Assigned athlete -->
       <div class="col-5">
-        <os-field label="Athlete" required :model-value="programAthlete">
+        <os-field
+          :label="$t('coach.program_management.fields.athlete')"
+          required
+          :model-value="programAthlete"
+        >
           <template #control>
             <q-btn
               @click="showAthleteAssigningDialog = true"
@@ -166,6 +170,7 @@ import { dateGetWithoutTimezone } from "@/helpers/scalar";
 import { AthleteUser } from "@/helpers/users/user";
 import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssignAthlete.vue";
 import { useCoachInfoStore } from "@/stores/coachInfo";
+import mixpanel from "mixpanel-browser";
 
 // Define props
 const props = defineProps({
@@ -239,6 +244,12 @@ function onSubmit() {
     ? dateGetWithoutTimezone(programFinishedOn.value)
     : undefined;
   program.description = programDescription.value;
+
+  // Mixpanel tracking
+  mixpanel.track("Program Info Updated", {
+    Page: "ProgramView",
+    IsProgramDescriptionSet: program.description ? true : false,
+  });
 
   emit("submit", program);
 }

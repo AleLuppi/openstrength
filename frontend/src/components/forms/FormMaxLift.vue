@@ -32,6 +32,53 @@
         required
       ></os-input>
 
+      <!-- Display estimated 1RM -->
+      <os-input
+        v-if="showEstimated1RM"
+        :model-value="maxliftEstimated1RMValue"
+        :suffix="maxliftValueSuffix"
+        :label="$t('coach.maxlift_management.fields.estimated1rm')"
+        readonly
+      >
+        <template v-slot:after>
+          <q-icon name="sym_o_help" class="cursor-pointer">
+            <q-tooltip
+              v-if="
+                maxlift?.exercise?.defaultVariant?.loadType ==
+                (ExerciseLoadType.loaded || ExerciseLoadType.bodyweight)
+              "
+            >
+              {{
+                props.athlete?.weight
+                  ? $t(
+                      "coach.maxlift_management.computation.estimated1rm_with_weight",
+                      {
+                        athlete: props.athlete?.name,
+                        weight: props.athlete?.weight,
+                      },
+                    )
+                  : $t(
+                      "coach.maxlift_management.computation.estimated1rm_with_default_weight",
+                      {
+                        athlete: props.athlete?.name,
+                      },
+                    )
+              }}
+            </q-tooltip>
+            <q-tooltip v-else>
+              {{
+                $t(
+                  "coach.maxlift_management.computation.estimated1rm_no_weight",
+                  {
+                    athlete: props.athlete?.name,
+                  },
+                )
+              }}
+            </q-tooltip>
+          </q-icon>
+        </template></os-input
+      >
+
       <!-- Performance date -->
       <os-input
         v-model="maxliftDate"
@@ -75,13 +122,19 @@
 import { ref, computed, watch, PropType } from "vue";
 import { QForm } from "quasar";
 import { dateGetWithoutTimezone } from "@/helpers/scalar";
-import { Exercise } from "@/helpers/exercises/exercise";
+import { Exercise, ExerciseLoadType } from "@/helpers/exercises/exercise";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
+import { estimate1RMfromNRM } from "@/helpers/charts/chartDatasetComputations";
+import { AthleteUser } from "@/helpers/users/user";
 
 // Set props
 const props = defineProps({
   maxlift: {
     type: MaxLift,
+    required: false,
+  },
+  athlete: {
+    type: AthleteUser,
     required: false,
   },
   exercises: {
@@ -109,9 +162,19 @@ defineExpose({
 // Set ref
 const formElement = ref<QForm>();
 const maxliftExercise = ref<string>();
-const maxliftType = ref<string>();
+const maxliftType = ref<MaxLiftType>();
 const maxliftValue = ref<string>();
 const maxliftDate = ref<string>();
+
+// Get values to display estimated 1RM
+const maxliftEstimated1RMValue = computed(() =>
+  computeE1RM(maxliftValue.value, maxliftType.value, maxliftExercise.value),
+);
+const showEstimated1RM = computed(
+  () =>
+    (props.maxlift?.athlete || props.athlete) &&
+    maxliftEstimated1RMValue.value != undefined,
+);
 
 // Setup variables according to selected maxlift
 watch(
@@ -150,6 +213,28 @@ const maxliftValueSuffix = computed(() => {
 });
 
 /**
+ * Calculate estimate of 1RM value.
+ *
+ * @param value max lift value.
+ * @param type max lift type.
+ */
+function computeE1RM(
+  value?: string,
+  type?: MaxLiftType,
+  exerciseName?: string,
+) {
+  const maxliftObj = new MaxLift();
+  maxliftObj.athlete = props.athlete ?? props.maxlift?.athlete;
+  maxliftObj.exercise =
+    props.exercises.find((exercise) => exercise.name == exerciseName) ??
+    props.maxlift?.exercise;
+  maxliftObj.value = value;
+  maxliftObj.type = type;
+
+  return estimate1RMfromNRM(maxliftObj);
+}
+
+/**
  * Perform operations on form submit.
  */
 function onSubmit() {
@@ -157,11 +242,12 @@ function onSubmit() {
   maxlift.exercise = props.exercises.find(
     (exercise) => exercise.name == maxliftExercise.value,
   );
-  maxlift.type = maxliftType.value as MaxLiftType;
+  maxlift.type = maxliftType.value;
   maxlift.value = maxliftValue.value;
   maxlift.performedOn = maxliftDate.value
     ? dateGetWithoutTimezone(maxliftDate.value)
     : undefined;
+  if (props.athlete) maxlift.athlete = props.athlete;
 
   emit("submit", maxlift);
 }

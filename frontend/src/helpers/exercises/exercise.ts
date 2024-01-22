@@ -4,7 +4,7 @@ import {
   doUpdateDoc,
   doDeleteDoc,
 } from "@/helpers/database/readwrite";
-import { exercisesCollection } from "@/helpers/database/collections";
+import { dbCollections } from "@/helpers/database/collections";
 
 /**
  * Define available load types.
@@ -107,7 +107,11 @@ export class Exercise {
 
   // Variants
   variants?: ExerciseVariant[];
-  defaultVariant?: ExerciseVariant;
+
+  // Get default variant
+  public get defaultVariant(): ExerciseVariant | undefined {
+    return this.variants?.find((variant) => variant.isDefault);
+  }
 
   // Get all muscle groups in variants
   public get muscleGroups() {
@@ -141,7 +145,6 @@ export class Exercise {
     });
     this.variants = variants;
     this.variants ?? this.addDefaultVariant();
-    this.defaultVariant = this.variants?.find((variant) => variant.isDefault);
   }
 
   /**
@@ -369,7 +372,7 @@ export class ExerciseVariant {
     }
 
     // Delete the variant
-    doDeleteDoc(exercisesCollection, variantToDelete.uid, {
+    doDeleteDoc(dbCollections.exercises, variantToDelete.uid, {
       onSuccess: onSuccess,
       onError: onError,
     });
@@ -412,7 +415,7 @@ export function addDocExerciseVariant(
     exerciseVariant,
     exercise,
   );
-  doAddDoc(exercisesCollection, extendedVariantObj, {
+  doAddDoc(dbCollections.exercises, extendedVariantObj, {
     addUserId: true,
     onSuccess: (docRef: DocumentReference) => {
       exerciseVariant.uid = docRef.id;
@@ -467,7 +470,7 @@ export function updateDocExerciseVariant(
   );
   const docId = exerciseVariant.uid;
   if (docId)
-    doUpdateDoc(exercisesCollection, docId, extendedVariantObj, {
+    doUpdateDoc(dbCollections.exercises, docId, extendedVariantObj, {
       addUserId: true,
       onSuccess: (docRef: DocumentReference) => {
         onSuccess?.(docRef);
@@ -491,13 +494,7 @@ function extractExerciseVariantInfo(
   const { uid: _0, name: _1, exercise: _2, ...variantObj } = exerciseVariant;
   const variantExercise =
     exercise ?? exerciseVariant.exercise ?? new Exercise();
-  const {
-    uid: _3,
-    name: _4,
-    variants: _5,
-    defaultVariant: _6,
-    ...exerciseObj
-  } = variantExercise;
+  const { uid: _3, name: _4, variants: _5, ...exerciseObj } = variantExercise;
   const fullVariantObj = {
     ...exerciseObj,
     ...variantObj,

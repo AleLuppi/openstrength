@@ -88,6 +88,8 @@ import { useI18n } from "vue-i18n";
 import type { QForm } from "quasar";
 import { useQuasar } from "quasar";
 import { AthleteUser, UserGender } from "@/helpers/users/user";
+import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
 
 // Init plugin
 const $q = useQuasar();
@@ -180,12 +182,31 @@ function onSubmit() {
         message: i18n.t("coach.athlete_management.list.add_succeed"),
         position: "bottom",
       });
+
+      // Register GA4 event
+      event("athleteview_anagraphic_update", {
+        event_category: "documentation",
+        event_label: "Update athlete anagraphic info from AthleteView",
+        value: 1,
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("Update Athlete", {
+        Type: "Anagraphic Info",
+        IsWeightSet: Boolean(athlete.weight),
+        IsNoteSet: Boolean(athlete.coachNote),
+      });
     },
     onError: () => {
       $q.notify({
         type: "negative",
         message: i18n.t("coach.athlete_management.list.add_error"),
         position: "bottom",
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("ERROR Update Athlete", {
+        Type: "Anagraphic Info",
       });
     },
   });

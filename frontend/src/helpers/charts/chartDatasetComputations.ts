@@ -1,10 +1,12 @@
 import { max } from "moment";
 import { MaxLift, MaxLiftType } from "../maxlifts/maxlift";
 import { ProgramLine } from "../programs/program";
+import { ExerciseLoadType } from "@/helpers/exercises/exercise";
+
 
 /**
  * Define RPE-reps table.
- * Each value is a percentage of 1RM
+ * Each value is a percentage of 1RM.
  * Column index define the reps, row index define the rpe
  */
 export const rpeRepsTable: number[][] = [
@@ -20,6 +22,62 @@ export const rpeRepsTable: number[][] = [
 ];
 
 /**
+ * Estimate 1RM value based on exercise type and rpe table for a given maxlift.
+ *
+ * @param maxlift max lift to be used for the estimation.
+ * @param rpeTable optional rpe-reps table to override default one.
+ * @returns the estimated 1RM value
+ */
+export function estimate1RMfromNRM(
+  maxlift: MaxLift,
+  rpeTable: number[][] = rpeRepsTable,
+): number | undefined {
+  // Check inputs
+  if (typeof Number(maxlift.value) != "number" || !maxlift.type || !rpeTable)
+    return;
+
+  // Set body weigth
+  let bodyweight = undefined;
+  if (
+    maxlift.exercise?.defaultVariant?.loadType &&
+    [ExerciseLoadType.loaded || ExerciseLoadType.bodyweight].includes(
+      maxlift.exercise?.defaultVariant?.loadType,
+    )
+  ) {
+    bodyweight = maxlift.athlete?.weight ? Number(maxlift.athlete?.weight) : 75;
+  } else {
+    bodyweight = 0;
+  }
+
+  // Compute estimated 1RM value
+  let usefulRpeRepstableValue = undefined;
+  switch (maxlift.type) {
+    case MaxLiftType._3RM:
+      usefulRpeRepstableValue = rpeTable[0][2];
+      break;
+    case MaxLiftType._5RM:
+      usefulRpeRepstableValue = rpeTable[0][4];
+      break;
+    case MaxLiftType._6RM:
+      usefulRpeRepstableValue = rpeTable[0][5];
+      break;
+    case MaxLiftType._8RM:
+      usefulRpeRepstableValue = rpeTable[0][7];
+      break;
+    case MaxLiftType._10RM:
+      usefulRpeRepstableValue = rpeTable[0][9];
+      break;
+  }
+  const estimated1RMValue =
+    Number(maxlift.value) && usefulRpeRepstableValue
+      ? (bodyweight + Number(maxlift.value)) / (0.01 * usefulRpeRepstableValue)
+      : undefined;
+  return estimated1RMValue
+    ? Math.round(estimated1RMValue * 10) / 10 - bodyweight
+    : undefined;
+}
+
+/**
  * Method to compute the percentage of 1RM [%] from the rpe-reps table
  * @param reps repetition number from 1 to 15
  * @param rpe rpe from 6.5 to 10 at 0.5 increments
@@ -29,7 +87,7 @@ export const rpeRepsTable: number[][] = [
 export function calculatePercentage1RM(
   reps: number,
   rpe: number,
-  rpeTable: number[][],
+  rpeTable: number[][] = rpeRepsTable,
 ): number | undefined {
   if (reps < 1 || reps > 15 || rpe < 6.5 || rpe > 10 || !rpeTable) {
     console.error("Invalid reps, RPE values, or RPE table.");
@@ -119,9 +177,7 @@ export function calculateRpeFromTable(
 /**
  * Fallback method when no available computational methods are present
  */
-export function computeUndefined(
-  programLines: ProgramLine[],
-): number | undefined {
+export function computeUndefined(): number | undefined {
   return undefined;
 }
 

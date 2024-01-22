@@ -9,6 +9,7 @@
           :to="{ name: 'program', params: { programId: props.program.uid } }"
           :label="$t('coach.athlete_management.call_to_action.modify_program')"
           class="q-mr-md"
+          @click="registerProgramOpeningEvent()"
         ></q-btn>
       </div>
 
@@ -17,13 +18,14 @@
         <os-input
           v-model="programName"
           :label="$t('coach.athlete_management.fields.program_name')"
+          class="col-12"
         />
 
         <!-- Start date -->
         <os-input
           v-model="programStartedOn"
           :label="$t('coach.athlete_management.fields.program_start')"
-          class="col-3"
+          class="col-6"
         >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
@@ -51,7 +53,7 @@
         <os-input
           v-model="programFinishedOn"
           :label="$t('coach.athlete_management.fields.program_finish')"
-          class="col-3"
+          class="col-6"
         >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
@@ -97,6 +99,8 @@ import { useI18n } from "vue-i18n";
 import type { QForm } from "quasar";
 import { useQuasar } from "quasar";
 import { Program } from "@/helpers/programs/program";
+import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
 
 // Init plugin
 const $q = useQuasar();
@@ -158,11 +162,25 @@ function onSubmit() {
   props.onSubmit?.(program);
 
   program.saveUpdate({
+    saveFrozenView: true,
     onSuccess: () => {
       $q.notify({
         type: "positive",
         message: i18n.t("coach.athlete_management.list.add_succeed"),
         position: "bottom",
+      });
+
+      // Register GA4 event
+      event("athleteview_programinfo_updated", {
+        event_category: "documentation",
+        event_label: "Program info updated in AthleteView",
+        value: 1,
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("Program Info Updated", {
+        Page: "AthleteView",
+        IsProgramDescriptionSet: program.description ? true : false,
       });
     },
     onError: () => {
@@ -172,6 +190,23 @@ function onSubmit() {
         position: "bottom",
       });
     },
+  });
+}
+
+/**
+ * This method is only used to register the event related to button click
+ */
+function registerProgramOpeningEvent() {
+  // Register GA4 event
+  event("athleteview_program_open", {
+    event_category: "documentation",
+    event_label: "Program opened from AthleteView",
+    value: 1,
+  });
+
+  // Mixpanel tracking
+  mixpanel.track("Program Opened", {
+    Page: "AthleteView",
   });
 }
 </script>

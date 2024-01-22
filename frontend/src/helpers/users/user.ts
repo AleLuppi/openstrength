@@ -7,8 +7,7 @@ import {
   doGetDocs,
   changeDocId,
 } from "@/helpers/database/readwrite";
-import { usersCollection } from "@/helpers/database/collections";
-import { Program } from "@/helpers/programs/program";
+import { dbCollections } from "@/helpers/database/collections";
 
 /**
  * Define available user roles.
@@ -298,12 +297,12 @@ export function addDocUser(
 
   // Crate user document
   if (uid)
-    doAddDocWithId(usersCollection, uid, userObj, {
+    doAddDocWithId(dbCollections.users, uid, userObj, {
       onSuccess: (docRef: DocumentReference) => onSuccess?.(docRef),
       onError: onError,
     });
   else
-    doAddDoc(usersCollection, userObj, {
+    doAddDoc(dbCollections.users, userObj, {
       onSuccess: (docRef: DocumentReference) => {
         onSuccess?.(docRef);
         user.uid = docRef.id;
@@ -326,7 +325,7 @@ export function updateDocUser(
   const { uid: docId, ...userObj } = user;
   userObj.lastUpdated = new Date();
   if (docId)
-    doUpdateDoc(usersCollection, docId, userObj, {
+    doUpdateDoc(dbCollections.users, docId, userObj, {
       onSuccess: (docRef: DocumentReference) => {
         onSuccess?.(docRef);
       },
@@ -348,7 +347,7 @@ export async function loadDocUser(
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
   // Get and update used info
-  await doGetDocWithID(usersCollection, uid, {
+  await doGetDocWithID(dbCollections.users, uid, {
     onSuccess: (userData: { [key: string]: any } | undefined) => {
       const user = userData ? new User({ uid: uid, ...userData }) : undefined;
       onSuccess?.(user);
@@ -373,7 +372,7 @@ export async function getDocUserByField(
 ) {
   // Get documents and select first one only
   let userDoc: { [key: string]: any } | undefined = undefined;
-  await doGetDocs(usersCollection, [[field, "==", value]], {
+  await doGetDocs(dbCollections.users, [[field, "==", value]], {
     numDocs: 2,
     onSuccess: (docsData: { [key: string]: any }) => {
       userDoc = Object.keys(docsData).length == 1 ? docsData : undefined;
@@ -398,7 +397,7 @@ export function changeDocUserId(
   newId: string,
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
-  changeDocId(usersCollection, oldId, newId, {
+  changeDocId(dbCollections.users, oldId, newId, {
     onSuccess: onSuccess,
     onError: onError,
   });
