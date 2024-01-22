@@ -10,7 +10,7 @@ import {
 } from "@/helpers/database/collections";
 import { User, CoachUser, AthleteUser, UserRole } from "@/helpers/users/user";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
-import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import {
   matchNumberFractionInteger,
   matchNumberFractionPercentageFloat,
@@ -21,11 +21,11 @@ import {
   matchNumberUnsignedFloatWithOptionalUnit,
   matchNumberUnsignedInteger,
 } from "@/helpers/regex";
-import {
+/* import {
   calculateRepsFromTable,
   calculateRpeFromTable,
   rpeRepsTable,
-} from "../charts/chartDatasetComputations";
+} from "../charts/chartDatasetComputations"; */
 import { convertProgramToDayBlocks } from "@/helpers/programs/converters";
 
 /**
@@ -1478,11 +1478,4 @@ export function unflattenProgram(
   if (storeUnresolved && !outProgram.athlete && flatProgram.athleteId)
     storeUnresolved.athlete = [outProgram, flatProgram.athleteId];
   return outProgram;
-}
-function calculatePercentage1RM(
-  reps: number | undefined,
-  rpe: number | undefined,
-  rpeRepsTable: number[][],
-) {
-  throw new Error("Function not implemented.");
 }

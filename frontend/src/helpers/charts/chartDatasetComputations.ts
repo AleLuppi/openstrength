@@ -1,8 +1,7 @@
-import { max } from "moment";
+//import { max } from "moment";
 import { MaxLift, MaxLiftType } from "../maxlifts/maxlift";
 import { ProgramLine } from "../programs/program";
 import { ExerciseLoadType } from "@/helpers/exercises/exercise";
-
 
 /**
  * Define RPE-reps table.
@@ -94,12 +93,33 @@ export function calculatePercentage1RM(
     return undefined;
   }
 
-  const rpeIndex = 7 - Math.round((rpe - 6.5) * 2);
-  const repsIndex = reps - 1;
-  const percentage1RM = rpeTable[rpeIndex][repsIndex];
+  const floorReps = Math.floor(reps);
+  const ceilReps = Math.ceil(reps);
 
-  return percentage1RM;
+  const floorRpe = Math.floor(rpe);
+  const ceilRpe = Math.ceil(rpe)
+
+  if (floorReps === ceilReps && floorRpe === ceilRpe) {
+    // Integer reps, use the table directly
+    const rpeIndex = 7 - Math.round((rpe - 6.5) * 2);
+    const repsIndex = floorReps - 1;
+    return rpeTable[rpeIndex][repsIndex];
+  } else
+   {
+    // Fractional reps, interpolate between the two nearest integer reps
+    const rpeIndex = 7 - Math.round((rpe - 6.5) * 2);
+    const floorRepsIndex = floorReps - 1;
+    const ceilRepsIndex = ceilReps - 1;
+
+    const floorPercentage = rpeTable[rpeIndex][floorRepsIndex];
+    const ceilPercentage = rpeTable[rpeIndex][ceilRepsIndex];
+
+    // Linear interpolation
+    const fraction = reps - floorReps;
+    return floorPercentage + (ceilPercentage - floorPercentage) * fraction;
+  }
 }
+
 
 /**
  * Method to compute the number of reps given a % of the RM and rpe
@@ -111,7 +131,7 @@ export function calculatePercentage1RM(
 export function calculateRepsFromTable(
   percentage: number,
   rpe: number,
-  rpeTable: number[][],
+  rpeTable: number[][] = rpeRepsTable,
 ): number | undefined {
   if (
     percentage < 0 ||
@@ -127,16 +147,39 @@ export function calculateRepsFromTable(
   const rpeIndex = 7 - Math.round((rpe - 6.5) * 2);
   const row = rpeTable[rpeIndex];
 
-  // Iterate over the row to find the closest value to the provided percentage
-  const closestIndex = row
-    .map((value, index) => ({ index, diff: Math.abs(value - percentage) }))
-    .reduce((min, current) => (current.diff < min.diff ? current : min)).index;
+  // Find the two nearest percentages
+  let lowerIndex = 0;
+  let upperIndex = row.length - 1;
 
-  // Reps value is the index + 1
-  const reps = closestIndex + 1;
+  for (let i = 0; i < row.length; i++) {
+    if (row[i] === percentage) {
+      // Exact match, return the corresponding reps
+      return i + 1;
+    }
 
-  return reps;
+    if (row[i] < percentage && row[i] > row[lowerIndex]) {
+      lowerIndex = i;
+    } else if (row[i] > percentage && row[i] < row[upperIndex]) {
+      upperIndex = i;
+    }
+  }
+
+  const lowerPercentage = row[lowerIndex];
+  const upperPercentage = row[upperIndex];
+
+  const lowerReps = lowerIndex + 1;
+  const upperReps = upperIndex + 1;
+
+  // Linear interpolation
+  const fraction = (percentage - lowerPercentage) / (upperPercentage - lowerPercentage);
+  const reps = lowerReps + fraction * (upperReps - lowerReps);
+
+  // Round to the nearest integer
+  return Math.round(reps);
 }
+
+
+
 
 /**
  * Method to compute the rpe given a % of the RM and reps
@@ -148,7 +191,7 @@ export function calculateRepsFromTable(
 export function calculateRpeFromTable(
   percentage: number,
   reps: number,
-  rpeTable: number[][],
+  rpeTable: number[][] = rpeRepsTable,
 ): number | undefined {
   if (
     percentage < 0 ||
