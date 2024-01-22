@@ -47,6 +47,24 @@
               </span>
             </div>
 
+            <!-- Undo and redo -->
+            <div>
+              <q-btn
+                icon="sym_o_undo"
+                flat
+                round
+                @click="programBuilderElement?.undo()"
+                :disable="!canUndo"
+              ></q-btn>
+              <q-btn
+                icon="sym_o_redo"
+                flat
+                round
+                @click="programBuilderElement?.redo()"
+                :disable="!canRedo"
+              ></q-btn>
+            </div>
+
             <!-- Display and update assigned user -->
             <div
               v-if="selectedProgram.athlete && !denseView"
@@ -219,6 +237,18 @@
               onNewExercise(exerciseName, undefined, programExercise)
           "
           @new-variant="onNewExercise"
+          @undo="
+            (undos, redos) => {
+              canUndo = undos;
+              canRedo = redos;
+            }
+          "
+          @redo="
+            (redos, undos) => {
+              canUndo = undos;
+              canRedo = redos;
+            }
+          "
           :exercises="coachInfo.exercises"
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
@@ -684,6 +714,8 @@ const showAthleteAssigningDialog = ref(false);
 const showShareProgramDialog = ref(false);
 const programManagerExpanded = ref(false);
 const programManagerHeight = ref(0);
+const canUndo = ref(false);
+const canRedo = ref(false);
 
 // Set ref related to maxlift
 const updatingMaxlift = ref<MaxLift>();
@@ -862,6 +894,12 @@ function onProgramTableUpdate(program: Program) {
   // Update selected program
   selectedProgram.value = program;
   programSaved.value = false;
+
+  // Check if undo and redo are possible
+  if (programBuilderElement.value)
+    [canUndo.value, canRedo.value] = programBuilderElement.value
+      .getHistorySteps()
+      .map((val: number) => val > 0);
 
   // Start autosave
   autosaveProgram();
@@ -1273,9 +1311,26 @@ function handleDrawerClick(clickParam: number) {
  */
 function keydownHandler(event: KeyboardEvent) {
   // Save program on ctrl + s
-  if (event.ctrlKey && event.key === "s") {
+  if (event.ctrlKey && event.key.toLowerCase() === "s") {
     event.preventDefault();
     saveProgram(undefined, true);
+  }
+
+  // Undo changes on ctrl + z
+  else if (
+    event.ctrlKey &&
+    !event.shiftKey &&
+    event.key.toLowerCase() === "z"
+  ) {
+    programBuilderElement.value?.undo();
+  }
+
+  // Redo changes on ctrl + y or ctrl + shift + z
+  else if (
+    (event.ctrlKey && event.key.toLowerCase() === "y") ||
+    (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "z")
+  ) {
+    programBuilderElement.value?.redo();
   }
 }
 
