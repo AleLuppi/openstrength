@@ -825,6 +825,7 @@ function openProgram(programId?: string, force: boolean = false) {
   if (
     route.name === NamedRoutes.program &&
     programId != undefined &&
+    programId != route.params.programId &&
     (programSaved.value || force)
   ) {
     router.replace({
