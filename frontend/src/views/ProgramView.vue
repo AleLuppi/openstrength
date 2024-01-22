@@ -1263,10 +1263,26 @@ function handleDrawerClick(clickParam: number) {
   emit("activateDrawerItem", clickParam);
 }
 
+/**
+ * Manage key presses while on this view.
+ *
+ * @param event key press event.
+ */
+function keydownHandler(event: KeyboardEvent) {
+  // Save program on ctrl + s
+  if (event.ctrlKey && event.key === "s") {
+    event.preventDefault();
+    saveProgram(undefined, true);
+  }
+}
+
 // Define what to do on component mount
 onMounted(() => {
   // Open top card on large screens
   if ($q.screen.gt.sm) programManagerExpanded.value = true;
+
+  // Detect key presses while on this page
+  document.addEventListener("keydown", keydownHandler);
 });
 
 // Define what to do before component unmount
@@ -1274,6 +1290,9 @@ onBeforeUnmount(() => {
   // Clear autosave, and save program if required
   autosaveProgram.cancel();
   saveProgram(undefined, true);
+
+  // Remove key press event listener
+  document.addEventListener("keydown", keydownHandler);
 });
 </script>
 
