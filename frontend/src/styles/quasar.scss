@@ -92,6 +92,10 @@ a {
   color: $os-grey-8;
 }
 
+.text-md {
+  font-size: $os-fontsize-md;
+}
+
 .text-ellipsis {
   white-space: nowrap;
   overflow: hidden;

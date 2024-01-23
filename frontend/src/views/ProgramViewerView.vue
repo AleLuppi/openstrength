@@ -9,18 +9,6 @@
             {{ $t("coach.program_management.viewer.title") }}
             {{ programSnapshot.athlete }}
           </h3>
-          <!-- <div class="column justify-center">
-            <q-btn
-              v-if="user.role == UserRole.coach"
-              icon="sym_o_assignment_return"
-              :to="{
-                name: NamedRoutes.program,
-                params: { programId: route.query.id },
-              }"
-              class="no-print"
-              >{{ $t("coach.program_management.viewer.back") }}</q-btn
-            >
-          </div> -->
         </div>
 
         <p>
