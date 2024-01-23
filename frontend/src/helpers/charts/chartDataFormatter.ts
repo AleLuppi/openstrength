@@ -143,7 +143,6 @@ export function computeDataForExercise(
   const calculationFunction = chartInfo
     ? getCalculationFunction(chartInfo)
     : computeUndefined;
-
   if (chartInfo?.xAxisType === OSAvailableXType.Weeks) {
     weeks.forEach((week) => {
       let totalValueForWeek = 0;
@@ -171,6 +170,8 @@ export function computeDataForExercise(
           String(week),
           String(day),
         );
+         
+        //let estimatedLines = computeLines(lines);
 
         totalValueForDay += calculationFunction(lines) ?? 0;
       });
