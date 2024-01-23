@@ -171,16 +171,18 @@
           </p>
 
           <div
-            v-for="[name, email, whatsapp, instagram] in [
+            v-for="[name, email, emailcc, whatsapp, instagram] in [
               [
                 'Lorenzo Amadori',
                 'lorenzo.amadori1996@gmail.com',
+                'lorenzo.boffa06@gmail.com',
                 '393405489016',
                 'amalo96',
               ],
               [
                 'Lorenzo Boffa',
                 'lorenzo.boffa06@gmail.com',
+                'lorenzo.amadori1996@gmail.com',
                 '393468660263',
                 'loreboffa',
               ],
@@ -196,7 +198,9 @@
                 :href="
                   'mailto:' +
                   email +
-                  '?subject=OpenStrength: informazioni accesso piattaforma&body=Ciao, vorrei avere più informazioni.'
+                  '?subject=OpenStrength: accesso piattaforma' +
+                  '&body=Ciao, vorrei avere più informazioni riguardo all\'accesso a OpenStrength.' +
+                  (emailcc ? '&cc=' + emailcc : '')
                 "
               >
                 {{ email }}
