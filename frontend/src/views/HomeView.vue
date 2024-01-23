@@ -142,96 +142,6 @@
         </q-card>
       </div>
     </div>
-
-    <!-- Show dialog for 12Feb deadline -->
-    <q-dialog v-model="showDialogPresaleDeadline">
-      <q-card class="q-pa-sm">
-        <q-card-section class="q-pb-none">
-          <h3 class="text-primary">
-            Ancora pochi giorni per provare OpenStrength!
-          </h3>
-          <q-btn
-            flat
-            round
-            dense
-            icon="close"
-            color="light-dark"
-            v-close-popup
-            style="position: absolute; top: 0; right: 0"
-          />
-        </q-card-section>
-        <q-card-section>
-          <p class="q-pb-md text-md">
-            Hai tempo fino al 12 Febbraio per provare liberamente OpenStrength,
-            poi limiteremo gli accessi per qualche mese.
-          </p>
-          <p class="q-pb-md text-md">
-            Vuoi continuare ad usare l'app?
-            <span class="text-bold">Scrivici!</span>
-          </p>
-
-          <div
-            v-for="[name, email, emailcc, whatsapp, instagram] in [
-              [
-                'Lorenzo Amadori',
-                'lorenzo.amadori1996@gmail.com',
-                'lorenzo.boffa06@gmail.com',
-                '393405489016',
-                'amalo96',
-              ],
-              [
-                'Lorenzo Boffa',
-                'lorenzo.boffa06@gmail.com',
-                'lorenzo.amadori1996@gmail.com',
-                '393468660263',
-                'loreboffa',
-              ],
-            ]"
-            class="row justify-between items-center q-col-gutter-md q-mb-md"
-            :key="name"
-          >
-            <div class="col">
-              <p class="text-bold" style="font-size: 1.1em">{{ name }}:</p>
-            </div>
-            <div>
-              <a
-                :href="
-                  'mailto:' +
-                  email +
-                  '?subject=OpenStrength: accesso piattaforma' +
-                  '&body=Ciao, vorrei avere più informazioni riguardo all\'accesso a OpenStrength.' +
-                  (emailcc ? '&cc=' + emailcc : '')
-                "
-              >
-                {{ email }}
-              </a>
-            </div>
-            <div>
-              <q-btn
-                icon="fab fah fa-whatsapp"
-                round
-                :href="
-                  'https://wa.me/' +
-                  whatsapp +
-                  '?text=Ciao!%20Vorrei%20qualche%20informazione%20in%20più%20riguardo%20a%20OpenStrength'
-                "
-                target="_blank"
-                style="background-color: #25d366 !important"
-              ></q-btn>
-            </div>
-            <div>
-              <q-btn
-                icon="fab fah fa-instagram"
-                round
-                :href="'https://www.instagram.com/' + instagram"
-                target="_blank"
-                style="background-color: #e1306c !important"
-              ></q-btn>
-            </div>
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
   </q-page>
 </template>
 
@@ -239,7 +149,6 @@
 import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
 import { UserRole } from "@/helpers/users/user";
-import { onMounted, ref } from "vue";
 
 // Define emits
 defineEmits<{
@@ -248,14 +157,6 @@ defineEmits<{
 
 // Get user state
 const user = useUserStore();
-
-// Show deadline dialog
-const showDialogPresaleDeadline = ref(false);
-onMounted(() => {
-  setTimeout(() => {
-    showDialogPresaleDeadline.value = true;
-  }, 3000);
-});
 
 // Set coach action buttons
 const buttonsCoachAction = [
