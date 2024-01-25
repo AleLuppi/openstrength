@@ -127,6 +127,7 @@ export function getProgramUniqueWeeks(
         (exercise) => !exerciseName || exercise.exercise?.name == exerciseName,
       )
       .map((exercise) => exercise.scheduleWeek?.toString()) || [],
+    true,
   );
 }
 
@@ -144,6 +145,7 @@ export function getProgramUniqueDays(program?: Program, exerciseName?: string) {
         (exercise) => !exerciseName || exercise.exercise?.name == exerciseName,
       )
       .map((exercise) => exercise.scheduleDay?.toString()) || [],
+    true,
   );
 }
 
