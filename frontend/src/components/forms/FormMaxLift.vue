@@ -28,8 +28,8 @@
         v-model="maxliftValue"
         :suffix="maxliftValueSuffix"
         :label="$t('coach.maxlift_management.fields.value')"
-        mask="#####"
         required
+        @input="filterInput()"
       ></os-input>
 
       <!-- Display estimated 1RM -->
@@ -234,6 +234,13 @@ function computeE1RM(
   maxliftObj.type = type;
 
   return estimate1RMfromNRM(maxliftObj);
+}
+
+/**
+ * Allows user to only use numbers and dot
+ */
+function filterInput() {
+  maxliftValue.value = maxliftValue.value?.replace(/[^0-9.]/g, "");
 }
 
 /**
