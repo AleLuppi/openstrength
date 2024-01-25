@@ -44,8 +44,10 @@
           <q-icon name="sym_o_help" class="cursor-pointer">
             <q-tooltip
               v-if="
-                maxlift?.exercise?.defaultVariant?.loadType ==
-                (ExerciseLoadType.loaded || ExerciseLoadType.bodyweight)
+                maxlift?.exercise?.variants?.at(0)?.loadType ===
+                  ExerciseLoadType.loaded ||
+                maxlift?.exercise?.variants?.at(0)?.loadType ===
+                  ExerciseLoadType.bodyweight
               "
             >
               {{
