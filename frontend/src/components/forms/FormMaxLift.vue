@@ -89,8 +89,6 @@
         outlined
         dense
         mask="date"
-        :rules="['date']"
-        required
       >
         <template v-slot:append>
           <q-icon name="event" class="cursor-pointer">
@@ -190,7 +188,7 @@ watch(
           .toISOString()
           .split("T")[0]
           .replaceAll("-", "/")
-      : undefined;
+      : new Date().toISOString().split("T")[0].replaceAll("-", "/");
   },
   { immediate: true },
 );
