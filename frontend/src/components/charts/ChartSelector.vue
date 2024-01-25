@@ -102,7 +102,7 @@ const chartDescriptions: OSChartDescriptor[] = [
     chartTitle: i18n.t("coach.charts_management.list.tot_sets_title"),
     chartDescription: i18n.t("coach.charts_management.list.tot_sets_desc"),
   },
-  {
+  /* {
     chartType: OSChartType.Intensity,
     chartVersion: OSChartVersion.MaxIntensityKg,
     xAxisType: OSAvailableXType.Weeks,
@@ -117,7 +117,7 @@ const chartDescriptions: OSChartDescriptor[] = [
     chartTitle: "Average intensity varying weeks",
     chartDescription:
       "Average intensity used in the weeks [kg]. Note: values set as % are computed only if referred to something",
-  },
+  }, */
 ];
 
 // Get a list of data requests for program

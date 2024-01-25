@@ -170,7 +170,7 @@ export function computeDataForExercise(
           String(week),
           String(day),
         );
-         
+
         //let estimatedLines = computeLines(lines);
 
         totalValueForDay += calculationFunction(lines) ?? 0;

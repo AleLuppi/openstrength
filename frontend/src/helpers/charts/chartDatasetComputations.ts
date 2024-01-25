@@ -142,8 +142,6 @@ export function calculateRepsFromTable(
     return undefined;
   }
 
-
-
   const rpeIndex = 7 - Math.round((rpe - 6.5) * 2);
   const row = rpeTable[rpeIndex];
 
@@ -250,10 +248,9 @@ export function estimateMissingLineProps(
 
   //TODO: Ensure load is a percentage (if in kg, transform into a percentage)
   let loadPercentage = undefined;
-  if (load){
-    loadPercentage = 100*(load/maxliftValue);
+  if (load) {
+    loadPercentage = 100 * (load / maxliftValue);
   }
-  
 
   if (loadPercentage && reps && !rpe) {
     const estimatedRpe = calculateRpeFromTable(loadPercentage, reps);
@@ -262,7 +259,9 @@ export function estimateMissingLineProps(
     const estimatedLoad = calculatePercentage1RM(reps, rpe);
     //line.loadBaseValue = `${estimatedLoad}%`;
 
-    line.loadBaseValue = estimatedLoad ? (Math.round(estimatedLoad*100)/100).toString() + "%" : undefined;
+    line.loadBaseValue = estimatedLoad
+      ? (Math.round(estimatedLoad * 100) / 100).toString() + "%"
+      : undefined;
   } else if (loadPercentage && !reps && rpe) {
     const estimatedReps = calculateRepsFromTable(loadPercentage, rpe);
     line.repsBaseValue = `${estimatedReps}`;
