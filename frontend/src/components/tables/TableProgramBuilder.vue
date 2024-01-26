@@ -763,44 +763,35 @@ import {
 const i18n = useI18n();
 
 // Define props
-const props = defineProps({
-  modelValue: {
-    type: Program,
-    required: true,
-  },
-  exercises: {
-    type: Array as PropType<Exercise[]>,
-    default: () => [],
-  },
-  maxlifts: {
-    type: Array as PropType<MaxLift[]>,
-    default: () => [],
-  },
-  filter: {
-    type: Object as PropType<{
+const props = withDefaults(
+  defineProps<{
+    modelValue: Program;
+    exercises: Exercise[];
+    maxlifts: MaxLift[];
+    filter: {
       week: string[];
       day: string[];
       exercise: string[];
-    }>,
-    default: () => ({}),
+    };
+    dense: boolean;
+    historyMaxLength: number;
+    scrollOffset: number;
+    debounce: number;
+    defaultWeekName: number | string;
+    defaultDayName: number | string;
+  }>(),
+  {
+    exercises: () => [],
+    maxlifts: () => [],
+    filter: () => ({ week: [], day: [], exercise: [] }),
+    dense: false,
+    historyMaxLength: 50,
+    scrollOffset: 0,
+    debounce: 250,
+    defaultWeekName: "1",
+    defaultDayName: "1",
   },
-  dense: {
-    type: Boolean,
-    default: false,
-  },
-  historyMaxLength: {
-    type: Number,
-    default: 50,
-  },
-  scrollOffset: {
-    type: Number,
-    default: 0,
-  },
-  debounce: {
-    type: Number,
-    default: 250,
-  },
-});
+);
 
 // Define emits
 const emit = defineEmits<{
