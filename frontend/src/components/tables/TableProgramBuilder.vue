@@ -1210,6 +1210,7 @@ function moveExercise(
   exercisesValues.value.forEach((value) => {
     if (
       source != undefined &&
+      !duplicate &&
       value.week == source[0] &&
       value.day == source[1] &&
       value.order > source[2]
@@ -1380,15 +1381,17 @@ function moveDay(
   // Check if source is empty while renaming
   let isSourceEmpty = true;
 
-  // Perform move
-  exercisesValues.value.forEach((exerciseData) => {
-    if (exerciseData.week == fromWeek && exerciseData.day == fromDay) {
-      if (duplicate)
-        duplicateTable(exerciseData, [toWeek, toDay, exerciseData.order]);
-      else moveExercise(exerciseData, [toWeek, toDay, exerciseData.order]);
-      isSourceEmpty = false;
-    }
-  });
+  // Perform move (ordered)
+  arraySortObjectsByField(exercisesValues.value, "order", Number).forEach(
+    (exerciseData) => {
+      if (exerciseData.week == fromWeek && exerciseData.day == fromDay) {
+        if (duplicate)
+          duplicateTable(exerciseData, [toWeek, toDay, exerciseData.order]);
+        else moveExercise(exerciseData, [toWeek, toDay, exerciseData.order]);
+        isSourceEmpty = false;
+      }
+    },
+  );
 
   // Optionally add a table is source is empty
   if (createIfEmpty && isSourceEmpty) {
@@ -1440,7 +1443,7 @@ function duplicateDay(
   doScroll: boolean = true,
 ) {
   // Duplicate all data tables
-  moveDay(scheduleInfo, destination, true, undefined, true, doScroll);
+  moveDay(scheduleInfo, destination, false, undefined, true, doScroll);
 
   // Mixpanel tracking
   mixpanel.track("Duplicate Program Day");
