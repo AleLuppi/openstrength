@@ -751,7 +751,7 @@ import {
   MaxLiftTypesPerValue,
 } from "@/helpers/maxlifts/maxlift";
 import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
-import { numberClamp, stringGetNext } from "@/helpers/scalar";
+import { numberClamp, stringGetNextFromList } from "@/helpers/scalar";
 import mixpanel from "mixpanel-browser";
 import {
   ProgramBuilderData,
@@ -1373,9 +1373,7 @@ function moveDay(
   const [fromWeek, fromDay] = scheduleInfo;
   let [toWeek, toDay] = destination;
   if (nextFreeDestination)
-    while (allDays.value[toWeek]?.includes(toDay)) {
-      toDay = stringGetNext(toDay) || `${toDay}1`;
-    }
+    toDay = stringGetNextFromList(allDays.value[toWeek], toDay);
 
   // Check if source is empty while renaming
   let isSourceEmpty = true;
@@ -1476,9 +1474,7 @@ function addWeek(
   let [week, day] = destination instanceof Array ? destination : [destination];
   if (day == undefined)
     day = allDays.value[week]?.[0] ?? String(props.defaultDayName);
-  while (allWeeks.value.includes(week)) {
-    week = stringGetNext(week) || `${week}1`;
-  }
+  stringGetNextFromList(allWeeks.value, week);
 
   // Add week in selected destination
   addDay([week, day], doScroll);
@@ -1500,9 +1496,7 @@ function duplicateWeek(
 ) {
   // Get destination week
   let dstWeek = destination instanceof Array ? destination[0] : destination;
-  while (allWeeks.value.includes(dstWeek)) {
-    dstWeek = stringGetNext(dstWeek) || `${dstWeek}1`;
-  }
+  stringGetNextFromList(allWeeks.value, dstWeek);
 
   // Duplicate all days in week
   const srcWeek =
