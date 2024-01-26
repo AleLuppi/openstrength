@@ -663,11 +663,10 @@
           </q-btn>
 
           <!-- New week -->
-          <!-- FIXME add week -->
           <q-btn
             icon="add"
             :label="$t('coach.program_management.builder.new_week')"
-            @click="addDay([week, day])"
+            @click="addWeek(week)"
             flat
             rounded
           >
@@ -689,7 +688,7 @@
       <q-btn
         icon="add"
         :label="$t('coach.program_management.builder.new_day')"
-        @click="addDay(['1', '1'])"
+        @click="addWeek(String(defaultWeekName))"
         rounded
         unelevated
       ></q-btn>
@@ -729,7 +728,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType, watch, nextTick } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { uid } from "quasar";
 import { useI18n } from "vue-i18n";
 import FormProgramNewWeekDay from "@/components/forms/FormProgramNewWeekDay.vue";
@@ -1445,6 +1444,75 @@ function duplicateDay(
 
   // Mixpanel tracking
   mixpanel.track("Duplicate Program Day");
+}
+
+/**
+ * Delete all tables in a week.
+ *
+ * @param scheduleInfo schedule info of week to delete.
+ */
+// TODO
+// eslint-disable-next-line
+function deleteWeek(scheduleInfo: string | [string, string?, string?]) {
+  // Delete all days in week
+  const week = scheduleInfo instanceof Array ? scheduleInfo[0] : scheduleInfo;
+  allDays.value[week].forEach((day) => deleteDay([week, day]));
+
+  // Mixpanel tracking
+  mixpanel.track("Delete Whole Week in Program");
+}
+
+/**
+ * Add a new week in selected destination week.
+ *
+ * @param destination destination week and optional start day.
+ * @param [doScroll=true] if true, scroll to the newly created element.
+ */
+function addWeek(
+  destination: string | [string, string?, string?],
+  doScroll: boolean = true,
+) {
+  // Get destination week and day
+  let [week, day] = destination instanceof Array ? destination : [destination];
+  if (day == undefined)
+    day = allDays.value[week]?.[0] ?? String(props.defaultDayName);
+  while (allWeeks.value.includes(week)) {
+    week = stringGetNext(week) || `${week}1`;
+  }
+
+  // Add week in selected destination
+  addDay([week, day], doScroll);
+}
+
+/**
+ * Duplicate all tables in a selected week.
+ *
+ * @param scheduleInfo schedule info of week to duplicate.
+ * @param destination destination week.
+ * @param doScroll if true, scroll to the newly created element.
+ */
+// TODO
+// eslint-disable-next-line
+function duplicateWeek(
+  scheduleInfo: string | [string, string, string?],
+  destination: string | [string, string, string?],
+  doScroll: boolean = true,
+) {
+  // Get destination week
+  let dstWeek = destination instanceof Array ? destination[0] : destination;
+  while (allWeeks.value.includes(dstWeek)) {
+    dstWeek = stringGetNext(dstWeek) || `${dstWeek}1`;
+  }
+
+  // Duplicate all days in week
+  const srcWeek =
+    scheduleInfo instanceof Array ? scheduleInfo[0] : scheduleInfo;
+  allDays.value[srcWeek].forEach((day, idx) => {
+    duplicateDay([srcWeek, day], [dstWeek, day], doScroll && idx == 0);
+  });
+
+  // Mixpanel tracking
+  mixpanel.track("Duplicate Program Week");
 }
 
 /**
