@@ -238,7 +238,7 @@
                     @update:model-value="
                       (val: ProgramBuilderExerciseData['exercise']) => {
                         updateSelectedExercise(exerciseData, val);
-                        updateProgramWhole(/* FIXME only interesting exercises (idScheduleInfo) */);
+                        updateProgram();
                       }
                     "
                     :options="exercises.map((exercise) => exercise.name)"
@@ -278,7 +278,7 @@
                     @update:model-value="
                       (val: ProgramBuilderExerciseData['variant']) => {
                         exerciseData.variant = val;
-                        updateProgramWhole(/* FIXME only interesting exercises (idScheduleInfo) */);
+                        updateProgram();
                       }
                     "
                     :options="
@@ -328,7 +328,7 @@
                     @update:model-value="
                       (val: ProgramBuilderExerciseData['note']) => {
                         exerciseData.note = val;
-                        updateProgramWhole(/* FIXME only interesting exercises (idScheduleInfo) */);
+                        updateProgram();
                       }
                     "
                     type="textarea"
@@ -429,7 +429,7 @@
             @update:model-value="
               (val: ProgramBuilderExerciseData['data']) => {
                 updateTableData(exerciseData, val);
-                updateProgramWhole(/* FIXME only interesting exercises (idScheduleInfo) */);
+                updateProgram();
               }
             "
             :headers="[
@@ -753,9 +753,10 @@ import {
 import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
 import { numberClamp, stringGetNextFromList } from "@/helpers/scalar";
 import mixpanel from "mixpanel-browser";
-import type {
-  ProgramBuilderData,
-  ProgramBuilderExerciseData,
+import {
+  dataToProgramExercise,
+  type ProgramBuilderData,
+  type ProgramBuilderExerciseData,
 } from "@/helpers/programs/builder";
 
 // Init plugin
@@ -1056,7 +1057,7 @@ function resetTableData() {
 }
 
 /**
- * FIXME Inform parent about updated program and store new changes.
+ * Inform parent about updated program and store new changes.
  *
  * @param program instance that shall be propagated to parent.
  * @param [saveChange=true] if true, save changes in history, otherwise ignore it.
@@ -1147,7 +1148,7 @@ function onReferenceClick(
   });
 
   // Update program
-  updateProgramWhole(/* FIXME only interesting exercises (lineinfo.schedule) */);
+  updateProgram();
 }
 
 /**
@@ -1254,7 +1255,7 @@ function moveExercise(
   }
 
   // Update program with new structure
-  updateProgramWhole(/* FIXME only interesting exercises */);
+  updateProgram();
 }
 
 /**
@@ -1284,7 +1285,7 @@ function deleteTable(exerciseData: ProgramBuilderExerciseData) {
   mixpanel.track("Delete Exercise from Program");
 
   // Update program with new structure
-  updateProgramWhole();
+  updateProgram();
 }
 
 /**
@@ -1409,7 +1410,7 @@ function moveDay(
     );
 
   // Update program with new naming
-  updateProgramWhole(/* FIXME only interesting exercises */);
+  updateProgram();
 }
 
 /**
@@ -1611,7 +1612,7 @@ function duplicateBuilderExerciseValue(
 }
 
 /**
- * FIXME Store changes in data for successive undo/redo.
+ * Store changes in data for successive undo/redo.
  *
  * @param data changed data value to store.
  */
@@ -1653,7 +1654,7 @@ function undo(): boolean {
   );
 
   // Inform parent of update
-  updateProgramWhole(false /* FIXME only interesting exercises */);
+  updateProgram(false);
 
   return programHistoryPointer.value > 0;
 }
@@ -1680,55 +1681,35 @@ function redo(): boolean {
   );
 
   // Inform parent of update
-  updateProgramWhole(false /* FIXME only interesting exercises */);
+  updateProgram(false);
 
   return programHistoryPointer.value + 1 < programHistory.value.length;
 }
 
 /**
- * FIXME Rebuild the whole program based on the current table values.
+ * Update program based on the current program builder values.
  *
  * @param [saveChange=true] if true, save changes in history, otherwise ignore it.
  */
-function updateProgramWhole(saveChange: boolean = true) {
+function updateProgram(saveChange: boolean = true) {
   // Update program
   const program = props.modelValue;
   program.programExercises = [];
-  exercisesValues.value.forEach((exerciseInfo) => {
+  exercisesValues.value.forEach((exerciseData) => {
+    // Retrieve useful id
     const idx = getName([
-      exerciseInfo.week,
-      exerciseInfo.day,
-      exerciseInfo.order,
+      exerciseData.week,
+      exerciseData.day,
+      exerciseData.order,
     ]);
 
-    program.programExercises!.push(
-      new ProgramExercise({
-        program: program,
-        scheduleWeek: exerciseInfo.week,
-        scheduleDay: exerciseInfo.day,
-        scheduleOrder: Number(exerciseInfo.order),
-        exercise: selectedExercises.value[idx],
-        exerciseVariant: selectedExerciseVariants.value[idx],
-        exerciseNote: exerciseInfo.note,
-        lines: exerciseInfo.data.map(
-          (lineInfo, idx) =>
-            new ProgramLine({
-              lineOrder: idx,
-              uid: lineInfo.uid,
-              setsBaseValue: lineInfo.sets,
-              setsReference: lineInfo.setsRef,
-              repsBaseValue: lineInfo.reps,
-              repsReference: lineInfo.repsRef,
-              loadBaseValue: lineInfo.load,
-              loadReference: lineInfo.loadRef,
-              rpeBaseValue: lineInfo.rpe,
-              rpeReference: lineInfo.rpeRef,
-              note: lineInfo.note,
-              requestFeedbackText: lineInfo.requestText,
-              requestFeedbackVideo: lineInfo.requestVideo,
-            }),
-        ),
-      }),
+    // Build program exercise
+    const programExercise = dataToProgramExercise(exerciseData);
+    programExercise.program = program;
+    programExercise.exercise = selectedExercises.value[idx];
+    programExercise.exerciseVariant = selectedExerciseVariants.value[idx];
+    (program.programExercises = program.programExercises || []).push(
+      programExercise,
     );
   });
 
