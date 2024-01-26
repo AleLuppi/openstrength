@@ -753,7 +753,7 @@ import {
 import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
 import { numberClamp, stringGetNextFromList } from "@/helpers/scalar";
 import mixpanel from "mixpanel-browser";
-import {
+import type {
   ProgramBuilderData,
   ProgramBuilderExerciseData,
 } from "@/helpers/programs/builder";
@@ -765,19 +765,19 @@ const i18n = useI18n();
 const props = withDefaults(
   defineProps<{
     modelValue: Program;
-    exercises: Exercise[];
-    maxlifts: MaxLift[];
-    filter: {
+    exercises?: Exercise[];
+    maxlifts?: MaxLift[];
+    filter?: {
       week: string[];
       day: string[];
       exercise: string[];
     };
-    dense: boolean;
-    historyMaxLength: number;
-    scrollOffset: number;
-    debounce: number;
-    defaultWeekName: number | string;
-    defaultDayName: number | string;
+    dense?: boolean;
+    historyMaxLength?: number;
+    scrollOffset?: number;
+    debounce?: number;
+    defaultWeekName?: number | string;
+    defaultDayName?: number | string;
   }>(),
   {
     exercises: () => [],
@@ -1373,7 +1373,7 @@ function moveDay(
   const [fromWeek, fromDay] = scheduleInfo;
   let [toWeek, toDay] = destination;
   if (nextFreeDestination)
-    toDay = stringGetNextFromList(allDays.value[toWeek], toDay);
+    toDay = stringGetNextFromList(allDays.value[toWeek] ?? [], toDay);
 
   // Check if source is empty while renaming
   let isSourceEmpty = true;
