@@ -1,6 +1,19 @@
-// ----- Functions related to Date -----
+import { matchNumberUnsignedInteger } from "@/helpers/regex";
 
-import { matchNumberUnsignedInteger } from "./regex";
+// ----- Functions related to Number -----
+
+/**
+ * Clamp number between two values.
+ *
+ * @param num number to clamp.
+ * @param min minimum value.
+ * @param max maximum value.
+ */
+export function numberClamp(num: number, min: number, max: number) {
+  return Math.min(Math.max(num, min), max);
+}
+
+// ----- Functions related to Date -----
 
 /**
  * Clean a date from its timezone offset.

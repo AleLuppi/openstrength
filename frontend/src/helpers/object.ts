@@ -78,13 +78,13 @@ export function objectMapKeys<T extends object>(
  * @param updateFunc values update method.
  * @returns new object with mapped values.
  */
-export function objectMapValues<T extends object>(
+export function objectMapValues<T extends object, R>(
   obj: T,
   updateFunc: (
     value: T[keyof T] extends infer V ? V : never,
     key: keyof T,
     index: number,
-  ) => any,
+  ) => R,
 ) {
   return Object.fromEntries(
     Object.entries(obj).map(([k, v], i) => [k, updateFunc(v, k as keyof T, i)]),

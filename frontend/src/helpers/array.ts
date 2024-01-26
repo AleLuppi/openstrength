@@ -5,7 +5,7 @@
  * @param sorted if true, also sort values.
  * @returns a new array with only unique values.
  */
-export function arrayUniqueValues(array: any[], sorted: boolean = true) {
+export function arrayUniqueValues<T>(array: T[], sorted: boolean = true): T[] {
   const newArray = [...new Set(array)];
   if (sorted) return newArray.sort();
   return newArray;
@@ -17,9 +17,8 @@ export function arrayUniqueValues(array: any[], sorted: boolean = true) {
  * @param array input vector.
  * @returns a new array with only values different from undefined.
  */
-export function arrayFilterUndefined(array: any[]) {
-  const newArray = array.filter((val) => val != undefined);
-  return newArray;
+export function arrayFilterUndefined<T>(array: (T | undefined)[]): T[] {
+  return array.filter((val) => val != undefined) as T[];
 }
 
 /**
@@ -40,13 +39,14 @@ export function arrayCompare(arrayA: any[], arrayB: any[]) {
  * @param field object's key whose paired value will be used to sort.
  * @returns sorted array.
  */
-export function arraySortObjectsByField<T extends object>(
+export function arraySortObjectsByField<T extends object, R>(
   array: T[],
   field: keyof T,
+  transform: (val: T[keyof T]) => R = (val) => val as R,
 ) {
   return [...array].sort((objA, objB) => {
-    if (objA[field] < objB[field]) return -1;
-    else if (objA[field] > objB[field]) return 1;
+    if (transform(objA[field]) < transform(objB[field])) return -1;
+    else if (transform(objA[field]) > transform(objB[field])) return 1;
     return 0;
   });
 }
