@@ -730,7 +730,11 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from "vue";
-import { uid } from "quasar";
+import {
+  uid,
+  debounce as debounceFunction,
+  throttle as throttleFunction,
+} from "quasar";
 import { useI18n } from "vue-i18n";
 import FormProgramNewWeekDay from "@/components/forms/FormProgramNewWeekDay.vue";
 import { scrollToElementInParent } from "@/helpers/scroller";
@@ -809,8 +813,8 @@ const emit = defineEmits<{
 
 // Define expose
 defineExpose({
-  undo: undo,
-  redo: redo,
+  undo: throttleFunction(undo, props.debounce),
+  redo: throttleFunction(redo, props.debounce),
   getHistorySteps: () => {
     return [
       programHistoryPointer.value,
@@ -1693,9 +1697,11 @@ function redo(): boolean {
 /**
  * Update program based on the current program builder values.
  *
+ * Note: function call is debounced to prevent high loads due to frequent updates.
+ *
  * @param [saveChange=true] if true, save changes in history, otherwise ignore it.
  */
-function updateProgram(saveChange: boolean = true) {
+const updateProgram = debounceFunction((saveChange: boolean = true) => {
   // Update program
   const program = props.modelValue;
   program.programExercises = [];
@@ -1730,7 +1736,7 @@ function updateProgram(saveChange: boolean = true) {
 
   // Inform parent of update
   emitUpdatedProgram(program, saveChange);
-}
+}, props.debounce);
 
 /**
  * If there is the need, ask creation of new exercise or variant.
