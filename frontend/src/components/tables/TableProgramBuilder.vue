@@ -508,6 +508,7 @@
                 selectingReferenceLine ? onReferenceClick(row.uid) : undefined
             "
             dense
+            :debounce="debounce"
             class="col os-light-border"
           >
             <template #item="itemProps">
