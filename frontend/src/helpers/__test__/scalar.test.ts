@@ -1,11 +1,11 @@
 import { describe, expect, test } from "vitest";
 import { stringGetNext, stringGetNextFromList } from "@/helpers/scalar";
 
-/*******************/
-/***** STRINGS *****/
-/*******************/
-
 describe("Test @/helpers/scalar", () => {
+  /*******************/
+  /***** STRINGS *****/
+  /*******************/
+
   describe("STRING methods", () => {
     /**
      * stringGetNext
