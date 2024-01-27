@@ -326,8 +326,8 @@
                     :model-value="exerciseData.note"
                     :debounce="debounce"
                     @update:model-value="
-                      (val: ProgramBuilderExerciseData['note']) => {
-                        exerciseData.note = val;
+                      (val) => {
+                        exerciseData.note = String(val);
                         updateProgram();
                       }
                     "
@@ -427,8 +427,11 @@
           <osTableSheet
             :model-value="exerciseData.data"
             @update:model-value="
-              (val: ProgramBuilderExerciseData['data']) => {
-                updateExerciseLines(exerciseData, val);
+              (val) => {
+                updateExerciseLines(
+                  exerciseData,
+                  val as ProgramBuilderExerciseData['data'],
+                );
                 updateProgram();
               }
             "

@@ -133,7 +133,7 @@ const props = withDefaults(
 
 // Update model values to parent
 const emit = defineEmits<{
-  "update:modelValue": [value: { [key: string]: string }[]];
+  "update:modelValue": [value: typeof props.modelValue];
 }>();
 
 // Set ref
