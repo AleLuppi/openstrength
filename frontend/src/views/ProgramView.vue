@@ -746,6 +746,19 @@ const allAssignedPrograms = computed(
 // Get complete program filter
 const programFilter = computed({
   get() {
+    // Register mixpanel event
+    if (
+      (filterWeek.value?.length ?? 0) > 0 ||
+      (filterDay.value?.length ?? 0) > 0 ||
+      (filterExercise.value?.length ?? 0) > 0
+    ) {
+      mixpanel.track("Filter Used in Program", {
+        DaysSelected: filterWeek.value?.length ?? 0,
+        WeeksSelected: filterDay.value?.length ?? 0,
+        ExercisesSelected: filterExercise.value?.length ?? 0,
+      });
+    }
+
     return {
       week: filterWeek.value || [],
       day: filterDay.value || [],
@@ -1060,12 +1073,15 @@ function onNewExercise(
       onSuccess: () => {
         // Store variant in local storages
         exercise.variants?.unshift(newVariant);
-        if (programExercise) programExercise.exerciseVariant = newVariant;
+        if (programExercise) {
+          programExercise.exercise = newVariant.exercise;
+          programExercise.exerciseVariant = newVariant;
+        }
 
         // Force update of program under modification
         if (selectedProgram.value) {
-          const duplicteProgram = selectedProgram.value.duplicate();
-          nextTick(() => onProgramTableUpdate(duplicteProgram));
+          const duplicateProgram = selectedProgram.value.duplicate();
+          nextTick(() => onProgramTableUpdate(duplicateProgram));
         }
 
         // Inform user
@@ -1117,8 +1133,8 @@ function onNewExercise(
 
         // Force update of program under modification
         if (selectedProgram.value) {
-          const duplicteProgram = selectedProgram.value.duplicate();
-          nextTick(() => onProgramTableUpdate(duplicteProgram));
+          const duplicateProgram = selectedProgram.value.duplicate();
+          nextTick(() => onProgramTableUpdate(duplicateProgram));
         }
 
         // Inform user about exercise successfully saved

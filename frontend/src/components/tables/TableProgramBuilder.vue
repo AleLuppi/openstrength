@@ -236,9 +236,9 @@
                     :input-debounce="debounce"
                     :model-value="exerciseData.exercise"
                     @update:model-value="
-                      (val: ProgramBuilderExerciseData['exercise']) => {
+                      (val) => {
                         updateSelectedExercise(exerciseData, val);
-                        updateProgram();
+                        checkNewExercise(val, exerciseData, true);
                       }
                     "
                     :options="exercises.map((exercise) => exercise.name)"
@@ -276,9 +276,14 @@
                     :input-debounce="debounce"
                     :model-value="exerciseData.variant"
                     @update:model-value="
-                      (val: ProgramBuilderExerciseData['variant']) => {
+                      (val) => {
                         updateSelectedVariant(exerciseData, val);
-                        updateProgram();
+                        checkNewVariant(
+                          exerciseData.exercise ?? '',
+                          val,
+                          exerciseData,
+                          true,
+                        );
                       }
                     "
                     :options="
@@ -1589,8 +1594,12 @@ const updateProgram = debounceFunction(doUpdateProgram, props.debounce);
  * Use debounced version instead.
  *
  * @param [saveChange=true] if true, save changes in history, otherwise ignore it.
+ * @param callback optional callback function to call when program has been saved.
  */
-function doUpdateProgram(saveChange: boolean = true) {
+function doUpdateProgram(
+  saveChange: boolean = true,
+  callback?: (program: Program, builderData: ProgramBuilderData) => void,
+) {
   // Resolve builder data with exercise and variant
   const resolvedData: ProgramBuilderFilledData[] = exercisesValues.value.map(
     (exerciseData) => {
@@ -1617,44 +1626,74 @@ function doUpdateProgram(saveChange: boolean = true) {
       if (saveChange) storeChanges(builderData);
       programCurrentValue.value = props.modelValue;
       emit("update:modelValue", programCurrentValue.value);
+
+      // Optionally call a callback function
+      callback?.(programCurrentValue.value, builderData);
     },
   );
-
-  // // FIXME See if new exercise or variant is required
-  // if (
-  //   optionallyCreateNewExercise(
-  //     exercisesValues.value[idx].exercise,
-  //     exercisesValues.value[idx].variant,
-  //     programExercise,
-  //   )
-  // )
-  //   // New exercise or variant: parent is in charge of updating program
-  //   return;
 }
 
 /**
- * If there is the need, ask creation of new exercise or variant.
+ * If there is the need, ask creation of new exercise.
  *
- * @param exerciseName name of new exercise that might be created, or parent exercise of variant that might be created.
- * @param variantName optional name of new variant that might be created.
+ * @param exerciseName name of new exercise that might be created.
+ * @param exerciseData optional exercise data where new exercise may be found.
+ * @param [saveProgram=true] if true, update program with new exercise.
  */
-// FIXME
-// eslint-disable-next-line
-function optionallyCreateNewExercise(
-  exerciseName?: string,
-  variantName?: string,
-  programExercise?: ProgramExercise,
-): boolean {
-  // Exercise must be provided
-  if (!exerciseName) return false;
-
+function checkNewExercise(
+  exerciseName: string,
+  exerciseData?: ProgramBuilderExerciseData,
+  saveProgram: boolean = true,
+) {
   // Check if any exercise with requested name
+  if (
+    exerciseName &&
+    !props.exercises.some(
+      (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
+    )
+  ) {
+    if (saveProgram) {
+      doUpdateProgram(true, (program) => {
+        const programExercise = exerciseData
+          ? program.programExercises?.find(
+              (programExercise) =>
+                programExercise.scheduleWeek == exerciseData?.week &&
+                programExercise.scheduleDay == exerciseData?.day &&
+                programExercise.scheduleOrder == exerciseData?.order,
+            )
+          : undefined;
+        emit("newExercise", exerciseName, programExercise);
+      });
+    } else emit("newExercise", exerciseName);
+  }
+  // Not a new exercise, optionally save program anyway
+  if (saveProgram) updateProgram();
+}
+
+/**
+ * If there is the need, ask creation of new variant.
+ *
+ * @param exerciseName name parent exercise that will contain new variant.
+ * @param variantName name of new variant that might be created.
+ * @param exerciseData optional exercise data where new exercise may be found.
+ * @param [saveProgram=true] if true, update program with new exercise.
+ */
+function checkNewVariant(
+  exerciseName: string,
+  variantName?: string,
+  exerciseData?: ProgramBuilderExerciseData,
+  saveProgram: boolean = true,
+) {
+  // Ensure exercise with selected name exists
   const foundExercise = props.exercises.find(
-    (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
+    (exercise) =>
+      exerciseName &&
+      exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
   );
   if (!foundExercise) {
-    emit("newExercise", exerciseName, programExercise);
-    return true;
+    // No exercise found, not knowing where to place variant
+    console.error(`New variant requested for unknown exercise ${exerciseName}`);
+    return;
   }
 
   // Check if any variant with requested name
@@ -1664,11 +1703,22 @@ function optionallyCreateNewExercise(
       (variant) => variant.name?.toLowerCase() == variantName.toLowerCase(),
     )
   ) {
-    emit("newVariant", exerciseName, variantName, programExercise);
-    return true;
+    if (saveProgram) {
+      doUpdateProgram(true, (program) => {
+        const programExercise = exerciseData
+          ? program.programExercises?.find(
+              (programExercise) =>
+                programExercise.scheduleWeek == exerciseData?.week &&
+                programExercise.scheduleDay == exerciseData?.day &&
+                programExercise.scheduleOrder == exerciseData?.order,
+            )
+          : undefined;
+        emit("newVariant", exerciseName, variantName, programExercise);
+      });
+    } else emit("newVariant", exerciseName, variantName);
   }
-
-  return false;
+  // Not a new exercise, optionally save program anyway
+  if (saveProgram) updateProgram();
 }
 
 /**
