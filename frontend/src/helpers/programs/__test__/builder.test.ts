@@ -1,17 +1,17 @@
 import { describe, expect, test } from "vitest";
 import {
   dataToProgramExercise,
-  type ProgramBuilderData,
-  type ProgramBuilderExerciseData,
+  type ProgramBuilderFilledData,
 } from "@/helpers/programs/builder";
 import { ProgramExercise, ProgramLine } from "../program";
+import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 
 describe("Test @/helpers/programs/builder", () => {
   /**
    * dataToProgramExercise
    */
   describe("'dataToProgramExercise' function", () => {
-    const programBuilderData: ProgramBuilderData = [
+    const programBuilderData: ProgramBuilderFilledData[] = [
       {
         data: [
           {
@@ -29,8 +29,8 @@ describe("Test @/helpers/programs/builder", () => {
             note: undefined,
           },
         ],
-        exercise: "abc",
-        variant: "def",
+        exercise: new Exercise({ name: "abc" }),
+        variant: new ExerciseVariant({ name: "def" }),
         note: "no",
         week: "1",
         day: "1",
@@ -38,8 +38,8 @@ describe("Test @/helpers/programs/builder", () => {
       },
       {
         data: [],
-        exercise: "a",
-        variant: "b",
+        exercise: new Exercise({ name: "a" }),
+        variant: new ExerciseVariant({ name: "b" }),
         note: undefined,
         week: "3",
         day: "2",
@@ -65,8 +65,8 @@ describe("Test @/helpers/programs/builder", () => {
             note: undefined,
           },
         ],
-        exercise: "abc",
-        variant: "def",
+        exercise: new Exercise({ name: "abc" }),
+        variant: new ExerciseVariant({ name: "def" }),
         note: "no",
         week: "1",
         day: "1",
@@ -80,6 +80,8 @@ describe("Test @/helpers/programs/builder", () => {
           scheduleWeek: "1",
           scheduleDay: "1",
           scheduleOrder: 1,
+          exercise: new Exercise({ name: "abc" }),
+          exerciseVariant: new ExerciseVariant({ name: "def" }),
           exerciseNote: "no",
           lines: [
             new ProgramLine({
@@ -109,6 +111,8 @@ describe("Test @/helpers/programs/builder", () => {
           scheduleDay: "2",
           scheduleOrder: 1,
           exerciseNote: undefined,
+          exercise: new Exercise({ name: "a" }),
+          exerciseVariant: new ExerciseVariant({ name: "b" }),
           lines: [],
         }),
       );
@@ -121,6 +125,8 @@ describe("Test @/helpers/programs/builder", () => {
           scheduleDay: "1",
           scheduleOrder: 1,
           exerciseNote: "no",
+          exercise: new Exercise({ name: "abc" }),
+          exerciseVariant: new ExerciseVariant({ name: "def" }),
           lines: [
             new ProgramLine({
               uid: "123",

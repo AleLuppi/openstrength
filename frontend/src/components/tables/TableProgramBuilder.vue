@@ -277,7 +277,7 @@
                     :model-value="exerciseData.variant"
                     @update:model-value="
                       (val: ProgramBuilderExerciseData['variant']) => {
-                        exerciseData.variant = val;
+                        updateSelectedVariant(exerciseData, val);
                         updateProgram();
                       }
                     "
@@ -428,7 +428,7 @@
             :model-value="exerciseData.data"
             @update:model-value="
               (val: ProgramBuilderExerciseData['data']) => {
-                updateTableData(exerciseData, val);
+                updateExerciseLines(exerciseData, val);
                 updateProgram();
               }
             "
@@ -731,7 +731,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from "vue";
 import {
-  uid,
   debounce as debounceFunction,
   throttle as throttleFunction,
 } from "quasar";
@@ -759,9 +758,16 @@ import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManage
 import { numberClamp, stringGetNextFromList } from "@/helpers/scalar";
 import mixpanel from "mixpanel-browser";
 import {
-  dataToProgramExercise,
+  resetBuilderData,
+  updateSelectedExercise,
+  updateSelectedVariant,
+  updateExerciseLines,
+  duplicateBuilderData,
+  duplicateBuilderExerciseData,
+  updateProgramWithBuilderData,
   type ProgramBuilderData,
   type ProgramBuilderExerciseData,
+  ProgramBuilderFilledData,
 } from "@/helpers/programs/builder";
 
 // Init plugin
@@ -982,129 +988,26 @@ const filteredExercises = computed(() => {
 watch(
   () => props.modelValue,
   () => {
-    if (programCurrentValue.value != props.modelValue) resetTableData();
+    if (programCurrentValue.value != props.modelValue)
+      resetBuilderData(props.modelValue).then((builderData) => {
+        exercisesValues.value = builderData;
+
+        // Empty changes
+        if (
+          props.modelValue.uid == undefined ||
+          programCurrentValue.value?.uid != props.modelValue.uid ||
+          programHistory.value.length <= 1
+        ) {
+          programHistory.value.length = 0;
+          storeChanges();
+        }
+
+        // Set current value to be equal to input one
+        programCurrentValue.value = props.modelValue;
+      });
   },
   { immediate: true },
 );
-
-/**
- * Get a random uid.
- *
- * @returns a random uid.
- */
-function getRandomUid() {
-  return "OS-" + uid();
-}
-
-/**
- * Update table data according to input data.
- */
-function resetTableData() {
-  // Delete previously stored values
-  exercisesValues.value = [];
-
-  // Set new exercise values
-  (props.modelValue.programExercises ?? []).forEach((programExercise) => {
-    // Get schedule info
-    const week = String(programExercise.scheduleWeek ?? -1),
-      day = String(programExercise.scheduleDay ?? -1),
-      order = String(programExercise.scheduleOrder ?? -1);
-
-    // Prepare new element
-    const newExerciseData: ProgramBuilderExerciseData = {
-      // schedule-related values
-      week: week,
-      day: day,
-      order: order,
-
-      // exercise-related values
-      exercise: programExercise.exercise?.name,
-      variant: programExercise.exerciseVariant?.name ?? "",
-      note: programExercise.exerciseNote ?? "",
-
-      // data-related values
-      data:
-        programExercise.lines?.map((line) => {
-          if (!line.uid) line.uid = getRandomUid();
-          return {
-            uid: line.uid,
-            load: line.loadBaseValue,
-            loadRef: line.loadReference,
-            reps: line.repsBaseValue,
-            repsRef: line.repsReference,
-            sets: line.setsBaseValue,
-            setsRef: line.setsReference,
-            rpe: line.rpeBaseValue,
-            rpeRef: line.rpeReference,
-            note: line.note,
-            requestText: line.requestFeedbackText ?? false,
-            requestVideo: line.requestFeedbackVideo ?? false,
-          };
-        }) ?? [],
-    };
-
-    // Store new element
-    exercisesValues.value.push(newExerciseData);
-  });
-
-  // Empty changes
-  if (
-    props.modelValue.uid == undefined ||
-    programCurrentValue.value?.uid != props.modelValue.uid ||
-    programHistory.value.length <= 1
-  ) {
-    programHistory.value.length = 0;
-    storeChanges();
-  }
-
-  // Set current value to be equal to input one
-  programCurrentValue.value = props.modelValue;
-}
-
-/**
- * Inform parent about updated program and store new changes.
- *
- * @param program instance that shall be propagated to parent.
- * @param [saveChange=true] if true, save changes in history, otherwise ignore it.
- */
-function emitUpdatedProgram(program: Program, saveChange: boolean = true) {
-  if (saveChange) storeChanges();
-  programCurrentValue.value = program;
-  emit("update:modelValue", programCurrentValue.value);
-}
-
-/**
- * Update selected exercises.
- *
- * @param exerciseData exercise data that shall be updated.
- * @param newName new name of the exercise.
- */
-function updateSelectedExercise(
-  exerciseData: ProgramBuilderExerciseData,
-  newName?: string,
-) {
-  // Reset variant name
-  if (exerciseData.exercise != newName) exerciseData.variant = undefined;
-
-  // Update name
-  exerciseData.exercise = newName;
-}
-
-/**
- * Update table data for an exercise in program.
- *
- * @param exerciseData exercise data that shall be updated.
- * @param data table data that shall be saved.
- */
-function updateTableData(
-  exerciseData: ProgramBuilderExerciseData,
-  data: ProgramBuilderExerciseData["data"],
-) {
-  data.forEach((line) => {
-    if (!Object.keys(line).includes("uid")) line.uid = getRandomUid();
-  });
-  exerciseData.data = data;
-}
 
 /**
  * Perform operations on reference selection.
@@ -1248,7 +1151,7 @@ function moveExercise(
   } else {
     // If both table and destination are known, table is being moved or cloned
     if (duplicate) {
-      const duplicateData = duplicateBuilderExerciseValue(exerciseData, true);
+      const duplicateData = duplicateBuilderExerciseData(exerciseData, true);
       duplicateData.week = destination[0];
       duplicateData.day = destination[1];
       duplicateData.order = destination[2];
@@ -1589,48 +1492,19 @@ function getReferenceDisplayName(reference: ProgramLine | MaxLift | undefined) {
 }
 
 /**
- * Get a duplicate of current program builder values.
- *
- * @param values if provided, duplicate supplied values, otherwise duplicate known reference.
- * @returns duplicate of current builder values.
- */
-function duplicateBuilderValues(values?: ProgramBuilderData) {
-  return (values ?? exercisesValues.value).map((value) => {
-    return duplicateBuilderExerciseValue(value, false);
-  });
-}
-
-/**
- * Get a duplicate of a program builder exercise.
- *
- * @param exerciseData data to duplicate.
- * @param [updateId=true] if true, change data id, otherwise preserve it.
- * @returns duplicate of current exercise values.
- */
-function duplicateBuilderExerciseValue(
-  exerciseData: ProgramBuilderExerciseData,
-  updateId: boolean = true,
-) {
-  return {
-    ...exerciseData,
-    data: exerciseData.data.map((data) => {
-      return { ...data, uid: updateId ? getRandomUid() : data.uid };
-    }),
-  };
-}
-
-/**
  * Store changes in data for successive undo/redo.
  *
  * @param data changed data value to store.
  */
-function storeChanges() {
+function storeChanges(builderData?: ProgramBuilderData) {
   // Store data from current pointer position
   if (programHistoryPointer.value + 1 < programHistory.value.length)
     programHistory.value.length = programHistoryPointer.value + 1;
 
   // Add new element up to max length
-  programHistory.value.push(duplicateBuilderValues());
+  programHistory.value.push(
+    builderData ?? duplicateBuilderData(exercisesValues.value),
+  );
   if (programHistory.value.length > props.historyMaxLength)
     programHistory.value = programHistory.value.slice(
       programHistory.value.length - props.historyMaxLength,
@@ -1649,8 +1523,9 @@ function undo(): boolean {
   // Restore program from last pointer position
   if (programHistoryPointer.value > 0) {
     programHistoryPointer.value -= 1;
-    exercisesValues.value = duplicateBuilderValues(
-      programHistory.value.at(programHistoryPointer.value),
+    exercisesValues.value = duplicateBuilderData(
+      programHistory.value.at(programHistoryPointer.value) ??
+        exercisesValues.value,
     );
   }
 
@@ -1676,8 +1551,9 @@ function redo(): boolean {
   // Try to force next program modification
   if (programHistoryPointer.value + 1 < programHistory.value.length) {
     programHistoryPointer.value += 1;
-    exercisesValues.value = duplicateBuilderValues(
-      programHistory.value.at(programHistoryPointer.value),
+    exercisesValues.value = duplicateBuilderData(
+      programHistory.value.at(programHistoryPointer.value) ??
+        exercisesValues.value,
     );
   }
 
@@ -1701,27 +1577,45 @@ function redo(): boolean {
  *
  * @param [saveChange=true] if true, save changes in history, otherwise ignore it.
  */
-const updateProgram = debounceFunction((saveChange: boolean = true) => {
-  // Update program
-  const program = props.modelValue;
-  program.programExercises = [];
-  exercisesValues.value.forEach((exerciseData) => {
-    // Retrieve useful id
-    const idx = getName([
-      exerciseData.week,
-      exerciseData.day,
-      exerciseData.order,
-    ]);
+const updateProgram = debounceFunction(doUpdateProgram, props.debounce);
 
-    // Build program exercise
-    const programExercise = dataToProgramExercise(exerciseData);
-    programExercise.program = program;
-    programExercise.exercise = selectedExercises.value[idx];
-    programExercise.exerciseVariant = selectedExerciseVariants.value[idx];
-    (program.programExercises = program.programExercises || []).push(
-      programExercise,
-    );
-  });
+/**
+ * Update program based on the current program builder values.
+ *
+ * Note: this should not be used unless immediate update is required.
+ * Use debounced version instead.
+ *
+ * @param [saveChange=true] if true, save changes in history, otherwise ignore it.
+ */
+function doUpdateProgram(saveChange: boolean = true) {
+  // Resolve builder data with exercise and variant
+  const resolvedData: ProgramBuilderFilledData[] = exercisesValues.value.map(
+    (exerciseData) => {
+      // Retrieve useful id
+      const idx = getName([
+        exerciseData.week,
+        exerciseData.day,
+        exerciseData.order,
+      ]);
+
+      // Resolve exercise and variant
+      return {
+        ...exerciseData,
+        exercise: selectedExercises.value[idx],
+        variant: selectedExerciseVariants.value[idx],
+      };
+    },
+  );
+
+  // Update program
+  updateProgramWithBuilderData(props.modelValue, resolvedData).then(
+    (builderData) => {
+      // Store changes and inform parent of update
+      if (saveChange) storeChanges(builderData);
+      programCurrentValue.value = props.modelValue;
+      emit("update:modelValue", programCurrentValue.value);
+    },
+  );
 
   // // FIXME See if new exercise or variant is required
   // if (
@@ -1733,10 +1627,7 @@ const updateProgram = debounceFunction((saveChange: boolean = true) => {
   // )
   //   // New exercise or variant: parent is in charge of updating program
   //   return;
-
-  // Inform parent of update
-  emitUpdatedProgram(program, saveChange);
-}, props.debounce);
+}
 
 /**
  * If there is the need, ask creation of new exercise or variant.
