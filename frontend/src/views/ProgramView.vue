@@ -173,10 +173,7 @@
           </div>
 
           <!-- Filter by week, day, exercise -->
-          <q-slide-transition
-            @show="updateProgramManagerHeight"
-            @hide="updateProgramManagerHeight"
-          >
+          <q-slide-transition>
             <div v-show="programManagerExpanded">
               <div
                 class="row items-end justify-between q-col-gutter-sm q-pt-md"
@@ -220,6 +217,11 @@
             class="full-width q-mx-lg"
             :ripple="false"
           ></q-btn>
+
+          <!-- Keep track of object height -->
+          <q-resize-observer
+            @resize="({ height }) => (programManagerHeight = height)"
+          />
         </div>
 
         <!-- Show table to build program -->
@@ -256,8 +258,7 @@
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
           :dense="denseView"
-          :scroll-offset="programManagerHeight + 15"
-          class="q-pa-sm"
+          :scroll-offset="programManagerHeight"
         >
           <template v-slot:empty-filtered>
             <h6>
@@ -645,7 +646,7 @@ import {
   onBeforeUnmount,
   defineAsyncComponent,
 } from "vue";
-import { debounce, dom, QDialog, QCard } from "quasar";
+import { debounce, QDialog, QCard } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import { Program, ProgramExercise } from "@/helpers/programs/program";
 import { useUserStore } from "@/stores/user";
@@ -691,7 +692,6 @@ defineExpose({ handleDrawerClick });
 const $q = useQuasar();
 const i18n = useI18n();
 const route = useRoute();
-const { height } = dom;
 
 // Get store
 const user = useUserStore();
@@ -1290,15 +1290,6 @@ function onUnsavedProgramRestore() {
 }
 
 /**
- * Update program manager element height value.
- */
-function updateProgramManagerHeight() {
-  programManagerHeight.value = programManagerElement.value
-    ? height(programManagerElement.value)
-    : 0;
-}
-
-/**
  * Handle custom right drawer click.
  *
  * @param clickParam parameters provided by drawer on click.
@@ -1390,7 +1381,7 @@ onBeforeUnmount(() => {
 .os-top-card {
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 3;
   border-radius: 0 0 20px 20px;
 }
 </style>

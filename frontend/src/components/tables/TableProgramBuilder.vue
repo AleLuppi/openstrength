@@ -1,7 +1,10 @@
 <template>
   <div
+    class="bg-white"
     :class="
-      dense ? 'q-pl-sm q-pr-none q-ml-sm q-mr-none' : 'q-pa-md q-ma-md shadow-2'
+      dense
+        ? 'q-pl-sm q-pr-none q-ml-sm q-mr-none'
+        : 'q-px-sm q-py-md q-ma-md shadow-2'
     "
     style="border-radius: 24px"
   >
@@ -10,13 +13,14 @@
       <!-- Day wrapper -->
       <div
         :ref="(el) => (dayElements[getName([week, day])] = el)"
-        v-for="(day, dayIdx) in filteredDays[week]"
+        v-for="day in filteredDays[week]"
         :key="`day${day}`"
       >
         <!-- Show week and day and allow navigation -->
         <div
-          class="row items-center q-gutter-x-xs"
-          :class="{ 'q-mt-lg': dayIdx > 0 }"
+          class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-xs os-day-title"
+          v-intersection="dayTitleInteresctionHandler"
+          :style="`top: ${scrollOffset}px`"
         >
           <!-- Week and day names -->
           <h6 class="q-mt-none">
@@ -167,7 +171,7 @@
         <div
           v-for="(exerciseData, idx) in filteredExercises[week][day]"
           :key="getName([week, day, exerciseData.order])"
-          class="justify-evenly q-mb-md"
+          class="justify-evenly q-px-sm q-mb-md"
           :class="dense ? 'column items-stretch' : 'row items-start'"
         >
           <!-- Reordering arrows -->
@@ -684,6 +688,9 @@
             </q-tooltip></q-btn
           >
         </div>
+
+        <!-- Fake element to create some spacing -->
+        <div class="q-pb-md"></div>
       </div>
     </div>
 
@@ -1730,9 +1737,45 @@ function checkNewVariant(
 function getName(arr: (string | number)[], sep: string = sepWekDay) {
   return arrayFilterUndefined(arr).join(sep);
 }
+
+// Set method to handle sticky day title
+const dayTitleInteresctionHandler = computed(() => ({
+  handler: (entry?: {
+    [key: string]: any;
+    intersectionRatio?: number;
+    boundingClientRect?: { [key: string]: number | undefined };
+    target?: Element;
+  }) => {
+    // Add classes when element becomes sticky, delete them otherwise
+    if (
+      !entry?.isIntersecting &&
+      (entry?.boundingClientRect?.top ?? 0) - 10 < props.scrollOffset
+    ) {
+      entry?.target?.classList.add("shadow-1");
+      entry?.target?.classList.add("bg-orange-1");
+    } else {
+      entry?.target?.classList.remove("shadow-1");
+      entry?.target?.classList.remove("bg-orange-1");
+    }
+    return true;
+  },
+  cfg: {
+    rootMargin: `-${props.scrollOffset + 2}px 0px 0px 0px`,
+    threshold: [1],
+  },
+}));
 </script>
 
 <style scoped lang="scss">
+.os-day-title {
+  position: sticky;
+  z-index: 1;
+  border-radius: 0 0 8px 8px;
+  transition:
+    box-shadow 300ms,
+    background-color 300ms;
+}
+
 .os-light-border {
   border: 1px solid $light;
 }
