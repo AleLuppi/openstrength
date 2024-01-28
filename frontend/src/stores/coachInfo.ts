@@ -20,6 +20,8 @@ import {
   sortExercises,
 } from "@/helpers/exercises/listManagement";
 import { MaxLift, MaxLiftProps } from "@/helpers/maxlifts/maxlift";
+import { objectIsEmpty } from "@/helpers/object";
+import { arrayFilterUndefined } from "@/helpers/array";
 
 /**
  * Store all the info required for a coach to use the app.
@@ -174,6 +176,21 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
       _maxlifts.value = value;
     },
   });
+
+  // Check if anything is loading
+  const whatLoading = computed<("program" | "maxlift")[]>(() => {
+    return arrayFilterUndefined([
+      objectIsEmpty(_programsUnresolved.value) ||
+      !Object.values(_programsUnresolved.value).some((val) => val != undefined)
+        ? undefined
+        : "program",
+      objectIsEmpty(_maxliftsUnresolved.value) ||
+      !Object.values(_maxliftsUnresolved.value).some((val) => val != undefined)
+        ? undefined
+        : "maxlift",
+    ]);
+  });
+  const isLoading = computed(() => whatLoading.value.length > 0);
 
   /**
    * Load list of athletes for a coach.
@@ -428,6 +445,8 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
     exercises,
     programs,
     maxlifts,
+    isLoading,
+    whatLoading,
     loadAthletes,
     loadExercises,
     loadPrograms,

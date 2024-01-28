@@ -225,7 +225,10 @@
         <!-- Show table to build program -->
         <TableProgramBuilder
           ref="programBuilderElement"
-          v-if="selectedProgram?.athlete"
+          v-if="
+            selectedProgram?.athlete &&
+            !coachInfo.whatLoading.includes('program')
+          "
           :model-value="selectedProgram"
           @update:model-value="
             (program) => {
@@ -268,6 +271,9 @@
             />
           </template>
         </TableProgramBuilder>
+
+        <SkeletonTableProgramBuilder v-else-if="selectedProgram?.athlete">
+        </SkeletonTableProgramBuilder>
 
         <!-- Create a new program or open one already assigned to athlete -->
         <div v-else class="q-pa-lg column items-center">
@@ -637,6 +643,7 @@ import {
   onMounted,
   nextTick,
   onBeforeUnmount,
+  defineAsyncComponent,
 } from "vue";
 import { debounce, dom, QDialog, QCard } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
@@ -666,6 +673,11 @@ import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
+
+// Import components
+const SkeletonTableProgramBuilder = defineAsyncComponent(
+  () => import("@/components/skeletons/SkeletonTableProgramBuilder.vue"),
+);
 
 // Define emits
 const emit = defineEmits<{
