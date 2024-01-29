@@ -24,7 +24,6 @@ describe("Test @/helpers/programs/builder", () => {
         scheduleOrder: 1,
         lines: [
           new ProgramLine({
-            uid: "uid1",
             setsBaseValue: "3",
             repsBaseValue: "5/8",
             loadBaseValue: "50kg/70kg",
@@ -53,7 +52,7 @@ describe("Test @/helpers/programs/builder", () => {
             }),
           }),
           new ProgramLine({
-            uid: "uid2",
+            uid: "uidline2",
             loadBaseValue: "100kg",
           }),
         ],
@@ -139,7 +138,7 @@ describe("Test @/helpers/programs/builder", () => {
           note: "",
           data: [
             {
-              uid: "uid1",
+              uid: expect.stringMatching(/^OS-/),
               load: "50kg/70kg",
               loadRef: new ProgramLine({
                 setsBaseValue: "8",
@@ -171,7 +170,7 @@ describe("Test @/helpers/programs/builder", () => {
               requestVideo: false,
             },
             {
-              uid: "uid2",
+              uid: "uidline2",
               load: "100kg",
               loadRef: undefined,
               reps: undefined,
