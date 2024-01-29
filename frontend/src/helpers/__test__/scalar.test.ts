@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { stringGetNext, stringGetNextFromList } from "@/helpers/scalar";
+import { stringGetNext, stringGetNextFromList } from "../scalar";
 
 describe("Test @/helpers/scalar", () => {
   /*******************/
