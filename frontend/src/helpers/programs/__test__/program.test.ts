@@ -1,1180 +1,950 @@
+import { describe, expect, test } from "vitest";
 import { ProgramLine } from "@/helpers/programs/program";
 
-/****************/
-/***** LOAD *****/
-/****************/
-export function testAllLoadCases() {
-  // Test line translation
-  const lineTest = new ProgramLine({
-    setsBaseValue: "3",
-    repsBaseValue: "5/8",
-    loadBaseValue: "50kg/70kg",
-    rpeBaseValue: "5",
-    requestFeedbackText: true,
-    setsReference: new ProgramLine({
-      setsBaseValue: "8",
-      repsBaseValue: "5",
-      loadBaseValue: "50 kg",
-      rpeBaseValue: "8",
-      requestFeedbackText: true,
-    }),
-    repsReference: new ProgramLine({
-      setsBaseValue: "8",
-      repsBaseValue: "5",
-      loadBaseValue: "50 kg",
-      rpeBaseValue: "8",
-      requestFeedbackText: true,
-    }),
-    loadReference: new ProgramLine({
-      setsBaseValue: "8",
-      repsBaseValue: "5",
+describe("Test @/helpers/programs/program", () => {
+  describe("'ProgramLine' computed values", () => {
+    describe("load-related tests", () => {
+      // Reference data
+      const lineTest = new ProgramLine({
+        setsBaseValue: "3",
+        repsBaseValue: "5/8",
+        loadBaseValue: "50kg/70kg",
+        rpeBaseValue: "5",
+        requestFeedbackText: true,
+        setsReference: new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "5",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        }),
+        repsReference: new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "5",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        }),
+        loadReference: new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "5",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        }),
+      });
+      const loadComputedValues = (line: ProgramLine) =>
+        Object.fromEntries(
+          [
+            "loadRequire",
+            "loadValue",
+            "loadComputedValue",
+            "loadSupposedValue",
+            "loadRangeMin",
+            "loadRangeMax",
+            "loadOperation",
+          ].map((key) => [key, line[key as keyof ProgramLine]]),
+        );
 
-      rpeBaseValue: "8",
-      requestFeedbackText: true,
-    }),
+      test("load '100kg'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "100kg";
+        const expected = {
+          loadRequire: false,
+          loadValue: 100,
+          loadComputedValue: undefined,
+          loadSupposedValue: undefined,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: undefined,
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load '70%' with reference '100kg'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "70%";
+        lineUnderTest.loadReference = new ProgramLine({
+          loadBaseValue: "100kg",
+        });
+        const expected = {
+          loadRequire: false,
+          loadValue: 70,
+          loadComputedValue: 70,
+          loadSupposedValue: undefined,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: "*0.7",
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load '?'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "?";
+        const expected = {
+          loadRequire: true,
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: undefined,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: undefined,
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load '100kg/103kg'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "100kg/103kg";
+        const expected = {
+          loadRequire: true,
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: 101.5,
+          loadRangeMin: 100,
+          loadRangeMax: 103,
+          loadOperation: undefined,
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load '30%/50%' with reference '120kg'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "30%/50%";
+        lineUnderTest.loadReference = new ProgramLine({
+          loadBaseValue: "120kg",
+        });
+        const expected = {
+          loadRequire: true,
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: 48,
+          loadRangeMin: 36,
+          loadRangeMax: 60,
+          loadOperation: "*0.4",
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load '(100kg)'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "(100kg)";
+        const expected = {
+          loadRequire: true,
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: 100,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: undefined,
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load '(50%)' with reference '120kg'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "(50%)";
+        lineUnderTest.loadReference = new ProgramLine({
+          loadBaseValue: "120kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          loadRequire: true,
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: 60,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: undefined,
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load '-10kg' with reference '100kg'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "-10kg";
+        lineUnderTest.loadReference = new ProgramLine({
+          loadBaseValue: "100kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          loadRequire: false,
+          loadValue: 90,
+          loadComputedValue: 90,
+          loadSupposedValue: undefined,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: "-10",
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load '-20%' with reference '100kg'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "-20%";
+        lineUnderTest.loadReference = new ProgramLine({
+          loadBaseValue: "100kg",
+        });
+        const expected = {
+          loadRequire: false,
+          loadValue: 80,
+          loadComputedValue: 80,
+          loadSupposedValue: undefined,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: "*0.8",
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load '-10kg' with reference '50kg/150kg'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "-10kg";
+        lineUnderTest.loadReference = new ProgramLine({
+          loadBaseValue: "50kg/150kg",
+        });
+        const expected = {
+          loadRequire: false,
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: 90,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: "-10",
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load '-20%' with reference '50kg/150kg'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "-20%";
+        lineUnderTest.loadReference = new ProgramLine({
+          loadBaseValue: "50kg/150kg",
+        });
+        const expected = {
+          loadRequire: false,
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: 80,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: "*0.8",
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load '-10kg' with reference 'undefined'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "-10kg";
+        lineUnderTest.loadReference = new ProgramLine({
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: undefined,
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          loadRequire: false,
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: undefined,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: "-10",
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load '-20%' with reference 'undefined'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "-20%";
+        lineUnderTest.loadReference = new ProgramLine({
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: undefined,
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          loadRequire: false,
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: undefined,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: "*0.8",
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load 'W1-10kg' with reference '50kg/150kg'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "W1-10kg";
+        lineUnderTest.loadReference = new ProgramLine({
+          loadBaseValue: "50kg/150kg",
+        });
+        const expected = {
+          loadRequire: false,
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: 90,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: "-10",
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load 'W1-20%' with reference 'undefined'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "W1-20%";
+        lineUnderTest.loadReference = new ProgramLine({
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: undefined,
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          loadRequire: false,
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: undefined,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: "*0.8",
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("load 'W1-10%' with reference '50kg/150kg'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.loadBaseValue = "W1-10%";
+        lineUnderTest.loadReference = new ProgramLine({
+          loadBaseValue: "50kg/150kg",
+        });
+        const expected = {
+          loadRequire: false,
+          loadValue: undefined,
+          loadComputedValue: undefined,
+          loadSupposedValue: 90,
+          loadRangeMin: undefined,
+          loadRangeMax: undefined,
+          loadOperation: "*0.9",
+        };
+        expect(loadComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+    });
+
+    describe("reps-related tests", () => {
+      // Reference data
+      const lineTest = new ProgramLine({
+        setsBaseValue: "W1-3",
+        repsBaseValue: "5/8",
+        loadBaseValue: "50kg/70kg",
+        rpeBaseValue: "5",
+        requestFeedbackText: true,
+        setsReference: new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "5",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        }),
+        repsReference: new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "5",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        }),
+        loadReference: new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "5",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        }),
+      });
+      const repsComputedValues = (line: ProgramLine) =>
+        Object.fromEntries(
+          [
+            "repsRequire",
+            "repsValue",
+            "repsComputedValue",
+            "repsSupposedValue",
+            "repsRangeMin",
+            "repsRangeMax",
+            "repsOperation",
+          ].map((key) => [key, line[key as keyof ProgramLine]]),
+        );
+
+      test("reps '3'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.repsBaseValue = "3";
+        const expected = {
+          repsRequire: false,
+          repsValue: 3,
+          repsComputedValue: undefined,
+          repsSupposedValue: undefined,
+          repsRangeMin: undefined,
+          repsRangeMax: undefined,
+          repsOperation: undefined,
+        };
+        expect(repsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("reps '(3)'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.repsBaseValue = "(3)";
+        const expected = {
+          repsRequire: true,
+          repsValue: undefined,
+          repsComputedValue: undefined,
+          repsSupposedValue: 3,
+          repsRangeMin: undefined,
+          repsRangeMax: undefined,
+          repsOperation: undefined,
+        };
+        expect(repsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("reps '3/4'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.repsBaseValue = "3/4";
+        const expected = {
+          repsRequire: true,
+          repsValue: undefined,
+          repsComputedValue: undefined,
+          repsSupposedValue: 3.5,
+          repsRangeMin: 3,
+          repsRangeMax: 4,
+          repsOperation: undefined,
+        };
+        expect(repsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("reps '?'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.repsBaseValue = "?";
+        const expected = {
+          repsRequire: true,
+          repsValue: undefined,
+          repsComputedValue: undefined,
+          repsSupposedValue: undefined,
+          repsRangeMin: undefined,
+          repsRangeMax: undefined,
+          repsOperation: undefined,
+        };
+        expect(repsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("reps 'MAX-1' with reference '20'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.repsBaseValue = "MAX-1";
+        lineUnderTest.repsReference = new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "20",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          repsRequire: false,
+          repsValue: 19,
+          repsComputedValue: 19,
+          repsSupposedValue: undefined,
+          repsRangeMin: undefined,
+          repsRangeMax: undefined,
+          repsOperation: "-1",
+        };
+        expect(repsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("reps '-1' with reference '3'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.repsBaseValue = "-1";
+        lineUnderTest.repsReference = new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "3",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          repsRequire: false,
+          repsValue: 2,
+          repsComputedValue: 2,
+          repsSupposedValue: undefined,
+          repsRangeMin: undefined,
+          repsRangeMax: undefined,
+          repsOperation: "-1",
+        };
+        expect(repsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("reps '-1' with reference '(3)'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.repsBaseValue = "-1";
+        lineUnderTest.repsReference = new ProgramLine({
+          repsBaseValue: "(3)",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          repsRequire: false,
+          repsValue: undefined,
+          repsComputedValue: undefined,
+          repsSupposedValue: 2,
+          repsRangeMin: undefined,
+          repsRangeMax: undefined,
+          repsOperation: "-1",
+        };
+        expect(repsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("reps '-1' with reference 'undefined'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.repsBaseValue = "-1";
+        lineUnderTest.repsReference = new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: undefined,
+          repsValue: undefined,
+          repsComputedValue: undefined,
+          repsSupposedValue: undefined,
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          repsRequire: false,
+          repsValue: undefined,
+          repsComputedValue: undefined,
+          repsSupposedValue: undefined,
+          repsRangeMin: undefined,
+          repsRangeMax: undefined,
+          repsOperation: "-1",
+        };
+        expect(repsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("reps 'W1-1' with reference 'undefined'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.repsBaseValue = "-1";
+        lineUnderTest.repsReference = new ProgramLine({
+          repsBaseValue: undefined,
+          repsValue: undefined,
+          repsComputedValue: undefined,
+          repsSupposedValue: undefined,
+          requestFeedbackText: true,
+        });
+        const expected = {
+          repsRequire: false,
+          repsValue: undefined,
+          repsComputedValue: undefined,
+          repsSupposedValue: undefined,
+          repsRangeMin: undefined,
+          repsRangeMax: undefined,
+          repsOperation: "-1",
+        };
+        expect(repsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+    });
+
+    describe("sets-related tests", () => {
+      // Reference data
+      const lineTest = new ProgramLine({
+        setsBaseValue: "3",
+        repsBaseValue: "5/8",
+        loadBaseValue: "50kg/70kg",
+        rpeBaseValue: "5",
+        requestFeedbackText: true,
+        setsReference: new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "5",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        }),
+        repsReference: new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "5",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        }),
+        loadReference: new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "5",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        }),
+      });
+      const setsComputedValues = (line: ProgramLine) =>
+        Object.fromEntries(
+          [
+            "setsRequire",
+            "setsValue",
+            "setsComputedValue",
+            "setsSupposedValue",
+            "setsRangeMin",
+            "setsRangeMax",
+            "setsOperation",
+          ].map((key) => [key, line[key as keyof ProgramLine]]),
+        );
+
+      test("sets '3'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.setsBaseValue = "3";
+        const expected = {
+          setsRequire: false,
+          setsValue: 3,
+          setsComputedValue: undefined,
+          setsSupposedValue: undefined,
+          setsRangeMin: undefined,
+          setsRangeMax: undefined,
+          setsOperation: undefined,
+        };
+        expect(setsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("sets '(3)'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.setsBaseValue = "(3)";
+        const expected = {
+          setsRequire: true,
+          setsValue: undefined,
+          setsComputedValue: undefined,
+          setsSupposedValue: 3,
+          setsRangeMin: undefined,
+          setsRangeMax: undefined,
+          setsOperation: undefined,
+        };
+        expect(setsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("sets '3/4'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.setsBaseValue = "3/4";
+        const expected = {
+          setsRequire: true,
+          setsValue: undefined,
+          setsComputedValue: undefined,
+          setsSupposedValue: 3.5,
+          setsRangeMin: 3,
+          setsRangeMax: 4,
+          setsOperation: undefined,
+        };
+        expect(setsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("sets '?'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.setsBaseValue = "?";
+        const expected = {
+          setsRequire: true,
+          setsValue: undefined,
+          setsComputedValue: undefined,
+          setsSupposedValue: undefined,
+          setsRangeMin: undefined,
+          setsRangeMax: undefined,
+          setsOperation: undefined,
+        };
+        expect(setsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("sets '-1' with reference '3'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.setsBaseValue = "-1";
+        lineUnderTest.setsReference = new ProgramLine({
+          setsBaseValue: "3",
+          repsBaseValue: "3",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          setsRequire: false,
+          setsValue: 2,
+          setsComputedValue: 2,
+          setsSupposedValue: undefined,
+          setsRangeMin: undefined,
+          setsRangeMax: undefined,
+          setsOperation: "-1",
+        };
+        expect(setsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("sets '-1' with reference '(3)'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.setsBaseValue = "-1";
+        lineUnderTest.setsReference = new ProgramLine({
+          setsBaseValue: "(3)",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          setsRequire: false,
+          setsValue: undefined,
+          setsComputedValue: undefined,
+          setsSupposedValue: 2,
+          setsRangeMin: undefined,
+          setsRangeMax: undefined,
+          setsOperation: "-1",
+        };
+        expect(setsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("sets '-1' with reference 'undefined'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.setsBaseValue = "-1";
+        lineUnderTest.setsReference = new ProgramLine({
+          setsBaseValue: undefined,
+          setsValue: undefined,
+          setsComputedValue: undefined,
+          setsSupposedValue: undefined,
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          setsRequire: false,
+          setsValue: undefined,
+          setsComputedValue: undefined,
+          setsSupposedValue: undefined,
+          setsRangeMin: undefined,
+          setsRangeMax: undefined,
+          setsOperation: "-1",
+        };
+        expect(setsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("sets 'W1-1' with reference 'undefined'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.setsBaseValue = "W1-1";
+        lineUnderTest.setsReference = new ProgramLine({
+          setsBaseValue: undefined,
+          setsValue: undefined,
+          setsComputedValue: undefined,
+          setsSupposedValue: undefined,
+          requestFeedbackText: true,
+        });
+        const expected = {
+          setsRequire: false,
+          setsValue: undefined,
+          setsComputedValue: undefined,
+          setsSupposedValue: undefined,
+          setsRangeMin: undefined,
+          setsRangeMax: undefined,
+          setsOperation: "-1",
+        };
+        expect(setsComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+    });
+
+    describe("rpe-related tests", () => {
+      // Reference data
+      const lineTest = new ProgramLine({
+        setsBaseValue: "3",
+        repsBaseValue: "5/8",
+        loadBaseValue: "50kg/70kg",
+        rpeBaseValue: "5",
+        requestFeedbackText: true,
+        setsReference: new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "5",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        }),
+        repsReference: new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "5",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        }),
+        loadReference: new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "5",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "8",
+          requestFeedbackText: true,
+        }),
+        rpeReference: new ProgramLine({
+          setsBaseValue: "8",
+          repsBaseValue: "5",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "9",
+          requestFeedbackText: true,
+        }),
+      });
+      const rpeComputedValues = (line: ProgramLine) =>
+        Object.fromEntries(
+          [
+            "rpeRequire",
+            "rpeValue",
+            "rpeComputedValue",
+            "rpeSupposedValue",
+            "rpeRangeMin",
+            "rpeRangeMax",
+            "rpeOperation",
+          ].map((key) => [key, line[key as keyof ProgramLine]]),
+        );
+
+      test("rpe '8'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.rpeBaseValue = "8";
+        const expected = {
+          rpeRequire: false,
+          rpeValue: 8,
+          rpeComputedValue: undefined,
+          rpeSupposedValue: undefined,
+          rpeRangeMin: undefined,
+          rpeRangeMax: undefined,
+          rpeOperation: undefined,
+        };
+        expect(rpeComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("rpe '(8)'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.rpeBaseValue = "(8)";
+        const expected = {
+          rpeRequire: true,
+          rpeValue: undefined,
+          rpeComputedValue: undefined,
+          rpeSupposedValue: 8,
+          rpeRangeMin: undefined,
+          rpeRangeMax: undefined,
+          rpeOperation: undefined,
+        };
+        expect(rpeComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("rpe '7/8'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.rpeBaseValue = "7/8";
+        const expected = {
+          rpeRequire: true,
+          rpeValue: undefined,
+          rpeComputedValue: undefined,
+          rpeSupposedValue: 7.5,
+          rpeRangeMin: 7,
+          rpeRangeMax: 8,
+          rpeOperation: undefined,
+        };
+        expect(rpeComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("rpe '?'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.rpeBaseValue = "?";
+        const expected = {
+          rpeRequire: true,
+          rpeValue: undefined,
+          rpeComputedValue: undefined,
+          rpeSupposedValue: undefined,
+          rpeRangeMin: undefined,
+          rpeRangeMax: undefined,
+          rpeOperation: undefined,
+        };
+        expect(rpeComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("rpe '-1' with reference '9'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.rpeBaseValue = "-1";
+        lineUnderTest.rpeReference = new ProgramLine({
+          setsBaseValue: "3",
+          repsBaseValue: "3",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "9",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          rpeRequire: false,
+          rpeValue: 8,
+          rpeComputedValue: 8,
+          rpeSupposedValue: undefined,
+          rpeRangeMin: undefined,
+          rpeRangeMax: undefined,
+          rpeOperation: "-1",
+        };
+        expect(rpeComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("rpe '-1' with reference '(9)'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.rpeBaseValue = "-1";
+        lineUnderTest.rpeReference = new ProgramLine({
+          setsBaseValue: "3",
+          loadBaseValue: "50 kg",
+          rpeBaseValue: "(9)",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          rpeRequire: false,
+          rpeValue: undefined,
+          rpeComputedValue: undefined,
+          rpeSupposedValue: 8,
+          rpeRangeMin: undefined,
+          rpeRangeMax: undefined,
+          rpeOperation: "-1",
+        };
+        expect(rpeComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("rpe '-1' with reference 'undefined'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.rpeBaseValue = "-1";
+        lineUnderTest.rpeReference = new ProgramLine({
+          rpeBaseValue: undefined,
+          rpeValue: undefined,
+          rpeComputedValue: undefined,
+          rpeSupposedValue: undefined,
+          loadBaseValue: "50 kg",
+          requestFeedbackText: true,
+        });
+        const expected = {
+          rpeRequire: false,
+          rpeValue: undefined,
+          rpeComputedValue: undefined,
+          rpeSupposedValue: undefined,
+          rpeRangeMin: undefined,
+          rpeRangeMax: undefined,
+          rpeOperation: "-1",
+        };
+        expect(rpeComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+
+      test("rpe 'W1-1' with reference 'undefined'", () => {
+        const lineUnderTest = lineTest.duplicate();
+        lineUnderTest.rpeBaseValue = "W1-1";
+        lineUnderTest.rpeReference = new ProgramLine({
+          rpeBaseValue: undefined,
+          rpeValue: undefined,
+          rpeComputedValue: undefined,
+          rpeSupposedValue: undefined,
+          requestFeedbackText: true,
+        });
+        const expected = {
+          rpeRequire: false,
+          rpeValue: undefined,
+          rpeComputedValue: undefined,
+          rpeSupposedValue: undefined,
+          rpeRangeMin: undefined,
+          rpeRangeMax: undefined,
+          rpeOperation: "-1",
+        };
+        expect(rpeComputedValues(lineUnderTest)).toMatchObject(expected);
+      });
+    });
   });
+});
 
-  const names = [
-    "loadRequire",
-    "loadValue",
-    "loadComputedValue",
-    "loadSupposedValue",
-    "loadRangeMin",
-    "loadRangeMax",
-    "loadOperation",
-  ];
-
-  console.log("-----------START---------------");
-  console.log("-----------LOAD TEST 2---------------");
-  lineTest.loadBaseValue = "100kg";
-  const valueToTest = lineTest.loadBaseValue;
-  const resultsExpected = [
-    false,
-    100,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-  ];
-
-  testLoad(lineTest, valueToTest, names, resultsExpected);
-
-  console.log("-----------LOAD TEST 3---------------");
-  lineTest.loadBaseValue = "70%";
-  const valueToTest2 = lineTest.loadBaseValue;
-  lineTest.loadReference = new ProgramLine({
-    loadBaseValue: "100kg",
-    loadValue: 100,
-  });
-  const resultsExpected2 = [
-    false,
-    70,
-    70,
-    undefined,
-    undefined,
-    undefined,
-    "*0.7",
-  ];
-
-  testLoad(lineTest, valueToTest2, names, resultsExpected2);
-
-  console.log("-----------LOAD TEST 4---------------");
-  lineTest.loadBaseValue = "?";
-  const valueToTest3 = lineTest.loadBaseValue;
-  const resultsExpected3 = [
-    true,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-  ];
-
-  testLoad(lineTest, valueToTest3, names, resultsExpected3);
-
-  console.log("-----------LOAD TEST 5---------------");
-  lineTest.loadBaseValue = "100kg/103kg";
-  const valueToTest4 = lineTest.loadBaseValue;
-  const resultsExpected4 = [
-    true,
-    undefined,
-    undefined,
-    101.5,
-    100,
-    103,
-    undefined,
-    undefined,
-  ];
-
-  testLoad(lineTest, valueToTest4, names, resultsExpected4);
-
-  console.log("-----------LOAD TEST 6---------------");
-  lineTest.loadBaseValue = "30%/50%";
-  lineTest.loadReference = new ProgramLine({
-    loadBaseValue: "120kg",
-  });
-  const valueToTest6 = lineTest.loadBaseValue;
-  const resultsExpected6 = [true, undefined, undefined, 48, 36, 60, "*0.4"];
-
-  testLoad(lineTest, valueToTest6, names, resultsExpected6);
-
-  console.log("-----------LOAD TEST 7---------------");
-  lineTest.loadBaseValue = "(100kg)";
-
-  const valueToTest7 = lineTest.loadBaseValue;
-  const resultsExpected7 = [
-    true,
-    undefined,
-    undefined,
-    100,
-    undefined,
-    undefined,
-    undefined,
-  ];
-
-  testLoad(lineTest, valueToTest7, names, resultsExpected7);
-
-  console.log("-----------LOAD TEST 8---------------");
-  lineTest.loadBaseValue = "(50%)";
-  lineTest.loadReference = new ProgramLine({
-    loadBaseValue: "120kg",
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  });
-  const valueToTest8 = lineTest.loadBaseValue;
-  const resultsExpected8 = [
-    true,
-    undefined,
-    undefined,
-    60,
-    undefined,
-    undefined,
-    undefined,
-  ];
-
-  testLoad(lineTest, valueToTest8, names, resultsExpected8);
-
-  console.log("-----------LOAD TEST 9---------------");
-  lineTest.loadBaseValue = "-10kg";
-  lineTest.loadReference = new ProgramLine({
-    loadBaseValue: "100kg",
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  });
-  const valueToTest9 = lineTest.loadBaseValue;
-  const resultsExpected9 = [
-    false,
-    90,
-    90,
-    undefined,
-    undefined,
-    undefined,
-    "-10",
-  ];
-
-  testLoad(lineTest, valueToTest9, names, resultsExpected9);
-
-  console.log("-----------LOAD TEST 10---------------");
-  lineTest.loadBaseValue = "-20%";
-  lineTest.loadReference = new ProgramLine({
-    loadBaseValue: "100kg",
-  });
-  const valueToTest10 = lineTest.loadBaseValue;
-  const resultsExpected10 = [
-    false,
-    80,
-    80,
-    undefined,
-    undefined,
-    undefined,
-    "*0.8",
-  ];
-
-  testLoad(lineTest, valueToTest10, names, resultsExpected10);
-
-  console.log("-----------LOAD TEST 11---------------");
-  lineTest.loadBaseValue = "-10kg";
-  lineTest.loadReference = new ProgramLine({
-    loadBaseValue: "50kg/150kg",
-  });
-  const valueToTest11 = lineTest.loadBaseValue;
-  const resultsExpected11 = [
-    false,
-    undefined,
-    undefined,
-    90,
-    undefined,
-    undefined,
-    "-10",
-  ];
-
-  testLoad(lineTest, valueToTest11, names, resultsExpected11);
-
-  console.log("-----------LOAD TEST 12---------------");
-  lineTest.loadBaseValue = "-20%";
-  lineTest.loadReference = new ProgramLine({
-    loadBaseValue: "50kg/150kg",
-  });
-  const valueToTest12 = lineTest.loadBaseValue;
-  const resultsExpected12 = [
-    false,
-    undefined,
-    undefined,
-    "80",
-    undefined,
-    undefined,
-    "*0.8",
-  ];
-
-  testLoad(lineTest, valueToTest12, names, resultsExpected12);
-
-  console.log("-----------LOAD TEST 13---------------");
-  lineTest.loadBaseValue = "-10kg";
-  lineTest.loadReference = new ProgramLine({
-    loadValue: undefined,
-    loadComputedValue: undefined,
-    loadSupposedValue: undefined,
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  });
-  const valueToTest13 = lineTest.loadBaseValue;
-  const resultsExpected13 = [
-    false,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    "-10",
-  ];
-
-  testLoad(lineTest, valueToTest13, names, resultsExpected13);
-
-  console.log("-----------LOAD TEST 14---------------");
-  lineTest.loadBaseValue = "-20%";
-  lineTest.loadReference = new ProgramLine({
-    loadValue: undefined,
-    loadComputedValue: undefined,
-    loadSupposedValue: undefined,
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  });
-  const valueToTest14 = lineTest.loadBaseValue;
-  const resultsExpected14 = [
-    false,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    "*0.8",
-  ];
-
-  testLoad(lineTest, valueToTest14, names, resultsExpected14);
-
-  console.log("-----------LOAD TEST 15---------------");
-  lineTest.loadBaseValue = "W1-10kg";
-  lineTest.loadReference = new ProgramLine({
-    loadBaseValue: "50kg/150kg",
-  });
-  const valueToTest15 = lineTest.loadBaseValue;
-  const resultsExpected15 = [
-    false,
-    undefined,
-    undefined,
-    90,
-    undefined,
-    undefined,
-    "-10",
-  ];
-
-  testLoad(lineTest, valueToTest15, names, resultsExpected15);
-
-  console.log("-----------LOAD TEST 16---------------");
-  lineTest.loadBaseValue = "W1-20%";
-  lineTest.loadReference = new ProgramLine({
-    loadValue: undefined,
-    loadComputedValue: undefined,
-    loadSupposedValue: undefined,
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  });
-  const valueToTest16 = lineTest.loadBaseValue;
-  const resultsExpected16 = [
-    false,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    "*0.8",
-  ];
-
-  testLoad(lineTest, valueToTest16, names, resultsExpected16);
-
-  console.log("-----------LOAD TEST 17---------------");
-  lineTest.loadBaseValue = "W1-10%";
-  lineTest.loadReference = new ProgramLine({
-    loadBaseValue: "50kg/150kg",
-  });
-  const valueToTest17 = lineTest.loadBaseValue;
-  const resultsExpected17 = [
-    false,
-    undefined,
-    undefined,
-    90,
-    undefined,
-    undefined,
-    "*0.9",
-  ];
-
-  testLoad(lineTest, valueToTest17, names, resultsExpected17);
-}
-
-export function testLoad(
-  lineTest: ProgramLine,
-  valueToTest: boolean | number | string | undefined,
-  names: string[],
-  resultsExpected: Array<boolean | number | string | undefined>,
-) {
-  if (
-    lineTest.loadRequire === resultsExpected[0] &&
-    lineTest.loadValue === resultsExpected[1] &&
-    lineTest.loadComputedValue === resultsExpected[2] &&
-    lineTest.loadSupposedValue === resultsExpected[3] &&
-    lineTest.loadRangeMin === resultsExpected[4] &&
-    lineTest.loadRangeMax === resultsExpected[5] &&
-    lineTest.loadOperation === resultsExpected[6]
-  ) {
-    console.log("All tests passed");
-  } else {
-    console.log("Start test with", valueToTest);
-    console.log(
-      names[0],
-      lineTest.loadRequire,
-      "   passed",
-      lineTest.loadRequire === resultsExpected[0],
-    );
-    console.log("loadBaseValue", lineTest.loadBaseValue);
-    console.log(
-      names[1],
-      lineTest.loadValue,
-      "   passed",
-      lineTest.loadValue === resultsExpected[1],
-    );
-    console.log(
-      names[2],
-      lineTest.loadComputedValue,
-      "   passed",
-      lineTest.loadComputedValue === resultsExpected[2],
-    );
-    console.log(
-      names[3],
-      lineTest.loadSupposedValue,
-      "   passed",
-      lineTest.loadSupposedValue === resultsExpected[3],
-    );
-    console.log(
-      names[4],
-      lineTest.loadRangeMin,
-      "   passed",
-      lineTest.loadRangeMin === resultsExpected[4],
-    );
-    console.log(
-      names[5],
-      lineTest.loadRangeMax,
-      "   passed",
-      lineTest.loadRangeMax === resultsExpected[5],
-    );
-    console.log(
-      names[6],
-      lineTest.loadOperation,
-      "   passed",
-      lineTest.loadOperation === resultsExpected[6],
-    );
-  }
-
-  console.log("                ");
-  console.log("                ");
-  console.log("                ");
-}
-
-/****************/
-/***** REPS *****/
-/****************/
-
-export function testAllRepCases() {
-  // Test line translation
-  const lineTest = new ProgramLine({
-    setsBaseValue: "W1-3",
-    repsBaseValue: "5/8",
-    loadBaseValue: "50kg/70kg",
-    rpeBaseValue: "5",
-    requestFeedbackText: true,
-    setsReference: new ProgramLine({
-      setsBaseValue: "8",
-      repsBaseValue: "5",
-      loadBaseValue: "50 kg",
-      rpeBaseValue: "8",
-      requestFeedbackText: true,
-    }),
-    repsReference: new ProgramLine({
-      setsBaseValue: "8",
-      repsBaseValue: "5",
-      loadBaseValue: "50 kg",
-      rpeBaseValue: "8",
-      requestFeedbackText: true,
-    }),
-    loadReference: new ProgramLine({
-      setsBaseValue: "8",
-      repsBaseValue: "5",
-      loadBaseValue: "50 kg",
-      rpeBaseValue: "8",
-      requestFeedbackText: true,
-    }),
-  });
-
-  const names = [
-    "repsRequire",
-    "repsValue",
-    "repsComputedValue",
-    "repsSupposedValue",
-    "repsRangeMin",
-    "repsRangeMax",
-    "repsOperation",
-  ];
-
-  console.log("-----------START---------------");
-  console.log("-----------REPS TEST 2---------------");
-  lineTest.repsBaseValue = "3";
-  const valueToTest = lineTest.repsBaseValue;
-  const resultsExpected = [
-    false,
-    3,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-  ];
-
-  testReps(lineTest, valueToTest, names, resultsExpected);
-
-  console.log("-----------REPS TEST 3---------------");
-  lineTest.repsBaseValue = "(3)";
-  const valueToTest2 = lineTest.repsBaseValue;
-  const resultsExpected2 = [
-    true,
-    undefined,
-    undefined,
-    3,
-    undefined,
-    undefined,
-    undefined,
-  ];
-
-  testReps(lineTest, valueToTest2, names, resultsExpected2);
-
-  console.log("-----------REPS TEST 4---------------");
-  lineTest.repsBaseValue = "3/4";
-  const valueToTest3 = lineTest.repsBaseValue;
-  const resultsExpected3 = [true, undefined, undefined, 3.5, 3, 4, undefined];
-
-  testReps(lineTest, valueToTest3, names, resultsExpected3);
-
-  console.log("-----------REPS TEST 5---------------");
-  lineTest.repsBaseValue = "?";
-  const valueToTest4 = lineTest.repsBaseValue;
-  const resultsExpected4 = [
-    true,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-  ];
-
-  testReps(lineTest, valueToTest4, names, resultsExpected4);
-
-  console.log("-----------REPS TEST 6---------------");
-  lineTest.repsBaseValue = "MAX-1";
-  lineTest.repsReference = new ProgramLine({
-    setsBaseValue: "8",
-    repsBaseValue: "20",
-    loadBaseValue: "50 kg",
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  });
-  const valueToTest5 = lineTest.repsBaseValue;
-  const resultsExpected5 = [
-    false,
-    19,
-    19,
-    undefined,
-    undefined,
-    undefined,
-    "-1",
-  ];
-
-  testReps(lineTest, valueToTest5, names, resultsExpected5);
-
-  console.log("-----------REPS TEST 7---------------");
-  lineTest.repsBaseValue = "-1";
-  lineTest.repsReference = new ProgramLine({
-    setsBaseValue: "8",
-    repsBaseValue: "3",
-    loadBaseValue: "50 kg",
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  });
-  const valueToTest6 = lineTest.repsBaseValue;
-  const resultsExpected6 = [false, 2, 2, undefined, undefined, undefined, "-1"];
-
-  testReps(lineTest, valueToTest6, names, resultsExpected6);
-
-  console.log("-----------REPS TEST 8---------------");
-  lineTest.repsBaseValue = "-1";
-  lineTest.repsReference = new ProgramLine({
-    repsBaseValue: "(3)",
-    loadBaseValue: "50 kg",
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  });
-  const valueToTest7 = lineTest.repsBaseValue;
-  const resultsExpected7 = [
-    false,
-    undefined,
-    undefined,
-    2,
-    undefined,
-    undefined,
-    "-1",
-  ];
-
-  testReps(lineTest, valueToTest7, names, resultsExpected7);
-
-  console.log("-----------REPS TEST 9---------------");
-  lineTest.repsBaseValue = "-1";
-  lineTest.repsReference = new ProgramLine({
-    setsBaseValue: "8",
-    repsBaseValue: undefined,
-    repsValue: undefined,
-    repsComputedValue: undefined,
-    repsSupposedValue: undefined,
-    loadBaseValue: "50 kg",
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  });
-  const valueToTest8 = lineTest.repsBaseValue;
-  const resultsExpected8 = [
-    false,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    "-1",
-  ];
-
-  testReps(lineTest, valueToTest8, names, resultsExpected8);
-
-  console.log("-----------REPS TEST 10---------------");
-  lineTest.repsBaseValue = "W1-1";
-  lineTest.repsReference = new ProgramLine({
-    repsBaseValue: undefined,
-    repsValue: undefined,
-    repsComputedValue: undefined,
-    repsSupposedValue: undefined,
-    requestFeedbackText: true,
-  });
-  const valueToTest9 = lineTest.repsBaseValue;
-  const resultsExpected9 = [
-    false,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    "-1",
-  ];
-
-  testReps(lineTest, valueToTest9, names, resultsExpected9);
-}
-
-export function testReps(
-  lineTest: ProgramLine,
-  valueToTest: boolean | number | string | undefined,
-  names: string[],
-  resultsExpected: Array<boolean | number | string | undefined>,
-) {
-  if (
-    lineTest.repsRequire === resultsExpected[0] &&
-    lineTest.repsValue === resultsExpected[1] &&
-    lineTest.repsComputedValue === resultsExpected[2] &&
-    lineTest.repsSupposedValue === resultsExpected[3] &&
-    lineTest.repsRangeMin === resultsExpected[4] &&
-    lineTest.repsRangeMax === resultsExpected[5] &&
-    lineTest.repsOperation === resultsExpected[6]
-  ) {
-    console.log("All tests passed");
-  } else {
-    console.log("Start test with", valueToTest);
-    console.log(
-      names[0],
-      lineTest.repsRequire,
-      "   passed",
-      lineTest.repsRequire === resultsExpected[0],
-    );
-    console.log("repsBaseValue", lineTest.repsBaseValue);
-    console.log(
-      names[1],
-      lineTest.repsValue,
-      "   passed",
-      lineTest.repsValue === resultsExpected[1],
-    );
-    console.log(
-      names[2],
-      lineTest.repsComputedValue,
-      "   passed",
-      lineTest.repsComputedValue === resultsExpected[2],
-    );
-    console.log(
-      names[3],
-      lineTest.repsSupposedValue,
-      "   passed",
-      lineTest.repsSupposedValue === resultsExpected[3],
-    );
-    console.log(
-      names[4],
-      lineTest.repsRangeMin,
-      "   passed",
-      lineTest.repsRangeMin === resultsExpected[4],
-    );
-    console.log(
-      names[5],
-      lineTest.repsRangeMax,
-      "   passed",
-      lineTest.repsRangeMax === resultsExpected[5],
-    );
-    console.log(
-      names[6],
-      lineTest.repsOperation,
-      "   passed",
-      lineTest.repsOperation === resultsExpected[6],
-    );
-  }
-
-  console.log("                ");
-  console.log("                ");
-  console.log("                ");
-}
-
-/****************/
-/***** SETS *****/
-/****************/
-
-export function testAllSetsCases() {
-  // Test line translation
-  const lineTest = new ProgramLine({
-    setsBaseValue: "3",
-    repsBaseValue: "5/8",
-    loadBaseValue: "50kg/70kg",
-    rpeBaseValue: "5",
-    requestFeedbackText: true,
-    setsReference: new ProgramLine({
-      setsBaseValue: "8",
-      repsBaseValue: "5",
-      loadBaseValue: "50 kg",
-      rpeBaseValue: "8",
-      requestFeedbackText: true,
-    }),
-    repsReference: new ProgramLine({
-      setsBaseValue: "8",
-      repsBaseValue: "5",
-      loadBaseValue: "50 kg",
-      rpeBaseValue: "8",
-      requestFeedbackText: true,
-    }),
-    loadReference: new ProgramLine({
-      setsBaseValue: "8",
-      repsBaseValue: "5",
-      loadBaseValue: "50 kg",
-      rpeBaseValue: "8",
-      requestFeedbackText: true,
-    }),
-  });
-
-  const names = [
-    "setsRequire",
-    "setsValue",
-    "setsComputedValue",
-    "setsSupposedValue",
-    "setsRangeMin",
-    "setsRangeMax",
-    "setsOperation",
-  ];
-
-  console.log("-----------START---------------");
-  console.log("-----------SETS TEST 2---------------");
-  lineTest.setsBaseValue = "3";
-  const valueToTest = lineTest.setsBaseValue;
-  const resultsExpected = [
-    false,
-    3,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-  ];
-
-  testSets(lineTest, valueToTest, names, resultsExpected);
-
-  console.log("-----------SETS TEST 3---------------");
-  lineTest.setsBaseValue = "(3)";
-  const valueToTest2 = lineTest.setsBaseValue;
-  const resultsExpected2 = [
-    true,
-    undefined,
-    undefined,
-    3,
-    undefined,
-    undefined,
-    undefined,
-  ];
-
-  testSets(lineTest, valueToTest2, names, resultsExpected2);
-
-  console.log("-----------SETS TEST 4---------------");
-  lineTest.setsBaseValue = "3/4";
-  const valueToTest3 = lineTest.setsBaseValue;
-  const resultsExpected3 = [true, undefined, undefined, 3.5, 3, 4, undefined];
-
-  testSets(lineTest, valueToTest3, names, resultsExpected3);
-
-  console.log("-----------SETS TEST 5---------------");
-  lineTest.setsBaseValue = "?";
-  const valueToTest4 = lineTest.setsBaseValue;
-  const resultsExpected4 = [
-    true,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-  ];
-
-  testSets(lineTest, valueToTest4, names, resultsExpected4);
-
-  console.log("-----------SETS TEST 6---------------");
-  lineTest.setsBaseValue = "-1";
-  lineTest.setsReference = new ProgramLine({
-    setsBaseValue: "3",
-    repsBaseValue: "3",
-    loadBaseValue: "50 kg",
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  });
-  const valueToTest6 = lineTest.setsBaseValue;
-  const resultsExpected6 = [false, 2, 2, undefined, undefined, undefined, "-1"];
-
-  testSets(lineTest, valueToTest6, names, resultsExpected6);
-
-  console.log("-----------SETS TEST 7---------------");
-  lineTest.setsBaseValue = "-1";
-  lineTest.setsReference = new ProgramLine({
-    setsBaseValue: "(3)",
-    loadBaseValue: "50 kg",
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  });
-  const valueToTest7 = lineTest.setsBaseValue;
-  const resultsExpected7 = [
-    false,
-    undefined,
-    undefined,
-    2,
-    undefined,
-    undefined,
-    "-1",
-  ];
-
-  testSets(lineTest, valueToTest7, names, resultsExpected7);
-
-  console.log("-----------SETS TEST 8---------------");
-  lineTest.setsBaseValue = "-1";
-  lineTest.setsReference = new ProgramLine({
-    setsBaseValue: undefined,
-    setsValue: undefined,
-    setsComputedValue: undefined,
-    setsSupposedValue: undefined,
-    loadBaseValue: "50 kg",
-    rpeBaseValue: "8",
-    requestFeedbackText: true,
-  });
-  const valueToTest8 = lineTest.setsBaseValue;
-  const resultsExpected8 = [
-    false,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    "-1",
-  ];
-
-  testSets(lineTest, valueToTest8, names, resultsExpected8);
-
-  console.log("-----------SETS TEST 9---------------");
-  lineTest.setsBaseValue = "W1-1";
-  lineTest.setsReference = new ProgramLine({
-    setsBaseValue: undefined,
-    setsValue: undefined,
-    setsComputedValue: undefined,
-    setsSupposedValue: undefined,
-    requestFeedbackText: true,
-  });
-  const valueToTest9 = lineTest.setsBaseValue;
-  const resultsExpected9 = [
-    false,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    "-1",
-  ];
-
-  testSets(lineTest, valueToTest9, names, resultsExpected9);
-}
-
-export function testSets(
-  lineTest: ProgramLine,
-  valueToTest: boolean | number | string | undefined,
-  names: string[],
-  resultsExpected: Array<boolean | number | string | undefined>,
-) {
-  if (
-    lineTest.setsRequire === resultsExpected[0] &&
-    lineTest.setsValue === resultsExpected[1] &&
-    lineTest.setsComputedValue === resultsExpected[2] &&
-    lineTest.setsSupposedValue === resultsExpected[3] &&
-    lineTest.setsRangeMin === resultsExpected[4] &&
-    lineTest.setsRangeMax === resultsExpected[5] &&
-    lineTest.setsOperation === resultsExpected[6]
-  ) {
-    console.log("All tests passed");
-  } else {
-    console.log("Start test with", valueToTest);
-    console.log(
-      names[0],
-      lineTest.setsRequire,
-      "   passed",
-      lineTest.setsRequire === resultsExpected[0],
-    );
-    console.log("setsBaseValue", lineTest.setsBaseValue);
-    console.log(
-      names[1],
-      lineTest.setsValue,
-      "   passed",
-      lineTest.setsValue === resultsExpected[1],
-    );
-    console.log(
-      names[2],
-      lineTest.setsComputedValue,
-      "   passed",
-      lineTest.setsComputedValue === resultsExpected[2],
-    );
-    console.log(
-      names[3],
-      lineTest.setsSupposedValue,
-      "   passed",
-      lineTest.setsSupposedValue === resultsExpected[3],
-    );
-    console.log(
-      names[4],
-      lineTest.setsRangeMin,
-      "   passed",
-      lineTest.setsRangeMin === resultsExpected[4],
-    );
-    console.log(
-      names[5],
-      lineTest.setsRangeMax,
-      "   passed",
-      lineTest.setsRangeMax === resultsExpected[5],
-    );
-    console.log(
-      names[6],
-      lineTest.setsOperation,
-      "   passed",
-      lineTest.setsOperation === resultsExpected[6],
-    );
-  }
-
-  console.log("                ");
-  console.log("                ");
-  console.log("                ");
-}
-
-/***************/
-/***** RPE *****/
-/***************/
-
-export function testAllRpeCases() {
-  // Test line translation
-  const lineTest = new ProgramLine({
-    setsBaseValue: "3",
-    repsBaseValue: "5/8",
-    loadBaseValue: "50kg/70kg",
-    rpeBaseValue: "5",
-    requestFeedbackText: true,
-    setsReference: new ProgramLine({
-      setsBaseValue: "8",
-      repsBaseValue: "5",
-      loadBaseValue: "50 kg",
-      rpeBaseValue: "8",
-      requestFeedbackText: true,
-    }),
-    repsReference: new ProgramLine({
-      setsBaseValue: "8",
-      repsBaseValue: "5",
-      loadBaseValue: "50 kg",
-      rpeBaseValue: "8",
-      requestFeedbackText: true,
-    }),
-    loadReference: new ProgramLine({
-      setsBaseValue: "8",
-      repsBaseValue: "5",
-      loadBaseValue: "50 kg",
-      rpeBaseValue: "8",
-      requestFeedbackText: true,
-    }),
-    rpeReference: new ProgramLine({
-      setsBaseValue: "8",
-      repsBaseValue: "5",
-      loadBaseValue: "50 kg",
-      rpeBaseValue: "9",
-      requestFeedbackText: true,
-    }),
-  });
-
-  const names = [
-    "rpeRequire",
-    "rpeValue",
-    "rpeComputedValue",
-    "rpeSupposedValue",
-    "rpeRangeMin",
-    "rpeRangeMax",
-    "rpeOperation",
-  ];
-
-  console.log("-----------START---------------");
-  console.log("-----------RPE TEST 2---------------");
-  lineTest.rpeBaseValue = "8";
-  const valueToTest = lineTest.rpeBaseValue;
-  const resultsExpected = [
-    false,
-    8,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-  ];
-
-  testRpe(lineTest, valueToTest, names, resultsExpected);
-
-  console.log("-----------RPE TEST 3---------------");
-  lineTest.rpeBaseValue = "(8)";
-  const valueToTest2 = lineTest.rpeBaseValue;
-  const resultsExpected2 = [
-    true,
-    undefined,
-    undefined,
-    8,
-    undefined,
-    undefined,
-    undefined,
-  ];
-
-  testRpe(lineTest, valueToTest2, names, resultsExpected2);
-
-  console.log("-----------RPE TEST 4---------------");
-  lineTest.rpeBaseValue = "7/8";
-  const valueToTest3 = lineTest.rpeBaseValue;
-  const resultsExpected3 = [true, undefined, undefined, 7.5, 7, 8, undefined];
-
-  testRpe(lineTest, valueToTest3, names, resultsExpected3);
-
-  console.log("-----------RPE TEST 5---------------");
-  lineTest.rpeBaseValue = "?";
-  const valueToTest4 = lineTest.rpeBaseValue;
-  const resultsExpected4 = [
-    true,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-  ];
-
-  testRpe(lineTest, valueToTest4, names, resultsExpected4);
-
-  console.log("-----------RPE TEST 6---------------");
-  lineTest.rpeBaseValue = "-1";
-  lineTest.rpeReference = new ProgramLine({
-    setsBaseValue: "3",
-    repsBaseValue: "3",
-    loadBaseValue: "50 kg",
-    rpeBaseValue: "9",
-    requestFeedbackText: true,
-  });
-  const valueToTest6 = lineTest.rpeBaseValue;
-  const resultsExpected6 = [false, 8, 8, undefined, undefined, undefined, "-1"];
-
-  testRpe(lineTest, valueToTest6, names, resultsExpected6);
-
-  console.log("-----------RPE TEST 7---------------");
-  lineTest.rpeBaseValue = "-1";
-  lineTest.rpeReference = new ProgramLine({
-    setsBaseValue: "3",
-    loadBaseValue: "50 kg",
-    rpeBaseValue: "(9)",
-    requestFeedbackText: true,
-  });
-  const valueToTest7 = lineTest.rpeBaseValue;
-  const resultsExpected7 = [
-    false,
-    undefined,
-    undefined,
-    8,
-    undefined,
-    undefined,
-    "-1",
-  ];
-
-  testRpe(lineTest, valueToTest7, names, resultsExpected7);
-
-  console.log("-----------RPE TEST 8---------------");
-  lineTest.rpeBaseValue = "-1";
-  lineTest.rpeReference = new ProgramLine({
-    rpeBaseValue: undefined,
-    rpeValue: undefined,
-    rpeComputedValue: undefined,
-    rpeSupposedValue: undefined,
-    loadBaseValue: "50 kg",
-    requestFeedbackText: true,
-  });
-  const valueToTest8 = lineTest.rpeBaseValue;
-  const resultsExpected8 = [
-    false,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    "-1",
-  ];
-
-  testRpe(lineTest, valueToTest8, names, resultsExpected8);
-
-  console.log("-----------RPE TEST 9---------------");
-  lineTest.rpeBaseValue = "W1-1";
-  lineTest.rpeReference = new ProgramLine({
-    rpeBaseValue: undefined,
-    rpeValue: undefined,
-    rpeComputedValue: undefined,
-    rpeSupposedValue: undefined,
-    requestFeedbackText: true,
-  });
-  const valueToTest9 = lineTest.rpeBaseValue;
-  const resultsExpected9 = [
-    false,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    "-1",
-  ];
-
-  testRpe(lineTest, valueToTest9, names, resultsExpected9);
-}
-
-export function testRpe(
-  lineTest: ProgramLine,
-  valueToTest: boolean | number | string | undefined,
-  names: string[],
-  resultsExpected: Array<boolean | number | string | undefined>,
-) {
-  if (
-    lineTest.rpeRequire === resultsExpected[0] &&
-    lineTest.rpeValue === resultsExpected[1] &&
-    lineTest.rpeComputedValue === resultsExpected[2] &&
-    lineTest.rpeSupposedValue === resultsExpected[3] &&
-    lineTest.rpeRangeMin === resultsExpected[4] &&
-    lineTest.rpeRangeMax === resultsExpected[5] &&
-    lineTest.rpeOperation === resultsExpected[6]
-  ) {
-    console.log("All tests passed");
-  } else {
-    console.log("Start test with", valueToTest);
-    console.log(
-      names[0],
-      lineTest.rpeRequire,
-      "   passed",
-      lineTest.rpeRequire === resultsExpected[0],
-    );
-    console.log("rpeBaseValue", lineTest.rpeBaseValue);
-    console.log(
-      names[1],
-      lineTest.rpeValue,
-      "   passed",
-      lineTest.rpeValue === resultsExpected[1],
-    );
-    console.log(
-      names[2],
-      lineTest.rpeComputedValue,
-      "   passed",
-      lineTest.rpeComputedValue === resultsExpected[2],
-    );
-    console.log(
-      names[3],
-      lineTest.rpeSupposedValue,
-      "   passed",
-      lineTest.rpeSupposedValue === resultsExpected[3],
-    );
-    console.log(
-      names[4],
-      lineTest.rpeRangeMin,
-      "   passed",
-      lineTest.rpeRangeMin === resultsExpected[4],
-    );
-    console.log(
-      names[5],
-      lineTest.rpeRangeMax,
-      "   passed",
-      lineTest.rpeRangeMax === resultsExpected[5],
-    );
-    console.log(
-      names[6],
-      lineTest.rpeOperation,
-      "   passed",
-      lineTest.rpeOperation === resultsExpected[6],
-    );
-  }
-
-  console.log("                ");
-  console.log("                ");
-  console.log("                ");
-}
-
-testAllLoadCases();
-testAllRepCases();
-testAllSetsCases();
-testAllRpeCases();
