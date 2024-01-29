@@ -47,6 +47,24 @@
               </span>
             </div>
 
+            <!-- Undo and redo -->
+            <div>
+              <q-btn
+                icon="sym_o_undo"
+                flat
+                round
+                @click="programBuilderElement?.undo()"
+                :disable="!canUndo"
+              ></q-btn>
+              <q-btn
+                icon="sym_o_redo"
+                flat
+                round
+                @click="programBuilderElement?.redo()"
+                :disable="!canRedo"
+              ></q-btn>
+            </div>
+
             <!-- Display and update assigned user -->
             <div
               v-if="selectedProgram.athlete && !denseView"
@@ -206,6 +224,7 @@
 
         <!-- Show table to build program -->
         <TableProgramBuilder
+          ref="programBuilderElement"
           v-if="selectedProgram?.athlete"
           :model-value="selectedProgram"
           @update:model-value="
@@ -218,6 +237,18 @@
               onNewExercise(exerciseName, undefined, programExercise)
           "
           @new-variant="onNewExercise"
+          @undo="
+            (undos, redos) => {
+              canUndo = undos;
+              canRedo = redos;
+            }
+          "
+          @redo="
+            (redos, undos) => {
+              canUndo = undos;
+              canRedo = redos;
+            }
+          "
           :exercises="coachInfo.exercises"
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
@@ -669,6 +700,7 @@ const showingUtils = ref(UtilsOptions.list);
 
 // Set ref related to program
 const programManagerElement = ref<HTMLElement>();
+const programBuilderElement = ref<typeof TableProgramBuilder>();
 const selectedProgram = ref<Program>();
 const substituteProgramId = ref<string>();
 const oldAthleteAssigned = ref<AthleteUser>();
@@ -682,6 +714,8 @@ const showAthleteAssigningDialog = ref(false);
 const showShareProgramDialog = ref(false);
 const programManagerExpanded = ref(false);
 const programManagerHeight = ref(0);
+const canUndo = ref(false);
+const canRedo = ref(false);
 
 // Set ref related to maxlift
 const updatingMaxlift = ref<MaxLift>();
@@ -825,6 +859,7 @@ function openProgram(programId?: string, force: boolean = false) {
   if (
     route.name === NamedRoutes.program &&
     programId != undefined &&
+    programId != route.params.programId &&
     (programSaved.value || force)
   ) {
     router.replace({
@@ -859,6 +894,12 @@ function onProgramTableUpdate(program: Program) {
   // Update selected program
   selectedProgram.value = program;
   programSaved.value = false;
+
+  // Check if undo and redo are possible
+  if (programBuilderElement.value)
+    [canUndo.value, canRedo.value] = programBuilderElement.value
+      .getHistorySteps()
+      .map((val: number) => val > 0);
 
   // Start autosave
   autosaveProgram();
@@ -1263,10 +1304,43 @@ function handleDrawerClick(clickParam: number) {
   emit("activateDrawerItem", clickParam);
 }
 
+/**
+ * Manage key presses while on this view.
+ *
+ * @param event key press event.
+ */
+function keydownHandler(event: KeyboardEvent) {
+  // Save program on ctrl + s
+  if (event.ctrlKey && event.key.toLowerCase() === "s") {
+    event.preventDefault();
+    saveProgram(undefined, true);
+  }
+
+  // Undo changes on ctrl + z
+  else if (
+    event.ctrlKey &&
+    !event.shiftKey &&
+    event.key.toLowerCase() === "z"
+  ) {
+    programBuilderElement.value?.undo();
+  }
+
+  // Redo changes on ctrl + y or ctrl + shift + z
+  else if (
+    (event.ctrlKey && event.key.toLowerCase() === "y") ||
+    (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "z")
+  ) {
+    programBuilderElement.value?.redo();
+  }
+}
+
 // Define what to do on component mount
 onMounted(() => {
   // Open top card on large screens
   if ($q.screen.gt.sm) programManagerExpanded.value = true;
+
+  // Detect key presses while on this page
+  document.addEventListener("keydown", keydownHandler);
 });
 
 // Define what to do before component unmount
@@ -1274,6 +1348,9 @@ onBeforeUnmount(() => {
   // Clear autosave, and save program if required
   autosaveProgram.cancel();
   saveProgram(undefined, true);
+
+  // Remove key press event listener
+  document.addEventListener("keydown", keydownHandler);
 });
 </script>
 
