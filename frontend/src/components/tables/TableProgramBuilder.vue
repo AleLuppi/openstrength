@@ -9,11 +9,16 @@
     style="border-radius: 24px"
   >
     <!-- Week wrapper -->
-    <div v-for="week in filteredWeeks" :key="`week${week}`">
+    <div
+      v-for="week in allWeeks"
+      v-show="filteredWeeks.includes(week)"
+      :key="`week${week}`"
+    >
       <!-- Day wrapper -->
       <div
         :ref="(el) => (dayElements[getName([week, day])] = el)"
-        v-for="day in filteredDays[week]"
+        v-for="day in allDays[week]"
+        v-show="filteredDays[week].includes(day)"
         :key="`day${day}`"
       >
         <!-- Show week and day and allow navigation -->
@@ -169,7 +174,12 @@
 
         <!-- Exercise elements -->
         <div
-          v-for="(exerciseData, idx) in filteredExercises[week][day]"
+          v-for="(exerciseData, idx) in allExercises[week][day]"
+          v-show="
+            filter.exercise.length == 0 ||
+            (exerciseData.exercise &&
+              filter.exercise.includes(exerciseData.exercise))
+          "
           :key="getName([week, day, exerciseData.order])"
           class="justify-evenly q-px-sm q-mb-md"
           :class="dense ? 'column items-stretch' : 'row items-start'"
@@ -194,11 +204,11 @@
               flat
               dense
               :color="
-                idx == filteredExercises[week][day].length - 1
+                idx == allExercises[week][day].length - 1
                   ? 'grey-5'
                   : 'secondary'
               "
-              :disable="idx == filteredExercises[week][day].length - 1"
+              :disable="idx == allExercises[week][day].length - 1"
             />
           </div>
 
@@ -950,6 +960,36 @@ const allDays = computed(() => {
   );
 });
 
+// Separate exercises by week and day
+const allExercises = computed(() => {
+  return arraySortObjectsByField(
+    exercisesValues.value,
+    "order",
+    false,
+    Number,
+  ).reduce(
+    (
+      out: {
+        [week: string]: {
+          [day: string]: ProgramBuilderExerciseData[];
+        };
+      },
+      exerciseData,
+    ) => {
+      // Extract week and day
+      const week = exerciseData.week,
+        day = exerciseData.day;
+
+      // Store interesting element
+      if (!(week in out)) out[week] = {};
+      if (!(day in out[week])) out[week][day] = [];
+      out[week][day].push(exerciseData);
+      return out;
+    },
+    {},
+  );
+});
+
 // Get a reference to requested weeks and days by filter
 const filteredWeeks = computed(() =>
   props.filter.week.length == 0
@@ -966,43 +1006,21 @@ const filteredDays = computed(() =>
 
 // Get a subset of tables to show according to filters
 const filteredExercises = computed(() => {
-  return arraySortObjectsByField(
-    exercisesValues.value,
-    "order",
-    false,
-    Number,
-  ).reduce(
-    (
-      out: {
-        [week: string]: {
-          [day: string]: ProgramBuilderExerciseData[];
-        };
-      },
-      exerciseData,
-    ) => {
-      const week = exerciseData.week,
-        day = exerciseData.day;
-
-      // Ignore unwanted element
-      if (
-        !filteredWeeks.value.includes(week) ||
-        !filteredDays.value[week].includes(day)
-      )
-        return out;
-      if (
-        props.filter.exercise.length > 0 &&
-        (!exerciseData.exercise ||
-          !props.filter.exercise.includes(exerciseData.exercise))
-      )
-        return out;
-
-      // Store interesting element
-      if (!(week in out)) out[week] = {};
-      if (!(day in out[week])) out[week][day] = [];
-      out[week][day].push(exerciseData);
-      return out;
-    },
-    {},
+  return Object.fromEntries(
+    allWeeks.value.map((week) => [
+      week,
+      Object.fromEntries(
+        allDays.value[week].map((day) => [
+          day,
+          allExercises.value[week][day].filter(
+            (exerciseData) =>
+              props.filter.exercise.length == 0 ||
+              (exerciseData.exercise &&
+                props.filter.exercise.includes(exerciseData.exercise)),
+          ),
+        ]),
+      ),
+    ]),
   );
 });
 
