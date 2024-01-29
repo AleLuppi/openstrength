@@ -925,7 +925,7 @@ const exercisesInfoShowExpanded = computed<typeof exercisesInfoExpanded.value>(
 const allWeeks = computed(() =>
   arrayUniqueValues(
     exercisesValues.value.map((exerciseData) => exerciseData.week),
-    true,
+    (week) => week.padStart(100, "0"),
   ),
 );
 const allDays = computed(() => {
@@ -945,7 +945,9 @@ const allDays = computed(() => {
     },
     {},
   );
-  return objectMapValues(days, (daysList) => arrayUniqueValues(daysList, true));
+  return objectMapValues(days, (daysList) =>
+    arrayUniqueValues(daysList, (day) => day.padStart(100, "0")),
+  );
 });
 
 // Get a reference to requested weeks and days by filter
@@ -964,7 +966,12 @@ const filteredDays = computed(() =>
 
 // Get a subset of tables to show according to filters
 const filteredExercises = computed(() => {
-  return arraySortObjectsByField(exercisesValues.value, "order", Number).reduce(
+  return arraySortObjectsByField(
+    exercisesValues.value,
+    "order",
+    false,
+    Number,
+  ).reduce(
     (
       out: {
         [week: string]: {
@@ -1304,16 +1311,19 @@ function moveDay(
   let isSourceEmpty = true;
 
   // Perform move (ordered)
-  arraySortObjectsByField(exercisesValues.value, "order", Number).forEach(
-    (exerciseData) => {
-      if (exerciseData.week == fromWeek && exerciseData.day == fromDay) {
-        if (duplicate)
-          duplicateTable(exerciseData, [toWeek, toDay, exerciseData.order]);
-        else moveExercise(exerciseData, [toWeek, toDay, exerciseData.order]);
-        isSourceEmpty = false;
-      }
-    },
-  );
+  arraySortObjectsByField(
+    exercisesValues.value,
+    "order",
+    false,
+    Number,
+  ).forEach((exerciseData) => {
+    if (exerciseData.week == fromWeek && exerciseData.day == fromDay) {
+      if (duplicate)
+        duplicateTable(exerciseData, [toWeek, toDay, exerciseData.order]);
+      else moveExercise(exerciseData, [toWeek, toDay, exerciseData.order]);
+      isSourceEmpty = false;
+    }
+  });
 
   // Optionally add a table is source is empty
   if (createIfEmpty && isSourceEmpty) {
