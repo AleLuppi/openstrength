@@ -130,6 +130,7 @@ export function getProgramUniqueWeeks(
         )
         .map((exercise) => exercise.scheduleWeek?.toString()) || [],
     ),
+    (week) => week.padStart(100, "0"),
   );
 }
 
@@ -150,6 +151,7 @@ export function getProgramUniqueDays(program?: Program, exerciseName?: string) {
         )
         .map((exercise) => exercise.scheduleDay?.toString()) || [],
     ),
+    (week) => week.padStart(100, "0"),
   );
 }
 
