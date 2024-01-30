@@ -47,6 +47,7 @@
         :columns="columns"
         wrap-cells
         row-key="name"
+        :pagination="{ rowsPerPage: 0 }"
         flat
         bordered
         hide-bottom

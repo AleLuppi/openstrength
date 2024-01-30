@@ -3,7 +3,7 @@ import {
   ProgramExercise,
   ProgramLine,
 } from "@/helpers/programs/program";
-import { arrayUniqueValues } from "@/helpers/array";
+import { arrayFilterUndefined, arrayUniqueValues } from "@/helpers/array";
 
 /**
  * Sort program exercises according to week, day, order.
@@ -84,7 +84,7 @@ export function orderProgramExercises(
     week: string | number,
     day: string | number,
     order: string | number,
-  ) => string | number = (week, day, order) => [week, day, order].join(sep),
+  ) => string = (week, day, order) => [week, day, order].join(sep),
   sep: string = ".",
   sortLines: boolean = true,
 ): {
@@ -122,12 +122,15 @@ export function getProgramUniqueWeeks(
   exerciseName?: string,
 ) {
   return arrayUniqueValues(
-    program?.programExercises
-      ?.filter(
-        (exercise) => !exerciseName || exercise.exercise?.name == exerciseName,
-      )
-      .map((exercise) => exercise.scheduleWeek?.toString()) || [],
-    true,
+    arrayFilterUndefined(
+      program?.programExercises
+        ?.filter(
+          (exercise) =>
+            !exerciseName || exercise.exercise?.name == exerciseName,
+        )
+        .map((exercise) => exercise.scheduleWeek?.toString()) || [],
+    ),
+    (week) => week.padStart(100, "0"),
   );
 }
 
@@ -140,12 +143,15 @@ export function getProgramUniqueWeeks(
  */
 export function getProgramUniqueDays(program?: Program, exerciseName?: string) {
   return arrayUniqueValues(
-    program?.programExercises
-      ?.filter(
-        (exercise) => !exerciseName || exercise.exercise?.name == exerciseName,
-      )
-      .map((exercise) => exercise.scheduleDay?.toString()) || [],
-    true,
+    arrayFilterUndefined(
+      program?.programExercises
+        ?.filter(
+          (exercise) =>
+            !exerciseName || exercise.exercise?.name == exerciseName,
+        )
+        .map((exercise) => exercise.scheduleDay?.toString()) || [],
+    ),
+    (week) => week.padStart(100, "0"),
   );
 }
 
@@ -161,10 +167,13 @@ export function getProgramUniqueExercises(
   exerciseName?: string,
 ) {
   return arrayUniqueValues(
-    program?.programExercises
-      ?.filter(
-        (exercise) => !exerciseName || exercise.exercise?.name == exerciseName,
-      )
-      .map((exercise) => exercise.exercise?.name) || [],
+    arrayFilterUndefined(
+      program?.programExercises
+        ?.filter(
+          (exercise) =>
+            !exerciseName || exercise.exercise?.name == exerciseName,
+        )
+        .map((exercise) => exercise.exercise?.name) || [],
+    ),
   );
 }
