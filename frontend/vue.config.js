@@ -2,7 +2,7 @@ const { defineConfig } = require("@vue/cli-service");
 module.exports = defineConfig({
   transpileDependencies: ["quasar"],
 
-  productionSourceMap: process.env.VUE_APP_SOURCE_MAP === true,
+  productionSourceMap: process.env.NODE_ENV != "production",
 
   pluginOptions: {
     quasar: {

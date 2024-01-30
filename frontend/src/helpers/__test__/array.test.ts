@@ -1,0 +1,97 @@
+import { describe, expect, test } from "vitest";
+import { arraySort } from "../array";
+
+describe("Test @/helpers/array", () => {
+  /**
+   * arraySort
+   */
+  describe("'arraySort' function", () => {
+    test("already sorted", () => {
+      const arr = [1, 2, 3, 4, 5];
+      const res = arraySort(arr);
+      expect(res).toStrictEqual([1, 2, 3, 4, 5]);
+      expect(res).not.toBe(arr);
+    });
+
+    test("already sorted, sort inplace", () => {
+      const arr = [1, 2, 3, 4, 5];
+      const res = arraySort(arr, true);
+      expect(res).toStrictEqual([1, 2, 3, 4, 5]);
+      expect(res).toBe(arr);
+    });
+
+    test("numbers", () => {
+      const arr = [10, 2, 5, 8, 19, 4];
+      const res = arraySort(arr);
+      expect(res).toStrictEqual([2, 4, 5, 8, 10, 19]);
+      expect(res).not.toBe(arr);
+    });
+
+    test("numbers, sort inplace", () => {
+      const arr = [10, 2, 5, 4, 19, 4];
+      const res = arraySort(arr, true);
+      expect(res).toStrictEqual([2, 4, 4, 5, 10, 19]);
+      expect(res).toBe(arr);
+    });
+
+    test("numbers as string", () => {
+      const arr = ["10", "2", "5", "4", "19", "4"];
+      const res = arraySort(arr);
+      expect(res).toStrictEqual(["10", "19", "2", "4", "4", "5"]);
+    });
+
+    test("texts", () => {
+      const arr = ["abc", "bcd", "aaa", "bubu", "a", "bcd"];
+      const res = arraySort(arr);
+      expect(res).toStrictEqual(["a", "aaa", "abc", "bcd", "bcd", "bubu"]);
+    });
+
+    test("texts and numbers as strings", () => {
+      const arr = ["abc", "bcd", "1", "20"];
+      const res = arraySort(arr);
+      expect(res).toStrictEqual(["1", "20", "abc", "bcd"]);
+    });
+
+    test("strings and numbers", () => {
+      const arr = ["abc", "bcd", 1, 20];
+      const res = arraySort(arr);
+      expect(res).toStrictEqual(["abc", "bcd", 1, 20]);
+    });
+
+    test("numbers, sort by negative", () => {
+      const arr = [1, 2, 3, 10, 5, 7];
+      const res = arraySort(arr, undefined, (val) => -val);
+      expect(res).toStrictEqual([10, 7, 5, 3, 2, 1]);
+    });
+
+    test("strings, sort with left pad", () => {
+      const arr = ["abc", "bcd", "aaa", "bubu", "a", "bcd"];
+      const res = arraySort(arr, undefined, (val) => val.padStart(5, "z"));
+      expect(res).toStrictEqual(["bubu", "aaa", "abc", "bcd", "bcd", "a"]);
+    });
+
+    test("texts and numbers as strings, sort with left pad", () => {
+      const arr = ["5", "number", "20", "a", "4"];
+      const res = arraySort(arr, undefined, (val) => val.padStart(5, "0"));
+      expect(res).toStrictEqual(["4", "5", "a", "20", "number"]);
+    });
+
+    test("numbers, sort by position in array", () => {
+      const arr = [1, 2, 3, 10, 5, 7];
+      const res = arraySort(arr, undefined, (val, arr) =>
+        arr.findIndex((v) => v == val),
+      );
+      expect(res).toStrictEqual([1, 2, 3, 10, 5, 7]);
+    });
+
+    test("numbers, sort by number multiplied by position in array", () => {
+      const arr = [2, 3, 1, 10, 5, 7];
+      const res = arraySort(
+        arr,
+        undefined,
+        (val, arr) => val * (arr.findIndex((v) => v == val) ?? 100),
+      );
+      expect(res).toStrictEqual([2, 1, 3, 5, 10, 7]);
+    });
+  });
+});

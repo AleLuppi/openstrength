@@ -47,6 +47,24 @@
               </span>
             </div>
 
+            <!-- Undo and redo -->
+            <div>
+              <q-btn
+                icon="sym_o_undo"
+                flat
+                round
+                @click="programBuilderElement?.undo()"
+                :disable="!canUndo"
+              ></q-btn>
+              <q-btn
+                icon="sym_o_redo"
+                flat
+                round
+                @click="programBuilderElement?.redo()"
+                :disable="!canRedo"
+              ></q-btn>
+            </div>
+
             <!-- Display and update assigned user -->
             <div
               v-if="selectedProgram.athlete && !denseView"
@@ -155,10 +173,7 @@
           </div>
 
           <!-- Filter by week, day, exercise -->
-          <q-slide-transition
-            @show="updateProgramManagerHeight"
-            @hide="updateProgramManagerHeight"
-          >
+          <q-slide-transition>
             <div v-show="programManagerExpanded">
               <div
                 class="row items-end justify-between q-col-gutter-sm q-pt-md"
@@ -202,11 +217,20 @@
             class="full-width q-mx-lg"
             :ripple="false"
           ></q-btn>
+
+          <!-- Keep track of object height -->
+          <q-resize-observer
+            @resize="({ height }) => (programManagerHeight = height)"
+          />
         </div>
 
         <!-- Show table to build program -->
         <TableProgramBuilder
-          v-if="selectedProgram?.athlete"
+          ref="programBuilderElement"
+          v-if="
+            selectedProgram?.athlete &&
+            !coachInfo.whatLoading.includes('program')
+          "
           :model-value="selectedProgram"
           @update:model-value="
             (program) => {
@@ -218,12 +242,23 @@
               onNewExercise(exerciseName, undefined, programExercise)
           "
           @new-variant="onNewExercise"
+          @undo="
+            (undos, redos) => {
+              canUndo = undos;
+              canRedo = redos;
+            }
+          "
+          @redo="
+            (redos, undos) => {
+              canUndo = undos;
+              canRedo = redos;
+            }
+          "
           :exercises="coachInfo.exercises"
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
           :dense="denseView"
-          :scroll-offset="programManagerHeight + 15"
-          class="q-pa-sm"
+          :scroll-offset="programManagerHeight"
         >
           <template v-slot:empty-filtered>
             <h6>
@@ -237,6 +272,9 @@
             />
           </template>
         </TableProgramBuilder>
+
+        <SkeletonTableProgramBuilder v-else-if="selectedProgram?.athlete">
+        </SkeletonTableProgramBuilder>
 
         <!-- Create a new program or open one already assigned to athlete -->
         <div v-else class="q-pa-lg column items-center">
@@ -606,8 +644,9 @@ import {
   onMounted,
   nextTick,
   onBeforeUnmount,
+  defineAsyncComponent,
 } from "vue";
-import { debounce, dom, QDialog, QCard } from "quasar";
+import { debounce, QDialog, QCard } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import { Program, ProgramExercise } from "@/helpers/programs/program";
 import { useUserStore } from "@/stores/user";
@@ -636,6 +675,11 @@ import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
 
+// Import components
+const SkeletonTableProgramBuilder = defineAsyncComponent(
+  () => import("@/components/skeletons/SkeletonTableProgramBuilder.vue"),
+);
+
 // Define emits
 const emit = defineEmits<{
   activateDrawerItem: [item: number];
@@ -648,7 +692,6 @@ defineExpose({ handleDrawerClick });
 const $q = useQuasar();
 const i18n = useI18n();
 const route = useRoute();
-const { height } = dom;
 
 // Get store
 const user = useUserStore();
@@ -669,6 +712,7 @@ const showingUtils = ref(UtilsOptions.list);
 
 // Set ref related to program
 const programManagerElement = ref<HTMLElement>();
+const programBuilderElement = ref<typeof TableProgramBuilder>();
 const selectedProgram = ref<Program>();
 const substituteProgramId = ref<string>();
 const oldAthleteAssigned = ref<AthleteUser>();
@@ -682,6 +726,8 @@ const showAthleteAssigningDialog = ref(false);
 const showShareProgramDialog = ref(false);
 const programManagerExpanded = ref(false);
 const programManagerHeight = ref(0);
+const canUndo = ref(false);
+const canRedo = ref(false);
 
 // Set ref related to maxlift
 const updatingMaxlift = ref<MaxLift>();
@@ -712,6 +758,19 @@ const allAssignedPrograms = computed(
 // Get complete program filter
 const programFilter = computed({
   get() {
+    // Register mixpanel event
+    if (
+      (filterWeek.value?.length ?? 0) > 0 ||
+      (filterDay.value?.length ?? 0) > 0 ||
+      (filterExercise.value?.length ?? 0) > 0
+    ) {
+      mixpanel.track("Filter Used in Program", {
+        DaysSelected: filterWeek.value?.length ?? 0,
+        WeeksSelected: filterDay.value?.length ?? 0,
+        ExercisesSelected: filterExercise.value?.length ?? 0,
+      });
+    }
+
     return {
       week: filterWeek.value || [],
       day: filterDay.value || [],
@@ -825,6 +884,7 @@ function openProgram(programId?: string, force: boolean = false) {
   if (
     route.name === NamedRoutes.program &&
     programId != undefined &&
+    programId != route.params.programId &&
     (programSaved.value || force)
   ) {
     router.replace({
@@ -859,6 +919,12 @@ function onProgramTableUpdate(program: Program) {
   // Update selected program
   selectedProgram.value = program;
   programSaved.value = false;
+
+  // Check if undo and redo are possible
+  if (programBuilderElement.value)
+    [canUndo.value, canRedo.value] = programBuilderElement.value
+      .getHistorySteps()
+      .map((val: number) => val > 0);
 
   // Start autosave
   autosaveProgram();
@@ -1019,12 +1085,15 @@ function onNewExercise(
       onSuccess: () => {
         // Store variant in local storages
         exercise.variants?.unshift(newVariant);
-        if (programExercise) programExercise.exerciseVariant = newVariant;
+        if (programExercise) {
+          programExercise.exercise = newVariant.exercise;
+          programExercise.exerciseVariant = newVariant;
+        }
 
         // Force update of program under modification
         if (selectedProgram.value) {
-          const duplicteProgram = selectedProgram.value.duplicate();
-          nextTick(() => onProgramTableUpdate(duplicteProgram));
+          const duplicateProgram = selectedProgram.value.duplicate();
+          nextTick(() => onProgramTableUpdate(duplicateProgram));
         }
 
         // Inform user
@@ -1076,8 +1145,8 @@ function onNewExercise(
 
         // Force update of program under modification
         if (selectedProgram.value) {
-          const duplicteProgram = selectedProgram.value.duplicate();
-          nextTick(() => onProgramTableUpdate(duplicteProgram));
+          const duplicateProgram = selectedProgram.value.duplicate();
+          nextTick(() => onProgramTableUpdate(duplicateProgram));
         }
 
         // Inform user about exercise successfully saved
@@ -1221,15 +1290,6 @@ function onUnsavedProgramRestore() {
 }
 
 /**
- * Update program manager element height value.
- */
-function updateProgramManagerHeight() {
-  programManagerHeight.value = programManagerElement.value
-    ? height(programManagerElement.value)
-    : 0;
-}
-
-/**
  * Handle custom right drawer click.
  *
  * @param clickParam parameters provided by drawer on click.
@@ -1263,10 +1323,43 @@ function handleDrawerClick(clickParam: number) {
   emit("activateDrawerItem", clickParam);
 }
 
+/**
+ * Manage key presses while on this view.
+ *
+ * @param event key press event.
+ */
+function keydownHandler(event: KeyboardEvent) {
+  // Save program on ctrl + s
+  if (event.ctrlKey && event.key.toLowerCase() === "s") {
+    event.preventDefault();
+    saveProgram(undefined, true);
+  }
+
+  // Undo changes on ctrl + z
+  else if (
+    event.ctrlKey &&
+    !event.shiftKey &&
+    event.key.toLowerCase() === "z"
+  ) {
+    programBuilderElement.value?.undo();
+  }
+
+  // Redo changes on ctrl + y or ctrl + shift + z
+  else if (
+    (event.ctrlKey && event.key.toLowerCase() === "y") ||
+    (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "z")
+  ) {
+    programBuilderElement.value?.redo();
+  }
+}
+
 // Define what to do on component mount
 onMounted(() => {
   // Open top card on large screens
   if ($q.screen.gt.sm) programManagerExpanded.value = true;
+
+  // Detect key presses while on this page
+  document.addEventListener("keydown", keydownHandler);
 });
 
 // Define what to do before component unmount
@@ -1274,6 +1367,9 @@ onBeforeUnmount(() => {
   // Clear autosave, and save program if required
   autosaveProgram.cancel();
   saveProgram(undefined, true);
+
+  // Remove key press event listener
+  document.addEventListener("keydown", keydownHandler);
 });
 </script>
 
@@ -1285,7 +1381,7 @@ onBeforeUnmount(() => {
 .os-top-card {
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 3;
   border-radius: 0 0 20px 20px;
 }
 </style>

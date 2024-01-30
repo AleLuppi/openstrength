@@ -1,6 +1,20 @@
-// ----- Functions related to Date -----
+import { matchNumberUnsignedInteger } from "@/helpers/regex";
+import { arrayUniqueValues } from "@/helpers/array";
 
-import { matchNumberUnsignedInteger } from "./regex";
+// ----- Functions related to Number -----
+
+/**
+ * Clamp number between two values.
+ *
+ * @param num number to clamp.
+ * @param min minimum value.
+ * @param max maximum value.
+ */
+export function numberClamp(num: number, min: number, max: number) {
+  return Math.min(Math.max(num, min), max);
+}
+
+// ----- Functions related to Date -----
 
 /**
  * Clean a date from its timezone offset.
@@ -65,4 +79,28 @@ export function stringGetNext(text: string) {
   }
 
   return textBeginning + replacedEnding;
+}
+
+/**
+ * Get next free name from a list of names.
+ *
+ * @param names list of all available names.
+ * @param startName optional name to start searching from.
+ * @param fallback method to rename provided name if it ends with non-sortable special characters.
+ * @returns first free name.
+ */
+export function stringGetNextFromList(
+  names: string[],
+  startName?: string,
+  fallback: (name: string) => string = (name) => `${name}1`,
+) {
+  // Set starting position
+  if (startName == undefined)
+    startName = arrayUniqueValues(names)[0] ?? fallback("");
+
+  // Get free name
+  while (names.includes(startName)) {
+    startName = stringGetNext(startName) || fallback(startName);
+  }
+  return startName;
 }
