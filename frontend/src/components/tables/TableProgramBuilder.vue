@@ -827,7 +827,19 @@ const props = withDefaults(
     defaultWeekName: "1",
     defaultDayName: "1",
   },
-);
+  dense: {
+    type: Boolean,
+    default: false,
+  },
+  historyMaxLength: {
+    type: Number,
+    default: 50,
+  },
+  scrollOffset: {
+    type: Number,
+    default: 0,
+  },
+});
 
 // Define emits
 const emit = defineEmits<{
