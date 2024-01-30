@@ -83,6 +83,7 @@
             @focus="selectSingleCell(props.row.id, col.id)"
             borderless
             autogrow
+            :debounce="debounce"
             :dense="dense"
             class="placeholder-light placeholder-hide-on-focus"
           >
@@ -105,54 +106,34 @@
 
 <script setup lang="ts">
 import { objectMapValues } from "@/helpers/object";
-import { ref, computed, PropType } from "vue";
+import { ref, computed } from "vue";
 
 // Define props
-const props = defineProps({
-  modelValue: {
-    type: Array as PropType<{ [key: string]: any }[]>,
-    required: true,
+const props = withDefaults(
+  defineProps<{
+    modelValue: { [key: string]: any }[];
+    headers?: string[] | { [key: string]: string };
+    types?: string[] | { [key: string]: string };
+    childProps?:
+      | { [prop: string]: any }[]
+      | { [key: string]: { [prop: string]: any } };
+    widths?: string[] | { [key: string]: string };
+    placeholders?: any[] | { [key: string]: any };
+    showNewLine?: boolean | any[] | { [key: string]: any };
+    deleteEmptyLine?: boolean;
+    dense?: boolean;
+    debounce?: string | number;
+  }>(),
+  {
+    showNewLine: false,
+    deleteEmptyLine: false,
+    dense: false,
   },
-  headers: {
-    type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
-    required: false,
-  },
-  types: {
-    type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
-    required: false,
-  },
-  childProps: {
-    type: [Array, Object] as PropType<
-      { [prop: string]: any }[] | { [key: string]: { [prop: string]: any } }
-    >,
-  },
-  widths: {
-    type: [Array, Object] as PropType<string[] | { [key: string]: string }>,
-    required: false,
-  },
-  placeholders: {
-    type: [Array, Object] as PropType<any[] | { [key: string]: any }>,
-    required: false,
-  },
-  showNewLine: {
-    type: [Boolean, Array, Object] as PropType<
-      boolean | any[] | { [key: string]: any }
-    >,
-    default: false,
-  },
-  deleteEmptyLine: {
-    type: Boolean,
-    default: false,
-  },
-  dense: {
-    type: Boolean,
-    default: false,
-  },
-});
+);
 
 // Update model values to parent
 const emit = defineEmits<{
-  "update:modelValue": [value: { [key: string]: string }[]];
+  "update:modelValue": [value: typeof props.modelValue];
 }>();
 
 // Set ref

@@ -173,10 +173,7 @@
           </div>
 
           <!-- Filter by week, day, exercise -->
-          <q-slide-transition
-            @show="updateProgramManagerHeight"
-            @hide="updateProgramManagerHeight"
-          >
+          <q-slide-transition>
             <div v-show="programManagerExpanded">
               <div
                 class="row items-end justify-between q-col-gutter-sm q-pt-md"
@@ -220,12 +217,20 @@
             class="full-width q-mx-lg"
             :ripple="false"
           ></q-btn>
+
+          <!-- Keep track of object height -->
+          <q-resize-observer
+            @resize="({ height }) => (programManagerHeight = height)"
+          />
         </div>
 
         <!-- Show table to build program -->
         <TableProgramBuilder
           ref="programBuilderElement"
-          v-if="selectedProgram?.athlete"
+          v-if="
+            selectedProgram?.athlete &&
+            !coachInfo.whatLoading.includes('program')
+          "
           :model-value="selectedProgram"
           @update:model-value="
             (program) => {
@@ -253,8 +258,7 @@
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
           :dense="denseView"
-          :scroll-offset="programManagerHeight + 15"
-          class="q-pa-sm"
+          :scroll-offset="programManagerHeight"
         >
           <template v-slot:empty-filtered>
             <h6>
@@ -268,6 +272,9 @@
             />
           </template>
         </TableProgramBuilder>
+
+        <SkeletonTableProgramBuilder v-else-if="selectedProgram?.athlete">
+        </SkeletonTableProgramBuilder>
 
         <!-- Create a new program or open one already assigned to athlete -->
         <div v-else class="q-pa-lg column items-center">
@@ -637,8 +644,9 @@ import {
   onMounted,
   nextTick,
   onBeforeUnmount,
+  defineAsyncComponent,
 } from "vue";
-import { debounce, dom, QDialog, QCard } from "quasar";
+import { debounce, QDialog, QCard } from "quasar";
 import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import { Program, ProgramExercise } from "@/helpers/programs/program";
 import { useUserStore } from "@/stores/user";
@@ -667,6 +675,11 @@ import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
 
+// Import components
+const SkeletonTableProgramBuilder = defineAsyncComponent(
+  () => import("@/components/skeletons/SkeletonTableProgramBuilder.vue"),
+);
+
 // Define emits
 const emit = defineEmits<{
   activateDrawerItem: [item: number];
@@ -679,7 +692,6 @@ defineExpose({ handleDrawerClick });
 const $q = useQuasar();
 const i18n = useI18n();
 const route = useRoute();
-const { height } = dom;
 
 // Get store
 const user = useUserStore();
@@ -746,6 +758,19 @@ const allAssignedPrograms = computed(
 // Get complete program filter
 const programFilter = computed({
   get() {
+    // Register mixpanel event
+    if (
+      (filterWeek.value?.length ?? 0) > 0 ||
+      (filterDay.value?.length ?? 0) > 0 ||
+      (filterExercise.value?.length ?? 0) > 0
+    ) {
+      mixpanel.track("Filter Used in Program", {
+        DaysSelected: filterWeek.value?.length ?? 0,
+        WeeksSelected: filterDay.value?.length ?? 0,
+        ExercisesSelected: filterExercise.value?.length ?? 0,
+      });
+    }
+
     return {
       week: filterWeek.value || [],
       day: filterDay.value || [],
@@ -1060,12 +1085,15 @@ function onNewExercise(
       onSuccess: () => {
         // Store variant in local storages
         exercise.variants?.unshift(newVariant);
-        if (programExercise) programExercise.exerciseVariant = newVariant;
+        if (programExercise) {
+          programExercise.exercise = newVariant.exercise;
+          programExercise.exerciseVariant = newVariant;
+        }
 
         // Force update of program under modification
         if (selectedProgram.value) {
-          const duplicteProgram = selectedProgram.value.duplicate();
-          nextTick(() => onProgramTableUpdate(duplicteProgram));
+          const duplicateProgram = selectedProgram.value.duplicate();
+          nextTick(() => onProgramTableUpdate(duplicateProgram));
         }
 
         // Inform user
@@ -1117,8 +1145,8 @@ function onNewExercise(
 
         // Force update of program under modification
         if (selectedProgram.value) {
-          const duplicteProgram = selectedProgram.value.duplicate();
-          nextTick(() => onProgramTableUpdate(duplicteProgram));
+          const duplicateProgram = selectedProgram.value.duplicate();
+          nextTick(() => onProgramTableUpdate(duplicateProgram));
         }
 
         // Inform user about exercise successfully saved
@@ -1262,15 +1290,6 @@ function onUnsavedProgramRestore() {
 }
 
 /**
- * Update program manager element height value.
- */
-function updateProgramManagerHeight() {
-  programManagerHeight.value = programManagerElement.value
-    ? height(programManagerElement.value)
-    : 0;
-}
-
-/**
  * Handle custom right drawer click.
  *
  * @param clickParam parameters provided by drawer on click.
@@ -1362,7 +1381,7 @@ onBeforeUnmount(() => {
 .os-top-card {
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 3;
   border-radius: 0 0 20px 20px;
 }
 </style>
