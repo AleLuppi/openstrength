@@ -351,6 +351,9 @@
                       }
                     "
                     type="textarea"
+                    :placeholder="
+                      $t('coach.program_management.builder.note_name')
+                    "
                     hide-bottom-space
                   >
                   </os-input>

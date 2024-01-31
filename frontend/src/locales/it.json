@@ -324,6 +324,7 @@
         "exercise_name_tooltip": "Vuoi aggiungere un esercizio? Scrivi qui il suo nome",
         "variant_name": "Nome variante...",
         "variant_name_tooltip": "Vuoi aggiungere una variante? Scrivi qui il suo nome",
+        "note_name": "Note esercizio...",
         "line_duplicate": "Duplica esercizio",
         "line_duplicate_in_day": "Copia in un altro giorno",
         "line_duplicate_in_day_form": "Duplica in...",

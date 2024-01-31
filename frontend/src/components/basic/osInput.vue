@@ -27,6 +27,7 @@
       "
       lazy-rules
       :rows="rows ?? 3"
+      class="input-number-hide-arrows"
       :class="{ 'placeholder-hide-on-focus': placeholderHideOnFocus }"
     >
       <template v-for="(_, slot) in $slots as Readonly<QInputSlots>" #[slot]>
@@ -61,3 +62,20 @@ defineExpose({
   getNativeElement: () => inputElement.value?.getNativeElement(),
 });
 </script>
+
+<style scoped lang="scss">
+// Hide up/down arrows inside input element if of type "number"
+.input-number-hide-arrows {
+  /* Chrome, Safari, Edge, Opera */
+  &:deep(input::-webkit-outer-spin-button),
+  :deep(input::-webkit-inner-spin-button) {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  &:deep(input[type="number"]) {
+    -moz-appearance: textfield;
+  }
+}
+</style>
