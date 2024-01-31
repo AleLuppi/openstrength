@@ -1,9 +1,116 @@
 import { describe, expect, test } from "vitest";
-import { stringGetNext, stringGetNextFromList } from "../scalar";
+import {
+  numberRoundToDecimal,
+  stringGetNext,
+  stringGetNextFromList,
+} from "../scalar";
 
 describe("Test @/helpers/scalar", () => {
+  /******************/
+  /***** NUMBER *****/
+  /******************/
+  describe("NUMBER methods", () => {
+    describe("'numberRoundToDecimal' function", () => {
+      test("integer number '1' to 2 decimals", () => {
+        const res = numberRoundToDecimal(1, 2);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("1");
+      });
+
+      test("number '2.3' to 2 decimals", () => {
+        const res = numberRoundToDecimal(2.3, 2);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("2.3");
+      });
+
+      test("number '2.3' to 0 decimals", () => {
+        const res = numberRoundToDecimal(2.3, 0);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("2");
+      });
+
+      test("number '5.8' to 2 decimals", () => {
+        const res = numberRoundToDecimal(5.8, 2);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("5.8");
+      });
+
+      test("number '5.8' to 0 decimals", () => {
+        const res = numberRoundToDecimal(5.8, 0);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("6");
+      });
+
+      test("number '0.123456' to 0 decimals", () => {
+        const res = numberRoundToDecimal(0.123456, 0);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("0");
+      });
+
+      test("number '0.123456' to 1 decimals", () => {
+        const res = numberRoundToDecimal(0.123456, 1);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("0.1");
+      });
+
+      test("number '0.123456' to 2 decimals", () => {
+        const res = numberRoundToDecimal(0.123456, 2);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("0.12");
+      });
+
+      test("number '0.123456' to 3 decimals", () => {
+        const res = numberRoundToDecimal(0.123456, 3);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("0.123");
+      });
+
+      test("number '0.123456' to 4 decimals", () => {
+        const res = numberRoundToDecimal(0.123456, 4);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("0.1235");
+      });
+
+      test("number '0.123456' to 5 decimals", () => {
+        const res = numberRoundToDecimal(0.123456, 5);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("0.12346");
+      });
+
+      test("number '0.123456' to 6 decimals", () => {
+        const res = numberRoundToDecimal(0.123456, 6);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("0.123456");
+      });
+
+      test("number '0.123456' to 7 decimals", () => {
+        const res = numberRoundToDecimal(0.123456, 7);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("0.123456");
+      });
+
+      test("number '6.478' to -1 decimals", () => {
+        const res = numberRoundToDecimal(6.478, -1);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("6");
+      });
+
+      test("number '4.844' to 1.3 decimals", () => {
+        const res = numberRoundToDecimal(4.844, 1.3);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("4.8");
+      });
+
+      test("number '4.844' to 1.8 decimals", () => {
+        const res = numberRoundToDecimal(4.844, 1.8);
+        expect(res).toBeTypeOf("number");
+        expect(String(res)).toMatch("4.8");
+      });
+    });
+  });
+
   /*******************/
-  /***** STRINGS *****/
+  /***** STRING *****/
   /*******************/
 
   describe("STRING methods", () => {
