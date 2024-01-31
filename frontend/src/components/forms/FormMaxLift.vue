@@ -44,10 +44,10 @@
           <q-icon name="sym_o_help" class="cursor-pointer">
             <q-tooltip
               v-if="
-                maxlift?.exercise?.variants?.at(0)?.loadType ===
-                  ExerciseLoadType.loaded ||
-                maxlift?.exercise?.variants?.at(0)?.loadType ===
-                  ExerciseLoadType.bodyweight
+                maxlift?.exercise?.defaultVariant?.loadType &&
+                [ExerciseLoadType.loaded, ExerciseLoadType.bodyweight].includes(
+                  maxlift?.exercise?.defaultVariant?.loadType,
+                )
               "
             >
               {{
@@ -89,6 +89,7 @@
         outlined
         dense
         mask="date"
+        required
       >
         <template v-slot:append>
           <q-icon name="event" class="cursor-pointer">
@@ -183,12 +184,10 @@ watch(
     maxliftExercise.value = props.maxlift?.exercise?.name;
     maxliftType.value = props.maxlift?.type;
     maxliftValue.value = props.maxlift?.value;
-    maxliftDate.value = props.maxlift?.performedOn
-      ? props.maxlift.performedOn
-          .toISOString()
-          .split("T")[0]
-          .replaceAll("-", "/")
-      : new Date().toISOString().split("T")[0].replaceAll("-", "/");
+    maxliftDate.value = (props.maxlift?.performedOn ?? new Date())
+      .toISOString()
+      .split("T")[0]
+      .replaceAll("-", "/");
   },
   { immediate: true },
 );
@@ -244,9 +243,7 @@ function onSubmit() {
   );
   maxlift.type = maxliftType.value;
   maxlift.value = maxliftValue.value;
-  maxlift.performedOn = maxliftDate.value
-    ? dateGetWithoutTimezone(maxliftDate.value)
-    : undefined;
+  maxlift.performedOn = dateGetWithoutTimezone(maxliftDate.value);
   if (props.athlete) maxlift.athlete = props.athlete;
 
   emit("submit", maxlift);

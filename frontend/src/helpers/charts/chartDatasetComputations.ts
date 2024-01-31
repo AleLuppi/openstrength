@@ -1,6 +1,7 @@
+import { ExerciseLoadType } from "@/helpers/exercises/exercise";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import { ProgramLine } from "@/helpers/programs/program";
-import { ExerciseLoadType } from "../exercises/exercise";
+import { numberRoundToDecimal } from "@/helpers/scalar";
 
 /**
  * Define RPE-reps table.
@@ -31,18 +32,22 @@ export function estimate1RMfromNRM(
   rpeTable: number[][] = rpeRepsTable,
 ): number | undefined {
   // Check inputs
-  if (typeof Number(maxlift.value) !== "number" || !maxlift.type || !rpeTable) {
-    console.error("Invalid inputs.");
+  if (
+    maxlift.value == undefined ||
+    typeof Number(maxlift.value) !== "number" ||
+    !maxlift.type ||
+    !rpeTable
+  ) {
     return undefined;
   }
 
   // Set body weight
   let bodyweight = 0;
   if (
-    maxlift.exercise?.variants?.at(0)?.loadType &&
-    (maxlift.exercise?.variants?.at(0)?.loadType === ExerciseLoadType.loaded ||
-      maxlift.exercise?.variants?.at(0)?.loadType ===
-        ExerciseLoadType.bodyweight)
+    maxlift.exercise?.defaultVariant?.loadType &&
+    [ExerciseLoadType.loaded, ExerciseLoadType.bodyweight].includes(
+      maxlift.exercise?.defaultVariant?.loadType,
+    )
   ) {
     bodyweight = maxlift.athlete?.weight ? Number(maxlift.athlete?.weight) : 75;
   }
@@ -65,18 +70,18 @@ export function estimate1RMfromNRM(
     case MaxLiftType._10RM:
       usefulRpeRepstableValue = rpeTable[0][9];
       break;
-    default:
-      console.error("Unsupported MaxLiftType.");
-      return undefined;
   }
 
-  const estimated1RMValue = usefulRpeRepstableValue
-    ? (bodyweight + Number(maxlift.value)) / (0.01 * usefulRpeRepstableValue)
-    : undefined;
-
-  return estimated1RMValue
-    ? Number((Math.round(estimated1RMValue * 10) / 10 - bodyweight).toFixed(2))
-    : undefined;
+  // Get correct output result
+  if (usefulRpeRepstableValue != undefined) {
+    const estimated1RMValue =
+      (bodyweight + Number(maxlift.value)) / (0.01 * usefulRpeRepstableValue);
+    return numberRoundToDecimal(
+      numberRoundToDecimal(estimated1RMValue, 1) - bodyweight,
+      2,
+    );
+  }
+  return undefined;
 }
 
 /**
