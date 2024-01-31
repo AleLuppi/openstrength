@@ -28,7 +28,7 @@
         v-model="maxliftValue"
         :suffix="maxliftValueSuffix"
         :label="$t('coach.maxlift_management.fields.value')"
-        mask="#####"
+        type="number"
         required
       ></os-input>
 
@@ -42,37 +42,32 @@
       >
         <template v-slot:after>
           <q-icon name="sym_o_help" class="cursor-pointer">
-            <q-tooltip
-              v-if="
-                maxlift?.exercise?.defaultVariant?.loadType ==
-                (ExerciseLoadType.loaded || ExerciseLoadType.bodyweight)
-              "
-            >
+            <q-tooltip>
               {{
-                props.athlete?.weight
-                  ? $t(
-                      "coach.maxlift_management.computation.estimated1rm_with_weight",
-                      {
-                        athlete: props.athlete?.name,
-                        weight: props.athlete?.weight,
-                      },
-                    )
-                  : $t(
-                      "coach.maxlift_management.computation.estimated1rm_with_default_weight",
-                      {
-                        athlete: props.athlete?.name,
-                      },
-                    )
-              }}
-            </q-tooltip>
-            <q-tooltip v-else>
-              {{
-                $t(
-                  "coach.maxlift_management.computation.estimated1rm_no_weight",
-                  {
-                    athlete: props.athlete?.name,
-                  },
+                maxliftSelectedExercise?.defaultVariant?.loadType &&
+                [ExerciseLoadType.loaded, ExerciseLoadType.bodyweight].includes(
+                  maxliftSelectedExercise?.defaultVariant?.loadType,
                 )
+                  ? athlete?.weight
+                    ? $t(
+                        "coach.maxlift_management.computation.estimated1rm_with_weight",
+                        {
+                          athlete: athlete?.name,
+                          weight: athlete?.weight,
+                        },
+                      )
+                    : $t(
+                        "coach.maxlift_management.computation.estimated1rm_with_default_weight",
+                        {
+                          athlete: athlete?.name,
+                        },
+                      )
+                  : $t(
+                      "coach.maxlift_management.computation.estimated1rm_no_weight",
+                      {
+                        athlete: props.athlete?.name,
+                      },
+                    )
               }}
             </q-tooltip>
           </q-icon>
@@ -87,7 +82,6 @@
         outlined
         dense
         mask="date"
-        :rules="['date']"
         required
       >
         <template v-slot:append>
@@ -168,7 +162,11 @@ const maxliftDate = ref<string>();
 
 // Get values to display estimated 1RM
 const maxliftEstimated1RMValue = computed(() =>
-  computeE1RM(maxliftValue.value, maxliftType.value, maxliftExercise.value),
+  computeE1RM(
+    maxliftValue.value,
+    maxliftType.value,
+    maxliftSelectedExercise.value,
+  ),
 );
 const showEstimated1RM = computed(
   () =>
@@ -183,14 +181,17 @@ watch(
     maxliftExercise.value = props.maxlift?.exercise?.name;
     maxliftType.value = props.maxlift?.type;
     maxliftValue.value = props.maxlift?.value;
-    maxliftDate.value = props.maxlift?.performedOn
-      ? props.maxlift.performedOn
-          .toISOString()
-          .split("T")[0]
-          .replaceAll("-", "/")
-      : undefined;
+    maxliftDate.value = (props.maxlift?.performedOn ?? new Date())
+      .toISOString()
+      .split("T")[0]
+      .replaceAll("-", "/");
   },
   { immediate: true },
+);
+
+// Retrieve selected exercise
+const maxliftSelectedExercise = computed(() =>
+  props.exercises.find((exercise) => exercise.name == maxliftExercise.value),
 );
 
 // Gather correct suffix for current selection
@@ -217,17 +218,12 @@ const maxliftValueSuffix = computed(() => {
  *
  * @param value max lift value.
  * @param type max lift type.
+ * @param exercise max lift exercise.
  */
-function computeE1RM(
-  value?: string,
-  type?: MaxLiftType,
-  exerciseName?: string,
-) {
+function computeE1RM(value?: string, type?: MaxLiftType, exercise?: Exercise) {
   const maxliftObj = new MaxLift();
   maxliftObj.athlete = props.athlete ?? props.maxlift?.athlete;
-  maxliftObj.exercise =
-    props.exercises.find((exercise) => exercise.name == exerciseName) ??
-    props.maxlift?.exercise;
+  maxliftObj.exercise = exercise ?? props.maxlift?.exercise;
   maxliftObj.value = value;
   maxliftObj.type = type;
 
@@ -239,14 +235,10 @@ function computeE1RM(
  */
 function onSubmit() {
   const maxlift = props.maxlift ?? new MaxLift();
-  maxlift.exercise = props.exercises.find(
-    (exercise) => exercise.name == maxliftExercise.value,
-  );
+  maxlift.exercise = maxliftSelectedExercise.value;
   maxlift.type = maxliftType.value;
   maxlift.value = maxliftValue.value;
-  maxlift.performedOn = maxliftDate.value
-    ? dateGetWithoutTimezone(maxliftDate.value)
-    : undefined;
+  maxlift.performedOn = dateGetWithoutTimezone(maxliftDate.value);
   if (props.athlete) maxlift.athlete = props.athlete;
 
   emit("submit", maxlift);

@@ -7,14 +7,12 @@
         :label="$t('coach.exercise_management.fields.variant')"
         :rules="[
           (name: string) =>
-            props.variant.exercise?.variants?.reduce(
-              (response, variant) =>
-                response &&
-                (variant == props.variant ||
-                  (Boolean(name) && variant.name != name) ||
-                  (!Boolean(name) && !variant.isDefault)),
-              true,
-            ) || $t('coach.exercise_management.add_variant_already_exists'),
+            variant.isDefault ||
+            (Boolean(name) &&
+              !props.variant.exercise?.variants?.some(
+                (variant) => variant != props.variant && variant.name == name,
+              )) ||
+            $t('coach.exercise_management.add_variant_already_exists'),
         ]"
         :disable="variant.isDefault"
         required
@@ -161,7 +159,9 @@ const variantMuscleGroupsOptions = computed(() =>
       props.optionsMuscleGroups ?? props.variant.muscleGroups ?? [],
     ),
   ).map((val) => ({
-    label: Object.values(ExerciseMuscleGroups).includes(val)
+    label: Object.values(ExerciseMuscleGroups).includes(
+      val as ExerciseMuscleGroups,
+    )
       ? i18n.t("coach.exercise_management.fields.musclegroups_available." + val)
       : val,
     value: val,
@@ -183,7 +183,7 @@ const variantEquipmentOptions = computed(() =>
       props.optionsEquipment ?? props.variant.equipment ?? [],
     ),
   ).map((val) => ({
-    label: Object.values(ExerciseEquipment).includes(val)
+    label: Object.values(ExerciseEquipment).includes(val as ExerciseEquipment)
       ? i18n.t("coach.exercise_management.fields.equipment_available." + val)
       : val,
     value: val,
@@ -195,7 +195,7 @@ const variantEquipmentOptions = computed(() =>
  */
 function onSubmit() {
   const variant = props.variant;
-  variant.name = variantName.value;
+  variant.name = variant.isDefault ? undefined : variantName.value;
   variant.muscleGroups = variantMuscleGroups.value;
   variant.loadType = variantLoadType.value as ExerciseLoadType;
   variant.equipment = variantEquipment.value;

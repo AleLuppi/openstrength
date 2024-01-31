@@ -14,6 +14,18 @@ export function numberClamp(num: number, min: number, max: number) {
   return Math.min(Math.max(num, min), max);
 }
 
+/**
+ * Round a number preserving a selected number of digits.
+ *
+ * @param num number to round.
+ * @param ndigits how many digits to keep.
+ * @returns rounded decimal number.
+ */
+export function numberRoundToDecimal(num: number, ndigits: number = 0) {
+  const factor = Math.pow(10, Math.max(Math.floor(ndigits), 0));
+  return Math.round(num * factor) / factor;
+}
+
 // ----- Functions related to Date -----
 
 /**
