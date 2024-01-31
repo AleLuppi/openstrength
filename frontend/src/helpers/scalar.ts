@@ -116,4 +116,3 @@ export function stringGetNextFromList(
   }
   return startName;
 }
-
