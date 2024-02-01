@@ -44,10 +44,20 @@ import type { QInputProps, QInputSlots } from "quasar";
 
 // Define props (from child)
 interface extendedInputProps extends QInputProps {
-  placeholder?: string; // missing in QInputProps
-  placeholderHideOnFocus?: boolean;
-  required?: boolean;
+  // input element props (missing in QInputProps)
+  placeholder?: string;
+  step?: string;
+  min?: string;
+  max?: string;
+
+  // textarea element props (missing in QInputProps)
   rows?: number;
+
+  // whether to hide placeholder when input is focused instead of waiting for first character
+  placeholderHideOnFocus?: boolean;
+
+  // whether a non-empty model value is required to validate a form
+  required?: boolean;
 }
 defineProps<extendedInputProps>();
 
