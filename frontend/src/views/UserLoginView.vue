@@ -14,7 +14,7 @@
       </h3>
 
       <!-- Redirect to registration -->
-      <p>
+      <!-- <p>
         {{ $t("user.auth.without_account") }}
         <router-link
           class="text-primary"
@@ -22,7 +22,7 @@
         >
           {{ $t("user.auth.signin_to_signup") }}
         </router-link>
-      </p>
+      </p> -->
     </div>
 
     <!-- Access form -->

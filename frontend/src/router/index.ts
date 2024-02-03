@@ -15,6 +15,7 @@ import { defineAsyncComponent } from "vue";
 
 /* Dinamically import the views */
 import HomeView from "@/views/HomeView.vue";
+const LandingPage = () => import("@/views/LandingPage.vue");
 const AthletesView = () => import("@/views/AthletesView.vue");
 const LibraryView = () => import("@/views/LibraryView.vue");
 const ProgramView = () => import("@/views/ProgramView.vue");
@@ -36,6 +37,7 @@ const RightDrawerProgramElements = defineAsyncComponent(
 /* Set routes names */
 export enum NamedRoutes {
   home = "home",
+  access = "access",
   athletes = "athletes",
   library = "library",
   program = "program",
@@ -76,6 +78,17 @@ const routes: RouteRecordRaw[] = [
     component: HomeView,
     meta: {
       title: "Home",
+      redirectNotAuthenticated: "access",
+    },
+  },
+  {
+    path: "/access",
+    name: NamedRoutes.home,
+    component: LandingPage,
+    meta: {
+      title: "Access",
+      showLeftDrawer: false,
+      showHeader: false,
     },
   },
   {
@@ -146,6 +159,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: "Register",
       redirectAuthenticated: "home",
+      redirectNotAuthenticated: "login",
     },
   },
   {
