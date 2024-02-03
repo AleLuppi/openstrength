@@ -18,6 +18,7 @@ import {
   matchNumberFractionPercentageFloat,
   matchNumberIntegerInBrackets,
   matchNumberOptionallySignedPercentageFloat,
+  matchNumberSignedFloat,
   matchNumberSignedFloatWithOptionalUnit,
   matchNumberSignedInteger,
   matchNumberUnsignedFloat,
@@ -595,47 +596,6 @@ export class ProgramLine {
         return this.refRepsValue + operationValue;
       }
     } else return undefined;
-    /*  // Estimated from tables
-    else if (
-      (this.rpeValue || this.rpeComputedValue || this.rpeSupposedValue) &&
-      (this.loadValue || this.loadComputedValue || this.loadSupposedValue)
-    ) {
-      const load =
-        this.loadValue ?? this.loadComputedValue ?? this.loadSupposedValue;
-      const rpe =
-        this.rpeValue ?? this.rpeComputedValue ?? this.rpeSupposedValue;
-      // Case 1: load is already a %
-      if (this.loadBaseValue?.toString().includes("%") && load && rpe) {
-        return calculateRepsFromTable(load, rpe, rpeRepsTable);
-      }
-      // Case 2: load is not a % thus must be computed from load (kg) and 1RM/e1RM
-      else if (
-        !this.loadBaseValue?.toString().includes("%") &&
-        load &&
-        rpe &&
-        this.loadReference
-      ) {
-        // Check if load reference is actually an 1RM
-        if (this.loadReference && this.loadReference instanceof MaxLift) {
-          if (this.loadReference.type == MaxLiftType._1RM) {
-            // Compute load
-            const loadPercentage = load / Number(this.loadReference.value);
-            return calculateRepsFromTable(loadPercentage, rpe, rpeRepsTable);
-          } else if (
-            this.loadReference.type == MaxLiftType._3RM ||
-            this.loadReference.type == MaxLiftType._5RM ||
-            this.loadReference.type == MaxLiftType._6RM ||
-            this.loadReference.type == MaxLiftType._8RM ||
-            this.loadReference.type == MaxLiftType._10RM
-          ) {
-            // TODO: Estimate e1RM and compute (to be done when e1RM is available)
-            return undefined;
-          } else {
-            return undefined;
-          }
-        }
-      }
-    } */
   }
   get loadComputedValue(): number | undefined {
     // Computed from reference
@@ -653,51 +613,12 @@ export class ProgramLine {
           return this.refLoadValue + parseFloat(this.loadOperation);
       } else return undefined;
     }
-    // Estimated from table (only if a reference is selected, TODO: change structure)
-    /*     else if (
-      (this.repsValue || this.repsComputedValue || this.repsSupposedValue) &&
-      (this.rpeValue || this.rpeComputedValue || this.rpeSupposedValue)
-    ) {
-      const reps =
-        this.repsValue ?? this.repsComputedValue ?? this.repsSupposedValue;
-      const rpe =
-        this.rpeValue ?? this.rpeComputedValue ?? this.rpeSupposedValue;
-      // Get load percentage from table
-      const loadPercentage = calculatePercentage1RM(reps, rpe, rpeRepsTable);
-
-      // Now to compute the value we have to use the 1RM or e1RM
-      if (this.loadReference && this.loadReference instanceof MaxLift) {
-        const maxliftValue = Number(this.loadReference.value);
-
-        if (
-          this.loadReference.type == MaxLiftType._1RM &&
-          maxliftValue &&
-          loadPercentage != undefined
-        ) {
-          return 0.01 * loadPercentage * maxliftValue;
-        } else if (
-          this.loadReference.type == MaxLiftType._3RM ||
-          this.loadReference.type == MaxLiftType._5RM ||
-          this.loadReference.type == MaxLiftType._6RM ||
-          this.loadReference.type == MaxLiftType._8RM ||
-          this.loadReference.type == MaxLiftType._10RM
-        ) {
-          // TODO: Estimate e1RM and compute (to be done when e1RM is available)
-          return undefined;
-        } else {
-          return undefined;
-        }
-      }
-
-      return undefined;
-    } */
-
     return undefined;
   }
   get rpeComputedValue(): number | undefined {
     // Computed from reference to other values
     if (this.rpeReference?.rpeValue) {
-      if (this.rpeOperation && matchNumberUnsignedFloat(this.rpeOperation)) {
+      if (this.rpeOperation && matchNumberSignedFloat(this.rpeOperation)) {
         const operationValue = parseFloat(this.rpeOperation);
         const computedValue = this.rpeReference.rpeValue + operationValue;
 
@@ -705,48 +626,6 @@ export class ProgramLine {
         return Math.max(0, Math.min(10, computedValue));
       }
     }
-    //TODO: check
-    // Estimated from tables
-    /*     else if (
-      (this.repsValue || this.repsComputedValue || this.repsSupposedValue) &&
-      (this.loadValue || this.loadComputedValue || this.loadSupposedValue)
-    ) {
-      const load =
-        this.loadValue ?? this.loadComputedValue ?? this.loadSupposedValue;
-      const reps =
-        this.repsValue ?? this.repsComputedValue ?? this.repsSupposedValue;
-      // Case 1: load is already a %
-      if (this.loadBaseValue?.toString().includes("%") && load && reps) {
-        return calculateRpeFromTable(load, reps, rpeRepsTable);
-      }
-      // Case 2: load is not a % thus must be computed from load (kg) and 1RM/e1RM
-      else if (
-        !this.loadBaseValue?.toString().includes("%") &&
-        load &&
-        reps &&
-        this.loadReference
-      ) {
-        // Check if load reference is actually an 1RM
-        if (this.loadReference && this.loadReference instanceof MaxLift) {
-          if (this.loadReference.type == MaxLiftType._1RM) {
-            // Compute load
-            const loadPercentage = load / Number(this.loadReference.value);
-            return calculateRpeFromTable(loadPercentage, reps, rpeRepsTable);
-          } else if (
-            this.loadReference.type == MaxLiftType._3RM ||
-            this.loadReference.type == MaxLiftType._5RM ||
-            this.loadReference.type == MaxLiftType._6RM ||
-            this.loadReference.type == MaxLiftType._8RM ||
-            this.loadReference.type == MaxLiftType._10RM
-          ) {
-            // TODO: Estimate e1RM and compute (to be done when e1RM is available)
-            return undefined;
-          } else {
-            return undefined;
-          }
-        }
-      }
-    } */
     else return undefined;
   }
 
