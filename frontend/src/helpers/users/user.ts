@@ -72,6 +72,22 @@ export type CoachUserProps = UserProps & {
   // Coach specific
   sports?: string[];
   athletesNumberRange?: [number | undefined, number | undefined];
+
+  // Onboarding
+  onboarding?: CoachOnboardingProps;
+};
+
+/**
+ * Onboarding related variables for coach
+ */
+export type CoachOnboardingProps = {
+  firstTimeInHome?: boolean;
+  firstTimeInAthleteLeftTable?: boolean;
+  firstTimeInAthleteRightTable?: boolean;
+  firstTimeInProgramView?: boolean;
+  firstTimeInProgramBuilder?: boolean;
+  firstTimeInExerciseLibrary?: boolean;
+  firstTimeInVariantLibrary?: boolean;
 };
 
 /**
@@ -217,7 +233,15 @@ export class CoachUser extends User {
   sports?: string[];
   athletesNumberRange?: [number | undefined, number | undefined];
 
-  constructor({ sports, athletesNumberRange, ...props }: CoachUserProps = {}) {
+  // Onboarding
+  onboarding?: CoachOnboardingProps;
+
+  constructor({
+    sports,
+    athletesNumberRange,
+    onboarding,
+    ...props
+  }: CoachUserProps = {}) {
     // Set super properties
     const superProps = { ...props, role: UserRole.coach };
     super(superProps);
@@ -225,6 +249,7 @@ export class CoachUser extends User {
     // Set specific properties
     this.sports = sports;
     this.athletesNumberRange = athletesNumberRange;
+    this.onboarding = onboarding;
   }
 }
 
