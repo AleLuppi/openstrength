@@ -6,9 +6,19 @@
         <q-card>
           <q-card-section class="q-pb-sm">
             <div class="row justify-between q-mb-sm">
-              <h4 class="text-margin-xs">
-                {{ $t("coach.athlete_management.list.title") }}
-              </h4>
+              <div class="row justify-start items-center">
+                <h4 class="text-margin-xs">
+                  {{ $t("coach.athlete_management.list.title") }}
+                </h4>
+                <q-btn
+                  icon="sym_o_help"
+                  color="light-dark"
+                  flat
+                  outline
+                  class="q-pa-none q-ml-xs"
+                  @click="showTutorialDialog = true"
+                ></q-btn>
+              </div>
 
               <!-- Add new athlete -->
               <div class="column justify-center">
