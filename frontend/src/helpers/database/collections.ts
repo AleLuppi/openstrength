@@ -10,4 +10,7 @@ export enum dbCollections {
 export enum dbSubcollections {
   // Under "programs"
   programsSnapshots = "snapshots",
+
+  // Under "user"
+  userConfig = "config",
 }

@@ -7,7 +7,10 @@ import {
   doGetDocs,
   changeDocId,
 } from "@/helpers/database/readwrite";
-import { dbCollections } from "@/helpers/database/collections";
+import {
+  dbCollections,
+  dbSubcollections,
+} from "@/helpers/database/collections";
 
 /**
  * Define available user roles.
@@ -282,6 +285,38 @@ export class AthleteUser extends User {
 }
 
 /**
+ * Config object to manage app blocks, access, and pricing tiers
+ */
+export type UserConfig = {
+  pricingTier: PricingTier;
+  payment: Payment;
+  subscriptionLevel: "complete" | "1" | "2" | undefined;
+  access: "enabled" | "disabled";
+};
+
+interface Payment {
+  amount: number;
+  date: Date;
+  isPaid: boolean;
+  tool:
+    | "creditCard"
+    | "bankTransfer"
+    | "paypal"
+    | "stripe"
+    | "other"
+    | undefined;
+  totalPaidTillNow: number; //useful for estimating user LTV
+}
+
+interface PricingTier {
+  name: string;
+  price: number;
+  billingCycle: "monthly" | "quarterly" | "annual" | "lifetime" | undefined;
+  maxAthletes: number;
+  expiringDate: Date;
+}
+
+/**
  * Store user on database.
  *
  * @param user user to store on database.
@@ -309,6 +344,29 @@ export function addDocUser(
       },
       onError: onError,
     });
+}
+
+/**
+ * Store user config info on database.
+ *
+ * @param userConfig element to store on database.
+ * @param userId reference user id where user configuration should be saved.
+ * @param onSuccess function to execute when operation is successful.
+ * @param onError function to execute when operation fails.
+ */
+export function addDocUserConfig(
+  userConfigData: UserConfig,
+  userId: string,
+  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+) {
+  doAddDoc(
+    `${dbCollections.users}/${userId}/${dbSubcollections.userConfig}`,
+    userConfigData,
+    {
+      onSuccess: onSuccess,
+      onError: onError,
+    },
+  );
 }
 
 /**
