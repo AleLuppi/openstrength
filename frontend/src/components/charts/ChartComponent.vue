@@ -153,8 +153,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "@/styles/quasar.scss";
-
 // TODO move outside of component
 h2 {
   font-size: 1.5rem;

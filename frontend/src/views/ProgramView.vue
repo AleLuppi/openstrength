@@ -225,7 +225,7 @@
         </div>
 
         <!-- Show table to build program -->
-        <TableProgramBuilder
+        <ProgramBuilder
           ref="programBuilderElement"
           v-if="
             selectedProgram?.athlete &&
@@ -258,7 +258,15 @@
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
           :dense="denseView"
-          :scroll-offset="programManagerHeight"
+          :class="
+            denseView
+              ? 'q-pl-sm q-pr-none q-ml-sm q-mr-none'
+              : 'q-pa-sm q-mx-md q-my-sm shadow-2'
+          "
+          style="border-radius: 24px"
+          :style="`height: ${
+            programPageHeight - programManagerHeight - 8 * 2
+          }px`"
         >
           <template v-slot:empty-filtered>
             <h6>
@@ -271,7 +279,7 @@
               outline
             />
           </template>
-        </TableProgramBuilder>
+        </ProgramBuilder>
 
         <SkeletonTableProgramBuilder v-else-if="selectedProgram?.athlete">
         </SkeletonTableProgramBuilder>
@@ -532,6 +540,11 @@
           icon="drag_indicator"
         />
       </template>
+
+      <!-- Keep track of available height -->
+      <q-resize-observer
+        @resize="({ height }) => (programPageHeight = height)"
+      />
     </q-splitter>
 
     <!-- Dialog to set program info -->
@@ -647,7 +660,6 @@ import {
   defineAsyncComponent,
 } from "vue";
 import { debounce, QDialog, QCard } from "quasar";
-import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import { Program, ProgramExercise } from "@/helpers/programs/program";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
@@ -676,6 +688,9 @@ import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
 
 // Import components
+const ProgramBuilder = defineAsyncComponent(
+  () => import("@/components/ProgramBuilder.vue"),
+);
 const SkeletonTableProgramBuilder = defineAsyncComponent(
   () => import("@/components/skeletons/SkeletonTableProgramBuilder.vue"),
 );
@@ -712,7 +727,7 @@ const showingUtils = ref(UtilsOptions.list);
 
 // Set ref related to program
 const programManagerElement = ref<HTMLElement>();
-const programBuilderElement = ref<typeof TableProgramBuilder>();
+const programBuilderElement = ref<typeof ProgramBuilder>();
 const selectedProgram = ref<Program>();
 const substituteProgramId = ref<string>();
 const oldAthleteAssigned = ref<AthleteUser>();
@@ -725,6 +740,7 @@ const showUnsavedProgramRestoreDialog = ref(false);
 const showAthleteAssigningDialog = ref(false);
 const showShareProgramDialog = ref(false);
 const programManagerExpanded = ref(false);
+const programPageHeight = ref(0);
 const programManagerHeight = ref(0);
 const canUndo = ref(false);
 const canRedo = ref(false);
@@ -740,11 +756,10 @@ const denseView = computed(() => !$q.screen.gt.sm);
 const showUtilsDialog = ref(false);
 
 // Get program requested from router
-const requestedProgram = computed(
-  () =>
-    coachInfo.programs
-      ?.find((program) => program.uid == route.params.programId)
-      ?.duplicate(),
+const requestedProgram = computed(() =>
+  coachInfo.programs
+    ?.find((program) => program.uid == route.params.programId)
+    ?.duplicate(),
 );
 
 // Get all coach programs
@@ -785,11 +800,10 @@ const programFilter = computed({
 });
 
 // Get max lifts for selected athlete
-const athleteMaxlifts = computed(
-  () =>
-    coachInfo.maxlifts?.filter(
-      (maxlift) => maxlift.athlete?.uid == selectedProgram.value?.athleteId,
-    ),
+const athleteMaxlifts = computed(() =>
+  coachInfo.maxlifts?.filter(
+    (maxlift) => maxlift.athlete?.uid == selectedProgram.value?.athleteId,
+  ),
 );
 
 // Decide whether to display warning dialog on new program
@@ -1381,7 +1395,8 @@ onBeforeUnmount(() => {
 .os-top-card {
   position: sticky;
   top: 0;
-  z-index: 3;
+  z-index: 1;
   border-radius: 0 0 20px 20px;
 }
 </style>
+

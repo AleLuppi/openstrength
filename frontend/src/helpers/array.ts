@@ -65,6 +65,7 @@ export function arrayCompare(arrayA: any[], arrayB: any[]) {
  *
  * @param array list of objects that shall be sorted.
  * @param field object's key whose paired value will be used to sort.
+ * @param [inplace=false] if true, sort array inplace.
  * @param [sortBy=(val) => val] optional transformation applied to values before comparing them.
  * @returns sorted array.
  */
@@ -75,4 +76,25 @@ export function arraySortObjectsByField<T extends object, R>(
   sortBy: (val: T[keyof T], arr: T[]) => R = (val) => val as R,
 ) {
   return arraySort(array, inplace, (val, arr) => sortBy(val[field], arr));
+}
+
+/**
+ * Transform an array of pairs into an object.
+ *
+ * @param array input array of pairs.
+ * @param [unique=false] if true, ensure list of values only contains unique values.
+ * @returns object having the first value in pairs as keys, and second value in pairs values (array).
+ */
+export function arrayOfPairsToObject<K extends string | number | symbol, V>(
+  array: [K, V][],
+  unique: boolean = false,
+): { [key in K]: V[] } {
+  return array.reduce(
+    (out, [key, value]) => {
+      if (unique) out[key] = arrayUniqueValues([...(out[key] ?? []), value]);
+      else out[key] = (out[key] ?? []).concat([value]);
+      return out;
+    },
+    {} as { [key in K]: V[] },
+  );
 }

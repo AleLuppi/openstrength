@@ -6,6 +6,7 @@ import {
 } from "@/helpers/programs/program";
 import type { MaxLift } from "@/helpers/maxlifts/maxlift";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+import { numberClamp } from "@/helpers/scalar";
 
 /**
  * Define data models used in program builder.
@@ -89,24 +90,9 @@ export function resetBuilderData(program: Program) {
         note: programExercise.exerciseNote ?? "",
 
         // data-related values
-        data:
-          programExercise.lines?.map((line) => {
-            if (!line.uid) line.uid = getRandomUid();
-            return {
-              uid: line.uid,
-              load: line.loadBaseValue,
-              loadRef: line.loadReference,
-              reps: line.repsBaseValue,
-              repsRef: line.repsReference,
-              sets: line.setsBaseValue,
-              setsRef: line.setsReference,
-              rpe: line.rpeBaseValue,
-              rpeRef: line.rpeReference,
-              note: line.note,
-              requestText: line.requestFeedbackText ?? false,
-              requestVideo: line.requestFeedbackVideo ?? false,
-            };
-          }) ?? [],
+        data: programExercise.lines
+          ? programLinesToTable(programExercise.lines)
+          : [],
       };
 
       // Store new element
@@ -118,34 +104,172 @@ export function resetBuilderData(program: Program) {
 }
 
 /**
- * Update selected exercises.
+ * Translate a list of program lines into a table of data.
  *
- * @param exerciseData exercise data that shall be updated.
- * @param newName new name of the exercise.
+ * @param lines list of lines to convert.
+ * @returns tabular representation of the lines.
  */
-export function updateSelectedExercise(
-  exerciseData: ProgramBuilderExerciseData,
-  newName?: string,
-) {
-  // Reset variant name
-  if (exerciseData.exercise != newName) exerciseData.variant = undefined;
-
-  // Update name
-  exerciseData.exercise = newName;
+export function programLinesToTable(lines: ProgramLine[]) {
+  return lines.map((line) => {
+    if (!line.uid) line.uid = getRandomUid();
+    return {
+      uid: line.uid,
+      load: line.loadBaseValue,
+      loadRef: line.loadReference,
+      reps: line.repsBaseValue,
+      repsRef: line.repsReference,
+      sets: line.setsBaseValue,
+      setsRef: line.setsReference,
+      rpe: line.rpeBaseValue,
+      rpeRef: line.rpeReference,
+      note: line.note,
+      requestText: line.requestFeedbackText ?? false,
+      requestVideo: line.requestFeedbackVideo ?? false,
+    };
+  });
 }
 
 /**
- * Update selected variant.
+ * Translate a table of data into a list of program lines.
  *
- * @param exerciseData exercise data that shall be updated.
- * @param newName new name of the variant.
+ * @param data tabular representation of the lines.
+ * @param programExercise optional parent exercise to store in lines.
+ * @returns list of program lines.
  */
-export function updateSelectedVariant(
-  exerciseData: ProgramBuilderExerciseData,
-  newName?: string,
+export function tableToProgramLines(
+  data: ReturnType<typeof programLinesToTable>,
+  programExercise?: ProgramExercise,
 ) {
-  // Update name
-  exerciseData.variant = newName;
+  return data.map(
+    (lineInfo, idx) =>
+      new ProgramLine({
+        programExercise: programExercise,
+        lineOrder: idx,
+        uid: lineInfo.uid ?? getRandomUid(),
+        loadBaseValue: lineInfo.load,
+        loadReference: lineInfo.loadRef,
+        repsBaseValue: lineInfo.reps,
+        repsReference: lineInfo.repsRef,
+        setsBaseValue: lineInfo.sets,
+        setsReference: lineInfo.setsRef,
+        rpeBaseValue: lineInfo.rpe,
+        rpeReference: lineInfo.rpeRef,
+        note: lineInfo.note,
+        requestFeedbackText: lineInfo.requestText,
+        requestFeedbackVideo: lineInfo.requestVideo,
+      }),
+  );
+}
+
+/**
+ * Move one exercise in table.
+ *
+ * 4 actions are possible:
+ *  - If no destination is provided, exercise will be deleted.
+ *  - If no exercise data is provided, a new empty table will be added in destination.
+ *  - If both data and destination are provided, move selected exercise to destination.
+ *  - If duplicate flag is true, clone the exercise data in destination.
+ *
+ * @param builderData program builder data.
+ * @param exerciseData data of exercise that is being affected.
+ * @param destination destination week, day, and exercise order.
+ * @param [duplicate=false] if true, duplicate exercise instead of moving it (ignored if any input is undefined).
+ */
+export function moveExercise(
+  builderData: ProgramBuilderData,
+  exerciseData?: ProgramBuilderExerciseData,
+  destination?: [string, string, string],
+  duplicate: boolean = false,
+): ProgramBuilderData {
+  // Nothing to do if both table and destination are unknown
+  if (exerciseData == undefined && destination == undefined) return builderData;
+
+  // Clean source and destination schedule
+  const source =
+    exerciseData != undefined
+      ? [exerciseData.week, exerciseData.day, Number(exerciseData.order)]
+      : undefined;
+  if (destination)
+    destination[2] = numberClamp(
+      Number(destination[2]),
+      1,
+      (getLargestOrderInDay(builderData, destination) ?? 0) + 1,
+    ).toString();
+
+  // Move any exercise between source and destination
+  builderData.forEach((value) => {
+    if (
+      source != undefined &&
+      !duplicate &&
+      value.week == source[0] &&
+      value.day == source[1] &&
+      value.order > source[2]
+    )
+      value.order = String(Number(value.order) - 1);
+    if (
+      destination != undefined &&
+      value.week == destination[0] &&
+      value.day == destination[1] &&
+      value.order >= destination[2]
+    )
+      value.order = String(Number(value.order) + 1);
+  });
+
+  if (destination == undefined) {
+    // If destination is unknown, the table is being destroyed
+    builderData = builderData.filter((value) => value != exerciseData);
+  } else if (exerciseData == undefined) {
+    // If table is unknown, a new table is being creted
+    builderData.push({
+      data: [],
+      exercise: undefined,
+      variant: undefined,
+      note: undefined,
+      week: destination[0],
+      day: destination[1],
+      order: destination[2],
+    });
+  } else {
+    // If both table and destination are known, table is being moved or cloned
+    if (duplicate) {
+      const duplicateData = duplicateBuilderExerciseData(exerciseData, true);
+      duplicateData.week = destination[0];
+      duplicateData.day = destination[1];
+      duplicateData.order = destination[2];
+      builderData.push(duplicateData);
+    } else {
+      exerciseData.week = destination[0];
+      exerciseData.day = destination[1];
+      exerciseData.order = destination[2];
+    }
+  }
+
+  return builderData;
+}
+
+/**
+ * Get largest line order for lines in a day.
+ *
+ * @param builderData program builder data.
+ * @param idScheduleInfo schedule info of interesting day or exercise in interesting day.
+ */
+export function getLargestOrderInDay(
+  builderData: ProgramBuilderData,
+  scheduleInfo: [string, string, string?] | ProgramBuilderExerciseData,
+): number | undefined {
+  if (builderData.length == 0) return undefined;
+  const [week, day] =
+    scheduleInfo instanceof Array
+      ? scheduleInfo
+      : [scheduleInfo.week, scheduleInfo.day];
+  const max = Math.max(
+    ...builderData.map((value) => {
+      if (value.week == week && value.day == day) return Number(value.order);
+      else return -1;
+    }),
+  );
+  if (max >= 0) return max;
+  else return undefined;
 }
 
 /**
