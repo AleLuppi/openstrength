@@ -329,7 +329,17 @@
       <q-dialog v-model="showTutorialDialog">
         <q-card class="q-pa-sm dialog-min-width">
           <q-card-section class="row items-center q-pb-none">
-            <h5>Tutorial</h5>
+            <div class="row">
+              <h5>Tutorial</h5>
+              <q-btn
+                :icon="pauseAnimation === false ? 'pause' : 'play_arrow'"
+                color="light-dark"
+                flat
+                outline
+                round
+                @click="pauseAnimation = !pauseAnimation"
+              ></q-btn>
+            </div>
 
             <q-space />
             <q-btn
@@ -344,8 +354,7 @@
           <q-card-section class="column justify-center">
             <Vue3Lottie
               :animationData="rocketAnimation"
-              :height="200"
-              :width="200"
+              :pause-animation="pauseAnimation"
             />
           </q-card-section>
         </q-card>
@@ -444,7 +453,14 @@ const maxlifts = computed(() => coachInfo.maxlifts || []);
 
 // Set onboarding ref
 const showTutorialDialog = ref(false);
-onMounted(() => (showTutorialDialog.value = true));
+const userFirstTime = ref(true);
+const pauseAnimation = ref(false);
+
+onMounted(() => {
+  userFirstTime.value === true
+    ? (showTutorialDialog.value = true)
+    : (showTutorialDialog.value = false);
+});
 
 // Update table selection
 watch(selectedAthlete, (athlete) =>
