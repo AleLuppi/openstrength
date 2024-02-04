@@ -16,7 +16,7 @@
                   flat
                   outline
                   class="q-pa-none q-ml-xs"
-                  @click="showTutorialDialog = true"
+                  @click="showTutorialNewAthleteDialog = true"
                 ></q-btn>
               </div>
 
@@ -335,12 +335,49 @@
         </div>
       </div>
 
-      <!-- Dialog for onboarding -->
-      <q-dialog v-model="showTutorialDialog">
+      <!-- Dialog for onboarding: step1 new athlete -->
+      <q-dialog v-model="showTutorialNewAthleteDialog">
         <q-card class="q-pa-sm dialog-min-width">
           <q-card-section class="row items-center q-pb-none">
             <div class="row">
-              <h5>Tutorial</h5>
+              <h5>Creiamo un atleta!</h5>
+
+              <q-btn
+                :icon="pauseAnimation === false ? 'pause' : 'play_arrow'"
+                color="light-dark"
+                flat
+                outline
+                round
+                @click="pauseAnimation = !pauseAnimation"
+              ></q-btn>
+            </div>
+
+            <q-space />
+            <q-btn
+              icon="close"
+              flat
+              round
+              dense
+              color="button-negative"
+              v-close-popup
+            />
+          </q-card-section>
+          <q-card-section class="column justify-center">
+            <Vue3Lottie
+              :animationData="rocketAnimation"
+              :pause-animation="pauseAnimation"
+            />
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
+      <!-- Dialog for onboarding: step2 new maxlift -->
+      <q-dialog v-model="showTutorialAthleteMaxliftDialog">
+        <q-card class="q-pa-sm dialog-min-width">
+          <q-card-section class="row items-center q-pb-none">
+            <div class="row">
+              <h5>Creiamo un massimale</h5>
+
               <q-btn
                 :icon="pauseAnimation === false ? 'pause' : 'play_arrow'"
                 color="light-dark"
@@ -462,14 +499,15 @@ const exercises = computed(() => coachInfo.exercises || []);
 const maxlifts = computed(() => coachInfo.maxlifts || []);
 
 // Set onboarding ref
-const showTutorialDialog = ref(false);
+const showTutorialNewAthleteDialog = ref(false);
+const showTutorialAthleteMaxliftDialog = ref(false);
 const userFirstTime = ref(true);
 const pauseAnimation = ref(false);
 
 onMounted(() => {
   userFirstTime.value === true
-    ? (showTutorialDialog.value = true)
-    : (showTutorialDialog.value = false);
+    ? (showTutorialNewAthleteDialog.value = true)
+    : (showTutorialNewAthleteDialog.value = false);
 });
 
 // Update table selection
@@ -631,6 +669,13 @@ function createAthlete() {
     },
   });
   showAthleteDialog.value = false;
+
+  // Show onboarding
+  setTimeout(() => {
+    userFirstTime.value === true
+      ? (showTutorialAthleteMaxliftDialog.value = true)
+      : (showTutorialAthleteMaxliftDialog.value = false);
+  }, 1200);
 }
 
 /**
