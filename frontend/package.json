@@ -25,7 +25,8 @@
     "vue-gtag": "^2.0.1",
     "vue-i18n": "^9.1.0",
     "vue-router": "^4.2.4",
-    "vue-social-sharing": "^4.0.0-alpha4"
+    "vue-social-sharing": "^4.0.0-alpha4",
+    "vue3-lottie": "^3.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

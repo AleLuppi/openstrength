@@ -324,12 +324,38 @@
           </div>
         </div>
       </div>
+
+      <!-- Dialog for onboarding -->
+      <q-dialog v-model="showTutorialDialog">
+        <q-card class="q-pa-sm dialog-min-width">
+          <q-card-section class="row items-center q-pb-none">
+            <h5>Tutorial</h5>
+
+            <q-space />
+            <q-btn
+              icon="close"
+              flat
+              round
+              dense
+              color="button-negative"
+              v-close-popup
+            />
+          </q-card-section>
+          <q-card-section class="column justify-center">
+            <Vue3Lottie
+              :animationData="rocketAnimation"
+              :height="200"
+              :width="200"
+            />
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, watch } from "vue";
+import { ref, computed, nextTick, watch, onMounted } from "vue";
 import { useQuasar, QDialog } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
@@ -348,6 +374,8 @@ import {
   getAssignedProgram,
 } from "@/helpers/programs/athleteAssignment";
 import mixpanel from "mixpanel-browser";
+import { Vue3Lottie } from "vue3-lottie";
+import { rocketAnimation } from "@/assets/sources";
 
 // Init plugin
 const $q = useQuasar();
@@ -413,6 +441,10 @@ const athletes = computed(() => coachInfo.athletes || []);
 const programs = computed(() => coachInfo.programs || []);
 const exercises = computed(() => coachInfo.exercises || []);
 const maxlifts = computed(() => coachInfo.maxlifts || []);
+
+// Set onboarding ref
+const showTutorialDialog = ref(false);
+onMounted(() => (showTutorialDialog.value = true));
 
 // Update table selection
 watch(selectedAthlete, (athlete) =>

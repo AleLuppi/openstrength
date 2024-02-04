@@ -10,6 +10,7 @@ import { Quasar } from "quasar";
 import quasarUserOptions from "./quasar-user-options";
 import i18n from "./i18n";
 import VueSocialSharing from "vue-social-sharing";
+import Vue3Lottie from "vue3-lottie";
 
 // Analytics modules
 import VueGtag from "vue-gtag";
@@ -71,7 +72,8 @@ app
     config: { id: "G-G8BLW1JL0M" },
     enabled: process.env.NODE_ENV == "production",
   })
-  .use(VueSocialSharing);
+  .use(VueSocialSharing)
+  .use(Vue3Lottie);
 
 // Mount the application
 app.mount("#app");
