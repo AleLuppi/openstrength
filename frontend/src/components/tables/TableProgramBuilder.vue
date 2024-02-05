@@ -1,19 +1,71 @@
 <template>
-  <div
-    class="bg-white"
-    :class="
-      dense
-        ? 'q-pl-sm q-pr-none q-ml-sm q-mr-none'
-        : 'q-px-sm q-py-md q-ma-md shadow-2'
-    "
-    style="border-radius: 24px"
-  >
+  <div>
     <!-- Week wrapper -->
     <div
       v-for="week in allWeeks"
       v-show="filteredWeeks.includes(week)"
       :key="`week${week}`"
+      class="bg-white"
+      :class="
+        dense
+          ? 'q-pl-sm q-pr-none q-ml-sm q-mr-none'
+          : 'q-px-md q-py-xs q-ma-md shadow-2'
+      "
+      style="border-radius: 24px"
     >
+      <div class="row items-center">
+        <h3 class="text-margin-xs">{{ getWeekDisplayName(week) }}</h3>
+
+        <!-- Management buttons -->
+        <div>
+          <!-- Duplicate week -->
+          <q-btn
+            @click="editWeekDayName = ['', '']"
+            icon="fa-regular fa-clone"
+            size="sm"
+            color="dark-light"
+            flat
+            round
+            :ripple="false"
+          >
+            <q-tooltip anchor="top middle" :offset="[0, 40]">
+              {{ $t("coach.program_management.builder.week_duplicate") }}
+            </q-tooltip>
+
+            <FormProgramNewWeekDay
+              v-model="editWeekDayName"
+              @save="
+                (val?: [string, string]) => {
+                  if (val) duplicateWeek(week, val);
+                }
+              "
+              :title="
+                $t('coach.program_management.builder.week_duplicate_form')
+              "
+              :cover="false"
+              :weekonly="true"
+              anchor="center right"
+              self="center left"
+            >
+            </FormProgramNewWeekDay>
+          </q-btn>
+
+          <!-- Delete week -->
+          <q-btn
+            @click="deleteWeek([week])"
+            icon="fa-regular fa-trash-can"
+            size="sm"
+            color="dark-light"
+            flat
+            round
+            :ripple="false"
+          >
+            <q-tooltip anchor="top middle" :offset="[0, 40]">
+              {{ $t("coach.program_management.builder.week_delete") }}
+            </q-tooltip>
+          </q-btn>
+        </div>
+      </div>
       <!-- Day wrapper -->
       <div
         :ref="(el) => (dayElements[getName([week, day])] = el)"
@@ -1407,8 +1459,6 @@ function duplicateDay(
  *
  * @param scheduleInfo schedule info of week to delete.
  */
-// TODO
-// eslint-disable-next-line
 function deleteWeek(scheduleInfo: string | [string, string?, string?]) {
   // Delete all days in week
   const week = scheduleInfo instanceof Array ? scheduleInfo[0] : scheduleInfo;
@@ -1445,8 +1495,6 @@ function addWeek(
  * @param destination destination week.
  * @param doScroll if true, scroll to the newly created element.
  */
-// TODO
-// eslint-disable-next-line
 function duplicateWeek(
   scheduleInfo: string | [string, string, string?],
   destination: string | [string, string, string?],

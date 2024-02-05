@@ -19,6 +19,7 @@
         hide-bottom-space
       />
       <q-input
+        v-if="props.weekonly === undefined || props.weekonly != true"
         dense
         v-model="scope.value[1]"
         :prefix="$t('coach.program_management.builder.day_name')"
@@ -46,7 +47,9 @@ import { objectDeepCompare } from "@/helpers/object";
 import type { QPopupEditProps } from "quasar";
 
 // Define props and emits
-const props = defineProps<QPopupEditProps & { forceSave?: boolean }>();
+const props = defineProps<
+  QPopupEditProps & { forceSave?: boolean } & { weekonly?: boolean }
+>();
 const emit = defineEmits<{
   save: [value: any, initialValue: any];
 }>();
