@@ -666,7 +666,12 @@
           <q-btn
             icon="add"
             :label="$t('coach.program_management.builder.new_exercise')"
-            @click="addTable([week, day])"
+            @click="
+              () => {
+                addTable([week, day]);
+                showTutorialAdvancedReference = true;
+              }
+            "
             flat
             rounded
           >
@@ -717,7 +722,12 @@
       <q-btn
         icon="add"
         :label="$t('coach.program_management.builder.new_day')"
-        @click="addWeek(String(defaultWeekName))"
+        @click="
+          () => {
+            addWeek(String(defaultWeekName));
+            showTutorialNewExercise = true;
+          }
+        "
         rounded
         unelevated
       ></q-btn>
@@ -753,6 +763,42 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <!-- Dialog for onboarding: step4 insert exercise info -->
+    <!-- TODO: i18n -->
+    <DialogTutorial
+      v-model="showTutorialNewExercise"
+      title="Compiliamo un esercizio"
+      subtitle="Inserisci una percentuale e riferiscila al massimale che hai creato. Puoi inserire valori o range di valori sia in kg che in percentuale! Ad esempio 75%, 80%/90%, 75kg oppure 80kg/90kg"
+      :animationData="video04"
+    ></DialogTutorial>
+
+    <!-- Dialog for onboarding: step5 add new variant -->
+    <!-- TODO: i18n -->
+    <DialogTutorial
+      v-model="showTutorialNewVariant"
+      title="Aggiungiamo una variante"
+      subtitle="Puoi aggiungere una variante direttamente dall'esercizio! Digita il suo nome e premi il bottone per aggiungerla alla tua libreria!"
+      :animationData="video05"
+    ></DialogTutorial>
+
+    <!-- Dialog for onboarding: step6 advanced references -->
+    <!-- TODO: i18n -->
+    <DialogTutorial
+      v-model="showTutorialAdvancedReference"
+      title="Come usare le reference ad altre linee"
+      subtitle="Puoi aggiungere un riferimento alla riga precedente dello stesso esercizio. Prova con un top set e backoff! Ad esempio puoi chiedere di fare il backoff a -10% rispetto al top set. Nota: il riferimento puo anche essere ad una riga di un altro esercizio, nel passato e nel futuro!"
+      :animationData="video06"
+    ></DialogTutorial>
+
+    <!-- Dialog for onboarding: step7 advanced references -->
+    <!-- TODO: i18n -->
+    <DialogTutorial
+      v-model="showTutorialDuplicateDay"
+      title="Come duplicare giorni"
+      subtitle="Puoi duplicare i giorni di un programma cliccando l'icona e digitando la settimana e il giorno di destinazione."
+      :animationData="video07"
+    ></DialogTutorial>
   </div>
 </template>
 
@@ -797,9 +843,28 @@ import {
   type ProgramBuilderExerciseData,
   ProgramBuilderFilledData,
 } from "@/helpers/programs/builder";
+import DialogTutorial from "../dialogs/DialogTutorial.vue";
+import { video04, video05, video06, video07 } from "@/assets/sources";
 
 // Init plugin
 const i18n = useI18n();
+
+// Onboarding
+const showTutorialNewExercise = ref(false); //step 4
+const showTutorialNewVariant = ref(false); // step 5
+const showTutorialAdvancedReference = ref(false); // step6
+const showTutorialDuplicateDay = ref(false); // step7
+
+watch(showTutorialNewExercise, (newValue, oldValue) => {
+  if (oldValue === true && newValue === false) {
+    showTutorialNewVariant.value = true;
+  }
+});
+watch(showTutorialAdvancedReference, (newValue, oldValue) => {
+  if (oldValue === true && newValue === false) {
+    showTutorialDuplicateDay.value = true;
+  }
+});
 
 // Define props
 const props = withDefaults(

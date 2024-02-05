@@ -63,6 +63,14 @@
           </q-card>
         </router-link>
       </div>
+
+      <!-- Dialog for onboarding: step1 new athlete -->
+      <DialogTutorial
+        v-model="showTutorialVideo01"
+        title="Benvenuto!"
+        subtitle="Segui questo breve tutorial per creare il tuo primo programma!"
+        :animationData="video01"
+      ></DialogTutorial>
     </div>
 
     <div v-else-if="!user.isSignedIn">
@@ -147,8 +155,10 @@
 
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
-import { logoFullImage } from "@/assets/sources";
+import { logoFullImage, video01 } from "@/assets/sources";
 import { UserRole } from "@/helpers/users/user";
+import { ref } from "vue";
+import DialogTutorial from "@/components/dialogs/DialogTutorial.vue";
 
 // Define emits
 defineEmits<{
@@ -157,6 +167,9 @@ defineEmits<{
 
 // Get user state
 const user = useUserStore();
+
+// Onboarding related
+const showTutorialVideo01 = ref(true);
 
 // Set coach action buttons
 const buttonsCoachAction = [

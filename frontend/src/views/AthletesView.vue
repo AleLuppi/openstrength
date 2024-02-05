@@ -16,7 +16,7 @@
                   flat
                   outline
                   class="q-pa-none q-ml-xs"
-                  @click="showTutorialNewAthleteDialog = true"
+                  @click="showTutorialAthleteViewDialog = true"
                 ></q-btn>
               </div>
 
@@ -335,57 +335,35 @@
         </div>
       </div>
 
+      <!-- Dialog for onboarding: full generic athlete tutorial -->
+      <DialogTutorial
+        v-model="showTutorialAthleteViewDialog"
+        title="Come creare un atleta e un massimale"
+        :animationData="video2e3"
+      ></DialogTutorial>
+
       <!-- Dialog for onboarding: step1 new athlete -->
-      <q-dialog v-model="showTutorialNewAthleteDialog">
-        <q-card class="q-pa-sm dialog-min-width">
-          <q-card-section class="row items-center q-pb-none">
-            <div class="row">
-              <h5>Creiamo un atleta!</h5>
-
-              <q-btn
-                :icon="pauseAnimation === false ? 'pause' : 'play_arrow'"
-                color="light-dark"
-                flat
-                outline
-                round
-                @click="pauseAnimation = !pauseAnimation"
-              ></q-btn>
-            </div>
-
-            <q-space />
-            <q-btn
-              icon="close"
-              flat
-              round
-              dense
-              color="button-negative"
-              v-close-popup
-            />
-          </q-card-section>
-          <q-card-section class="column justify-center">
-            <Vue3Lottie
-              :animationData="rocketAnimation"
-              :pause-animation="pauseAnimation"
-            />
-          </q-card-section>
-        </q-card>
-      </q-dialog>
+      <DialogTutorial
+        v-model="showTutorialNewAthleteDialog"
+        title="Creiamo un atleta!"
+        subtitle="Clicca sul bottone e inserisci i dati"
+        :animationData="video02"
+      ></DialogTutorial>
 
       <!-- Dialog for onboarding: step2 new maxlift -->
-      <q-dialog v-model="showTutorialAthleteMaxliftDialog">
+      <DialogTutorial
+        v-model="showTutorialAthleteMaxliftDialog"
+        title="Ora aggiungiamo un massimale"
+        subtitle="Ci servirà per costruire il tuo primo programma!"
+        :animationData="video03"
+      ></DialogTutorial>
+
+      <!-- Dialog for onboarding: step3 go to program -->
+      <q-dialog v-model="shotTutorialGoToProgram">
         <q-card class="q-pa-sm dialog-min-width">
           <q-card-section class="row items-center q-pb-none">
             <div class="row">
-              <h5>Creiamo un massimale</h5>
-
-              <q-btn
-                :icon="pauseAnimation === false ? 'pause' : 'play_arrow'"
-                color="light-dark"
-                flat
-                outline
-                round
-                @click="pauseAnimation = !pauseAnimation"
-              ></q-btn>
+              <h5>Ben fatto!</h5>
             </div>
 
             <q-space />
@@ -398,12 +376,9 @@
               v-close-popup
             />
           </q-card-section>
-          <q-card-section class="column justify-center">
-            <Vue3Lottie
-              :animationData="rocketAnimation"
-              :pause-animation="pauseAnimation"
-            />
-          </q-card-section>
+          <q-card-action class="justify-end">
+            <q-btn :to="{ name: 'program' }">Ora creiamo un programma!</q-btn>
+          </q-card-action>
         </q-card>
       </q-dialog>
     </div>
@@ -430,8 +405,8 @@ import {
   getAssignedProgram,
 } from "@/helpers/programs/athleteAssignment";
 import mixpanel from "mixpanel-browser";
-import { Vue3Lottie } from "vue3-lottie";
-import { rocketAnimation } from "@/assets/sources";
+import DialogTutorial from "@/components/dialogs/DialogTutorial.vue";
+import { video02, video03, video2e3 } from "@/assets/sources";
 
 // Init plugin
 const $q = useQuasar();
@@ -499,10 +474,11 @@ const exercises = computed(() => coachInfo.exercises || []);
 const maxlifts = computed(() => coachInfo.maxlifts || []);
 
 // Set onboarding ref
+const showTutorialAthleteViewDialog = ref(false);
 const showTutorialNewAthleteDialog = ref(false);
 const showTutorialAthleteMaxliftDialog = ref(false);
+const shotTutorialGoToProgram = ref(false);
 const userFirstTime = ref(true);
-const pauseAnimation = ref(false);
 
 onMounted(() => {
   userFirstTime.value === true
@@ -601,6 +577,9 @@ function saveMaxlift(newMaxLift: MaxLift) {
     },
   });
   showMaxLiftAddDialog.value = false;
+
+  // Onboarding
+  shotTutorialGoToProgram.value = true;
 }
 
 /**
