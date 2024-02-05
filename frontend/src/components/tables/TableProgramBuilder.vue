@@ -8,7 +8,7 @@
       class="bg-white"
       :class="
         dense
-          ? 'q-pl-sm q-pr-none q-ml-sm q-mr-none'
+          ? 'q-pl-sm q-pr-none q-mt-sm q-mb-sm q-ml-sm q-mr-xs shadow-2'
           : 'q-px-md q-py-xs q-ma-md shadow-2'
       "
       style="border-radius: 24px"
