@@ -19,6 +19,7 @@ const AthletesView = () => import("@/views/AthletesView.vue");
 const LibraryView = () => import("@/views/LibraryView.vue");
 const ProgramView = () => import("@/views/ProgramView.vue");
 const ProgramViewerView = () => import("@/views/ProgramViewerView.vue");
+const ProgramLibraryView = () => import("@/views/ProgramLibraryView.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
@@ -39,6 +40,7 @@ export enum NamedRoutes {
   athletes = "athletes",
   library = "library",
   program = "program",
+  programlibrary = "program_library",
   view = "view",
   view_program = "program_view",
   login = "login",
@@ -107,6 +109,16 @@ const routes: RouteRecordRaw[] = [
       restrictAccessByRole: [UserRole.coach],
       redirectNotAuthorized: "home",
       showRightDrawer: RightDrawerProgramElements,
+    },
+  },
+  {
+    path: "/program-library",
+    name: NamedRoutes.programlibrary,
+    component: ProgramLibraryView,
+    meta: {
+      title: "Program Library",
+      restrictAccessByRole: [UserRole.coach],
+      redirectNotAuthorized: "home",
     },
   },
   {

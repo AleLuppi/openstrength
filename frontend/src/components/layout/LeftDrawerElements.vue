@@ -107,6 +107,11 @@ const allDrawerPages = [
     caption: "layout.views.program",
     icon: "fa-solid fa-dumbbell",
   },
+  {
+    route: "program_library",
+    caption: "layout.views.programlibrary",
+    icon: "fa-solid fa-sheet-plastic",
+  },
 ];
 
 // Limit shown page to those accessible by user
