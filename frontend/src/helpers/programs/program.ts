@@ -163,6 +163,22 @@ export type ProgramForzenView = {
 };
 
 /**
+ * Compact program object.
+ */
+export type ProgramCompactView = {
+  days: {
+    dayName: string;
+    exercises: {
+      exerciseFullName: string;
+      weekSchemas: {
+        weekName: string;
+        schemas: string[];
+      }[];
+    }[];
+  }[];
+};
+
+/**
  * Training program entity.
  *
  * @public

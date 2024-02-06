@@ -9,24 +9,6 @@
               <h4 class="text-margin-xs">
                 {{ $t("coach.athlete_management.list.title") }}
               </h4>
-
-              <!-- Add new athlete -->
-              <div class="column justify-center">
-                <q-btn
-                  icon="sym_o_note_add"
-                  :label="
-                    $q.screen.gt.sm
-                      ? $t('coach.athlete_management.list.add')
-                      : undefined
-                  "
-                  color="button-primary"
-                  :padding="$q.screen.gt.sm ? 'xs sm' : 'sm sm'"
-                  @click="
-                    updatingProgram = undefined;
-                    showAthleteDialog = true;
-                  "
-                />
-              </div>
             </div>
 
             <div class="row q-gutter-x-md items-center">
@@ -47,12 +29,12 @@
 
           <q-separator />
 
-          <TableExistingPrograms
+          <TableExistingProgramTemplates
             ref="programsTableElement"
             :programs="programs"
             @update:selected="onProgramSelection"
             :filter="searchProgram"
-          ></TableExistingPrograms>
+          ></TableExistingProgramTemplates>
         </q-card>
 
         <!-- TODO: Dialog to add a new program template -->
@@ -83,6 +65,8 @@
                 @click="selectedProgram = undefined"
               ></q-btn>
             </div>
+            <TableCompactProgram :compactprogram="compactProgram">
+            </TableCompactProgram>
           </q-card-section>
         </q-card>
       </component>
@@ -94,8 +78,10 @@
 import { ref, computed } from "vue";
 import { useQuasar, QDialog } from "quasar";
 import { useCoachInfoStore } from "@/stores/coachInfo";
-import TableExistingPrograms from "@/components/tables/TableExistingPrograms.vue";
+import TableExistingProgramTemplates from "@/components/tables/TableExistingProgramTemplates.vue";
 import { Program } from "@/helpers/programs/program";
+import TableCompactProgram from "@/components/tables/TableCompactProgram.vue";
+import { convertProgramToCompactView } from "@/helpers/programs/converters";
 
 // Init plugin
 const $q = useQuasar();
@@ -105,15 +91,26 @@ const coachInfo = useCoachInfoStore();
 
 // Set program related ref
 const searchProgram = ref<string>();
-const updatingProgram = ref<Program>(); // athlete that is currently being updated
 const selectedProgram = ref<Program>(); // athlete that is currently selected in left table
-const programsTableElement = ref<typeof TableExistingPrograms>();
-
-// Set additional athlete info ref
-const showAthleteDialog = ref(false); // whether to show dialog to add athlete
+const programsTableElement = ref<typeof TableExistingProgramTemplates>();
 
 // Get coach info
 const programs = computed(() => coachInfo.programs || []);
+
+const compactProgram = computed(() => {
+  return selectedProgram.value
+    ? convertProgramToCompactView(selectedProgram.value)
+    : undefined;
+});
+
+/**
+ * Allow program template info modification.
+ *
+ * @param program selected program instance.
+ */
+function onProgramSelection(program?: Program) {
+  selectedProgram.value = program;
+}
 </script>
 
 <style scoped lang="scss">
