@@ -67,14 +67,14 @@
             </div>
 
             <div class="row justify-between">
-              <p>{{ selectedProgram?.name }}</p>
+              <p v-if="$q.screen.gt.sm">{{ selectedProgram?.name }}</p>
               <q-btn
                 icon="sym_o_open_in_new"
                 :to="{
                   name: 'program',
                   params: { programId: selectedProgram?.uid },
                 }"
-                >Open in builder</q-btn
+                >{{ $t("coach.programlibrary_management.list.open") }}</q-btn
               >
             </div>
 

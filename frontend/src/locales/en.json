@@ -388,7 +388,8 @@
     "programlibrary_management": {
       "list": {
         "title": "Program templates",
-        "search": "Search template..."
+        "search": "Search template...",
+        "open": "Open in builder"
       },
       "fields": {
         "program_info": "Template info"

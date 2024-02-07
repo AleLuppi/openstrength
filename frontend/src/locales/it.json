@@ -388,7 +388,8 @@
     "programlibrary_management": {
       "list": {
         "title": "Programmi template",
-        "search": "Cerca template..."
+        "search": "Cerca template...",
+        "open": "Apri nel builder"
       },
       "fields": {
         "program_info": "Info del programma template"
