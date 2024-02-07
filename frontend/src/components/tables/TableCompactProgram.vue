@@ -5,7 +5,7 @@
         :rows="flattenedRows[dayBlock.dayName]"
         :columns="columns"
         :title="'Day ' + dayBlock.dayName"
-        row-key="dayName"
+        row-key="exerciseFullName"
         wrap-cells
         :pagination="{ rowsPerPage: 0 }"
         flat
@@ -29,33 +29,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, PropType } from "vue";
+import { defineProps, computed } from "vue";
 import type { QTableProps } from "quasar";
 import { ProgramCompactView } from "@/helpers/programs/program";
 
 // Define props
 const props = defineProps({
   compactprogram: {
-    type: Object as PropType<ProgramCompactView>,
+    type: Object as () => ProgramCompactView | null,
     required: false,
   },
 });
 
-// Get day names
-const programDays = ref<string[]>([]);
-props.compactprogram?.days.forEach((day) => {
-  programDays.value?.push(day.dayName);
-});
-
-// Sort the day names as numbers
-programDays.value.sort((a, b) => {
-  const numA = parseInt(a);
-  const numB = parseInt(b);
-  return numA - numB;
-});
-
 // Get week names
-// Compute weekNames
 const weekNames = computed(() => {
   const weeks: string[] = [];
   props.compactprogram?.days.forEach((day) => {
@@ -67,39 +53,33 @@ const weekNames = computed(() => {
       });
     });
   });
-  return weeks;
-});
-
-// Sort the week names as numbers
-weekNames.value.sort((a, b) => {
-  const numA = parseInt(a);
-  const numB = parseInt(b);
-  return numA - numB;
+  return weeks.sort((a, b) => parseInt(a) - parseInt(b));
 });
 
 // Flatten the rows
-const flattenedRows = ref<{ [key: string]: Array<{ [key: string]: string }> }>(
-  {},
-);
-props.compactprogram?.days.forEach((day) => {
-  const rows: Array<{ [key: string]: string }> = [];
-  day.exercises.forEach((exercise) => {
-    const row: { [key: string]: string } = {
-      exerciseFullName: exercise.exerciseFullName,
-      dayName: day.dayName,
-    };
-    weekNames.value.forEach((weekName) => {
-      const weekSchema = exercise.weekSchemas.find(
-        (week) => week.weekName === weekName,
-      );
-      row[weekName] = weekSchema ? weekSchema.schemas.join(", ") : "";
-    });
-    rows.push(row);
-  });
-  flattenedRows.value[day.dayName] = rows;
-});
+const flattenedRows = computed(() => {
+  const flattened: Record<string, Record<string, string>[]> = {};
 
-console.log("flattened rows", flattenedRows.value);
+  props.compactprogram?.days.forEach((day) => {
+    const rows: Record<string, string>[] = [];
+    day.exercises.forEach((exercise) => {
+      const row: Record<string, string> = {
+        exerciseFullName: exercise.exerciseFullName,
+        dayName: day.dayName,
+      };
+      weekNames.value.forEach((weekName) => {
+        const weekSchema = exercise.weekSchemas.find(
+          (week: { weekName: string }) => week.weekName === weekName,
+        );
+        row[weekName] = weekSchema ? weekSchema.schemas.join(", ") : "";
+      });
+      rows.push(row);
+    });
+    flattened[day.dayName] = rows;
+  });
+
+  return flattened;
+});
 
 // Constructing the columns array dynamically
 const columns: QTableProps["columns"] = [
@@ -107,9 +87,9 @@ const columns: QTableProps["columns"] = [
     name: "exerciseFullName",
     label: "Exercise",
     align: "left",
-    field: (row) => row.exerciseFullName,
+    field: "exerciseFullName",
     style: "width: 30%",
-    format: (val) => `${val}`,
+    format: (val: string) => val,
   },
   ...weekNames.value.map((weekName) => ({
     name: weekName,
@@ -123,9 +103,7 @@ const columns: QTableProps["columns"] = [
 
 <style lang="sass">
 .my-sticky-column-table
-
   thead tr:first-child th:first-child
-    /* bg color is important for th; just specify one */
     background-color: $lighter
 
   td:first-child

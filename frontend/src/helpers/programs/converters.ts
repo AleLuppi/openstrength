@@ -139,5 +139,6 @@ export function convertProgramToCompactView(
     }
   });
 
+  console.log("final compact", compactView);
   return compactView;
 }

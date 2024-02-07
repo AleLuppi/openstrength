@@ -65,6 +65,7 @@
                 @click="selectedProgram = undefined"
               ></q-btn>
             </div>
+            <p>{{ selectedProgram?.name }}</p>
             <TableCompactProgram :compactprogram="compactProgram">
             </TableCompactProgram>
           </q-card-section>
@@ -79,7 +80,7 @@ import { ref, computed } from "vue";
 import { useQuasar, QDialog } from "quasar";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import TableExistingProgramTemplates from "@/components/tables/TableExistingProgramTemplates.vue";
-import { Program } from "@/helpers/programs/program";
+import { Program, ProgramCompactView } from "@/helpers/programs/program";
 import TableCompactProgram from "@/components/tables/TableCompactProgram.vue";
 import { convertProgramToCompactView } from "@/helpers/programs/converters";
 
@@ -93,15 +94,10 @@ const coachInfo = useCoachInfoStore();
 const searchProgram = ref<string>();
 const selectedProgram = ref<Program>(); // athlete that is currently selected in left table
 const programsTableElement = ref<typeof TableExistingProgramTemplates>();
+const compactProgram = ref<ProgramCompactView>();
 
 // Get coach info
 const programs = computed(() => coachInfo.programs || []);
-
-const compactProgram = computed(() => {
-  return selectedProgram.value
-    ? convertProgramToCompactView(selectedProgram.value)
-    : undefined;
-});
 
 /**
  * Allow program template info modification.
@@ -109,7 +105,12 @@ const compactProgram = computed(() => {
  * @param program selected program instance.
  */
 function onProgramSelection(program?: Program) {
+  compactProgram.value = undefined;
   selectedProgram.value = program;
+  console.log("on program selection", program);
+  compactProgram.value = program
+    ? convertProgramToCompactView(program)
+    : undefined;
 }
 </script>
 
