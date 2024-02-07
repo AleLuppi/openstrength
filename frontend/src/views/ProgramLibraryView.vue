@@ -49,7 +49,7 @@
         class="col-7"
       >
         <q-card>
-          <q-card-section class="q-gutter-x-xs os-athleteinfo-max-height">
+          <q-card-section class="q-gutter-x-xs os-templateinfo-max-height">
             <div class="row justify-between items-center">
               <h6>
                 {{ $t("coach.programlibrary_management.fields.program_info") }}
@@ -65,8 +65,20 @@
                 @click="selectedProgram = undefined"
               ></q-btn>
             </div>
-            <p>{{ selectedProgram?.name }}</p>
-            <div v-if="compactProgram" style="max-height: 50vh">
+
+            <div class="row justify-between">
+              <p>{{ selectedProgram?.name }}</p>
+              <q-btn
+                icon="sym_o_open_in_new"
+                :to="{
+                  name: 'program',
+                  params: { programId: selectedProgram?.uid },
+                }"
+                >Open in builder</q-btn
+              >
+            </div>
+
+            <div v-if="compactProgram">
               <TableCompactProgram :compactprogram="compactProgram">
               </TableCompactProgram>
             </div>
@@ -123,7 +135,7 @@ function onProgramSelection(program?: Program) {
   box-shadow: 0px 8px 32px 0px rgba(51, 38, 174, 0.08);
 }
 
-.os-athleteinfo-max-height {
+.os-templateinfo-max-height {
   height: calc(100vh - 38px);
 }
 </style>

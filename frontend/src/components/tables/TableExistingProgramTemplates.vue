@@ -122,10 +122,10 @@ watch(selectedRows, (value) =>
 
 <style scoped lang="scss">
 .os-table-max-height {
-  max-height: calc(100vh - 255px);
+  max-height: calc(100vh - 116px - 38px);
 }
 
 .os-table-max-height-with-header {
-  max-height: calc(100vh - 255px - 50px);
+  max-height: calc(100vh - 116px - 38px);
 }
 </style>
