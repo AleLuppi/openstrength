@@ -385,6 +385,15 @@
         "all_filtered_out": "Niente da mostrare"
       }
     },
+    "programlibrary_management": {
+      "list": {
+        "title": "Programmi template",
+        "search": "Cerca template..."
+      },
+      "fields": {
+        "program_info": "Info del programma template"
+      }
+    },
     "maxlift_management": {
       "list": {
         "search_maxlift": "Cerca...",
