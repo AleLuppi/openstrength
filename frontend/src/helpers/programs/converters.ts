@@ -86,34 +86,29 @@ export function convertProgramToDayBlocks(
 export function convertProgramToCompactView(
   program: Program,
 ): ProgramCompactView {
-  // Check input
-  if (!program.programExercises) return { days: [] };
+  const compactView: ProgramCompactView = { days: [] };
 
-  const programExercises = orderProgramExercises(
+  if (!program.programExercises) return compactView;
+
+  const orderedProgramExercises = orderProgramExercises(
     program.programExercises,
     (week, day, order) => [week, day, order].join("."),
   );
 
-  // Initialize an object to store the converted data
-  const compactView: ProgramCompactView = { days: [] };
-
-  // Loop through each program exercise
-  Object.entries(programExercises).forEach(([key, programExercise]) => {
-    // Retrieve week and day values
+  for (const [key, programExercise] of Object.entries(
+    orderedProgramExercises,
+  )) {
     const [week, day] = key.split(".");
-
     const exerciseFullName = `${programExercise?.exercise?.name ?? ""} - ${
       programExercise?.exerciseVariant?.name ?? ""
     }`;
 
-    // Find or create the day entry in the compact view
     let dayEntry = compactView.days.find((entry) => entry.dayName === day);
     if (!dayEntry) {
       dayEntry = { dayName: day, exercises: [] };
       compactView.days.push(dayEntry);
     }
 
-    // Find or create the exercise entry in the day
     let exerciseEntry = dayEntry.exercises.find(
       (exercise) => exercise.exerciseFullName === exerciseFullName,
     );
@@ -122,7 +117,6 @@ export function convertProgramToCompactView(
       dayEntry.exercises.push(exerciseEntry);
     }
 
-    // Find or create the week entry in the exercise
     let weekEntry = exerciseEntry.weekSchemas.find(
       (weekEntry) => weekEntry.weekName === week,
     );
@@ -131,14 +125,69 @@ export function convertProgramToCompactView(
       exerciseEntry.weekSchemas.push(weekEntry);
     }
 
-    // Add the schemas to the week entry
     if (programExercise.lines) {
-      programExercise.lines.forEach((line) => {
-        weekEntry!.schemas.push(convertLineToSchema(line));
-      });
+      for (const line of programExercise.lines) {
+        weekEntry.schemas.push(convertLineToSchema(line));
+      }
     }
-  });
+  }
 
-  console.log("final compact", compactView);
   return compactView;
+}
+
+/**
+ * Get unique sorted week names from a compact program view.
+ *
+ * @param compactProgram compact program view.
+ * @returns unique sorted week names.
+ */
+export function getWeekNamesFromCompactProgram(
+  compactProgram: ProgramCompactView,
+): string[] {
+  return compactProgram.days
+    .reduce((acc: string[], day) => {
+      day.exercises.forEach((exercise) => {
+        exercise.weekSchemas.forEach((week: { weekName: string }) => {
+          if (!acc.includes(week.weekName)) {
+            acc.push(week.weekName);
+          }
+        });
+      });
+      return acc;
+    }, [])
+    .sort((a, b) => parseInt(a) - parseInt(b));
+}
+
+/**
+ * Converts compact program to a flattened view.
+ *
+ * @param compactProgram compact program view.
+ * @returns flattened view of the compact program.
+ */
+export function convertCompactProgramToFlatView(
+  compactProgram: ProgramCompactView,
+): Record<string, Record<string, string>[]> {
+  const flattenedProgram: Record<string, Record<string, string>[]> = {};
+
+  const weekNames = getWeekNamesFromCompactProgram(compactProgram);
+
+  for (const day of compactProgram.days) {
+    const rows: Record<string, string>[] = [];
+    for (const exercise of day.exercises) {
+      const row: Record<string, string> = {
+        exerciseFullName: exercise.exerciseFullName,
+        dayName: day.dayName,
+      };
+      for (const weekName of weekNames) {
+        const weekSchema = exercise.weekSchemas.find(
+          (week: { weekName: string }) => week.weekName === weekName,
+        );
+        row[weekName] = weekSchema ? weekSchema.schemas.join(", ") : "";
+      }
+      rows.push(row);
+    }
+    flattenedProgram[day.dayName] = rows;
+  }
+
+  return flattenedProgram;
 }

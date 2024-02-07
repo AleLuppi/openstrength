@@ -7,7 +7,7 @@
           <q-card-section class="q-pb-sm">
             <div class="row justify-between q-mb-sm">
               <h4 class="text-margin-xs">
-                {{ $t("coach.athlete_management.list.title") }}
+                {{ $t("coach.programlibrary_management.list.title") }}
               </h4>
             </div>
 
@@ -66,8 +66,10 @@
               ></q-btn>
             </div>
             <p>{{ selectedProgram?.name }}</p>
-            <TableCompactProgram :compactprogram="compactProgram">
-            </TableCompactProgram>
+            <div v-if="compactProgram" style="max-height: 50vh">
+              <TableCompactProgram :compactprogram="compactProgram">
+              </TableCompactProgram>
+            </div>
           </q-card-section>
         </q-card>
       </component>

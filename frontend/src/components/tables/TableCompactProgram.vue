@@ -2,6 +2,7 @@
   <q-page>
     <div v-for="dayBlock in props.compactprogram?.days" :key="dayBlock.dayName">
       <q-table
+        v-if="flattenedRows"
         :rows="flattenedRows[dayBlock.dayName]"
         :columns="columns"
         :title="'Day ' + dayBlock.dayName"
@@ -32,53 +33,27 @@
 import { defineProps, computed } from "vue";
 import type { QTableProps } from "quasar";
 import { ProgramCompactView } from "@/helpers/programs/program";
+import {
+  convertCompactProgramToFlatView,
+  getWeekNamesFromCompactProgram,
+} from "@/helpers/programs/converters";
 
 // Define props
 const props = defineProps({
   compactprogram: {
-    type: Object as () => ProgramCompactView | null,
-    required: false,
+    type: Object as () => ProgramCompactView,
+    required: true,
   },
 });
 
-// Get week names
-const weekNames = computed(() => {
-  const weeks: string[] = [];
-  props.compactprogram?.days.forEach((day) => {
-    day.exercises.forEach((exercise) => {
-      exercise.weekSchemas.forEach((week: { weekName: string }) => {
-        if (!weeks.includes(week.weekName)) {
-          weeks.push(week.weekName);
-        }
-      });
-    });
-  });
-  return weeks.sort((a, b) => parseInt(a) - parseInt(b));
+const flattenedRows = computed(() => {
+  return props.compactprogram
+    ? convertCompactProgramToFlatView(props.compactprogram)
+    : undefined;
 });
 
-// Flatten the rows
-const flattenedRows = computed(() => {
-  const flattened: Record<string, Record<string, string>[]> = {};
-
-  props.compactprogram?.days.forEach((day) => {
-    const rows: Record<string, string>[] = [];
-    day.exercises.forEach((exercise) => {
-      const row: Record<string, string> = {
-        exerciseFullName: exercise.exerciseFullName,
-        dayName: day.dayName,
-      };
-      weekNames.value.forEach((weekName) => {
-        const weekSchema = exercise.weekSchemas.find(
-          (week: { weekName: string }) => week.weekName === weekName,
-        );
-        row[weekName] = weekSchema ? weekSchema.schemas.join(", ") : "";
-      });
-      rows.push(row);
-    });
-    flattened[day.dayName] = rows;
-  });
-
-  return flattened;
+const weekNames = computed(() => {
+  return getWeekNamesFromCompactProgram(props.compactprogram);
 });
 
 // Constructing the columns array dynamically
