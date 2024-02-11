@@ -93,7 +93,10 @@
       </q-dialog>
 
       <!-- Show dialog for 12Feb deadline -->
-      <q-dialog v-model="showDialogPresaleDeadline">
+      <q-dialog
+        :modelValue="showDialogPresaleDeadline && userNotPaid"
+        @update:modelValue="(val) => (showDialogPresaleDeadline = val)"
+      >
         <q-card class="q-pa-sm">
           <q-card-section class="q-pb-none">
             <h3 class="text-primary">
@@ -242,6 +245,25 @@ const isLoading = ref(true);
 // Global dialogs ref
 const showDialogOnboarding = ref(false);
 const showDialogPresaleDeadline = ref(false);
+const userNotPaid = computed(() => {
+  return user.uid
+    ? ![
+        "KZ5LJ59stDRRr9KBGghUbSHYU1s2",
+        "Xoq48VdR7dVFCpnrlS74mDbMcg92",
+        "L8V8XAXYpBP8SyXMAvggC8uWwDz2",
+        "lZwxtl9L7sS5lSOfXrtg3TpXznW2",
+        "F3C2gUQEoJURjIbLAahrWZB7gei1",
+        "oDuDlOgUInQH0DhKkmYe4FLusYn1",
+        "kZe6fi0EYtMLj2t0KKSCjL7Auc52",
+        "Dbr71cK84hTCxk2itmDBWeILPlS2",
+        "svvwd7Nw36R1vIdwhTtvg4Yiikf1",
+        "hk5ZvBR340RCdEAAG5E1Dstav0o1",
+        "pU5TTAMVE5TJt712X1cFpqLP3UD3",
+        "J5z5k20kN2Vi6UjzVYHkfJskLM92",
+        "IIhVf8x1RicwEVdp7TkkH86JBrF3",
+      ].includes(user.uid)
+    : true;
+});
 
 // Show presale dialog after 5 consecutive seconds in home page
 let timeoutDialogPresaleDeadline: ReturnType<typeof setTimeout>[] = [];
