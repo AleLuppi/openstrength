@@ -10,8 +10,12 @@
       @touchstart="interacted = true"
     >
       <!-- Header -->
-      <q-header v-if="showHeader" bordered class="bg-lightest text-light">
-        <q-toolbar v-if="$q.screen.lt.md">
+      <q-header
+        v-if="showHeaderSm || showHeaderLg"
+        bordered
+        class="bg-lightest text-light"
+      >
+        <q-toolbar v-if="showHeaderSm && $q.screen.lt.md">
           <q-btn
             v-if="!leftDrawerOpen || $q.screen.lt.md"
             flat
@@ -30,6 +34,34 @@
             flat
             round
             :to="{ name: 'profile' }"
+            color="text-light"
+          />
+        </q-toolbar>
+
+        <q-toolbar v-else-if="showHeaderLg && !$q.screen.lt.md">
+          <q-btn
+            flat
+            dense
+            aria-label="To home"
+            :to="{
+              name: user.isSignedIn ? NamedRoutes.home : NamedRoutes.landing,
+            }"
+          >
+            <img
+              :src="logoTextOnly"
+              alt="Logo OpenStrength"
+              style="height: 20px"
+            />
+          </q-btn>
+
+          <q-space />
+
+          <!-- Action buttons -->
+          <q-btn
+            icon-right="person"
+            :label="$t('layout.header.login')"
+            flat
+            :to="{ name: NamedRoutes.profile }"
             color="text-light"
           />
         </q-toolbar>
@@ -212,6 +244,7 @@ import { setLocale } from "@/helpers/locales";
 import { defaultExerciseCollection } from "@/utils/defaultExerciseCollection";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
+import { logoTextOnly } from "@/assets/sources";
 
 // Import async components
 const osSplashScreen = defineAsyncComponent(
@@ -237,7 +270,12 @@ const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
 const rightDrawerElement = computed(() => route.meta?.showRightDrawer);
 const rightDrawerActive = ref<number>(-1);
-const showHeader = computed(() => route.meta?.showHeader ?? true);
+const showHeaderSm = computed(
+  () => route.meta?.showHeaderSm ?? route.meta?.showHeader ?? true,
+);
+const showHeaderLg = computed(
+  () => route.meta?.showHeaderLg ?? route.meta?.showHeader ?? false,
+);
 const showFooter = computed(() => route.meta?.showFooter ?? true);
 const showLeftDrawer = computed(() => route.meta?.showLeftDrawer ?? true);
 const isLoading = ref(true);
@@ -414,7 +452,9 @@ function onShowGlobalDialog(which: string) {
 </script>
 
 <style scoped lang="scss">
-.fade-enter-active,
+.fade-enter-active {
+  transition: opacity 0s;
+}
 .fade-leave-active {
   transition: opacity 0.5s ease;
 }

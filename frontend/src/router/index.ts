@@ -16,7 +16,6 @@ import { defineAsyncComponent } from "vue";
 /* Dinamically import the views */
 import HomeView from "@/views/HomeView.vue";
 const LandingPage = () => import("@/views/LandingPage.vue");
-const ConfirmPage = () => import("@/views/ConfirmPage.vue");
 const AthletesView = () => import("@/views/AthletesView.vue");
 const LibraryView = () => import("@/views/LibraryView.vue");
 const ProgramView = () => import("@/views/ProgramView.vue");
@@ -38,8 +37,7 @@ const RightDrawerProgramElements = defineAsyncComponent(
 /* Set routes names */
 export enum NamedRoutes {
   home = "home",
-  access = "access",
-  confirm = "confirm",
+  landing = "landing",
   athletes = "athletes",
   library = "library",
   program = "program",
@@ -57,7 +55,9 @@ export enum NamedRoutes {
 /**
  * Currently available meta info in routes:
  *  - title : To set the page title in browser.
- *  - showHeader: If true, show top header. Default is true.
+ *  - showHeader: Set both header-related meta properties:
+ *    - showHeaderSm: If true, show header on small screens. Default is true.
+ *    - showHeaderLg: If true, show header on large screens. Default is false.
  *  - showFooter: If true, show bottom footer. Default is true.
  *  - showLeftDrawer: If true, show left drawer. Default is true.
  *  - showRightDrawer: If false, do not show right drawer. If a component is provided, use
@@ -80,27 +80,16 @@ const routes: RouteRecordRaw[] = [
     component: HomeView,
     meta: {
       title: "Home",
-      redirectNotAuthenticated: "access",
     },
   },
   {
-    path: "/access",
-    name: NamedRoutes.access,
+    path: "/welcome",
+    name: NamedRoutes.landing,
     component: LandingPage,
     meta: {
-      title: "Access",
+      title: "Welcome",
+      showHeader: true,
       showLeftDrawer: false,
-      showHeader: false,
-    },
-  },
-  {
-    path: "/confirm",
-    name: NamedRoutes.confirm,
-    component: ConfirmPage,
-    meta: {
-      title: "Confirm",
-      showLeftDrawer: false,
-      showHeader: false,
     },
   },
   {
@@ -110,7 +99,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: "Athletes",
       restrictAccessByRole: [UserRole.coach],
-      redirectNotAuthorized: "home",
+      redirectNotAuthorized: NamedRoutes.home,
     },
   },
   {
@@ -120,7 +109,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: "Library",
       restrictAccessByRole: [UserRole.coach],
-      redirectNotAuthorized: "home",
+      redirectNotAuthorized: NamedRoutes.home,
     },
   },
   {
@@ -130,7 +119,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: "Program",
       restrictAccessByRole: [UserRole.coach],
-      redirectNotAuthorized: "home",
+      redirectNotAuthorized: NamedRoutes.home,
       showRightDrawer: RightDrawerProgramElements,
     },
   },
@@ -161,7 +150,7 @@ const routes: RouteRecordRaw[] = [
     props: true,
     meta: {
       title: "Login",
-      redirectAuthenticated: "home",
+      redirectAuthenticated: NamedRoutes.home,
     },
   },
   {
@@ -170,8 +159,7 @@ const routes: RouteRecordRaw[] = [
     component: UserRegisterView,
     meta: {
       title: "Register",
-      redirectAuthenticated: "home",
-      redirectNotAuthenticated: "login",
+      redirectNotAuthenticated: NamedRoutes.login,
     },
   },
   {
@@ -180,7 +168,7 @@ const routes: RouteRecordRaw[] = [
     component: UserProfileView,
     meta: {
       title: "Profile",
-      redirectNotAuthenticated: "login",
+      redirectNotAuthenticated: NamedRoutes.login,
     },
   },
   {

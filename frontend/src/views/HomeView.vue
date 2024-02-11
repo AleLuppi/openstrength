@@ -146,9 +146,11 @@
 </template>
 
 <script setup lang="ts">
+import { onBeforeMount } from "vue";
 import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
 import { UserRole } from "@/helpers/users/user";
+import router, { NamedRoutes } from "@/router";
 
 // Define emits
 defineEmits<{
@@ -189,6 +191,11 @@ const buttonsUnsigedAction = [
     subtitle: "homepage.actions.to_login_caption",
   },
 ];
+
+// Redirect unsigned users to landing page
+onBeforeMount(() => {
+  if (!user.isSignedIn) router.push({ name: NamedRoutes.landing });
+});
 </script>
 
 <style scoped lang="scss">

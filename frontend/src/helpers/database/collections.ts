@@ -11,6 +11,6 @@ export enum dbSubcollections {
   // Under "programs"
   programsSnapshots = "snapshots",
 
-  // Under "user"
+  // Under "users"
   userConfig = "config",
 }
