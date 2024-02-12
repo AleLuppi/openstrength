@@ -59,7 +59,11 @@
           <!-- Action buttons -->
           <q-btn
             icon-right="person"
-            :label="$t('layout.header.login')"
+            :label="
+              user.isSignedIn
+                ? $t('layout.header.to_profile')
+                : $t('layout.header.to_login')
+            "
             flat
             :to="{ name: NamedRoutes.profile }"
             color="text-light"

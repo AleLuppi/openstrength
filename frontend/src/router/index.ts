@@ -83,6 +83,8 @@ const routes: RouteRecordRaw[] = [
     component: HomeView,
     meta: {
       title: "Home",
+      restrictAccessToLevel: 4,
+      redirectNotAuthorized: NamedRoutes.landing,
       redirectNotAuthenticated: NamedRoutes.landing,
     },
   },

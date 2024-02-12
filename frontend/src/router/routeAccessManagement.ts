@@ -92,6 +92,7 @@ export function routeAccessibleByUser(
   // Check if user can access, according to all restricting rules
   return (
     routeAccessibleByRole(user, route) &&
+    routeAccessibleByLevel(user, route) &&
     routeAccessibleByAuthenticated(user, route) &&
     routeAccessibleByNotAuthenticated(user, route)
   );

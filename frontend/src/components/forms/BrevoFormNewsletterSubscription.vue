@@ -135,6 +135,7 @@
                       autocomplete="off"
                       placeholder="EMAIL"
                       data-required="true"
+                      :value="initialEmail"
                       required
                     />
                   </div>
@@ -269,6 +270,16 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+
+withDefaults(
+  defineProps<{
+    initialEmail?: string;
+  }>(),
+  {
+    initialEmail: "",
+  },
+);
+
 declare global {
   interface Window {
     REQUIRED_CODE_ERROR_MESSAGE: string;
