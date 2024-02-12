@@ -8,6 +8,7 @@ import { useUserStore } from "@/stores/user";
 import { UserRole } from "@/helpers/users/user";
 import {
   routeAccessibleByRole,
+  routeAccessibleByLevel,
   routeAccessibleByAuthenticated,
   routeAccessibleByNotAuthenticated,
 } from "@/router/routeAccessManagement";
@@ -64,6 +65,8 @@ export enum NamedRoutes {
  *                     it as right drawer. The default is false.
  *  - restrictAccessByRole : List of user roles that can access the page. If not provided,
  *                           anyone can access the page. Admin can always access.
+ *  - restrictAccessToLevel : Maximum access level number user must have to be able to access
+ *                            the page (eg if 3, only users with level 1, 2 or 3 can access).
  *  - redirectNotAuthorized : View to redirect user when trying to access a view that is
  *                            restricted by user role.
  *  - redirectAuthenticated : View to redirect user if authenticated. This is a special
@@ -80,6 +83,7 @@ const routes: RouteRecordRaw[] = [
     component: HomeView,
     meta: {
       title: "Home",
+      redirectNotAuthenticated: NamedRoutes.landing,
     },
   },
   {
@@ -99,6 +103,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: "Athletes",
       restrictAccessByRole: [UserRole.coach],
+      restrictAccessToLevel: 4,
       redirectNotAuthorized: NamedRoutes.home,
     },
   },
@@ -109,6 +114,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: "Library",
       restrictAccessByRole: [UserRole.coach],
+      restrictAccessToLevel: 4,
       redirectNotAuthorized: NamedRoutes.home,
     },
   },
@@ -119,6 +125,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: "Program",
       restrictAccessByRole: [UserRole.coach],
+      restrictAccessToLevel: 4,
       redirectNotAuthorized: NamedRoutes.home,
       showRightDrawer: RightDrawerProgramElements,
     },
@@ -159,7 +166,7 @@ const routes: RouteRecordRaw[] = [
     component: UserRegisterView,
     meta: {
       title: "Register",
-      redirectNotAuthenticated: NamedRoutes.login,
+      redirectAuthenticated: NamedRoutes.home,
     },
   },
   {
@@ -216,7 +223,7 @@ router.beforeEach(async (to) => {
   const user = useUserStore();
 
   // Check if user has the authorization to access the page
-  if (!routeAccessibleByRole(user, to)) {
+  if (!routeAccessibleByRole(user, to) || !routeAccessibleByLevel(user, to)) {
     // Redirect user
     return {
       name: (to.meta.redirectNotAuthorized ?? "not_found") as RouteRecordName,

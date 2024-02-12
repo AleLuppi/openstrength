@@ -22,6 +22,25 @@ export function routeAccessibleByRole(
 }
 
 /**
+ * Check if route can be accessed by user, according to user access level.
+ *
+ * @param user instance requiring access.
+ * @param route route that shall be accessed.
+ * @returns true if user can access, false otherwise.
+ */
+export function routeAccessibleByLevel(
+  user: UserProps,
+  route: { [key: string]: any; meta: { [key: string]: any } },
+) {
+  // Check whether access should be restricted
+  const restrictIf =
+    route.meta.restrictAccessToLevel && // explicit restriction
+    (!user.config?.accessLevel || // user is not logged is or access level is unknown
+      (route.meta.restrictAccessToLevel as number) < user.config.accessLevel); // user level is not allowed
+  return !restrictIf;
+}
+
+/**
  * Check if route can be accessed by user, according to user login state.
  *
  * @param user instance requiring access.

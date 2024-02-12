@@ -4,11 +4,13 @@
     <q-item
       v-for="page in drawerPages"
       :key="page.route"
-      clickable
       tag="a"
-      :to="{ name: page.route }"
+      :to="
+        disabledPages.includes(page.route) ? undefined : { name: page.route }
+      "
       active-class="os-child-highlight-primary"
       class="link-child os-text-unselected"
+      :class="{ 'bg-grey-4 text-grey-5': disabledPages.includes(page.route) }"
     >
       <!-- Icon near text on expanded drawer -->
       <q-item-section v-if="!props.mini" avatar>
@@ -23,6 +25,16 @@
         <q-avatar :icon="page.icon" />
         <p>{{ $t(page.caption) }}</p>
       </q-card>
+
+      <q-tooltip
+        v-if="disabledPages.includes(page.route)"
+        anchor="center right"
+        self="center left"
+        :offset="[-14, 0]"
+      >
+        <!-- TODO i18n -->
+        {{ "Upgrade to PRO to unlock this feature" }}
+      </q-tooltip>
     </q-item>
 
     <!-- TODO add space -->
@@ -70,9 +82,12 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import router from "@/router";
+import router, { NamedRoutes } from "@/router";
 import { useUserStore } from "@/stores/user";
-import { routeAccessibleByUser } from "@/router/routeAccessManagement";
+import {
+  routeAccessibleByLevel,
+  routeAccessibleByUser,
+} from "@/router/routeAccessManagement";
 
 // Set props
 const props = defineProps({
@@ -115,8 +130,23 @@ const drawerPages = computed(() =>
     const route = router
       .getRoutes()
       .find((route) => String(route.name) == page.route);
-    return route && routeAccessibleByUser(user, route);
+    return (
+      route &&
+      (routeAccessibleByUser(user, route) || route.name == NamedRoutes.home)
+    );
   }),
+);
+
+// Get a list pages not accessible due to access level
+const disabledPages = computed(() =>
+  drawerPages.value
+    .filter((page) => {
+      const route = router
+        .getRoutes()
+        .find((route) => String(route.name) == page.route);
+      return route && !routeAccessibleByLevel(user, route);
+    })
+    .map((page) => page.route),
 );
 </script>
 
@@ -133,6 +163,6 @@ const drawerPages = computed(() =>
 }
 
 .os-text-unselected {
-  color: $os-secondary-6 !important;
+  color: $os-secondary-6;
 }
 </style>
