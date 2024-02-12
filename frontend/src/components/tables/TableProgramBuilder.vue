@@ -1,6 +1,7 @@
 <template>
   <div>
     <!-- Week wrapper -->
+
     <div
       v-for="week in allWeeks"
       v-show="filteredWeeks.includes(week)"
@@ -13,168 +14,13 @@
       "
       style="border-radius: 24px"
     >
-      <div class="row items-center">
-        <h3 class="text-margin-xs">{{ getWeekDisplayName(week) }}</h3>
-
-        <!-- Management buttons -->
-        <div>
-          <!-- Duplicate week -->
-          <q-btn
-            @click="editWeekDayName = ['', '']"
-            icon="fa-regular fa-clone"
-            size="sm"
-            color="dark-light"
-            flat
-            round
-            :ripple="false"
-          >
-            <q-tooltip anchor="top middle" :offset="[0, 40]">
-              {{ $t("coach.program_management.builder.week_duplicate") }}
-            </q-tooltip>
-
-            <FormProgramNewWeekDay
-              v-model="editWeekDayName"
-              @save="
-                (val?: [string, string]) => {
-                  if (val) duplicateWeek(week, val);
-                }
-              "
-              :title="
-                $t('coach.program_management.builder.week_duplicate_form')
-              "
-              :cover="false"
-              :weekonly="true"
-              anchor="center right"
-              self="center left"
-            >
-            </FormProgramNewWeekDay>
-          </q-btn>
-
-          <!-- Delete week -->
-          <q-btn
-            @click="deleteWeek([week])"
-            icon="fa-regular fa-trash-can"
-            size="sm"
-            color="dark-light"
-            flat
-            round
-            :ripple="false"
-          >
-            <q-tooltip anchor="top middle" :offset="[0, 40]">
-              {{ $t("coach.program_management.builder.week_delete") }}
-            </q-tooltip>
-          </q-btn>
-        </div>
-      </div>
-      <!-- Day wrapper -->
-      <div
-        :ref="(el) => (dayElements[getName([week, day])] = el)"
-        v-for="day in allDays[week]"
-        v-show="filteredDays[week].includes(day)"
-        :key="`day${day}`"
-      >
-        <!-- Show week and day and allow navigation -->
-        <div
-          class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-xs os-day-title"
-          v-intersection="dayTitleInteresctionHandler"
-          :style="`top: ${scrollOffset}px`"
-        >
-          <!-- Week and day names -->
-          <h6 class="q-mt-none">
-            <span
-              class="underlined-dashed cursor-pointer text-h4 text-margin-xs"
-            >
-              {{ getWeekDisplayName(week) }}
-              <q-menu auto-close>
-                <q-list
-                  v-for="otherWeek in filteredWeeks.filter(
-                    (oneWeek) => oneWeek != week,
-                  )"
-                  :key="`otherweek${otherWeek}`"
-                  style="min-width: 100px"
-                >
-                  <q-item
-                    clickable
-                    @click="
-                      scrollToElementInParent(
-                        dayElements[getName([otherWeek, day])] ??
-                          dayElements[
-                            getName([otherWeek, filteredDays[otherWeek][0]])
-                          ],
-                        scrollOffset,
-                      )
-                    "
-                  >
-                    <q-item-section>
-                      {{ getWeekDisplayName(otherWeek) }}
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-menu>
-            </span>
-            -
-            <span
-              class="underlined-dashed cursor-pointer text-h6 text-margin-xs"
-            >
-              {{ getDayDisplayName(day) }}
-              <q-menu auto-close>
-                <q-list
-                  v-for="otherDay in filteredDays[week].filter(
-                    (oneDay) => oneDay != day,
-                  )"
-                  :key="`otherweek${otherDay}`"
-                  style="min-width: 100px"
-                >
-                  <q-item
-                    clickable
-                    @click="
-                      scrollToElementInParent(
-                        dayElements[getName([week, otherDay])],
-                        scrollOffset,
-                      )
-                    "
-                  >
-                    <q-item-section>
-                      {{ getDayDisplayName(otherDay) }}
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-menu>
-            </span>
-          </h6>
+      <div v-show="weekInfoShowExpanded[getName([week])]">
+        <div class="row items-center">
+          <h3 class="text-margin-xs">{{ getWeekDisplayName(week) }}</h3>
 
           <!-- Management buttons -->
           <div>
-            <!-- Rename day -->
-            <q-btn
-              @click="editWeekDayName = [week, day]"
-              icon="edit"
-              size="sm"
-              color="dark-light"
-              flat
-              round
-              :ripple="false"
-            >
-              <q-tooltip anchor="top middle" :offset="[0, 40]">
-                {{ $t("coach.program_management.builder.day_rename") }}
-              </q-tooltip>
-
-              <FormProgramNewWeekDay
-                v-model="editWeekDayName"
-                @save="
-                  (val?: [string, string]) => {
-                    if (val) moveDay([week, day], val);
-                  }
-                "
-                :cover="false"
-                anchor="center right"
-                self="center right"
-                :offset="[15, 0]"
-              >
-              </FormProgramNewWeekDay>
-            </q-btn>
-
-            <!-- Duplicate day -->
+            <!-- Duplicate week -->
             <q-btn
               @click="editWeekDayName = ['', '']"
               icon="fa-regular fa-clone"
@@ -185,29 +31,30 @@
               :ripple="false"
             >
               <q-tooltip anchor="top middle" :offset="[0, 40]">
-                {{ $t("coach.program_management.builder.day_duplicate") }}
+                {{ $t("coach.program_management.builder.week_duplicate") }}
               </q-tooltip>
 
               <FormProgramNewWeekDay
                 v-model="editWeekDayName"
                 @save="
                   (val?: [string, string]) => {
-                    if (val) duplicateDay([week, day], val);
+                    if (val) duplicateWeek(week, val);
                   }
                 "
                 :title="
-                  $t('coach.program_management.builder.day_duplicate_form')
+                  $t('coach.program_management.builder.week_duplicate_form')
                 "
                 :cover="false"
+                :weekonly="true"
                 anchor="center right"
                 self="center left"
               >
               </FormProgramNewWeekDay>
             </q-btn>
 
-            <!-- Delete day -->
+            <!-- Delete week -->
             <q-btn
-              @click="deleteDay([week, day])"
+              @click="deleteWeek([week])"
               icon="fa-regular fa-trash-can"
               size="sm"
               color="dark-light"
@@ -216,546 +63,973 @@
               :ripple="false"
             >
               <q-tooltip anchor="top middle" :offset="[0, 40]">
-                {{ $t("coach.program_management.builder.day_delete") }}
+                {{ $t("coach.program_management.builder.week_delete") }}
               </q-tooltip>
             </q-btn>
-          </div>
 
-          <q-separator inset size="1px" class="col" />
+            <q-btn
+              icon="expand_less"
+              color="dark-light"
+              flat
+              outline
+              round
+              @click="() => (weekInfoExpanded[getName([week])] = false)"
+            ></q-btn>
+          </div>
         </div>
-
-        <!-- Exercise elements -->
+        <!-- Day wrapper -->
         <div
-          v-for="(exerciseData, idx) in allExercises[week][day]"
-          v-show="
-            filter.exercise.length == 0 ||
-            (exerciseData.exercise &&
-              filter.exercise.includes(exerciseData.exercise))
-          "
-          :key="getName([week, day, exerciseData.order])"
-          class="justify-evenly q-px-sm q-mb-md"
-          :class="dense ? 'column items-stretch' : 'row items-start'"
+          :ref="(el) => (dayElements[getName([week, day])] = el)"
+          v-for="day in allDays[week]"
+          v-show="filteredDays[week].includes(day)"
+          :key="`day${day}`"
         >
-          <!-- Reordering arrows -->
-          <div
-            v-if="!dense"
-            class="self-center justify-center"
-            :class="dense ? 'row' : 'column'"
-          >
-            <q-btn
-              @click="moveTable(exerciseData, -1)"
-              icon="arrow_drop_up"
-              flat
-              dense
-              :color="idx == 0 ? 'grey-5' : 'secondary'"
-              :disable="idx == 0"
-            />
-            <q-btn
-              @click="moveTable(exerciseData, +1)"
-              icon="arrow_drop_down"
-              flat
-              dense
-              :color="
-                idx == allExercises[week][day].length - 1
-                  ? 'grey-5'
-                  : 'secondary'
-              "
-              :disable="idx == allExercises[week][day].length - 1"
-            />
-          </div>
-
-          <!-- Exercise info -->
-          <div
-            :class="dense ? 'row justify-between items-end col-12' : 'col-3'"
-          >
+          <div v-show="dayInfoShowExpanded[getName([week, day])]">
+            <!-- Show week and day and allow navigation -->
             <div
-              class="q-pa-sm bg-lighter os-light-border col-8"
-              :class="{
-                'cursor-pointer':
-                  !exercisesInfoShowExpanded[
-                    getName([week, day, exerciseData.order])
-                  ],
-                'os-exercise-form': !dense,
-                'os-exercise-form-dense': dense,
-              }"
-              @click="
-                exercisesInfoExpanded = objectMapValues(
-                  exercisesInfoExpanded,
-                  () => false,
-                );
-                exercisesInfoExpanded[
-                  getName([week, day, exerciseData.order])
-                ] = true;
-              "
-              style="position: relative"
+              class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-xs os-day-title"
+              v-intersection="dayTitleInteresctionHandler"
+              :style="`top: ${scrollOffset}px`"
             >
-              <q-slide-transition>
-                <div
-                  v-show="
-                    exercisesInfoShowExpanded[
-                      getName([week, day, exerciseData.order])
-                    ]
-                  "
+              <!-- Week and day names -->
+              <h6 class="q-mt-none">
+                <span
+                  class="underlined-dashed cursor-pointer text-h4 text-margin-xs"
                 >
-                  <os-select
-                    use-input
-                    :input-debounce="debounce"
-                    :model-value="exerciseData.exercise"
-                    @update:model-value="
-                      (val) => {
-                        updateSelectedExercise(exerciseData, val);
-                        checkNewExercise(val, exerciseData, true);
-                      }
-                    "
-                    :options="exercises.map((exercise) => exercise.name)"
-                    :placeholder="
-                      $t('coach.program_management.builder.exercise_name')
-                    "
-                    hide-bottom-space
-                    new-value-mode="add-unique"
-                    :after-options-add-new="true"
-                    :no-options-add-new="true"
-                    add-option-class="text-primary text-bold text-center"
-                    :add-option-format-text="
-                      (text: string) =>
-                        $t('coach.exercise_management.create_named_exercise', {
-                          exercise: text,
-                        })
-                    "
-                  >
-                    <q-tooltip
-                      v-if="!exerciseData.exercise"
-                      anchor="center right"
-                      self="center left"
-                      :offset="[-10, 0]"
+                  {{ getWeekDisplayName(week) }}
+                  <q-menu auto-close>
+                    <q-list
+                      v-for="otherWeek in filteredWeeks.filter(
+                        (oneWeek) => oneWeek != week,
+                      )"
+                      :key="`otherweek${otherWeek}`"
+                      style="min-width: 100px"
                     >
-                      {{
-                        $t(
-                          "coach.program_management.builder.exercise_name_tooltip",
-                        )
-                      }}
-                    </q-tooltip>
-                  </os-select>
-                  <q-separator color="inherit" spaced="xs" />
-                  <os-select
-                    use-input
-                    :input-debounce="debounce"
-                    :model-value="exerciseData.variant"
-                    @update:model-value="
-                      (val) => {
-                        updateSelectedVariant(exerciseData, val);
-                        checkNewVariant(
-                          exerciseData.exercise ?? '',
-                          val,
-                          exerciseData,
-                          true,
-                        );
-                      }
-                    "
-                    :options="
-                      selectedExercises[
-                        getName([week, day, exerciseData.order])
-                      ]?.variants?.map((variant) => ({
-                        label: variant.isDefault
-                          ? $t('coach.exercise_management.default_variant')
-                          : variant.name,
-                        value: variant.isDefault ? '' : variant.name,
-                      }))
-                    "
-                    emit-value
-                    :placeholder="
-                      $t('coach.program_management.builder.variant_name')
-                    "
-                    hide-bottom-space
-                    new-value-mode="add-unique"
-                    :readonly="!exerciseData.exercise"
-                    :after-options-add-new="true"
-                    :no-options-add-new="true"
-                    add-option-class="text-primary text-bold text-center"
-                    :add-option-format-text="
-                      (text: string) =>
-                        $t('coach.exercise_management.create_named_variant', {
-                          variant: text,
-                        })
-                    "
-                  >
-                    <q-tooltip
-                      v-if="exerciseData.exercise && !exerciseData.variant"
-                      anchor="center right"
-                      self="center left"
-                      :offset="[-10, 0]"
+                      <q-item
+                        clickable
+                        @click="
+                          scrollToElementInParent(
+                            dayElements[getName([otherWeek, day])] ??
+                              dayElements[
+                                getName([otherWeek, filteredDays[otherWeek][0]])
+                              ],
+                            scrollOffset,
+                          )
+                        "
+                      >
+                        <q-item-section>
+                          {{ getWeekDisplayName(otherWeek) }}
+                        </q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </span>
+                -
+                <span
+                  class="underlined-dashed cursor-pointer text-h6 text-margin-xs"
+                >
+                  {{ getDayDisplayName(day) }}
+                  <q-menu auto-close>
+                    <q-list
+                      v-for="otherDay in filteredDays[week].filter(
+                        (oneDay) => oneDay != day,
+                      )"
+                      :key="`otherweek${otherDay}`"
+                      style="min-width: 100px"
                     >
-                      {{
-                        $t(
-                          "coach.program_management.builder.variant_name_tooltip",
-                        )
-                      }}
-                    </q-tooltip>
-                  </os-select>
-                  <q-separator color="inherit" spaced="xs" />
-                  <os-input
-                    :model-value="exerciseData.note"
-                    :debounce="debounce"
-                    @update:model-value="
-                      (val) => {
-                        exerciseData.note = String(val);
-                        updateProgram();
+                      <q-item
+                        clickable
+                        @click="
+                          scrollToElementInParent(
+                            dayElements[getName([week, otherDay])],
+                            scrollOffset,
+                          )
+                        "
+                      >
+                        <q-item-section>
+                          {{ getDayDisplayName(otherDay) }}
+                        </q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </span>
+              </h6>
+
+              <!-- Management buttons -->
+              <div>
+                <!-- Rename day -->
+                <q-btn
+                  @click="editWeekDayName = [week, day]"
+                  icon="edit"
+                  size="sm"
+                  color="dark-light"
+                  flat
+                  round
+                  :ripple="false"
+                >
+                  <q-tooltip anchor="top middle" :offset="[0, 40]">
+                    {{ $t("coach.program_management.builder.day_rename") }}
+                  </q-tooltip>
+
+                  <FormProgramNewWeekDay
+                    v-model="editWeekDayName"
+                    @save="
+                      (val?: [string, string]) => {
+                        if (val) moveDay([week, day], val);
                       }
                     "
-                    type="textarea"
-                    :placeholder="
-                      $t('coach.program_management.builder.note_name')
-                    "
-                    hide-bottom-space
+                    :cover="false"
+                    anchor="center right"
+                    self="center right"
+                    :offset="[15, 0]"
                   >
-                  </os-input>
-                  <q-btn
-                    icon="expand_less"
-                    @click.stop="
-                      exercisesInfoExpanded[
-                        getName([week, day, exerciseData.order])
-                      ] = false
-                    "
-                    flat
-                    dense
-                    color="secondary"
-                    class="full-width"
-                    :ripple="false"
-                  />
-                </div>
-              </q-slide-transition>
+                  </FormProgramNewWeekDay>
+                </q-btn>
 
-              <q-slide-transition>
-                <div
-                  v-show="
-                    !exercisesInfoShowExpanded[
-                      getName([week, day, exerciseData.order])
-                    ]
-                  "
+                <!-- Duplicate day -->
+                <q-btn
+                  @click="editWeekDayName = ['', '']"
+                  icon="fa-regular fa-clone"
+                  size="sm"
+                  color="dark-light"
+                  flat
+                  round
+                  :ripple="false"
                 >
-                  <p
-                    class="text-secondary text-bold text-ellipsis"
-                    style="max-width: 50vw"
-                  >
-                    {{ exerciseData.exercise }}
-                    {{
-                      exerciseData.variant ? " - " + exerciseData.variant : ""
-                    }}
-                  </p>
-                  <p
-                    class="text-xs text-italic text-ellipsis"
-                    style="max-width: 50vw"
-                  >
-                    {{ exerciseData.note }}
-                  </p>
-                </div>
-              </q-slide-transition>
-            </div>
-            <osButtonSupport
-              :icons="['fa-regular fa-clone', 'fa-regular fa-trash-can']"
-              :colors="['lighter', 'lighter']"
-              :hover-colors="['info', 'negative']"
-              :tooltips="[
-                $t('coach.program_management.builder.line_duplicate_in_day'),
-                $t('coach.program_management.builder.line_delete'),
-              ]"
-              @click="
-                (idx: number) => {
-                  switch (idx) {
-                    case 0:
-                      editWeekDayName = [week, day];
-                      break;
-                    case 1:
-                      deleteTable(exerciseData);
-                      break;
-                    default:
-                      break;
-                  }
-                }
-              "
-              :direction="dense ? 't' : 'b'"
-              class="q-mx-sm"
-            >
-              <template #slot-0>
-                <FormProgramNewWeekDay
-                  v-model="editWeekDayName"
-                  @save="
-                    (val) => duplicateTable(exerciseData, [val[0], val[1], '0'])
-                  "
-                  :title="
-                    $t(
-                      'coach.program_management.builder.line_duplicate_in_day_form',
-                    )
-                  "
-                  :force-save="true"
-                  :cover="false"
-                  anchor="center right"
-                  self="center left"
-                >
-                </FormProgramNewWeekDay>
-              </template>
-            </osButtonSupport>
-          </div>
+                  <q-tooltip anchor="top middle" :offset="[0, 40]">
+                    {{ $t("coach.program_management.builder.day_duplicate") }}
+                  </q-tooltip>
 
-          <!-- Data table -->
-          <osTableSheet
-            :model-value="exerciseData.data"
-            @update:model-value="
-              (val) => {
-                updateExerciseLines(
-                  exerciseData,
-                  val as ProgramBuilderExerciseData['data'],
-                );
-                updateProgram();
-              }
-            "
-            :headers="[
-              'load',
-              'reps',
-              'sets',
-              'rpe',
-              'note',
-              'requestText',
-              'requestVideo',
-            ]"
-            :types="{
-              requestText: 'checkbox',
-              requestVideo: 'checkbox',
-            }"
-            :childProps="{
-              requestText: {
-                'checked-icon': 'fa-solid fa-comment-dots',
-                'unchecked-icon': 'fa-solid fa-comment-slash',
-              },
-              requestVideo: {
-                'checked-icon': 'fa-solid fa-video',
-                'unchecked-icon': 'fa-solid fa-video-slash',
-              },
-            }"
-            :widths="
-              dense
-                ? {
-                    load: '19%',
-                    reps: '13%',
-                    sets: '13%',
-                    rpe: '13%',
-                    note: '28%',
-                    requestText: '7%',
-                    requestVideo: '7%',
-                  }
-                : {
-                    load: '10%',
-                    reps: '10%',
-                    sets: '10%',
-                    rpe: '10%',
-                    note: '46%',
-                    requestText: '7%',
-                    requestVideo: '7%',
-                  }
-            "
-            :placeholders="{
-              load: $t(
-                'coach.program_management.fields.load',
-              ).toLocaleLowerCase(),
-              reps: $t(
-                'coach.program_management.fields.reps',
-              ).toLocaleLowerCase(),
-              sets: $t(
-                'coach.program_management.fields.sets',
-              ).toLocaleLowerCase(),
-              rpe: $t(
-                'coach.program_management.fields.rpe',
-              ).toLocaleLowerCase(),
-              note: $t(
-                'coach.program_management.fields.note',
-              ).toLocaleLowerCase(),
-            }"
-            :showNewLine="{
-              load: '',
-              reps: '',
-              sets: '',
-              rpe: '',
-              note: '',
-              requestText: false,
-              requestVideo: false,
-            }"
-            :deleteEmptyLine="true"
-            @row-click="
-              (_: any, row: any) =>
-                selectingReferenceLine ? onReferenceClick(row.uid) : undefined
-            "
-            dense
-            :debounce="debounce"
-            class="col os-light-border"
-          >
-            <template #item="itemProps">
+                  <FormProgramNewWeekDay
+                    v-model="editWeekDayName"
+                    @save="
+                      (val?: [string, string]) => {
+                        if (val) duplicateDay([week, day], val);
+                      }
+                    "
+                    :title="
+                      $t('coach.program_management.builder.day_duplicate_form')
+                    "
+                    :cover="false"
+                    anchor="center right"
+                    self="center left"
+                  >
+                  </FormProgramNewWeekDay>
+                </q-btn>
+
+                <!-- Delete day -->
+                <q-btn
+                  @click="deleteDay([week, day])"
+                  icon="fa-regular fa-trash-can"
+                  size="sm"
+                  color="dark-light"
+                  flat
+                  round
+                  :ripple="false"
+                >
+                  <q-tooltip anchor="top middle" :offset="[0, 40]">
+                    {{ $t("coach.program_management.builder.day_delete") }}
+                  </q-tooltip>
+                </q-btn>
+              </div>
+
+              <q-separator inset size="1px" class="col" />
+
+              <!-- Expand button -->
+
               <q-btn
-                v-if="showReferenceButton(itemProps.col.field, itemProps.value)"
-                :icon="
-                  exerciseData.data[itemProps.row.id][
-                    (itemProps.col.field + 'Ref') as
-                      | 'loadRef'
-                      | 'repsRef'
-                      | 'setsRef'
-                      | 'rpeRef'
-                  ] == undefined
-                    ? 'fa-solid fa-link'
-                    : undefined
-                "
-                :label="
-                  getReferenceDisplayName(
-                    exerciseData.data[itemProps.row.id][
-                      (itemProps.col.field + 'Ref') as
-                        | 'loadRef'
-                        | 'repsRef'
-                        | 'setsRef'
-                        | 'rpeRef'
-                    ],
-                  )
-                "
-                color="secondary"
-                size="0.7em
+                icon="expand_less"
+                round
+                outline
+                flat
+                color="light-dark"
+                @click="() => (dayInfoExpanded[getName([week, day])] = false)"
+              ></q-btn>
+            </div>
+
+            <!-- Exercise elements -->
+            <div
+              v-for="(exerciseData, idx) in allExercises[week][day]"
+              v-show="
+                filter.exercise.length == 0 ||
+                (exerciseData.exercise &&
+                  filter.exercise.includes(exerciseData.exercise))
               "
-                :flat="
-                  exerciseData.data[itemProps.row.id][
-                    (itemProps.col.field + 'Ref') as
-                      | 'loadRef'
-                      | 'repsRef'
-                      | 'setsRef'
-                      | 'rpeRef'
-                  ] == undefined
+              :key="getName([week, day, exerciseData.order])"
+              class="justify-evenly q-px-sm q-mb-md"
+              :class="dense ? 'column items-stretch' : 'row items-start'"
+            >
+              <!-- Reordering arrows -->
+              <div
+                v-if="!dense"
+                class="self-center justify-center"
+                :class="dense ? 'row' : 'column'"
+              >
+                <q-btn
+                  @click="moveTable(exerciseData, -1)"
+                  icon="arrow_drop_up"
+                  flat
+                  dense
+                  :color="idx == 0 ? 'grey-5' : 'secondary'"
+                  :disable="idx == 0"
+                />
+                <q-btn
+                  @click="moveTable(exerciseData, +1)"
+                  icon="arrow_drop_down"
+                  flat
+                  dense
+                  :color="
+                    idx == allExercises[week][day].length - 1
+                      ? 'grey-5'
+                      : 'secondary'
+                  "
+                  :disable="idx == allExercises[week][day].length - 1"
+                />
+              </div>
+
+              <!-- Exercise info -->
+              <div
+                :class="
+                  dense ? 'row justify-between items-end col-12' : 'col-3'
+                "
+              >
+                <div
+                  class="q-pa-sm bg-lighter os-light-border col-8"
+                  :class="{
+                    'cursor-pointer':
+                      !exercisesInfoShowExpanded[
+                        getName([week, day, exerciseData.order])
+                      ],
+                    'os-exercise-form': !dense,
+                    'os-exercise-form-dense': dense,
+                  }"
+                  @click="
+                    exercisesInfoExpanded = objectMapValues(
+                      exercisesInfoExpanded,
+                      () => false,
+                    );
+                    exercisesInfoExpanded[
+                      getName([week, day, exerciseData.order])
+                    ] = true;
+                  "
+                  style="position: relative"
+                >
+                  <q-slide-transition>
+                    <div
+                      v-show="
+                        exercisesInfoShowExpanded[
+                          getName([week, day, exerciseData.order])
+                        ]
+                      "
+                    >
+                      <os-select
+                        use-input
+                        :input-debounce="debounce"
+                        :model-value="exerciseData.exercise"
+                        @update:model-value="
+                          (val) => {
+                            updateSelectedExercise(exerciseData, val);
+                            checkNewExercise(val, exerciseData, true);
+                          }
+                        "
+                        :options="exercises.map((exercise) => exercise.name)"
+                        :placeholder="
+                          $t('coach.program_management.builder.exercise_name')
+                        "
+                        hide-bottom-space
+                        new-value-mode="add-unique"
+                        :after-options-add-new="true"
+                        :no-options-add-new="true"
+                        add-option-class="text-primary text-bold text-center"
+                        :add-option-format-text="
+                          (text: string) =>
+                            $t(
+                              'coach.exercise_management.create_named_exercise',
+                              {
+                                exercise: text,
+                              },
+                            )
+                        "
+                      >
+                        <q-tooltip
+                          v-if="!exerciseData.exercise"
+                          anchor="center right"
+                          self="center left"
+                          :offset="[-10, 0]"
+                        >
+                          {{
+                            $t(
+                              "coach.program_management.builder.exercise_name_tooltip",
+                            )
+                          }}
+                        </q-tooltip>
+                      </os-select>
+                      <q-separator color="inherit" spaced="xs" />
+                      <os-select
+                        use-input
+                        :input-debounce="debounce"
+                        :model-value="exerciseData.variant"
+                        @update:model-value="
+                          (val) => {
+                            updateSelectedVariant(exerciseData, val);
+                            checkNewVariant(
+                              exerciseData.exercise ?? '',
+                              val,
+                              exerciseData,
+                              true,
+                            );
+                          }
+                        "
+                        :options="
+                          selectedExercises[
+                            getName([week, day, exerciseData.order])
+                          ]?.variants?.map((variant) => ({
+                            label: variant.isDefault
+                              ? $t('coach.exercise_management.default_variant')
+                              : variant.name,
+                            value: variant.isDefault ? '' : variant.name,
+                          }))
+                        "
+                        emit-value
+                        :placeholder="
+                          $t('coach.program_management.builder.variant_name')
+                        "
+                        hide-bottom-space
+                        new-value-mode="add-unique"
+                        :readonly="!exerciseData.exercise"
+                        :after-options-add-new="true"
+                        :no-options-add-new="true"
+                        add-option-class="text-primary text-bold text-center"
+                        :add-option-format-text="
+                          (text: string) =>
+                            $t(
+                              'coach.exercise_management.create_named_variant',
+                              {
+                                variant: text,
+                              },
+                            )
+                        "
+                      >
+                        <q-tooltip
+                          v-if="exerciseData.exercise && !exerciseData.variant"
+                          anchor="center right"
+                          self="center left"
+                          :offset="[-10, 0]"
+                        >
+                          {{
+                            $t(
+                              "coach.program_management.builder.variant_name_tooltip",
+                            )
+                          }}
+                        </q-tooltip>
+                      </os-select>
+                      <q-separator color="inherit" spaced="xs" />
+                      <os-input
+                        :model-value="exerciseData.note"
+                        :debounce="debounce"
+                        @update:model-value="
+                          (val) => {
+                            exerciseData.note = String(val);
+                            updateProgram();
+                          }
+                        "
+                        type="textarea"
+                        :placeholder="
+                          $t('coach.program_management.builder.note_name')
+                        "
+                        hide-bottom-space
+                      >
+                      </os-input>
+                      <q-btn
+                        icon="expand_less"
+                        @click.stop="
+                          exercisesInfoExpanded[
+                            getName([week, day, exerciseData.order])
+                          ] = false
+                        "
+                        flat
+                        dense
+                        color="secondary"
+                        class="full-width"
+                        :ripple="false"
+                      />
+                    </div>
+                  </q-slide-transition>
+
+                  <q-slide-transition>
+                    <div
+                      v-show="
+                        !exercisesInfoShowExpanded[
+                          getName([week, day, exerciseData.order])
+                        ]
+                      "
+                    >
+                      <p
+                        class="text-secondary text-bold text-ellipsis"
+                        style="max-width: 50vw"
+                      >
+                        {{ exerciseData.exercise }}
+                        {{
+                          exerciseData.variant
+                            ? " - " + exerciseData.variant
+                            : ""
+                        }}
+                      </p>
+                      <p
+                        class="text-xs text-italic text-ellipsis"
+                        style="max-width: 50vw"
+                      >
+                        {{ exerciseData.note }}
+                      </p>
+                    </div>
+                  </q-slide-transition>
+                </div>
+                <osButtonSupport
+                  :icons="['fa-regular fa-clone', 'fa-regular fa-trash-can']"
+                  :colors="['lighter', 'lighter']"
+                  :hover-colors="['info', 'negative']"
+                  :tooltips="[
+                    $t(
+                      'coach.program_management.builder.line_duplicate_in_day',
+                    ),
+                    $t('coach.program_management.builder.line_delete'),
+                  ]"
+                  @click="
+                    (idx: number) => {
+                      switch (idx) {
+                        case 0:
+                          editWeekDayName = [week, day];
+                          break;
+                        case 1:
+                          deleteTable(exerciseData);
+                          break;
+                        default:
+                          break;
+                      }
+                    }
+                  "
+                  :direction="dense ? 't' : 'b'"
+                  class="q-mx-sm"
+                >
+                  <template #slot-0>
+                    <FormProgramNewWeekDay
+                      v-model="editWeekDayName"
+                      @save="
+                        (val) =>
+                          duplicateTable(exerciseData, [val[0], val[1], '0'])
+                      "
+                      :title="
+                        $t(
+                          'coach.program_management.builder.line_duplicate_in_day_form',
+                        )
+                      "
+                      :force-save="true"
+                      :cover="false"
+                      anchor="center right"
+                      self="center left"
+                    >
+                    </FormProgramNewWeekDay>
+                  </template>
+                </osButtonSupport>
+              </div>
+
+              <!-- Data table -->
+              <osTableSheet
+                :model-value="exerciseData.data"
+                @update:model-value="
+                  (val) => {
+                    updateExerciseLines(
+                      exerciseData,
+                      val as ProgramBuilderExerciseData['data'],
+                    );
+                    updateProgram();
+                  }
+                "
+                :headers="[
+                  'load',
+                  'reps',
+                  'sets',
+                  'rpe',
+                  'note',
+                  'requestText',
+                  'requestVideo',
+                ]"
+                :types="{
+                  requestText: 'checkbox',
+                  requestVideo: 'checkbox',
+                }"
+                :childProps="{
+                  requestText: {
+                    'checked-icon': 'fa-solid fa-comment-dots',
+                    'unchecked-icon': 'fa-solid fa-comment-slash',
+                  },
+                  requestVideo: {
+                    'checked-icon': 'fa-solid fa-video',
+                    'unchecked-icon': 'fa-solid fa-video-slash',
+                  },
+                }"
+                :widths="
+                  dense
+                    ? {
+                        load: '19%',
+                        reps: '13%',
+                        sets: '13%',
+                        rpe: '13%',
+                        note: '28%',
+                        requestText: '7%',
+                        requestVideo: '7%',
+                      }
+                    : {
+                        load: '10%',
+                        reps: '10%',
+                        sets: '10%',
+                        rpe: '10%',
+                        note: '46%',
+                        requestText: '7%',
+                        requestVideo: '7%',
+                      }
+                "
+                :placeholders="{
+                  load: $t(
+                    'coach.program_management.fields.load',
+                  ).toLocaleLowerCase(),
+                  reps: $t(
+                    'coach.program_management.fields.reps',
+                  ).toLocaleLowerCase(),
+                  sets: $t(
+                    'coach.program_management.fields.sets',
+                  ).toLocaleLowerCase(),
+                  rpe: $t(
+                    'coach.program_management.fields.rpe',
+                  ).toLocaleLowerCase(),
+                  note: $t(
+                    'coach.program_management.fields.note',
+                  ).toLocaleLowerCase(),
+                }"
+                :showNewLine="{
+                  load: '',
+                  reps: '',
+                  sets: '',
+                  rpe: '',
+                  note: '',
+                  requestText: false,
+                  requestVideo: false,
+                }"
+                :deleteEmptyLine="true"
+                @row-click="
+                  (_: any, row: any) =>
+                    selectingReferenceLine
+                      ? onReferenceClick(row.uid)
+                      : undefined
                 "
                 dense
-                :ripple="false"
-                tabindex="-1"
-                style="width: 100%"
+                :debounce="debounce"
+                class="col os-light-border"
               >
-                <!-- Show list of options to select as reference -->
-                <q-menu anchor="center right" self="center left">
-                  <q-list style="min-width: 100px">
-                    <q-item
-                      v-for="[maxliftType, maxlift] in Object.entries(
-                        maxliftsPerExercise[exerciseData.exercise ?? ''] ?? {},
-                      ).filter(([maxliftType]) =>
-                        MaxLiftTypesPerValue[
-                          itemProps.col.field as
-                            | 'load'
-                            | 'reps'
-                            | 'sets'
-                            | 'rpe'
-                        ].includes(maxliftType as MaxLiftType),
-                      )"
-                      :key="maxliftType"
-                      @click="
-                        onReferenceClick(maxlift, 'maxlift', {
-                          exerciseData: exerciseData,
-                          lineNum: itemProps.row.id,
-                          field: itemProps.col.field,
-                        })
-                      "
-                      clickable
-                      v-close-popup
-                      dense
-                    >
-                      <!-- TODO i18n -->
-                      <q-item-section>{{ maxliftType }}</q-item-section>
-                    </q-item>
-                    <q-separator />
-                    <q-item
-                      clickable
-                      @click="
-                        selectingReferenceLine = {
-                          exerciseData: exerciseData,
-                          lineNum: itemProps.row.id,
-                          field: itemProps.col.field,
-                        }
-                      "
-                      v-close-popup
-                      dense
-                    >
-                      <q-item-section>{{
-                        $t(
-                          "coach.program_management.builder.reference_select_line",
-                        )
-                      }}</q-item-section>
-                    </q-item>
-                    <q-separator />
-                    <q-item
-                      v-if="
+                <template #item="itemProps">
+                  <q-btn
+                    v-if="
+                      showReferenceButton(itemProps.col.field, itemProps.value)
+                    "
+                    :icon="
+                      exerciseData.data[itemProps.row.id][
+                        (itemProps.col.field + 'Ref') as
+                          | 'loadRef'
+                          | 'repsRef'
+                          | 'setsRef'
+                          | 'rpeRef'
+                      ] == undefined
+                        ? 'fa-solid fa-link'
+                        : undefined
+                    "
+                    :label="
+                      getReferenceDisplayName(
                         exerciseData.data[itemProps.row.id][
                           (itemProps.col.field + 'Ref') as
                             | 'loadRef'
                             | 'repsRef'
                             | 'setsRef'
                             | 'rpeRef'
-                        ] != undefined
-                      "
-                      clickable
-                      @click="
-                        onReferenceClick('', 'line', {
-                          exerciseData: exerciseData,
-                          lineNum: itemProps.row.id,
-                          field: itemProps.col.field,
-                        })
-                      "
-                      v-close-popup
-                      dense
-                    >
-                      <q-item-section>{{
-                        $t("coach.program_management.builder.reference_remove")
-                      }}</q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-menu>
+                        ],
+                      )
+                    "
+                    color="secondary"
+                    size="0.7em
+              "
+                    :flat="
+                      exerciseData.data[itemProps.row.id][
+                        (itemProps.col.field + 'Ref') as
+                          | 'loadRef'
+                          | 'repsRef'
+                          | 'setsRef'
+                          | 'rpeRef'
+                      ] == undefined
+                    "
+                    dense
+                    :ripple="false"
+                    tabindex="-1"
+                    style="width: 100%"
+                  >
+                    <!-- Show list of options to select as reference -->
+                    <q-menu anchor="center right" self="center left">
+                      <q-list style="min-width: 100px">
+                        <q-item
+                          v-for="[maxliftType, maxlift] in Object.entries(
+                            maxliftsPerExercise[exerciseData.exercise ?? ''] ??
+                              {},
+                          ).filter(([maxliftType]) =>
+                            MaxLiftTypesPerValue[
+                              itemProps.col.field as
+                                | 'load'
+                                | 'reps'
+                                | 'sets'
+                                | 'rpe'
+                            ].includes(maxliftType as MaxLiftType),
+                          )"
+                          :key="maxliftType"
+                          @click="
+                            onReferenceClick(maxlift, 'maxlift', {
+                              exerciseData: exerciseData,
+                              lineNum: itemProps.row.id,
+                              field: itemProps.col.field,
+                            })
+                          "
+                          clickable
+                          v-close-popup
+                          dense
+                        >
+                          <!-- TODO i18n -->
+                          <q-item-section>{{ maxliftType }}</q-item-section>
+                        </q-item>
+                        <q-separator />
+                        <q-item
+                          clickable
+                          @click="
+                            selectingReferenceLine = {
+                              exerciseData: exerciseData,
+                              lineNum: itemProps.row.id,
+                              field: itemProps.col.field,
+                            }
+                          "
+                          v-close-popup
+                          dense
+                        >
+                          <q-item-section>{{
+                            $t(
+                              "coach.program_management.builder.reference_select_line",
+                            )
+                          }}</q-item-section>
+                        </q-item>
+                        <q-separator />
+                        <q-item
+                          v-if="
+                            exerciseData.data[itemProps.row.id][
+                              (itemProps.col.field + 'Ref') as
+                                | 'loadRef'
+                                | 'repsRef'
+                                | 'setsRef'
+                                | 'rpeRef'
+                            ] != undefined
+                          "
+                          clickable
+                          @click="
+                            onReferenceClick('', 'line', {
+                              exerciseData: exerciseData,
+                              lineNum: itemProps.row.id,
+                              field: itemProps.col.field,
+                            })
+                          "
+                          v-close-popup
+                          dense
+                        >
+                          <q-item-section>{{
+                            $t(
+                              "coach.program_management.builder.reference_remove",
+                            )
+                          }}</q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-menu>
+                  </q-btn>
+                </template>
+              </osTableSheet>
+            </div>
+
+            <!-- New element buttons -->
+            <div class="row items-center justify-center q-gutter-xs">
+              <!-- New exercise -->
+              <q-btn
+                icon="add"
+                :label="$t('coach.program_management.builder.new_exercise')"
+                @click="addTable([week, day])"
+                flat
+                rounded
+              >
+                <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+                  {{
+                    $t("coach.program_management.builder.new_exercise_tooltip")
+                  }}
+                </q-tooltip>
               </q-btn>
-            </template>
-          </osTableSheet>
+
+              <!-- New day -->
+              <q-btn
+                icon="add"
+                :label="$t('coach.program_management.builder.new_day')"
+                @click="addDay([week, day])"
+                flat
+                rounded
+              >
+                <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+                  {{ $t("coach.program_management.builder.new_day_tooltip") }}
+                </q-tooltip>
+              </q-btn>
+
+              <!-- New week -->
+              <q-btn
+                icon="add"
+                :label="$t('coach.program_management.builder.new_week')"
+                @click="addWeek(week)"
+                flat
+                rounded
+              >
+                <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+                  {{ $t("coach.program_management.builder.new_week_tooltip") }}
+                </q-tooltip></q-btn
+              >
+            </div>
+
+            <!-- Fake element to create some spacing -->
+            <div class="q-pb-md"></div>
+          </div>
+
+          <div v-show="!dayInfoShowExpanded[getName([week, day])]">
+            <!-- Show week and day and allow navigation -->
+            <div
+              class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-xs os-day-title"
+              v-intersection="dayTitleInteresctionHandler"
+              :style="`top: ${scrollOffset}px`"
+            >
+              <!-- Week and day names -->
+              <h6 class="q-mt-none">
+                <span
+                  class="underlined-dashed cursor-pointer text-h4 text-margin-xs"
+                >
+                  {{ getWeekDisplayName(week) }}
+                  <q-menu auto-close>
+                    <q-list
+                      v-for="otherWeek in filteredWeeks.filter(
+                        (oneWeek) => oneWeek != week,
+                      )"
+                      :key="`otherweek${otherWeek}`"
+                      style="min-width: 100px"
+                    >
+                      <q-item
+                        clickable
+                        @click="
+                          scrollToElementInParent(
+                            dayElements[getName([otherWeek, day])] ??
+                              dayElements[
+                                getName([otherWeek, filteredDays[otherWeek][0]])
+                              ],
+                            scrollOffset,
+                          )
+                        "
+                      >
+                        <q-item-section>
+                          {{ getWeekDisplayName(otherWeek) }}
+                        </q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </span>
+                -
+                <span
+                  class="underlined-dashed cursor-pointer text-h6 text-margin-xs"
+                >
+                  {{ getDayDisplayName(day) }}
+                  <q-menu auto-close>
+                    <q-list
+                      v-for="otherDay in filteredDays[week].filter(
+                        (oneDay) => oneDay != day,
+                      )"
+                      :key="`otherweek${otherDay}`"
+                      style="min-width: 100px"
+                    >
+                      <q-item
+                        clickable
+                        @click="
+                          scrollToElementInParent(
+                            dayElements[getName([week, otherDay])],
+                            scrollOffset,
+                          )
+                        "
+                      >
+                        <q-item-section>
+                          {{ getDayDisplayName(otherDay) }}
+                        </q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </span>
+              </h6>
+
+              <!-- Management buttons -->
+              <div>
+                <!-- Rename day -->
+                <q-btn
+                  @click="editWeekDayName = [week, day]"
+                  icon="edit"
+                  size="sm"
+                  color="dark-light"
+                  flat
+                  round
+                  :ripple="false"
+                >
+                  <q-tooltip anchor="top middle" :offset="[0, 40]">
+                    {{ $t("coach.program_management.builder.day_rename") }}
+                  </q-tooltip>
+
+                  <FormProgramNewWeekDay
+                    v-model="editWeekDayName"
+                    @save="
+                      (val?: [string, string]) => {
+                        if (val) moveDay([week, day], val);
+                      }
+                    "
+                    :cover="false"
+                    anchor="center right"
+                    self="center right"
+                    :offset="[15, 0]"
+                  >
+                  </FormProgramNewWeekDay>
+                </q-btn>
+
+                <!-- Duplicate day -->
+                <q-btn
+                  @click="editWeekDayName = ['', '']"
+                  icon="fa-regular fa-clone"
+                  size="sm"
+                  color="dark-light"
+                  flat
+                  round
+                  :ripple="false"
+                >
+                  <q-tooltip anchor="top middle" :offset="[0, 40]">
+                    {{ $t("coach.program_management.builder.day_duplicate") }}
+                  </q-tooltip>
+
+                  <FormProgramNewWeekDay
+                    v-model="editWeekDayName"
+                    @save="
+                      (val?: [string, string]) => {
+                        if (val) duplicateDay([week, day], val);
+                      }
+                    "
+                    :title="
+                      $t('coach.program_management.builder.day_duplicate_form')
+                    "
+                    :cover="false"
+                    anchor="center right"
+                    self="center left"
+                  >
+                  </FormProgramNewWeekDay>
+                </q-btn>
+
+                <!-- Delete day -->
+                <q-btn
+                  @click="deleteDay([week, day])"
+                  icon="fa-regular fa-trash-can"
+                  size="sm"
+                  color="dark-light"
+                  flat
+                  round
+                  :ripple="false"
+                >
+                  <q-tooltip anchor="top middle" :offset="[0, 40]">
+                    {{ $t("coach.program_management.builder.day_delete") }}
+                  </q-tooltip>
+                </q-btn>
+              </div>
+
+              <q-separator inset size="1px" class="col" />
+
+              <q-btn
+                icon="expand_more"
+                color="light-dark"
+                flat
+                outline
+                round
+                @click="() => (dayInfoExpanded[getName([week, day])] = true)"
+              ></q-btn>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <!-- New element buttons -->
-        <div class="row items-center justify-center q-gutter-xs">
-          <!-- New exercise -->
-          <q-btn
-            icon="add"
-            :label="$t('coach.program_management.builder.new_exercise')"
-            @click="addTable([week, day])"
-            flat
-            rounded
-          >
-            <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-              {{ $t("coach.program_management.builder.new_exercise_tooltip") }}
-            </q-tooltip>
-          </q-btn>
+      <div v-show="!weekInfoShowExpanded[getName([week])]">
+        <div class="row items-center">
+          <h3 class="text-margin-xs">{{ getWeekDisplayName(week) }}</h3>
 
-          <!-- New day -->
-          <q-btn
-            icon="add"
-            :label="$t('coach.program_management.builder.new_day')"
-            @click="addDay([week, day])"
-            flat
-            rounded
-          >
-            <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-              {{ $t("coach.program_management.builder.new_day_tooltip") }}
-            </q-tooltip>
-          </q-btn>
+          <!-- Management buttons -->
+          <div>
+            <!-- Duplicate week -->
+            <q-btn
+              @click="editWeekDayName = ['', '']"
+              icon="fa-regular fa-clone"
+              size="sm"
+              color="dark-light"
+              flat
+              round
+              :ripple="false"
+            >
+              <q-tooltip anchor="top middle" :offset="[0, 40]">
+                {{ $t("coach.program_management.builder.week_duplicate") }}
+              </q-tooltip>
 
-          <!-- New week -->
-          <q-btn
-            icon="add"
-            :label="$t('coach.program_management.builder.new_week')"
-            @click="addWeek(week)"
-            flat
-            rounded
-          >
-            <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-              {{ $t("coach.program_management.builder.new_week_tooltip") }}
-            </q-tooltip></q-btn
-          >
+              <FormProgramNewWeekDay
+                v-model="editWeekDayName"
+                @save="
+                  (val?: [string, string]) => {
+                    if (val) duplicateWeek(week, val);
+                  }
+                "
+                :title="
+                  $t('coach.program_management.builder.week_duplicate_form')
+                "
+                :cover="false"
+                :weekonly="true"
+                anchor="center right"
+                self="center left"
+              >
+              </FormProgramNewWeekDay>
+            </q-btn>
+
+            <!-- Delete week -->
+            <q-btn
+              @click="deleteWeek([week])"
+              icon="fa-regular fa-trash-can"
+              size="sm"
+              color="dark-light"
+              flat
+              round
+              :ripple="false"
+            >
+              <q-tooltip anchor="top middle" :offset="[0, 40]">
+                {{ $t("coach.program_management.builder.week_delete") }}
+              </q-tooltip>
+            </q-btn>
+
+            <q-btn
+              icon="expand_more"
+              color="dark-light"
+              flat
+              outline
+              round
+              @click="() => (weekInfoExpanded[getName([week])] = true)"
+            ></q-btn>
+          </div>
         </div>
-
-        <!-- Fake element to create some spacing -->
-        <div class="q-pb-md"></div>
       </div>
     </div>
 
@@ -927,6 +1201,12 @@ const selectingReferenceLine = ref<{
 const exercisesInfoExpanded = ref<{
   [key: string]: boolean;
 }>({}); // check if an exercise info table should be expanded or collapsed
+const dayInfoExpanded = ref<{
+  [key: string]: boolean;
+}>({}); // check if a day should be expanded or collapsed
+const weekInfoExpanded = ref<{
+  [key: string]: boolean;
+}>({}); // check if a week should be expanded or collapsed
 const programHistory = ref<ProgramBuilderData[]>([]); // store changes to data to allow walking history
 const programHistoryPointer = ref<number>(0); // pointer to current data version in history
 
@@ -984,6 +1264,26 @@ const exercisesInfoShowExpanded = computed<typeof exercisesInfoExpanded.value>(
         ];
       }),
     ),
+);
+
+// Get whether each day should be displayed or not
+const dayInfoShowExpanded = computed<typeof dayInfoExpanded.value>(() =>
+  Object.fromEntries(
+    exercisesValues.value.map((exerciseData) => {
+      const name = getName([exerciseData.week, exerciseData.day]);
+      return [name, dayInfoExpanded.value[name] || !exerciseData.day];
+    }),
+  ),
+);
+
+// Get whether each week should be displayed or not
+const weekInfoShowExpanded = computed<typeof weekInfoExpanded.value>(() =>
+  Object.fromEntries(
+    exercisesValues.value.map((exerciseData) => {
+      const name = getName([exerciseData.week]);
+      return [name, weekInfoExpanded.value[name] || !exerciseData.week];
+    }),
+  ),
 );
 
 // Get a reference to all weeks and days available
