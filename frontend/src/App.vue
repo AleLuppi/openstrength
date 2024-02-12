@@ -15,9 +15,14 @@
         bordered
         class="bg-lightest text-light"
       >
-        <q-toolbar v-if="showHeaderSm && $q.screen.lt.md">
+        <q-toolbar
+          v-if="
+            (showHeaderSm && $q.screen.lt.md) ||
+            (showHeaderLg && !$q.screen.lt.md)
+          "
+        >
           <q-btn
-            v-if="!leftDrawerOpen || $q.screen.lt.md"
+            v-if="showLeftDrawer && (!leftDrawerOpen || $q.screen.lt.md)"
             flat
             dense
             round
@@ -26,19 +31,6 @@
             icon="menu"
           />
 
-          <q-space />
-
-          <!-- Action buttons -->
-          <q-btn
-            icon="person"
-            flat
-            round
-            :to="{ name: 'profile' }"
-            color="text-light"
-          />
-        </q-toolbar>
-
-        <q-toolbar v-else-if="showHeaderLg && !$q.screen.lt.md">
           <q-btn
             flat
             dense
@@ -60,13 +52,14 @@
           <q-btn
             icon-right="person"
             :label="
-              user.isSignedIn
+              $q.screen.lt.md
+                ? undefined
+                : user.isSignedIn
                 ? $t('layout.header.to_profile')
                 : $t('layout.header.to_login')
             "
-            flat
             :to="{ name: NamedRoutes.profile }"
-            color="text-light"
+            color="primary"
           />
         </q-toolbar>
       </q-header>

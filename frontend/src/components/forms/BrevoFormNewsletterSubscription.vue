@@ -305,7 +305,7 @@ window.translation = {
     selectedLists: "{quantity} liste selezionate",
   },
 };
-window.AUTOHIDE = Boolean(1);
+window.AUTOHIDE = Boolean(0);
 
 // Load brevo js
 onMounted(() => {

@@ -17,6 +17,8 @@ import { defineAsyncComponent } from "vue";
 /* Dinamically import the views */
 import HomeView from "@/views/HomeView.vue";
 const LandingPage = () => import("@/views/LandingPage.vue");
+const LandingConfirmationPage = () =>
+  import("@/views/LandingConfirmationPage.vue");
 const AthletesView = () => import("@/views/AthletesView.vue");
 const LibraryView = () => import("@/views/LibraryView.vue");
 const ProgramView = () => import("@/views/ProgramView.vue");
@@ -39,6 +41,7 @@ const RightDrawerProgramElements = defineAsyncComponent(
 export enum NamedRoutes {
   home = "home",
   landing = "landing",
+  landing_confirmation = "landing_confirmation",
   athletes = "athletes",
   library = "library",
   program = "program",
@@ -92,6 +95,16 @@ const routes: RouteRecordRaw[] = [
     path: "/welcome",
     name: NamedRoutes.landing,
     component: LandingPage,
+    meta: {
+      title: "Welcome",
+      showHeader: true,
+      showLeftDrawer: false,
+    },
+  },
+  {
+    path: "/confirmation",
+    name: NamedRoutes.landing_confirmation,
+    component: LandingConfirmationPage,
     meta: {
       title: "Welcome",
       showHeader: true,
