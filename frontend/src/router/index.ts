@@ -8,6 +8,7 @@ import { useUserStore } from "@/stores/user";
 import { UserRole } from "@/helpers/users/user";
 import {
   routeAccessibleByRole,
+  routeAccessibleByLevel,
   routeAccessibleByAuthenticated,
   routeAccessibleByNotAuthenticated,
 } from "@/router/routeAccessManagement";
@@ -15,6 +16,9 @@ import { defineAsyncComponent } from "vue";
 
 /* Dinamically import the views */
 import HomeView from "@/views/HomeView.vue";
+const LandingPage = () => import("@/views/LandingPage.vue");
+const LandingConfirmationPage = () =>
+  import("@/views/LandingConfirmationPage.vue");
 const AthletesView = () => import("@/views/AthletesView.vue");
 const LibraryView = () => import("@/views/LibraryView.vue");
 const ProgramView = () => import("@/views/ProgramView.vue");
@@ -36,6 +40,8 @@ const RightDrawerProgramElements = defineAsyncComponent(
 /* Set routes names */
 export enum NamedRoutes {
   home = "home",
+  landing = "landing",
+  landing_confirmation = "landing_confirmation",
   athletes = "athletes",
   library = "library",
   program = "program",
@@ -53,13 +59,17 @@ export enum NamedRoutes {
 /**
  * Currently available meta info in routes:
  *  - title : To set the page title in browser.
- *  - showHeader: If true, show top header. Default is true.
+ *  - showHeader: Set both header-related meta properties:
+ *    - showHeaderSm: If true, show header on small screens. Default is true.
+ *    - showHeaderLg: If true, show header on large screens. Default is false.
  *  - showFooter: If true, show bottom footer. Default is true.
  *  - showLeftDrawer: If true, show left drawer. Default is true.
  *  - showRightDrawer: If false, do not show right drawer. If a component is provided, use
  *                     it as right drawer. The default is false.
  *  - restrictAccessByRole : List of user roles that can access the page. If not provided,
  *                           anyone can access the page. Admin can always access.
+ *  - restrictAccessToLevel : Maximum access level number user must have to be able to access
+ *                            the page (eg if 3, only users with level 1, 2 or 3 can access).
  *  - redirectNotAuthorized : View to redirect user when trying to access a view that is
  *                            restricted by user role.
  *  - redirectAuthenticated : View to redirect user if authenticated. This is a special
@@ -76,6 +86,29 @@ const routes: RouteRecordRaw[] = [
     component: HomeView,
     meta: {
       title: "Home",
+      restrictAccessToLevel: 4,
+      redirectNotAuthorized: NamedRoutes.landing,
+      redirectNotAuthenticated: NamedRoutes.landing,
+    },
+  },
+  {
+    path: "/welcome",
+    name: NamedRoutes.landing,
+    component: LandingPage,
+    meta: {
+      title: "Welcome",
+      showHeader: true,
+      showLeftDrawer: false,
+    },
+  },
+  {
+    path: "/confirmation",
+    name: NamedRoutes.landing_confirmation,
+    component: LandingConfirmationPage,
+    meta: {
+      title: "Welcome",
+      showHeader: true,
+      showLeftDrawer: false,
     },
   },
   {
@@ -85,7 +118,8 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: "Athletes",
       restrictAccessByRole: [UserRole.coach],
-      redirectNotAuthorized: "home",
+      restrictAccessToLevel: 4,
+      redirectNotAuthorized: NamedRoutes.home,
     },
   },
   {
@@ -95,7 +129,8 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: "Library",
       restrictAccessByRole: [UserRole.coach],
-      redirectNotAuthorized: "home",
+      restrictAccessToLevel: 4,
+      redirectNotAuthorized: NamedRoutes.home,
     },
   },
   {
@@ -105,7 +140,8 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: "Program",
       restrictAccessByRole: [UserRole.coach],
-      redirectNotAuthorized: "home",
+      restrictAccessToLevel: 4,
+      redirectNotAuthorized: NamedRoutes.home,
       showRightDrawer: RightDrawerProgramElements,
     },
   },
@@ -136,7 +172,7 @@ const routes: RouteRecordRaw[] = [
     props: true,
     meta: {
       title: "Login",
-      redirectAuthenticated: "home",
+      redirectAuthenticated: NamedRoutes.home,
     },
   },
   {
@@ -145,7 +181,7 @@ const routes: RouteRecordRaw[] = [
     component: UserRegisterView,
     meta: {
       title: "Register",
-      redirectAuthenticated: "home",
+      redirectAuthenticated: NamedRoutes.home,
     },
   },
   {
@@ -154,7 +190,7 @@ const routes: RouteRecordRaw[] = [
     component: UserProfileView,
     meta: {
       title: "Profile",
-      redirectNotAuthenticated: "login",
+      redirectNotAuthenticated: NamedRoutes.login,
     },
   },
   {
@@ -202,7 +238,7 @@ router.beforeEach(async (to) => {
   const user = useUserStore();
 
   // Check if user has the authorization to access the page
-  if (!routeAccessibleByRole(user, to)) {
+  if (!routeAccessibleByRole(user, to) || !routeAccessibleByLevel(user, to)) {
     // Redirect user
     return {
       name: (to.meta.redirectNotAuthorized ?? "not_found") as RouteRecordName,
