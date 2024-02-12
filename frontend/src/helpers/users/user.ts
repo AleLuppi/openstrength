@@ -1,16 +1,5 @@
-import { DocumentReference } from "firebase/firestore";
-import {
-  doAddDoc,
-  doAddDocWithId,
-  doUpdateDoc,
-  doGetDocWithID,
-  doGetDocs,
-  changeDocId,
-} from "@/helpers/database/readwrite";
-import {
-  dbCollections,
-  dbSubcollections,
-} from "@/helpers/database/collections";
+import { UserConfig } from "@/helpers/users/model";
+import { addDocUser, updateDocUser } from "./api";
 
 /**
  * Define available user roles.
@@ -66,6 +55,11 @@ export type UserProps = {
   // Computed info
   referencename?: string;
   isSignedIn?: boolean;
+
+  /**
+   * User Config.
+   */
+  config?: UserConfig;
 };
 
 /**
@@ -133,6 +127,11 @@ export class User {
   lastAccess?: Date;
   lastNotificationRead?: Date;
 
+  /**
+   * User config.
+   */
+  config?: UserConfig;
+
   // Get user displayable name
   public get referenceName() {
     return this.displayName ?? [this.name, this.surname].join(" ");
@@ -163,6 +162,7 @@ export class User {
     role,
     lastAccess,
     lastNotificationRead,
+    config,
   }: UserProps = {}) {
     this.uid = uid;
     this.email = email;
@@ -183,6 +183,7 @@ export class User {
     this.role = role ?? UserRole.unknown;
     this.lastAccess = lastAccess;
     this.lastNotificationRead = lastNotificationRead;
+    this.config = config;
   }
 
   saveNew({
@@ -282,181 +283,4 @@ export class AthleteUser extends User {
     this.height = height;
     this.weight = weight;
   }
-}
-
-/**
- * Config object to manage app blocks, access, and pricing tiers
- */
-export type UserConfig = {
-  pricingTier: PricingTier;
-  payment: Payment;
-  subscriptionLevel: "complete" | "1" | "2" | undefined;
-  access: "enabled" | "disabled";
-};
-
-interface Payment {
-  amount: number;
-  date: Date;
-  isPaid: boolean;
-  tool:
-    | "creditCard"
-    | "bankTransfer"
-    | "paypal"
-    | "stripe"
-    | "other"
-    | undefined;
-  totalPaidTillNow: number; //useful for estimating user LTV
-}
-
-interface PricingTier {
-  name: string;
-  price: number;
-  billingCycle: "monthly" | "quarterly" | "annual" | "lifetime" | undefined;
-  maxAthletes: number;
-  expiringDate: Date;
-}
-
-/**
- * Store user on database.
- *
- * @param user user to store on database.
- * @param onSuccess function to execute when operation is successful.
- * @param onError function to execute when operation fails.
- */
-export function addDocUser(
-  user: User | CoachUser | AthleteUser,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
-) {
-  // Get user info
-  const { uid: uid, ...userObj } = user;
-
-  // Crate user document
-  if (uid)
-    doAddDocWithId(dbCollections.users, uid, userObj, {
-      onSuccess: (docRef: DocumentReference) => onSuccess?.(docRef),
-      onError: onError,
-    });
-  else
-    doAddDoc(dbCollections.users, userObj, {
-      onSuccess: (docRef: DocumentReference) => {
-        onSuccess?.(docRef);
-        user.uid = docRef.id;
-      },
-      onError: onError,
-    });
-}
-
-/**
- * Store user config info on database.
- *
- * @param userConfig element to store on database.
- * @param userId reference user id where user configuration should be saved.
- * @param onSuccess function to execute when operation is successful.
- * @param onError function to execute when operation fails.
- */
-export function addDocUserConfig(
-  userConfigData: UserConfig,
-  userId: string,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
-) {
-  doAddDoc(
-    `${dbCollections.users}/${userId}/${dbSubcollections.userConfig}`,
-    userConfigData,
-    {
-      onSuccess: onSuccess,
-      onError: onError,
-    },
-  );
-}
-
-/**
- * Update user on database.
- *
- * @param user user to store on database.
- * @param onSuccess function to execute when operation is successful.
- * @param onError function to execute when operation fails.
- */
-export function updateDocUser(
-  user: User | CoachUser | AthleteUser,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
-) {
-  const { uid: docId, ...userObj } = user;
-  userObj.lastUpdated = new Date();
-  if (docId)
-    doUpdateDoc(dbCollections.users, docId, userObj, {
-      onSuccess: (docRef: DocumentReference) => {
-        onSuccess?.(docRef);
-      },
-      onError: onError,
-    });
-  else onError?.();
-}
-
-/**
- * Get the document related to a user.
- *
- * @param uid ID of the user whose document shall be retrieved.
- * @param onSuccess function to execute when operation is successful.
- * @param onError function to execute when operation fails.
- * @returns user instanced with data in document.
- */
-export async function loadDocUser(
-  uid: string,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
-) {
-  // Get and update used info
-  await doGetDocWithID(dbCollections.users, uid, {
-    onSuccess: (userData: { [key: string]: any } | undefined) => {
-      const user = userData ? new User({ uid: uid, ...userData }) : undefined;
-      onSuccess?.(user);
-    },
-    onError: onError,
-  });
-}
-
-/**
- * Get the document of a user based on email field.
- *
- * @param field key of the field to check.
- * @param value value that the field must contain.
- * @param onSuccess function to execute when operation is successful.
- * @param onError function to execute when operation fails.
- * @returns data from user document or undefined if either 0 or more than 1 document were found (ambiguity).
- */
-export async function getDocUserByField(
-  field: string,
-  value: string,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
-) {
-  // Get documents and select first one only
-  let userDoc: { [key: string]: any } | undefined = undefined;
-  await doGetDocs(dbCollections.users, [[field, "==", value]], {
-    numDocs: 2,
-    onSuccess: (docsData: { [key: string]: any }) => {
-      userDoc = Object.keys(docsData).length == 1 ? docsData : undefined;
-    },
-    onError: onError,
-  })
-    .then(() => onSuccess?.(userDoc))
-    .catch((error) => onError?.(error));
-  return userDoc;
-}
-
-/**
- * Move a user document from an ID to a new one.
- *
- * @param oldId id of the document that must be updated.
- * @param newId new id of the document.
- * @param onSuccess function to execute when operation is successful.
- * @param onError function to execute when operation fails.
- */
-export function changeDocUserId(
-  oldId: string,
-  newId: string,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
-) {
-  changeDocId(dbCollections.users, oldId, newId, {
-    onSuccess: onSuccess,
-    onError: onError,
-  });
 }

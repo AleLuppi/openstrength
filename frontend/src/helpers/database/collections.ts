@@ -9,8 +9,14 @@ export enum dbCollections {
 // Subcollections
 export enum dbSubcollections {
   // Under "programs"
-  programsSnapshots = "snapshots",
+  programSnapshots = "snapshots",
 
   // Under "users"
+  userConfig = "info",
+}
+
+// Known document IDs
+export enum dbFixedIds {
+  // User config
   userConfig = "config",
 }
