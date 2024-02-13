@@ -1379,6 +1379,16 @@ const filteredExercises = computed(() => {
   );
 });
 
+// Expand days and weeks when filter changes so to show exercises
+watch(filteredExercises, () => {
+  Object.keys(dayInfoShowExpanded.value).forEach((name) => {
+    dayInfoExpanded.value[name] = true;
+  });
+  Object.keys(weekInfoShowExpanded.value).forEach((name) => {
+    weekInfoExpanded.value[name] = true;
+  });
+});
+  
 // Update data table on input change
 watch(
   () => props.modelValue,
