@@ -197,15 +197,14 @@ export async function doGetDocWithID(
 ) {
   // Obtain document
   const docRef = doc(db, collectionName, docId);
-  await getDoc(docRef)
-    .then(
-      (documentSnapshot) =>
-        onSuccess?.(deepConvertTimestampToDate(documentSnapshot.data())),
-    )
-    .catch((error) => {
-      console.error(error);
-      onError?.(error);
-    });
+  try {
+    const documentSnapshot = await getDoc(docRef);
+    await onSuccess?.(deepConvertTimestampToDate(documentSnapshot.data()));
+    return documentSnapshot;
+  } catch (error) {
+    console.error(error);
+    onError?.(error);
+  }
 }
 
 /**
@@ -348,6 +347,8 @@ export async function changeDocId(
     onError?: Function;
   } = {},
 ) {
+  // TODO need to move subcollections as well
+
   // Retrieve doc data
   doGetDocWithID(collectionName, oldId, {
     onError: onError,

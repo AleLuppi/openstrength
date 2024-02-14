@@ -14,7 +14,7 @@
       </h3>
 
       <!-- Redirect to registration -->
-      <p>
+      <p v-if="false">
         {{ $t("user.auth.without_account") }}
         <router-link
           class="text-primary"
