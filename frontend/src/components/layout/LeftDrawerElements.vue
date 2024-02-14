@@ -4,7 +4,6 @@
     <q-item
       v-for="page in drawerPages"
       :key="page.route"
-      clickable
       tag="a"
       :to="{ name: page.route }"
       active-class="os-child-highlight-primary"
@@ -70,7 +69,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import router from "@/router";
+import router, { NamedRoutes } from "@/router";
 import { useUserStore } from "@/stores/user";
 import { routeAccessibleByUser } from "@/router/routeAccessManagement";
 
@@ -115,7 +114,10 @@ const drawerPages = computed(() =>
     const route = router
       .getRoutes()
       .find((route) => String(route.name) == page.route);
-    return route && routeAccessibleByUser(user, route);
+    return (
+      route &&
+      (routeAccessibleByUser(user, route) || route.name == NamedRoutes.home)
+    );
   }),
 );
 </script>
@@ -133,6 +135,6 @@ const drawerPages = computed(() =>
 }
 
 .os-text-unselected {
-  color: $os-secondary-6 !important;
+  color: $os-secondary-6;
 }
 </style>

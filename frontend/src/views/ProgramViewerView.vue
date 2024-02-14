@@ -138,7 +138,7 @@ watch(
   () => route.query.id,
   (docId) =>
     doGetDocs(
-      `${dbCollections.programs}/${docId}/${dbSubcollections.programsSnapshots}`,
+      `${dbCollections.programs}/${docId}/${dbSubcollections.programSnapshots}`,
       undefined,
       {
         ordering: ["-frozenOn"],

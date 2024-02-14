@@ -1432,7 +1432,7 @@ function addWeek(
   let [week, day] = destination instanceof Array ? destination : [destination];
   if (day == undefined)
     day = allDays.value[week]?.[0] ?? String(props.defaultDayName);
-  stringGetNextFromList(allWeeks.value, week);
+  week = stringGetNextFromList(allWeeks.value, week);
 
   // Add week in selected destination
   addDay([week, day], doScroll);
@@ -1454,7 +1454,7 @@ function duplicateWeek(
 ) {
   // Get destination week
   let dstWeek = destination instanceof Array ? destination[0] : destination;
-  stringGetNextFromList(allWeeks.value, dstWeek);
+  dstWeek = stringGetNextFromList(allWeeks.value, dstWeek);
 
   // Duplicate all days in week
   const srcWeek =

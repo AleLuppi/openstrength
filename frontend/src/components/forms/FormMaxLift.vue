@@ -29,6 +29,8 @@
         :suffix="maxliftValueSuffix"
         :label="$t('coach.maxlift_management.fields.value')"
         type="number"
+        step="0.01"
+        min="0.0"
         required
       ></os-input>
 

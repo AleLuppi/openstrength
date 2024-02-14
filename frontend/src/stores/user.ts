@@ -1,14 +1,12 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import type { User as FirebaseUser } from "firebase/auth";
+import { User, CoachUser, AthleteUser } from "@/helpers/users/user";
 import {
-  User,
-  CoachUser,
-  AthleteUser,
   loadDocUser,
   getDocUserByField,
   changeDocUserId,
-} from "@/helpers/users/user";
+} from "@/helpers/users/api";
 import { objectAssignNotUndefined } from "@/helpers/object";
 
 /**
@@ -45,6 +43,7 @@ export const useUserStore = defineStore("user", () => {
   const lastAccess = computed(() => user.value?.lastAccess);
   const lastNotificationRead = computed(() => user.value?.lastNotificationRead);
   const isSignedIn = computed(() => user.value?.isSignedIn);
+  const config = computed(() => user.value?.config);
 
   /**
    * Load user data based on user ID.
@@ -154,6 +153,7 @@ export const useUserStore = defineStore("user", () => {
     lastAccess,
     lastNotificationRead,
     isSignedIn,
+    config,
     loadUser,
     loadFirebaseUser,
     saveUser,
