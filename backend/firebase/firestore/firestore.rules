@@ -34,6 +34,18 @@ service cloud.firestore {
       allow create: if (userSignedIn() && (!('role' in request.resource.data) || request.resource.data.role != "admin")); // TODO user must be proprietary or coach, and ensure role is not assigned to admin
       allow update: if (request.resource.data.role != "admin"); // TODO only proprietary if exist, otherwise related person, and ensure role is not assigned to admin
       allow delete: if (existsUserDoc() && (userId != request.auth.uid) && ('email' in resource.data) && (resource.data.email == getUserEmail() && resource.data.email == request.auth.token.email)); // only duplicate documents (check by email field)
+    
+    	// Manage user config under "info" subcollection
+      match /info/config {
+      	allow read: if (userSignedIn() && (request.auth.uid == userId)); // only proprietary
+        allow create: if (userSignedIn() && (request.auth.uid == userId) && (!("accessLevel" in request.resource.data) || request.resource.data.accessLevel == null || request.resource.data.accessLevel == 5)); // only proprietary, and ensure access level is not set
+        allow update, delete: if false; // only admin
+      }
+      
+      // Do not allow any other subcollection
+      match /{document=**} {
+        allow read, write: if false;
+      }
     }
 
     // Manage "exercises" collection

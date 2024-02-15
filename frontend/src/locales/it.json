@@ -6,6 +6,8 @@
       "welcome_logged_out": "Accedi / Registrati"
     },
     "header": {
+      "to_login": "Già registrato? Accedi",
+      "to_profile": "Profilo",
       "button_feedback": "Feedback?"
     },
     "interaction": {

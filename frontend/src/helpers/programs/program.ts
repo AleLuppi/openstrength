@@ -1106,7 +1106,7 @@ export function addDocProgramFrozen(
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
   doAddDoc(
-    `${dbCollections.programs}/${programId}/${dbSubcollections.programsSnapshots}`,
+    `${dbCollections.programs}/${programId}/${dbSubcollections.programSnapshots}`,
     programView,
     {
       onSuccess: onSuccess,
