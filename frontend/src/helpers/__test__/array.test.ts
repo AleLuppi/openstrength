@@ -1,7 +1,31 @@
 import { describe, expect, test } from "vitest";
-import { arrayOfPairsToObject, arraySort } from "../array";
+import { arrayUniqueValues, arrayOfPairsToObject, arraySort } from "../array";
 
 describe("Test @/helpers/array", () => {
+  /**
+   * arrayUniqueValues
+   */
+  describe("'arrayUniqueValues' function", () => {
+    // TODO
+
+    test("array of numeric arrays", () => {
+      const arr = [
+        [1, 1],
+        [2, 2],
+        [3, 3],
+        [1, 1],
+        [3, 3],
+      ];
+      const res = arrayUniqueValues(arr, undefined, true);
+      expect(res).toStrictEqual([
+        [1, 1],
+        [2, 2],
+        [3, 3],
+      ]);
+      expect(res).not.toBe(arr);
+    });
+  });
+
   /**
    * arraySort
    */

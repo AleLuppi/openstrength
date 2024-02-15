@@ -2,14 +2,20 @@
  * Get the unique values in an array.
  *
  * @param array input vector.
- * @param sorted if true, also sort values, if function, apply a transformation to values for sorting purposes.
+ * @param [sorted=true] if true, also sort values, if function, apply a transformation to values for sorting purposes.
+ * @param [deep=false] if true, compare deep object values instead of loose instance comparison.
  * @returns a new array with only unique values.
  */
 export function arrayUniqueValues<T, R>(
   array: T[],
   sorted: boolean | ((val: T, arr: T[]) => R) = true,
+  deep: boolean = false,
 ): T[] {
-  const newArray = [...new Set(array)];
+  const newArray = deep
+    ? Object.values(
+        Object.fromEntries(array.map((v) => [JSON.stringify(v), v])),
+      )
+    : [...new Set(array)];
   if (sorted)
     return arraySort(
       newArray,
