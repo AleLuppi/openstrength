@@ -87,6 +87,9 @@ export type AthleteUserProps = UserProps & {
   assignedProgramId?: string;
   assignedPrograms?: string[];
 
+  // If true athlete is a placeholder for program template
+  isTemplate?: boolean;
+
   // Workout-related info
   height?: string;
   weight?: string;
@@ -243,6 +246,9 @@ export class AthleteUser extends User {
   assignedProgramId?: string;
   assignedPrograms?: string[];
 
+  // Athlete is used as placeholder for program template
+  isTemplate?: boolean;
+
   // Workout-related info
   height?: string;
   weight?: string;
@@ -260,6 +266,7 @@ export class AthleteUser extends User {
     coachesTo,
     assignedProgramId,
     assignedPrograms,
+    isTemplate,
     height,
     weight,
     ...props
@@ -276,6 +283,7 @@ export class AthleteUser extends User {
     this.coachesTo = coachesTo;
     this.assignedProgramId = assignedProgramId;
     this.assignedPrograms = assignedPrograms;
+    this.isTemplate = isTemplate;
     this.height = height;
     this.weight = weight;
   }
