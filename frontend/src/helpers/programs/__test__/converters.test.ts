@@ -13,6 +13,7 @@ describe("Test @/helpers/programs/converters", () => {
     const program: Program = new Program({
       uid: "rand-uid",
       name: "test program",
+      isProgramTemplate: false,
       programExercises: [
         new ProgramExercise({
           scheduleWeek: "1",

@@ -17,6 +17,7 @@ describe("Test @/helpers/programs/builder", () => {
   const program: Program = new Program({
     uid: "rand-uid",
     name: "test program",
+    isProgramTemplate: false,
     programExercises: [
       new ProgramExercise({
         scheduleWeek: "1",

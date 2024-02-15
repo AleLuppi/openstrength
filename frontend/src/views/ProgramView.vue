@@ -16,11 +16,11 @@
           class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest"
         >
           <!-- Utility buttons -->
-          <div class="row justify-between">
+          <div class="row justify-between align-center">
             <!-- Save button -->
             <div
               @click="saveProgram()"
-              class="row items-center justify-center"
+              class="row items-center"
               :class="{ 'cursor-pointer': !programSaved }"
             >
               <q-btn
@@ -63,37 +63,6 @@
                 @click="programBuilderElement?.redo()"
                 :disable="!canRedo"
               ></q-btn>
-            </div>
-
-            <!-- Display and update assigned user -->
-            <div
-              v-if="selectedProgram.athlete && !denseView"
-              class="row items-center justify-center q-col-gutter-sm"
-            >
-              <span class="text-black">
-                {{ $t("coach.program_management.builder.assigned_athlete") }}
-              </span>
-              <div>
-                <q-btn
-                  color="secondary"
-                  outline
-                  :dense="Boolean(selectedProgram.athlete)"
-                >
-                  <q-item dense class="q-py-none q-px-md">
-                    <q-item-section
-                      avatar
-                      v-if="$q.screen.gt.xs && selectedProgram.athlete.photoUrl"
-                    >
-                      <q-avatar size="md">
-                        <img :src="selectedProgram.athlete.photoUrl" />
-                      </q-avatar>
-                    </q-item-section>
-                    <q-item-section>{{
-                      selectedProgram.athlete.referenceName
-                    }}</q-item-section>
-                  </q-item>
-                </q-btn>
-              </div>
             </div>
 
             <!-- Maxlift and Charts -->
@@ -152,9 +121,44 @@
               </q-btn>
             </div>
 
-            <!-- Get shareable link to program -->
-            <div>
+            <!-- Save program as template -->
+            <div class="row">
               <q-btn
+                v-if="
+                  (selectedProgram &&
+                    selectedProgram.isProgramTemplate === false) ||
+                  selectedProgram.isProgramTemplate === undefined
+                "
+                icon="sym_o_publish"
+                flat
+                outline
+                color="secondary"
+                @click="
+                  () => {
+                    programFilter.week.length > 0 ||
+                    programFilter.day.length > 0 ||
+                    programFilter.exercise.length > 0
+                      ? (showProgramTemplateFilteredWarning = true)
+                      : (showProgramTemplateSaveDialog = true);
+                  }
+                "
+                :label="
+                  denseView
+                    ? undefined
+                    : i18n.t(
+                        'coach.programlibrary_management.list.export_template',
+                      )
+                "
+                :class="denseView ? 'q-pa-xs q-ma-none' : ''"
+              ></q-btn>
+              <q-badge v-else>{{
+                $t("coach.programlibrary_management.list.template")
+              }}</q-badge>
+
+              <!-- Get shareable link to program -->
+
+              <q-btn
+                v-if="selectedProgram.isProgramTemplate === false"
                 @click="
                   saveProgram();
                   showShareProgramDialog = true;
@@ -167,6 +171,7 @@
                     ? undefined
                     : i18n.t('coach.program_management.viewer.send_program')
                 "
+                :class="denseView ? 'q-pa-xs q-ma-none' : ''"
               >
               </q-btn>
             </div>
@@ -227,10 +232,7 @@
         <!-- Show table to build program -->
         <TableProgramBuilder
           ref="programBuilderElement"
-          v-if="
-            selectedProgram?.athlete &&
-            !coachInfo.whatLoading.includes('program')
-          "
+          v-if="selectedProgram && !coachInfo.whatLoading.includes('program')"
           :model-value="selectedProgram"
           @update:model-value="
             (program) => {
@@ -281,6 +283,7 @@
           <h4 class="text-margin-xs">
             {{ $t("coach.program_management.builder.initialize_program") }}
           </h4>
+
           <q-btn
             icon="sym_o_assignment_add"
             @click="openNewProgram"
@@ -419,6 +422,44 @@
                 <h6>
                   {{ $t("coach.program_management.list.program_section") }}
                 </h6>
+              </div>
+
+              <!-- Display and update assigned user -->
+              <div
+                v-if="
+                  selectedProgram &&
+                  (selectedProgram.isProgramTemplate === false ||
+                    selectedProgram.isProgramTemplate === undefined) &&
+                  !denseView
+                "
+                class="row items-center justify-start q-col-gutter-sm"
+              >
+                <span class="text-black">
+                  {{ $t("coach.program_management.builder.assigned_athlete") }}
+                </span>
+                <div>
+                  <q-btn
+                    color="secondary"
+                    outline
+                    :dense="Boolean(selectedProgram.athlete)"
+                  >
+                    <q-item dense class="q-py-none q-px-md">
+                      <q-item-section
+                        avatar
+                        v-if="
+                          $q.screen.gt.xs && selectedProgram.athlete?.photoUrl
+                        "
+                      >
+                        <q-avatar size="md">
+                          <img :src="selectedProgram.athlete.photoUrl" />
+                        </q-avatar>
+                      </q-item-section>
+                      <q-item-section>{{
+                        selectedProgram.athlete?.referenceName ?? ""
+                      }}</q-item-section>
+                    </q-item>
+                  </q-btn>
+                </div>
               </div>
 
               <!-- Search status or temporary program -->
@@ -633,6 +674,63 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- Dialog to warn user of filtered template saving -->
+    <q-dialog v-model="showProgramTemplateFilteredWarning">
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-icon
+            name="fa-solid fa-circle-exclamation"
+            color="negative"
+            size="sm"
+          />
+          <span class="q-ml-sm">
+            {{
+              $t("coach.programlibrary_management.list.filter_active_warning")
+            }}
+          </span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            :label="$t('common.cancel')"
+            color="secondary"
+            v-close-popup
+          />
+          <q-btn
+            :label="$t('common.continue')"
+            color="primary"
+            @click="showProgramTemplateSaveDialog = true"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Dialog to save program template -->
+    <q-dialog
+      v-model="showProgramTemplateSaveDialog"
+      @hide="programTemplateSavingFormElement?.reset"
+    >
+      <q-card v-if="selectedProgram">
+        <q-card-section class="row items-center">
+          <h6>
+            {{
+              $t("coach.programlibrary_management.list.template_saving_title")
+            }}
+          </h6>
+        </q-card-section>
+        <FormProgramTemplateSaving
+          ref="programTemplateSavingFormElement"
+          :program="selectedProgram"
+          :programFilter="programFilter"
+          @reset="showProgramTemplateSaveDialog = false"
+          @submit="saveProgramTemplate"
+        >
+        </FormProgramTemplateSaving>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -670,6 +768,7 @@ import {
 } from "@/helpers/programs/linesManagement";
 import router, { NamedRoutes } from "@/router";
 import FormProgramInfo from "@/components/forms/FormProgramInfo.vue";
+import FormProgramTemplateSaving from "@/components/forms/FormProgramTemplateSaving.vue";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { event } from "vue-gtag";
@@ -729,6 +828,12 @@ const programManagerHeight = ref(0);
 const canUndo = ref(false);
 const canRedo = ref(false);
 
+// Set ref related to program templates
+const showProgramTemplateFilteredWarning = ref(false);
+const showProgramTemplateSaveDialog = ref(false);
+const programTemplateSavingFormElement =
+  ref<typeof FormProgramTemplateSaving>();
+
 // Set ref related to maxlift
 const updatingMaxlift = ref<MaxLift>();
 const searchMaxLift = ref<string>();
@@ -751,7 +856,10 @@ const requestedProgram = computed(
 const allAssignedPrograms = computed(
   () =>
     coachInfo.programs?.filter(
-      (program) => program.uid === program.athlete?.assignedProgramId,
+      (program) =>
+        (program.uid === program.athlete?.assignedProgramId &&
+          program.isProgramTemplate === false) ||
+        program.isProgramTemplate === undefined,
     ) || [],
 );
 
@@ -966,6 +1074,130 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
 
       // Mixpanel tracking
       mixpanel.track("Program Saved", {
+        ExerciseNumber: currProgram?.programExercises?.length,
+      });
+
+      // Open program by updating route params
+      openProgram(currProgram.uid);
+    },
+    onError: () => {
+      $q.notify({
+        type: "negative",
+        message: i18n.t("coach.program_management.builder.save_error"),
+        position: "bottom",
+      });
+      programSaved.value = false;
+
+      // Mixpanel tracking
+      mixpanel.track("ERROR Program Saved", {
+        ExerciseNumber: currProgram?.programExercises?.length,
+      });
+    },
+  });
+}
+
+/**
+ * Save current filtered or not filtered program instance as program template.
+ * Note: this program instance is ready to be saved as it has already been filtered
+ * and prepared in the saving form
+ *
+ * @param program optional program instance that shall be save.
+ * @param checkUnsaved if true, only save if program shows active changes.
+ */
+function saveProgramTemplate(programTemplate: Program) {
+  // Save current program instance
+  const currProgram = programTemplate;
+  if (!currProgram) return;
+
+  currProgram.coach = user.baseUser;
+
+  currProgram.save({
+    saveFrozenView: true,
+    onSuccess: () => {
+      // Inform user about saved program
+      setSavedValue();
+      (coachInfo.programs =
+        coachInfo.programs?.filter(
+          (program) => program.uid != currProgram.uid,
+        ) || []).push(currProgram);
+
+      // Update athlete profile with new program
+      // assignProgramToAthlete(
+      //   currProgram,
+      //   currProgram.athlete,
+      //   oldAthleteAssigned.value,
+      // );
+
+      // Clear active change on current program
+      coachActiveChanges.program = undefined;
+
+      // Mixpanel tracking
+      mixpanel.track("Template Saved", {
+        ExerciseNumber: currProgram?.programExercises?.length,
+        TemplateUid: currProgram.uid,
+      });
+
+      $q.notify({
+        type: "positive",
+        //message: i18n.t("coach.program_management.builder.save_success"),
+        message:
+          "Modello di programma salvato correttamente, lo trovi in libreria programmi",
+        position: "bottom",
+      });
+
+      // Open program by updating route params
+      // openProgram(currProgram.uid);
+
+      // Close the form
+      showProgramTemplateSaveDialog.value = false;
+    },
+    onError: () => {
+      $q.notify({
+        type: "negative",
+        message: i18n.t("coach.program_management.builder.save_error"),
+        position: "bottom",
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("ERROR Program Template Saved", {
+        ExerciseNumber: currProgram?.programExercises?.length,
+        TemplateUid: currProgram.uid,
+      });
+    },
+  });
+}
+// eslint-disable-next-line
+function saveProgramTemplate2(program?: Program, checkUnsaved: boolean = false) {
+  // Check if program is unsaved
+  if (checkUnsaved && programSaved.value) return;
+
+  // Save current program instance
+  const currProgram = program ?? selectedProgram.value;
+  if (!currProgram) return;
+  currProgram.coach = user.baseUser;
+
+  currProgram.save({
+    saveFrozenView: true,
+    onSuccess: () => {
+      // Inform user about saved program
+      setSavedValue();
+      (coachInfo.programs =
+        coachInfo.programs?.filter(
+          (program) => program.uid != currProgram.uid,
+        ) || []).push(currProgram);
+
+      // Update athlete profile with new program
+      assignProgramToAthlete(
+        currProgram,
+        currProgram.athlete,
+        oldAthleteAssigned.value,
+      );
+
+      // Clear active change on current program
+      coachActiveChanges.program = undefined;
+
+      // Mixpanel tracking
+      mixpanel.track("Template Saved", {
         ExerciseNumber: currProgram?.programExercises?.length,
       });
 
