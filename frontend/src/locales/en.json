@@ -6,6 +6,8 @@
       "welcome_logged_out": "Sign in / Register"
     },
     "header": {
+      "to_login": "Already registered? Log in",
+      "to_profile": "Profile",
       "button_feedback": "feedback?"
     },
     "interaction": {
