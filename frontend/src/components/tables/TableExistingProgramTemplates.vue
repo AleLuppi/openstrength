@@ -45,6 +45,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  onDelete: {
+    type: Function,
+    required: false,
+  },
 });
 
 // Define emits
@@ -71,6 +75,7 @@ const columns = computed(() => [
     field: "lastmodification",
     sortable: true,
   },
+  { name: "delete", align: "center", label: "", field: "delete" },
 ]);
 
 // Set table rows
@@ -81,16 +86,17 @@ const rows = computed(() => {
   return props.programs.map((program) => ({
     uid: program.uid,
     name: program.name,
-    athletename: program.athlete?.referenceName ?? "Not assigned",
-    startdate: program.startedOn
-      ? i18n.d(program.startedOn, "short")
-      : "Not selected",
-    enddate: program.finishedOn
-      ? i18n.d(program.finishedOn, "short")
-      : "Not selected",
     lastmodification: program.lastUpdated
       ? i18n.d(program.lastUpdated, "middle")
       : "Not selected",
+    delete: {
+      element: "button",
+      on: { click: () => props.onDelete?.(program) },
+      icon: "delete",
+      flat: true,
+      round: true,
+      color: "button-negative",
+    },
   }));
 });
 

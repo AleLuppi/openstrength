@@ -34,6 +34,7 @@
             :programs="programs"
             @update:selected="onProgramSelection"
             :filter="searchProgram"
+            :on-delete="onProgramTemplateDelete"
           ></TableExistingProgramTemplates>
         </q-card>
 
@@ -86,17 +87,59 @@
         </q-card>
       </component>
     </div>
+
+    <!-- Dialog delete a program template -->
+    <q-dialog
+      v-model="showDialogDelete"
+      @hide="deletingProgramTemplate = undefined"
+    >
+      <q-card class="q-pa-sm dialog-min-width">
+        <q-card-section class="row items-center q-pb-none">
+          <p>
+            {{
+              $t(
+                "coach.programlibrary_management.list.delete_template_confirm",
+                {
+                  program: deletingProgramTemplate?.name,
+                },
+              )
+            }}
+          </p>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            :label="$t('common.cancel')"
+            type="reset"
+            color="button-negative"
+            v-close-popup
+          />
+          <q-btn
+            :label="$t('coach.programlibrary_management.list.delete_proceed')"
+            @click="
+              if (deletingProgramTemplate)
+                deleteProgram(deletingProgramTemplate);
+            "
+            color="button-negative"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useQuasar, QDialog } from "quasar";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import TableExistingProgramTemplates from "@/components/tables/TableExistingProgramTemplates.vue";
 import { Program, ProgramCompactView } from "@/helpers/programs/program";
 import TableCompactProgram from "@/components/tables/TableCompactProgram.vue";
 import { convertProgramToCompactView } from "@/helpers/programs/converters";
+import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
 
 // Init plugin
 const $q = useQuasar();
@@ -109,9 +152,19 @@ const searchProgram = ref<string>();
 const selectedProgram = ref<Program>(); // athlete that is currently selected in left table
 const programsTableElement = ref<typeof TableExistingProgramTemplates>();
 const compactProgram = ref<ProgramCompactView>();
+const deletingProgramTemplate = ref<Program>();
+const showDialogDelete = ref(false);
 
 // Get coach info
-const programs = computed(() => coachInfo.programs || []);
+const coachPrograms = computed(() => coachInfo.programs || []);
+const programs = computed(() => {
+  return coachPrograms.value?.filter((prog) => prog.isProgramTemplate === true);
+});
+
+// Show dialog deleting dialog when required
+watch(deletingProgramTemplate, (_newProgram) => {
+  if (_newProgram) showDialogDelete.value = true;
+});
 
 /**
  * Allow program template info modification.
@@ -121,10 +174,55 @@ const programs = computed(() => coachInfo.programs || []);
 function onProgramSelection(program?: Program) {
   compactProgram.value = undefined;
   selectedProgram.value = program;
-  console.log("on program selection", program);
   compactProgram.value = program
     ? convertProgramToCompactView(program)
     : undefined;
+}
+
+/**
+ * Delete one program template from list, upon confirmation.
+ *
+ * @param variant element that needs to be deleted.
+ */
+function onProgramTemplateDelete(program: Program) {
+  deletingProgramTemplate.value = program;
+  showDialogDelete.value = false;
+}
+
+/**
+ * Actually delete the selected program template.
+ *
+ * @param program element that shall be removed.
+ */
+function deleteProgram(program: Program) {
+  program.remove({
+    onSuccess: () => {
+      coachInfo.programs = coachInfo.programs?.filter(
+        (coachPrograms) => coachPrograms != program,
+      );
+      clearProgramTemplate();
+
+      // Register GA4 event
+      event("program_template_deleted", {
+        event_category: "documentation",
+        event_label: "Program Template Deleted from Library",
+        value: 1,
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("Program Template Deleted from Library", {
+        Page: "ProgramLibrary",
+      });
+    },
+  });
+}
+
+/**
+ * Clear program form and hide it.
+ */
+function clearProgramTemplate() {
+  deletingProgramTemplate.value = undefined;
+  selectedProgram.value = undefined;
 }
 </script>
 

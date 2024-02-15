@@ -389,10 +389,18 @@
       "list": {
         "title": "Programmi template",
         "search": "Cerca template...",
-        "open": "Apri nel builder"
+        "open": "Apri nel builder",
+        "delete_proceed": "Elimina programma",
+        "delete_template_confirm": "Stai per eliminare il programma template \"{ program }\". Sei sicuro?",
+        "export_template": "Esporta in libreria",
+        "template": "Programma Template",
+        "filter_active_warning": "Ci sono dei filtri attivi, verrà salvata una versione filtrata del programma, vuoi continuare?",
+        "template_saving_title": "Inserisci i dati del tuo programma template"
       },
       "fields": {
-        "program_info": "Info del programma template"
+        "program_info": "Info del programma template",
+        "name": "Nome programma",
+        "description": "Note"
       }
     },
     "maxlift_management": {
@@ -451,6 +459,7 @@
     "cancel": "Annulla",
     "default": "Default",
     "continue": "Continua",
+    "proceed": "Procedi",
     "finish": "Fine",
     "or": "o",
     "or_long": "oppure",

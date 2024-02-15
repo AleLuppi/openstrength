@@ -389,10 +389,18 @@
       "list": {
         "title": "Program templates",
         "search": "Search template...",
-        "open": "Open in builder"
+        "open": "Open in builder",
+        "delete_proceed": "Delete program",
+        "delete_template_confirm": "You are about to delete the program template named \"{ program }\". Are you sure?",
+        "export_template": "Export to library",
+        "template": "Program template",
+        "filter_active_warning": "There are active filters, a filtered version of the program will be saved. Do you want to proceed?",
+        "template_saving_title": "Insert your program template data"
       },
       "fields": {
-        "program_info": "Template info"
+        "program_info": "Template info",
+        "name": "Program name",
+        "description": "Note"
       }
     },
     "maxlift_management": {
@@ -451,6 +459,7 @@
     "cancel": "Cancel",
     "default": "Default",
     "continue": "Continue",
+    "proceed": "Proceed",
     "finish": "Finish",
     "or": "or",
     "or_long": "or",
