@@ -86,6 +86,31 @@
           </q-card-section>
         </q-card>
       </component>
+
+      <!-- Show text when no program is selected -->
+      <div v-else-if="!$q.screen.lt.sm" class="col-12 col-sm-6">
+        <div class="row flex-center" style="height: 100%">
+          <div class="row">
+            <q-icon
+              :name="
+                programs ? 'sym_o_exclamation' : 'fa-regular fa-hand-pointer'
+              "
+              size="2rem"
+              color="light-dark"
+              class="q-px-md"
+            ></q-icon>
+            <p>
+              {{
+                programs
+                  ? $t("coach.programlibrary_management.list.no_templates")
+                  : $t(
+                      "coach.programlibrary_management.list.no_selected_template",
+                    )
+              }}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Dialog delete a program template -->
