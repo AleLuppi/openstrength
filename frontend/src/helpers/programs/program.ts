@@ -52,6 +52,7 @@ export type ProgramProps = {
   isAssigned?: boolean;
   isOngoing?: boolean;
   isCompleted?: boolean;
+  isProgramTemplate?: boolean;
 };
 
 /**
@@ -146,6 +147,7 @@ export type ProgramForzenView = {
   description: string | undefined;
   startedOn: Date | undefined;
   finishedOn: Date | undefined;
+  isProgramTemplate: boolean;
   weekdays: {
     weekName: string;
     dayName: string;
@@ -202,6 +204,14 @@ export class Program {
   // App specific info
   createdOn?: Date;
   lastUpdated?: Date;
+
+  // Determine if program is a template if assigned to nobody
+  public get isProgramTemplate() {
+    return (
+      Boolean(this.athlete === undefined) ||
+      Boolean(this.athlete?.assignedProgramId === undefined)
+    );
+  }
 
   // Get reference users ID
   public get coachId() {
@@ -429,6 +439,7 @@ export class Program {
       startedOn: programToFreeze.startedOn,
       finishedOn: programToFreeze.finishedOn,
       weekdays: convertProgramToDayBlocks(programToFreeze),
+      isProgramTemplate: programToFreeze.isProgramTemplate ?? false,
       frozenOn: new Date(),
     };
     if (save && programToFreeze.uid)
