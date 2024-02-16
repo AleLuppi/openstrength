@@ -402,48 +402,6 @@
         </template>
       </osTableSheet>
     </div>
-
-    <!-- New element buttons -->
-    <div class="row items-center justify-center q-gutter-xs">
-      <!-- New exercise -->
-      <q-btn
-        icon="add"
-        :label="$t('coach.program_management.builder.new_exercise')"
-        @click="addTable([week, day])"
-        flat
-        rounded
-      >
-        <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-          {{ $t("coach.program_management.builder.new_exercise_tooltip") }}
-        </q-tooltip>
-      </q-btn>
-
-      <!-- New day -->
-      <q-btn
-        icon="add"
-        :label="$t('coach.program_management.builder.new_day')"
-        @click="addDay([week, day])"
-        flat
-        rounded
-      >
-        <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-          {{ $t("coach.program_management.builder.new_day_tooltip") }}
-        </q-tooltip>
-      </q-btn>
-
-      <!-- New week -->
-      <q-btn
-        icon="add"
-        :label="$t('coach.program_management.builder.new_week')"
-        @click="addWeek(week)"
-        flat
-        rounded
-      >
-        <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-          {{ $t("coach.program_management.builder.new_week_tooltip") }}
-        </q-tooltip></q-btn
-      >
-    </div>
   </div>
 </template>
 

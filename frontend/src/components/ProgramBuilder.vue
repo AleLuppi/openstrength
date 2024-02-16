@@ -198,7 +198,7 @@
           <q-separator inset size="1px" class="col" />
         </div>
 
-        <!-- FIXME program exercise, move up/down -->
+        <!-- Exercise table -->
         <TableProgramBuilder
           v-for="(exerciseIdx, currIdx) in programExercises[week][day]"
           v-show="
@@ -227,6 +227,48 @@
           @delete="deleteExercise(exerciseIdx)"
           @move="(down) => moveOrderExercise(exerciseIdx, down ? 1 : -1)"
         ></TableProgramBuilder>
+
+        <!-- New element buttons -->
+        <div class="row items-center justify-center q-gutter-xs">
+          <!-- New exercise -->
+          <q-btn
+            icon="add"
+            :label="$t('coach.program_management.builder.new_exercise')"
+            @click="addExercise([week, day])"
+            flat
+            rounded
+          >
+            <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+              {{ $t("coach.program_management.builder.new_exercise_tooltip") }}
+            </q-tooltip>
+          </q-btn>
+
+          <!-- New day -->
+          <q-btn
+            icon="add"
+            :label="$t('coach.program_management.builder.new_day')"
+            @click="addDay([week, day])"
+            flat
+            rounded
+          >
+            <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+              {{ $t("coach.program_management.builder.new_day_tooltip") }}
+            </q-tooltip>
+          </q-btn>
+
+          <!-- New week -->
+          <q-btn
+            icon="add"
+            :label="$t('coach.program_management.builder.new_week')"
+            @click="addWeek(week)"
+            flat
+            rounded
+          >
+            <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+              {{ $t("coach.program_management.builder.new_week_tooltip") }}
+            </q-tooltip></q-btn
+          >
+        </div>
       </div>
     </q-virtual-scroll>
 
@@ -265,7 +307,6 @@ import {
   arrayFilterUndefined,
   arrayOfPairsToObject,
   arraySort,
-  arraySortObjectsByField,
 } from "@/helpers/array";
 import {
   Program,
@@ -284,7 +325,10 @@ import {
   moveProgramExercise,
 } from "@/helpers/programs/builder";
 import { useI18n } from "vue-i18n";
-import { getProgramUniqueWeekDayPairs } from "@/helpers/programs/linesManagement";
+import {
+  getProgramUniqueWeekDayPairs,
+  sortProgramExercises,
+} from "@/helpers/programs/linesManagement";
 
 // Import components
 const TableProgramBuilder = defineAsyncComponent(
@@ -477,8 +521,6 @@ const isProgramFilteredOut = computed(() => {
   return asdf;
 });
 
-// NOTE FROM HERE
-
 /**
  * Perform operations on reference selection.
  *
@@ -531,7 +573,7 @@ function onReferenceClick(
   updateProgram();
 }
 
-/**NOTE ok
+/**
  * Move one exercise across builder and update program accordingly.
  *
  * @param programExercise exercise that is being affected.
@@ -576,7 +618,6 @@ function moveExerciseAndUpdate(
 }
 
 /**
- * FIXME
  * Move one exercise from one scheduling order to another, while preserving week and day schedule.
  *
  * @param programExercise exercise data that shall be deleted.
@@ -593,7 +634,7 @@ function moveOrderExercise(
   });
 }
 
-/**NOTE ok
+/**
  * Delete one exercise from the list.
  *
  * @param programExercise exercise data that shall be deleted.
@@ -606,7 +647,7 @@ function deleteExercise(programExercise: ProgramExercise | number) {
   mixpanel.track("Delete Exercise from Program");
 }
 
-/**NOTE ok
+/**
  * Add one exercise to the list.
  *
  * @param destination position where exercise shall be placed, ignoring order if already occupied.
@@ -625,7 +666,7 @@ function addExercise(
   );
 }
 
-/**NOTE ok
+/**
  * Duplicate an exercise in a specific week and day.
  *
  * @param programExercise exercise, or corresponding index, that shall be duplicated.
@@ -688,24 +729,26 @@ function moveDay(
   // Check if source is empty while renaming
   let isSourceEmpty = true;
 
+  // Exit if nothing to reorder
+  if (!selectedProgram.value?.programExercises) return;
+
   // Perform move (ordered)
-  arraySortObjectsByField(
-    exercisesValues.value,
-    "order",
-    false,
-    Number,
-  ).forEach((exerciseData) => {
-    if (exerciseData.week == fromWeek && exerciseData.day == fromDay) {
-      if (duplicate)
-        duplicateExercise(exerciseData, [toWeek, toDay, exerciseData.order]);
-      else
-        moveExerciseAndUpdate(exerciseData, [
-          toWeek,
-          toDay,
-          exerciseData.order,
-        ]);
-      isSourceEmpty = false;
-    }
+  sortProgramExercises(
+    selectedProgram.value.programExercises.filter(
+      (programExercise) =>
+        programExercise.scheduleWeek == fromWeek &&
+        programExercise.scheduleDay == fromDay,
+    ),
+  ).forEach((programExercise) => {
+    if (duplicate) duplicateExercise(programExercise, [toWeek, toDay]);
+    else
+      moveExerciseAndUpdate(
+        programExercise,
+        [toWeek, toDay, undefined],
+        false,
+        { looseOrder: true },
+      );
+    isSourceEmpty = false;
   });
 
   // Optionally add a table is source is empty
@@ -872,7 +915,7 @@ function storeChanges(builderData?: ProgramBuilderData | Program) {
   programHistoryPointer.value = programHistory.value.length - 1;
 }
 
-/**
+/** FIXME
  * Undo latest modification.
  *
  * @returns true if more undos are possible, false otherwise.
@@ -900,7 +943,7 @@ function undo(): boolean {
   return programHistoryPointer.value > 0;
 }
 
-/**
+/** FIXME
  * Redo next modification.
  *
  * @returns true if more redos are possible, false otherwise.
@@ -929,7 +972,7 @@ function redo(): boolean {
 }
 
 /**
- * Update program based on the current program builder values.
+ * Update program based on the current program value.
  *
  * Note: function call is debounced to prevent high loads due to frequent updates.
  *
@@ -938,7 +981,7 @@ function redo(): boolean {
 const updateProgram = debounceFunction(doUpdateProgram, props.debounce);
 
 /**
- * FIXME Update program based on the current program builder values.
+ * Update program based on the current program value.
  *
  * Note: this should not be used unless immediate update is required.
  * Use debounced version instead.
