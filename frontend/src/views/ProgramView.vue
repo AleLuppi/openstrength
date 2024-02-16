@@ -1063,11 +1063,13 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
         ) || []).push(currProgram);
 
       // Update athlete profile with new program
-      assignProgramToAthlete(
-        currProgram,
-        currProgram.athlete,
-        oldAthleteAssigned.value,
-      );
+      if (program?.isProgramTemplate === false) {
+        assignProgramToAthlete(
+          currProgram,
+          currProgram.athlete,
+          oldAthleteAssigned.value,
+        );
+      }
 
       // Clear active change on current program
       coachActiveChanges.program = undefined;
