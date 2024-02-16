@@ -31,212 +31,204 @@
       </slot>
     </div>
 
-    <!-- FIXME Display one day -->
+    <!-- Display all days -->
     <q-virtual-scroll
       v-else
       style="height: 100%"
-      :items-size="programExercises.length"
-      :items-fn="itemFn"
+      :items="allWeekDayPairs"
+      virtual-scroll-slice-size="2"
       virtual-scroll-item-size="300"
       separator
-      v-slot="{ item, index }"
+      v-slot="{ item: [week, day] }"
     >
-      <!-- Show week and day and allow navigation -->
+      <!-- Week Day wrapper -->
       <div
-        v-if="!item.programExercise"
+        :ref="(el) => (dayElements[getName([week, day])] = el)"
         v-show="
-          Object.keys(filteredWeekDay).includes(item.week) &&
-          filteredWeekDay[item.week].includes(item.day)
+          Object.keys(filteredWeekDay).includes(week) &&
+          filteredWeekDay[week].includes(day)
         "
-        v-intersection="dayTitleInteresctionHandler"
-        class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-xs os-day-title"
+        :key="`${week}.${day}`"
       >
-        <!-- Week and day names -->
-        <h6 class="q-mt-none">
-          <span class="underlined-dashed cursor-pointer text-h4 text-margin-xs">
-            {{ getWeekDisplayName(item.week) }}
-            <q-menu auto-close>
-              <q-list
-                v-for="otherWeek in Object.keys(filteredWeekDay).filter(
-                  (oneWeek) => oneWeek != item.week,
-                )"
-                :key="`otherweek${otherWeek}`"
-                style="min-width: 100px"
-              >
-                <q-item
-                  clickable
-                  @click="
-                    scrollToElementInParent(
-                      dayElements[getName([otherWeek, item.day])] ??
-                        dayElements[
-                          getName([otherWeek, filteredWeekDay[otherWeek][0]])
-                        ],
-                    )
-                  "
-                >
-                  <q-item-section>
-                    {{ getWeekDisplayName(otherWeek) }}
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </span>
-          -
-          <span class="underlined-dashed cursor-pointer text-h6 text-margin-xs">
-            {{ getDayDisplayName(item.day) }}
-            <q-menu auto-close>
-              <q-list
-                v-for="otherDay in filteredWeekDay[item.week].filter(
-                  (oneDay) => oneDay != item.day,
-                )"
-                :key="`otherweek${otherDay}`"
-                style="min-width: 100px"
-              >
-                <q-item
-                  clickable
-                  @click="
-                    scrollToElementInParent(
-                      dayElements[getName([item.week, otherDay])],
-                    )
-                  "
-                >
-                  <q-item-section>
-                    {{ getDayDisplayName(otherDay) }}
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </span>
-        </h6>
-
-        <!-- Management buttons -->
-        <div>
-          <!-- Rename day -->
-          <q-btn
-            @click="editWeekDayName = [item.week, item.day]"
-            icon="edit"
-            size="sm"
-            color="dark-light"
-            flat
-            round
-            :ripple="false"
-          >
-            <q-tooltip anchor="top middle" :offset="[0, 40]">
-              {{ $t("coach.program_management.builder.day_rename") }}
-            </q-tooltip>
-
-            <FormProgramNewWeekDay
-              v-model="editWeekDayName"
-              @save="
-                (val?: [string, string]) => {
-                  if (val) moveDay([item.week, item.day], val);
-                }
-              "
-              :cover="false"
-              anchor="center right"
-              self="center right"
-              :offset="[15, 0]"
+        <!-- Show week and day and allow navigation -->
+        <div
+          v-intersection="dayTitleInteresctionHandler"
+          class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-xs os-day-title"
+        >
+          <!-- Week and day names -->
+          <h6 class="q-mt-none">
+            <span
+              class="underlined-dashed cursor-pointer text-h4 text-margin-xs"
             >
-            </FormProgramNewWeekDay>
-          </q-btn>
-
-          <!-- Duplicate day -->
-          <q-btn
-            @click="editWeekDayName = ['', '']"
-            icon="fa-regular fa-clone"
-            size="sm"
-            color="dark-light"
-            flat
-            round
-            :ripple="false"
-          >
-            <q-tooltip anchor="top middle" :offset="[0, 40]">
-              {{ $t("coach.program_management.builder.day_duplicate") }}
-            </q-tooltip>
-
-            <FormProgramNewWeekDay
-              v-model="editWeekDayName"
-              @save="
-                (val?: [string, string]) => {
-                  if (val) duplicateDay([item.week, item.day], val);
-                }
-              "
-              :title="$t('coach.program_management.builder.day_duplicate_form')"
-              :cover="false"
-              anchor="center right"
-              self="center left"
+              {{ getWeekDisplayName(week) }}
+              <q-menu auto-close>
+                <q-list
+                  v-for="otherWeek in Object.keys(filteredWeekDay).filter(
+                    (oneWeek) => oneWeek != week,
+                  )"
+                  :key="`otherweek${otherWeek}`"
+                  style="min-width: 100px"
+                >
+                  <q-item
+                    clickable
+                    @click="
+                      scrollToElementInParent(
+                        dayElements[getName([otherWeek, day])] ??
+                          dayElements[
+                            getName([otherWeek, filteredWeekDay[otherWeek][0]])
+                          ],
+                      )
+                    "
+                  >
+                    <q-item-section>
+                      {{ getWeekDisplayName(otherWeek) }}
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </span>
+            -
+            <span
+              class="underlined-dashed cursor-pointer text-h6 text-margin-xs"
             >
-            </FormProgramNewWeekDay>
-          </q-btn>
+              {{ getDayDisplayName(day) }}
+              <q-menu auto-close>
+                <q-list
+                  v-for="otherDay in filteredWeekDay[week].filter(
+                    (oneDay) => oneDay != day,
+                  )"
+                  :key="`otherweek${otherDay}`"
+                  style="min-width: 100px"
+                >
+                  <q-item
+                    clickable
+                    @click="
+                      scrollToElementInParent(
+                        dayElements[getName([week, otherDay])],
+                      )
+                    "
+                  >
+                    <q-item-section>
+                      {{ getDayDisplayName(otherDay) }}
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </span>
+          </h6>
 
-          <!-- Delete day -->
-          <q-btn
-            @click="deleteDay([item.week, item.day])"
-            icon="fa-regular fa-trash-can"
-            size="sm"
-            color="dark-light"
-            flat
-            round
-            :ripple="false"
-          >
-            <q-tooltip anchor="top middle" :offset="[0, 40]">
-              {{ $t("coach.program_management.builder.day_delete") }}
-            </q-tooltip>
-          </q-btn>
+          <!-- Management buttons -->
+          <div>
+            <!-- Rename day -->
+            <q-btn
+              @click="editWeekDayName = [week, day]"
+              icon="edit"
+              size="sm"
+              color="dark-light"
+              flat
+              round
+              :ripple="false"
+            >
+              <q-tooltip anchor="top middle" :offset="[0, 40]">
+                {{ $t("coach.program_management.builder.day_rename") }}
+              </q-tooltip>
+
+              <FormProgramNewWeekDay
+                v-model="editWeekDayName"
+                @save="
+                  (val?: [string, string]) => {
+                    if (val) moveDay([week, day], val);
+                  }
+                "
+                :cover="false"
+                anchor="center right"
+                self="center right"
+                :offset="[15, 0]"
+              >
+              </FormProgramNewWeekDay>
+            </q-btn>
+
+            <!-- Duplicate day -->
+            <q-btn
+              @click="editWeekDayName = ['', '']"
+              icon="fa-regular fa-clone"
+              size="sm"
+              color="dark-light"
+              flat
+              round
+              :ripple="false"
+            >
+              <q-tooltip anchor="top middle" :offset="[0, 40]">
+                {{ $t("coach.program_management.builder.day_duplicate") }}
+              </q-tooltip>
+
+              <FormProgramNewWeekDay
+                v-model="editWeekDayName"
+                @save="
+                  (val?: [string, string]) => {
+                    if (val) duplicateDay([week, day], val);
+                  }
+                "
+                :title="
+                  $t('coach.program_management.builder.day_duplicate_form')
+                "
+                :cover="false"
+                anchor="center right"
+                self="center left"
+              >
+              </FormProgramNewWeekDay>
+            </q-btn>
+
+            <!-- Delete day -->
+            <q-btn
+              @click="deleteDay([week, day])"
+              icon="fa-regular fa-trash-can"
+              size="sm"
+              color="dark-light"
+              flat
+              round
+              :ripple="false"
+            >
+              <q-tooltip anchor="top middle" :offset="[0, 40]">
+                {{ $t("coach.program_management.builder.day_delete") }}
+              </q-tooltip>
+            </q-btn>
+          </div>
+
+          <q-separator inset size="1px" class="col" />
         </div>
 
-        <q-separator inset size="1px" class="col" />
+        <!-- FIXME program exercise, move up/down -->
+        <TableProgramBuilder
+          v-for="(exerciseIdx, currIdx) in programExercises[week][day]"
+          v-show="
+            filter.exercise.length == 0 ||
+            selectedProgram.programExercises[exerciseIdx].exercise ==
+              undefined ||
+            (selectedProgram.programExercises[exerciseIdx].exercise!.name &&
+              filter.exercise.includes(
+                selectedProgram.programExercises[exerciseIdx].exercise!.name!,
+              ))
+          "
+          :model-value="selectedProgram.programExercises[exerciseIdx]"
+          @update:model-value="updateProgram()"
+          :exercises="exercises"
+          :maxlifts="maxliftsPerExercise"
+          :can-move-up="currIdx > 0"
+          :can-move-down="currIdx < programExercises[week][day].length - 1"
+          :navigate-weeks="Object.keys(filteredWeekDay)"
+          :navigate-days="filteredWeekDay[week]"
+          v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
+          :dense="dense"
+          :key="selectedProgram.programExercises[exerciseIdx].scheduleOrder"
+          @duplicate="
+            (toWeek, toDay) => duplicateExercise(exerciseIdx, [toWeek, toDay])
+          "
+          @delete="deleteExercise(exerciseIdx)"
+          @move="(down) => moveOrderExercise(exerciseIdx, down ? 1 : -1)"
+        ></TableProgramBuilder>
       </div>
-
-      <!-- FIXME program exercise, move up/down -->
-      <TableProgramBuilder
-        v-else
-        v-show="
-          Object.keys(filteredWeekDay).includes(item.week) &&
-          filteredWeekDay[item.week].includes(item.day) &&
-          (filter.exercise.length == 0 ||
-            (item.programExercise.exercise?.name &&
-              filter.exercise.includes(item.programExercise.exercise.name)))
-        "
-        :model-value="item.programExercise"
-        @update:model-value="
-          (val) =>
-            (selectedProgram!.programExercises =
-              selectedProgram!.programExercises?.filter(
-                (currExercise) => currExercise != val,
-              ) ?? []).push(val)
-        "
-        :exercises="exercises"
-        :maxlifts="maxliftsPerExercise"
-        :can-move-up="true"
-        :can-move-down="true"
-        :navigate-weeks="Object.keys(filteredWeekDay)"
-        :navigate-days="filteredWeekDay[item.week]"
-        v-model:expanded="exercisesInfoExpanded[index]"
-        :dense="dense"
-        :key="item.programExercise.scheduleOrder"
-      ></TableProgramBuilder>
     </q-virtual-scroll>
-
-    <!-- FIXME height -->
-    <!-- <q-virtual-scroll
-      style="max-height: 500px"
-      :items-size="50"
-      :items-fn="itemFn"
-      virtual-scroll-item-size="1000"
-      separator
-      v-slot="{ item }"
-    >
-      <TableProgramBuilder
-        :data="item.exercises"
-        :exercises="exercises"
-        :week="item.week"
-        :day="item.day"
-        :filter="filter.exercise"
-        :navigate-weeks="filteredWeeks"
-        :navigate-days="filteredDays[item.week]"
-      ></TableProgramBuilder>
-    </q-virtual-scroll> -->
 
     <!-- Show dialog to stop reference line selection -->
     <q-dialog
@@ -272,6 +264,7 @@ import { scrollToElementInParent } from "@/helpers/scroller";
 import {
   arrayFilterUndefined,
   arrayOfPairsToObject,
+  arraySort,
   arraySortObjectsByField,
 } from "@/helpers/array";
 import {
@@ -286,18 +279,12 @@ import { stringGetNextFromList } from "@/helpers/scalar";
 import mixpanel from "mixpanel-browser";
 import {
   duplicateBuilderData,
-  updateProgramWithBuilderData,
   type ProgramBuilderData,
   type ProgramBuilderExerciseData,
-  ProgramBuilderFilledData,
-  moveExercise,
-  getLargestOrderInDay,
+  moveProgramExercise,
 } from "@/helpers/programs/builder";
 import { useI18n } from "vue-i18n";
-import {
-  getProgramUniqueWeekDayPairs,
-  sortProgramExercises,
-} from "@/helpers/programs/linesManagement";
+import { getProgramUniqueWeekDayPairs } from "@/helpers/programs/linesManagement";
 
 // Import components
 const TableProgramBuilder = defineAsyncComponent(
@@ -400,64 +387,49 @@ watch(
 
       // Set current program to input one
       selectedProgram.value = props.modelValue;
-
-      // Ensure sorted exercises and lines
-      selectedProgram.value.programExercises = selectedProgram.value
-        .programExercises
-        ? sortProgramExercises(selectedProgram.value.programExercises)
-        : undefined;
     }
   },
   { immediate: true },
 );
-watch(
-  //FIXME
-  () => selectedProgram.value?.programExercises,
-  () => emit("update:modelValue", selectedProgram.value),
-);
 
-// FIXME
-function itemFn(from: number, size: number) {
-  return programExercises.value.slice(from, from + size);
-}
+// Get all program exercises indexes sorted and separated by week/day
+const programExercises = computed<{
+  [week: string]: { [day: string]: number[] };
+}>(() => {
+  if (!selectedProgram.value?.programExercises) return {};
 
-// Get all program exercises sorted and separated by week/day
-const programExercises = computed<
-  { week: string; day: string; programExercise: ProgramExercise | undefined }[]
->(() => {
-  if (!selectedProgram.value?.programExercises) return [];
-  console.log("updating");
-
-  return selectedProgram.value.programExercises.reduce(
+  // Get separated indexes for each week and day pair
+  const outExercises = selectedProgram.value.programExercises.reduce(
     (
       out: {
-        week: string;
-        day: string;
-        programExercise: ProgramExercise | undefined;
-      }[],
+        [week: string]: { [day: string]: number[] };
+      },
       programExercise,
+      idx,
     ) => {
-      if (
-        !out.at(-1) ||
-        programExercise.scheduleWeek !=
-          out.at(-1)!.programExercise?.scheduleWeek ||
-        programExercise.scheduleDay != out.at(-1)!.programExercise?.scheduleDay
-      )
-        out.push({
-          week: programExercise.scheduleWeek!.toString(),
-          day: programExercise.scheduleDay!.toString(),
-          programExercise: undefined,
-        });
-      return out.concat([
-        {
-          week: programExercise.scheduleWeek!.toString(),
-          day: programExercise.scheduleDay!.toString(),
-          programExercise: programExercise,
-        },
-      ]);
+      const week = programExercise.scheduleWeek?.toString() ?? "";
+      const day = programExercise.scheduleDay?.toString() ?? "";
+      if (!(week in out)) out[week] = {};
+      if (!(day in out[week])) out[week][day] = [];
+      out[week][day].push(idx);
+      return out;
     },
-    [],
+    {},
   );
+
+  // Sort indexes by program order
+  Object.values(outExercises).forEach((dayObject) =>
+    Object.values(dayObject).forEach((idxs) => {
+      arraySort(idxs, true, (idx) =>
+        Number(
+          selectedProgram.value!.programExercises![idx].scheduleOrder ??
+            Infinity,
+        ),
+      );
+    }),
+  );
+
+  return outExercises;
 });
 
 // Get maxlifts separated per exercise name and type
@@ -486,23 +458,26 @@ const filteredWeekDay = computed(() =>
 );
 
 // Check if program has been completely filtered out by filters
-const isProgramFilteredOut = computed(
-  () =>
-    !selectedProgram.value?.programExercises?.some(
-      (programExercise) =>
-        programExercise.scheduleWeek &&
-        programExercise.scheduleDay &&
-        Object.keys(filteredWeekDay.value).includes(
-          programExercise.scheduleWeek.toString(),
-        ) &&
-        filteredWeekDay.value[programExercise.scheduleWeek].includes(
-          programExercise.scheduleDay.toString(),
-        ) &&
-        (props.filter.exercise.length == 0 ||
-          (programExercise.exercise?.name &&
-            props.filter.exercise.includes(programExercise.exercise.name))),
-    ),
-);
+const isProgramFilteredOut = computed(() => {
+  const asdf = !selectedProgram.value?.programExercises?.some(
+    (programExercise) =>
+      programExercise.scheduleWeek &&
+      programExercise.scheduleDay &&
+      Object.keys(filteredWeekDay.value).includes(
+        programExercise.scheduleWeek.toString(),
+      ) &&
+      filteredWeekDay.value[programExercise.scheduleWeek].includes(
+        programExercise.scheduleDay.toString(),
+      ) &&
+      (props.filter.exercise.length == 0 ||
+        (programExercise.exercise?.name &&
+          props.filter.exercise.includes(programExercise.exercise.name))),
+  );
+
+  return asdf;
+});
+
+// NOTE FROM HERE
 
 /**
  * Perform operations on reference selection.
@@ -556,24 +531,44 @@ function onReferenceClick(
   updateProgram();
 }
 
-/**
+/**NOTE ok
  * Move one exercise across builder and update program accordingly.
  *
- * @param exerciseData data of exercise that is being affected.
+ * @param programExercise exercise that is being affected.
  * @param destination destination week, day, and exercise order.
  * @param [duplicate=false] if true, duplicate exercise instead of moving it (ignored if any input is undefined).
+ * @param [sourceFallback=false] if true, use source position as destination if not provided (do not delete exercise).
+ * @param [sourceOffset=0] optional offset to source position, only used if source is used as destination fallback.
+ * @param [looseOrder=false] if true, place the exercise at the end of selected day if destination is occupied.
  */
 function moveExerciseAndUpdate(
-  exerciseData?: ProgramBuilderExerciseData,
-  destination?: [string, string, string],
+  programExercise?: ProgramExercise | number,
+  destination?: [string, string, string | undefined],
   duplicate: boolean = false,
+  {
+    sourceFallback = false,
+    sourceOffset = 0,
+    looseOrder = false,
+  }: {
+    sourceFallback?: boolean;
+    sourceOffset?: number;
+    looseOrder?: boolean;
+  } = {},
 ) {
+  // No sense if program in unknown
+  if (!selectedProgram.value) return;
+
   // Move exercise as required
-  exercisesValues.value = moveExercise(
-    exercisesValues.value,
-    exerciseData,
+  selectedProgram.value = moveProgramExercise(
+    selectedProgram.value,
+    programExercise,
     destination,
     duplicate,
+    {
+      sourceFallback: sourceFallback,
+      sourceOffset: sourceOffset,
+      looseOrder: looseOrder,
+    },
   );
 
   // Update program with new structure
@@ -581,102 +576,85 @@ function moveExerciseAndUpdate(
 }
 
 /**
- * Move one table from one scheduling order to another, while keeping week and day schedule.
+ * FIXME
+ * Move one exercise from one scheduling order to another, while preserving week and day schedule.
  *
- * @param exerciseData exercise data that shall be deleted.
- * @param moveBy how many positions to move the table up or down (positive to increase order, negative to decrease it).
+ * @param programExercise exercise data that shall be deleted.
+ * @param moveBy how many positions to move the exercise up or down (positive to increase order, negative to decrease it).
  */
-// FIXME
-// eslint-disable-next-line
-function moveTable(exerciseData: ProgramBuilderExerciseData, moveBy: number) {
-  moveExerciseAndUpdate(exerciseData, [
-    exerciseData.week,
-    exerciseData.day,
-    String(Number(exerciseData.order) + moveBy),
-  ]);
+function moveOrderExercise(
+  programExercise: ProgramExercise | number,
+  moveBy: number,
+) {
+  moveExerciseAndUpdate(programExercise, undefined, false, {
+    sourceFallback: true,
+    sourceOffset: moveBy,
+    looseOrder: false,
+  });
 }
 
-/**
+/**NOTE ok
  * Delete one exercise from the list.
  *
- * @param exerciseData exercise data that shall be deleted.
+ * @param programExercise exercise data that shall be deleted.
  */
-function deleteTable(exerciseData: ProgramBuilderExerciseData) {
-  // Delete table by moving to unknown destination
-  moveExerciseAndUpdate(exerciseData, undefined);
+function deleteExercise(programExercise: ProgramExercise | number) {
+  // Delete exercise by moving to unknown destination
+  moveExerciseAndUpdate(programExercise, undefined);
 
   // Mixpanel tracking
   mixpanel.track("Delete Exercise from Program");
-
-  // Update program with new structure
-  updateProgram();
 }
 
-/**
+/**NOTE ok
  * Add one exercise to the list.
  *
  * @param destination position where exercise shall be placed, ignoring order if already occupied.
- * @param exerciseData if provided, initialize a non-empty table with supplied values.
+ * @param programExercise if provided, initialize a non-empty exercise by duplication of supplied one.
  */
-function addTable(
-  destination: [string, string, string?],
-  exerciseData?: ProgramBuilderExerciseData,
+function addExercise(
+  destination?: [string, string, string?],
+  programExercise?: ProgramExercise | number,
 ) {
-  // Place exercise at the end of the day if position is already occupied or order is not specified
-  if (
-    destination[2] == undefined ||
-    exercisesValues.value.some(
-      (exerciseData) =>
-        exerciseData.week == destination[0] &&
-        exerciseData.day == destination[1] &&
-        exerciseData.order == destination[2],
-    )
-  ) {
-    const largestOrder = getLargestOrderInDay(
-      exercisesValues.value,
-      destination,
-    );
-    destination[2] = String((largestOrder ?? 0) + 1);
-  }
-
   // Add table in selected position
   moveExerciseAndUpdate(
-    exerciseData,
+    programExercise,
     destination as [string, string, string],
     true,
+    { sourceFallback: true, sourceOffset: 0, looseOrder: true },
   );
 }
 
-/**
- * Duplicate a table in a specific week and day.
+/**NOTE ok
+ * Duplicate an exercise in a specific week and day.
  *
- * @param exerciseData table that shall be duplicated.
+ * @param programExercise exercise, or corresponding index, that shall be duplicated.
  * @param destination optional destination week and day, otherwise duplicate in original week and day.
  */
-function duplicateTable(
-  exerciseData: ProgramBuilderExerciseData,
-  destination?: [string, string, string],
+function duplicateExercise(
+  programExercise: ProgramExercise | number,
+  destination?: [string, string, string?],
 ) {
-  addTable(
-    destination ?? [exerciseData.week, exerciseData.day, exerciseData.order],
-    exerciseData,
-  );
+  addExercise(destination, programExercise);
 
   // Mixpanel tracking
   mixpanel.track("Duplicate Exercise in Program");
 }
 
 /**
- * Delete all tables in a day.
+ * Delete all program exercises in a day.
  *
  * @param scheduleInfo schedule info of day to delete.
  */
 function deleteDay(scheduleInfo: [string, string, string?]) {
-  // Delete all data tables
+  // Delete all exercises in a day
   const [week, day] = scheduleInfo;
-  exercisesValues.value.forEach((exerciseData) => {
-    if (exerciseData.week == week && exerciseData.day == day)
-      deleteTable(exerciseData);
+  selectedProgram.value?.programExercises?.forEach((programExercise) => {
+    if (
+      programExercise.scheduleWeek == week &&
+      programExercise.scheduleDay == day
+    )
+      deleteExercise(programExercise);
   });
 
   // Mixpanel tracking
@@ -719,7 +697,7 @@ function moveDay(
   ).forEach((exerciseData) => {
     if (exerciseData.week == fromWeek && exerciseData.day == fromDay) {
       if (duplicate)
-        duplicateTable(exerciseData, [toWeek, toDay, exerciseData.order]);
+        duplicateExercise(exerciseData, [toWeek, toDay, exerciseData.order]);
       else
         moveExerciseAndUpdate(exerciseData, [
           toWeek,
@@ -732,7 +710,7 @@ function moveDay(
 
   // Optionally add a table is source is empty
   if (createIfEmpty && isSourceEmpty) {
-    addTable([toWeek, toDay]);
+    addExercise([toWeek, toDay]);
 
     // Mixpanel tracking
     mixpanel.track("New Day Created in Program");
@@ -870,12 +848,13 @@ function getDayDisplayName(dayId: ProgramBuilderExerciseData["day"]) {
   });
 }
 
-/**
+/**FIXME
  * Store changes in data for successive undo/redo.
  *
  * @param data changed data value to store.
  */
-function storeChanges(builderData?: ProgramBuilderData) {
+function storeChanges(builderData?: ProgramBuilderData | Program) {
+  if (builderData instanceof Program) return; // FIXME
   // Store data from current pointer position
   if (programHistoryPointer.value + 1 < programHistory.value.length)
     programHistory.value.length = programHistoryPointer.value + 1;
@@ -965,34 +944,11 @@ const updateProgram = debounceFunction(doUpdateProgram, props.debounce);
  * Use debounced version instead.
  *
  * @param [saveChange=true] if true, save changes in history, otherwise ignore it.
- * @param callback optional callback function to call when program has been saved.
  */
-function doUpdateProgram(
-  saveChange: boolean = true,
-  callback?: (program: Program, builderData: ProgramBuilderData) => void,
-) {
-  // Resolve builder data with exercise and variant
-  const resolvedData: ProgramBuilderFilledData[] = exercisesValues.value.map(
-    (exerciseData) => {
-      // Resolve exercise and variant
-      return {
-        ...exerciseData,
-      };
-    },
-  );
-
-  // Update program
-  updateProgramWithBuilderData(props.modelValue, resolvedData).then(
-    (builderData) => {
-      // Store changes and inform parent of update
-      if (saveChange) storeChanges(builderData);
-      selectedProgram.value = props.modelValue;
-      emit("update:modelValue", selectedProgram.value);
-
-      // Optionally call a callback function
-      callback?.(selectedProgram.value, builderData);
-    },
-  );
+function doUpdateProgram(saveChange: boolean = true) {
+  // Store changes and inform parent of update
+  if (saveChange) storeChanges(selectedProgram.value);
+  emit("update:modelValue", selectedProgram.value);
 }
 
 /**

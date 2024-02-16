@@ -756,10 +756,11 @@ const denseView = computed(() => !$q.screen.gt.sm);
 const showUtilsDialog = ref(false);
 
 // Get program requested from router
-const requestedProgram = computed(() =>
-  coachInfo.programs
-    ?.find((program) => program.uid == route.params.programId)
-    ?.duplicate(),
+const requestedProgram = computed(
+  () =>
+    coachInfo.programs
+      ?.find((program) => program.uid == route.params.programId)
+      ?.duplicate(),
 );
 
 // Get all coach programs
@@ -800,10 +801,11 @@ const programFilter = computed({
 });
 
 // Get max lifts for selected athlete
-const athleteMaxlifts = computed(() =>
-  coachInfo.maxlifts?.filter(
-    (maxlift) => maxlift.athlete?.uid == selectedProgram.value?.athleteId,
-  ),
+const athleteMaxlifts = computed(
+  () =>
+    coachInfo.maxlifts?.filter(
+      (maxlift) => maxlift.athlete?.uid == selectedProgram.value?.athleteId,
+    ),
 );
 
 // Decide whether to display warning dialog on new program
@@ -1399,4 +1401,3 @@ onBeforeUnmount(() => {
   border-radius: 0 0 20px 20px;
 }
 </style>
-

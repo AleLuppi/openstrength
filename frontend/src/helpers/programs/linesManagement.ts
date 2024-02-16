@@ -183,6 +183,7 @@ export function getProgramUniqueWeekDayPairs(
         }) || [],
     ),
     ([week, day]) => week.padStart(100, "0") + day.padStart(100, "0"),
+    true,
   );
 }
 

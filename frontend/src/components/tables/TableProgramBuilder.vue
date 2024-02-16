@@ -12,7 +12,7 @@
         :class="dense ? 'row' : 'column'"
       >
         <q-btn
-          @click="moveTable(exerciseData, -1)"
+          @click="emit('move', false)"
           icon="arrow_drop_up"
           flat
           dense
@@ -20,7 +20,7 @@
           :disable="!canMoveUp"
         />
         <q-btn
-          @click="moveTable(exerciseData, +1)"
+          @click="emit('move', true)"
           icon="arrow_drop_down"
           flat
           dense
@@ -119,7 +119,13 @@
               </os-select>
               <q-separator color="inherit" spaced="xs" />
               <os-input
-                v-model="programExercise.exerciseNote"
+                :model-value="programExercise.exerciseNote"
+                @update:model-value="
+                  (val) => {
+                    programExercise.exerciseNote = (val ?? '').toString();
+                    emitProgramExercise();
+                  }
+                "
                 :debounce="debounce"
                 type="textarea"
                 :placeholder="$t('coach.program_management.builder.note_name')"
@@ -178,7 +184,7 @@
                   ];
                   break;
                 case 1:
-                  deleteTable(exerciseData);
+                  emit('delete');
                   break;
                 default:
                   break;
@@ -191,9 +197,7 @@
           <template #slot-0>
             <FormProgramNewWeekDay
               v-model="editWeekDayName"
-              @save="
-                (val) => duplicateTable(exerciseData, [val[0], val[1], '0'])
-              "
+              @save="(val) => emit('duplicate', val[0], val[1])"
               :title="
                 $t(
                   'coach.program_management.builder.line_duplicate_in_day_form',
@@ -444,7 +448,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineAsyncComponent, computed, watch } from "vue";
+import { ref, defineAsyncComponent, computed } from "vue";
 import { ProgramExercise, ProgramLine } from "@/helpers/programs/program";
 import {
   type MaxLift,
@@ -511,6 +515,9 @@ const props = withDefaults(
 const emit = defineEmits<{
   "update:modelValue": [programExercise: ProgramExercise];
   "update:expanded": [expanded: boolean];
+  duplicate: [week: string, day: string];
+  delete: [];
+  move: [down: boolean];
   newExercise: [exerciseName: string];
   newVariant: [variantName: string];
 }>();
@@ -520,14 +527,9 @@ const editWeekDayName = ref<string[]>(); // week and/or day name that is being m
 
 // Retrieve and supply current program exercise
 const programExercise = computed(() => props.modelValue);
-watch(
-  programExercise,
-  (val) => {
-    console.log("emitting");
-    emit("update:modelValue", val);
-  },
-  { deep: true },
-);
+function emitProgramExercise() {
+  emit("update:modelValue", programExercise.value);
+}
 
 // Program exercise lines in tabular format
 const exerciseData = computed({
@@ -540,6 +542,7 @@ const exerciseData = computed({
       data,
       programExercise.value,
     );
+    emitProgramExercise();
   },
 });
 
@@ -561,6 +564,8 @@ const exerciseName = computed({
       // Check if exercise is new
       if (name && programExercise.value.exercise == undefined)
         emit("newExercise", name);
+
+      emitProgramExercise();
     }
   },
 });
@@ -583,6 +588,8 @@ const variantName = computed({
       // Check if exercise is new
       if (name && programExercise.value.exerciseVariant == undefined)
         emit("newVariant", name);
+
+      emitProgramExercise();
     }
   },
 });
