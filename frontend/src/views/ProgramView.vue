@@ -483,6 +483,7 @@
                     </div>
 
                     <q-btn
+                      v-if="selectedProgram.isProgramTemplate === false"
                       icon="edit"
                       outline
                       flat
@@ -532,20 +533,6 @@
                 outline
                 padding="xs sm"
               ></q-btn>
-
-              <!-- Select among assigned programs -->
-              <div v-if="selectedProgram">
-                <p class="q-mt-sm text-center">
-                  {{ $t("coach.program_management.builder.open_from_recent") }}
-                </p>
-                <q-card>
-                  <TableExistingPrograms
-                    :programs="allAssignedPrograms"
-                    @update:selected="(program) => openProgram(program?.uid)"
-                    :small="true"
-                  />
-                </q-card>
-              </div>
             </div>
 
             <!-- Close button in dialog mode -->
@@ -1123,13 +1110,6 @@ function saveProgramTemplate(programTemplate: Program) {
           (program) => program.uid != currProgram.uid,
         ) || []).push(currProgram);
 
-      // Update athlete profile with new program
-      // assignProgramToAthlete(
-      //   currProgram,
-      //   currProgram.athlete,
-      //   oldAthleteAssigned.value,
-      // );
-
       // Clear active change on current program
       coachActiveChanges.program = undefined;
 
@@ -1141,14 +1121,9 @@ function saveProgramTemplate(programTemplate: Program) {
 
       $q.notify({
         type: "positive",
-        //message: i18n.t("coach.program_management.builder.save_success"),
-        message:
-          "Modello di programma salvato correttamente, lo trovi in libreria programmi",
+        message: i18n.t("coach.programlibrary_management.list.save_success"),
         position: "bottom",
       });
-
-      // Open program by updating route params
-      // openProgram(currProgram.uid);
 
       // Close the form
       showProgramTemplateSaveDialog.value = false;
@@ -1164,59 +1139,6 @@ function saveProgramTemplate(programTemplate: Program) {
       mixpanel.track("ERROR Program Template Saved", {
         ExerciseNumber: currProgram?.programExercises?.length,
         TemplateUid: currProgram.uid,
-      });
-    },
-  });
-}
-// eslint-disable-next-line
-function saveProgramTemplate2(program?: Program, checkUnsaved: boolean = false) {
-  // Check if program is unsaved
-  if (checkUnsaved && programSaved.value) return;
-
-  // Save current program instance
-  const currProgram = program ?? selectedProgram.value;
-  if (!currProgram) return;
-  currProgram.coach = user.baseUser;
-
-  currProgram.save({
-    saveFrozenView: true,
-    onSuccess: () => {
-      // Inform user about saved program
-      setSavedValue();
-      (coachInfo.programs =
-        coachInfo.programs?.filter(
-          (program) => program.uid != currProgram.uid,
-        ) || []).push(currProgram);
-
-      // Update athlete profile with new program
-      assignProgramToAthlete(
-        currProgram,
-        currProgram.athlete,
-        oldAthleteAssigned.value,
-      );
-
-      // Clear active change on current program
-      coachActiveChanges.program = undefined;
-
-      // Mixpanel tracking
-      mixpanel.track("Template Saved", {
-        ExerciseNumber: currProgram?.programExercises?.length,
-      });
-
-      // Open program by updating route params
-      openProgram(currProgram.uid);
-    },
-    onError: () => {
-      $q.notify({
-        type: "negative",
-        message: i18n.t("coach.program_management.builder.save_error"),
-        position: "bottom",
-      });
-      programSaved.value = false;
-
-      // Mixpanel tracking
-      mixpanel.track("ERROR Program Saved", {
-        ExerciseNumber: currProgram?.programExercises?.length,
       });
     },
   });

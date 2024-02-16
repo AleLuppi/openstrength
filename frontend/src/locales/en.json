@@ -399,7 +399,8 @@
         "filter_active_warning": "There are active filters, a filtered version of the program will be saved. Do you want to proceed?",
         "template_saving_title": "Insert your program template data",
         "no_templates": "There are no program templates available, you can export one from program builder",
-        "no_selected_template": "Select a program template to view a preview"
+        "no_selected_template": "Select a program template to view a preview",
+        "save_success": "Program template correctly saved, you can find it in the program library"
       },
       "fields": {
         "program_info": "Template info",

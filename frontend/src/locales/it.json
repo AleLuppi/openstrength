@@ -399,7 +399,8 @@
         "filter_active_warning": "Ci sono dei filtri attivi, verrà salvata una versione filtrata del programma, vuoi continuare?",
         "template_saving_title": "Inserisci i dati del tuo programma template",
         "no_templates": "Non hai ancora esportato dei programmi template, puoi farlo dal builder programmi",
-        "no_selected_template": "Seleziona un programma template per visualizzarne l'anteprima"
+        "no_selected_template": "Seleziona un programma template per visualizzarne l'anteprima",
+        "save_success": "Modello di programma salvato correttamente, lo trovi in libreria programmi"
 
       },
       "fields": {
