@@ -56,6 +56,15 @@
                 {{ $t("coach.programlibrary_management.fields.program_info") }}
               </h6>
               <q-btn
+                v-if="$q.screen.gt.sm"
+                icon="sym_o_open_in_new"
+                :to="{
+                  name: 'program',
+                  params: { programId: selectedProgram?.uid },
+                }"
+                >{{ $t("coach.programlibrary_management.list.open") }}</q-btn
+              >
+              <q-btn
                 v-if="$q.screen.lt.sm"
                 icon="close"
                 outline
@@ -68,8 +77,9 @@
             </div>
 
             <div class="row justify-between">
-              <p v-if="$q.screen.gt.sm">{{ selectedProgram?.name }}</p>
               <q-btn
+                v-if="!$q.screen.gt.sm"
+                class="q-mb-sm"
                 icon="sym_o_open_in_new"
                 :to="{
                   name: 'program',
@@ -78,6 +88,45 @@
                 >{{ $t("coach.programlibrary_management.list.open") }}</q-btn
               >
             </div>
+
+            <q-card class="q-mt-sm q-mb-sm">
+              <q-card-section v-if="selectedProgram">
+                <div class="row justify-between">
+                  <div class="column">
+                    <p>
+                      {{
+                        selectedProgram.name ??
+                        $t("coach.program_management.fields.program")
+                      }}
+                    </p>
+                    <p
+                      class="text-italic text-xs"
+                      v-if="selectedProgram.lastUpdated"
+                    >
+                      {{ $t("coach.program_management.builder.last_update") }}
+                      {{ $d(selectedProgram.lastUpdated, "middle") }}
+                    </p>
+                  </div>
+
+                  <q-btn
+                    icon="edit"
+                    outline
+                    flat
+                    rounded
+                    size="0.8em"
+                    color="light-dark"
+                    @click="showDialogUpdate = true"
+                  ></q-btn>
+                </div>
+
+                <p
+                  class="q-mt-md text-italic"
+                  v-if="selectedProgram.description"
+                >
+                  {{ selectedProgram.description }}
+                </p>
+              </q-card-section>
+            </q-card>
 
             <div v-if="compactProgram">
               <TableCompactProgram :compactprogram="compactProgram">
@@ -152,6 +201,31 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- Dialog to update program template -->
+    <q-dialog
+      v-model="showDialogUpdate"
+      @hide="programTemplateSavingFormElement?.reset"
+    >
+      <q-card v-if="selectedProgram">
+        <q-card-section class="row items-center">
+          <h6>
+            {{
+              $t("coach.programlibrary_management.list.template_updating_title")
+            }}
+          </h6>
+        </q-card-section>
+        <FormProgramTemplateSaving
+          ref="programTemplateSavingFormElement"
+          :program-filter="programFilter"
+          :program="selectedProgram"
+          :update-info="true"
+          @reset="showDialogUpdate = false"
+          @submit="onProgramTemplateUpdate"
+        >
+        </FormProgramTemplateSaving>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -165,9 +239,13 @@ import TableCompactProgram from "@/components/tables/TableCompactProgram.vue";
 import { convertProgramToCompactView } from "@/helpers/programs/converters";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
+import { useI18n } from "vue-i18n";
+import FormProgramTemplateSaving from "@/components/forms/FormProgramTemplateSaving.vue";
+import { ProgramFilter } from "@/helpers/programTemplates/programTemplateModels";
 
 // Init plugin
 const $q = useQuasar();
+const i18n = useI18n();
 
 // Get store
 const coachInfo = useCoachInfoStore();
@@ -179,6 +257,15 @@ const programsTableElement = ref<typeof TableExistingProgramTemplates>();
 const compactProgram = ref<ProgramCompactView>();
 const deletingProgramTemplate = ref<Program>();
 const showDialogDelete = ref(false);
+const showDialogUpdate = ref(false);
+const programTemplateSavingFormElement =
+  ref<typeof FormProgramTemplateSaving>();
+
+const programFilter: ProgramFilter = {
+  week: [],
+  day: [],
+  exercise: [],
+};
 
 // Get coach info
 const coachPrograms = computed(() => coachInfo.programs || []);
@@ -212,6 +299,46 @@ function onProgramSelection(program?: Program) {
 function onProgramTemplateDelete(program: Program) {
   deletingProgramTemplate.value = program;
   showDialogDelete.value = false;
+}
+
+/**
+ * Update program template info
+ *
+ * @param variant element that needs to be deleted.
+ */
+function onProgramTemplateUpdate(program: Program) {
+  showDialogUpdate.value = false;
+
+  program.saveUpdate({
+    saveFrozenView: true,
+    onSuccess: () => {
+      $q.notify({
+        type: "positive",
+        message: i18n.t("coach.programlibrary_management.list.update_success"),
+        position: "bottom",
+      });
+
+      // Register GA4 event
+      event("athleteview_programinfo_updated", {
+        event_category: "documentation",
+        event_label: "Program info updated in AthleteView",
+        value: 1,
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("Program Info Updated", {
+        Page: "AthleteView",
+        IsProgramDescriptionSet: program.description ? true : false,
+      });
+    },
+    onError: () => {
+      $q.notify({
+        type: "negative",
+        message: i18n.t("coach.programlibrary_management.list.add_error"),
+        position: "bottom",
+      });
+    },
+  });
 }
 
 /**

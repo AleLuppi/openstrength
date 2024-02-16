@@ -1,5 +1,10 @@
 <template>
-  <q-form ref="formElement" @submit="onSubmit" @reset="onReset">
+  <q-form
+    ref="formElement"
+    @submit="onSubmit"
+    @reset="onReset"
+    @update="onUpdate"
+  >
     <q-card-section>
       <!-- TODO: show list of saved templates -->
 
@@ -22,25 +27,24 @@
 
     <q-card-actions align="right">
       <q-btn flat :label="$t('common.cancel')" type="reset" />
-      <q-btn :label="$t('common.proceed')" type="submit" />
+      <q-btn
+        :label="
+          props.updateInfo === true ? $t('common.update') : $t('common.proceed')
+        "
+        type="submit"
+      />
     </q-card-actions>
   </q-form>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-//import { useI18n } from "vue-i18n";
+import { ref, watch } from "vue";
 import type { QForm } from "quasar";
-//import { useQuasar } from "quasar";
-// import { event } from "vue-gtag";
-// import mixpanel from "mixpanel-browser";
 import { Program } from "@/helpers/programs/program";
 import { ProgramFilter } from "@/helpers/programTemplates/programTemplateModels";
 import { convertProgramToProgramTemplate } from "@/helpers/programTemplates/programTemplateModels";
 
 // Init plugin
-//const $q = useQuasar();
-//const i18n = useI18n();
 
 // Set props
 const props = defineProps({
@@ -52,11 +56,17 @@ const props = defineProps({
     type: Object as () => ProgramFilter,
     required: true,
   },
+  updateInfo: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 // Set emits
 const emit = defineEmits<{
   submit: [value: Program];
+  update: [value: Program];
   reset: [];
 }>();
 
@@ -75,19 +85,38 @@ const formElement = ref<QForm>();
 const programTemplateName = ref<string>();
 const programTemplateDescription = ref<string>();
 
+watch(
+  props.program,
+  (program: Program) => {
+    programTemplateName.value = program.name;
+    programTemplateDescription.value = program.description;
+  },
+  { immediate: true },
+);
+
 /**
  * Perform operations on form submit.
  */
-
 function onSubmit() {
-  const programTemplate = convertProgramToProgramTemplate(
-    props.program,
-    props.programFilter,
-  );
-  programTemplate.name = programTemplateName.value;
-  programTemplate.description = programTemplateDescription.value;
+  if (props.updateInfo === true) {
+    const programToUpdate = props.program;
+    programToUpdate.name = programTemplateName.value;
+    programToUpdate.description = programTemplateDescription.value;
 
-  emit("submit", programTemplate);
+    programTemplateName.value = undefined;
+    programTemplateDescription.value = undefined;
+
+    emit("submit", programToUpdate);
+  } else {
+    const programTemplate = convertProgramToProgramTemplate(
+      props.program,
+      props.programFilter,
+    );
+    programTemplate.name = programTemplateName.value;
+    programTemplate.description = programTemplateDescription.value;
+
+    emit("submit", programTemplate);
+  }
 }
 
 /**
