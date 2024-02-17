@@ -278,8 +278,10 @@
         }"
         :deleteEmptyLine="true"
         @row-click="
-          (_: any, row: any) =>
-            selectingReferenceLine ? onReferenceClick(row.uid) : undefined
+          (_1: any, _2: any, idx: number) => {
+            console.log(_1, _2, idx);
+            emit('selectReference', programExercise.lines!.at(idx)!);
+          }
         "
         dense
         :debounce="debounce"
@@ -340,11 +342,12 @@
                   )"
                   :key="maxliftType"
                   @click="
-                    onReferenceClick(maxlift, 'maxlift', {
-                      exerciseData: exerciseData,
-                      lineNum: itemProps.row.id,
-                      field: itemProps.col.field,
-                    })
+                    assignReference(
+                      programExercise.lines!.at(itemProps.rowIndex)!,
+                      maxlift,
+                      itemProps.col.field,
+                    );
+                    emitProgramExercise();
                   "
                   clickable
                   v-close-popup
@@ -357,11 +360,11 @@
                 <q-item
                   clickable
                   @click="
-                    selectingReferenceLine = {
-                      exerciseData: exerciseData,
-                      lineNum: itemProps.row.id,
-                      field: itemProps.col.field,
-                    }
+                    emit(
+                      'requireReference',
+                      programExercise.lines!.at(itemProps.row.id)!,
+                      itemProps.col.field,
+                    )
                   "
                   v-close-popup
                   dense
@@ -383,11 +386,12 @@
                   "
                   clickable
                   @click="
-                    onReferenceClick('', 'line', {
-                      exerciseData: exerciseData,
-                      lineNum: itemProps.row.id,
-                      field: itemProps.col.field,
-                    })
+                    assignReference(
+                      programExercise.lines!.at(itemProps.rowIndex)!,
+                      undefined,
+                      itemProps.col.field,
+                    );
+                    emitProgramExercise();
                   "
                   v-close-popup
                   dense
@@ -414,6 +418,7 @@ import {
   MaxLiftTypesPerValue,
 } from "@/helpers/maxlifts/maxlift";
 import {
+  assignReference,
   programLinesToTable,
   tableToProgramLines,
 } from "@/helpers/programs/builder";
@@ -478,6 +483,8 @@ const emit = defineEmits<{
   move: [down: boolean];
   newExercise: [exerciseName: string];
   newVariant: [variantName: string];
+  requireReference: [line: ProgramLine, field: string];
+  selectReference: [line: ProgramLine];
 }>();
 
 // Set ref

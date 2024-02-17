@@ -664,7 +664,6 @@ import { Program, ProgramExercise } from "@/helpers/programs/program";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { useCoachActiveChangesStore } from "@/stores/coachActiveChanges";
-import ChartSelector from "@/components/charts/ChartSelector.vue";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import { useQuasar } from "quasar";
@@ -693,6 +692,9 @@ const ProgramBuilder = defineAsyncComponent(
 );
 const SkeletonTableProgramBuilder = defineAsyncComponent(
   () => import("@/components/skeletons/SkeletonTableProgramBuilder.vue"),
+);
+const ChartSelector = defineAsyncComponent(
+  () => import("@/components/charts/ChartSelector.vue"),
 );
 
 // Define emits
@@ -1075,15 +1077,28 @@ function onNewExercise(
   variantName?: string,
   programExercise?: ProgramExercise,
 ) {
+  // Check exercise name
+  if (!exerciseName) {
+    $q.notify({
+      type: "negative",
+      message: i18n.t("coach.exercise_management.add_error"),
+      position: "bottom",
+    });
+    return;
+  }
+  const exercise = coachInfo.exercises?.find(
+    (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
+  );
+
   // Check if creating new exercise of variant
-  if (variantName) {
+  if (variantName && exercise) {
     // Creating new variant
 
-    // Get parent exercise
-    const exercise = coachInfo.exercises?.find(
-      (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
+    // Check new variant
+    const variant = exercise.variants?.find(
+      (variant) => variant.name?.toLowerCase() == variantName.toLowerCase(),
     );
-    if (!exercise) {
+    if (variant) {
       $q.notify({
         type: "negative",
         message: i18n.t("coach.exercise_management.add_error"),
@@ -1100,7 +1115,7 @@ function onNewExercise(
     newVariant.saveNew({
       onSuccess: () => {
         // Store variant in local storages
-        exercise.variants?.unshift(newVariant);
+        exercise.variants = (exercise.variants || []).concat([newVariant]);
         if (programExercise) {
           programExercise.exercise = newVariant.exercise;
           programExercise.exerciseVariant = newVariant;
@@ -1141,7 +1156,7 @@ function onNewExercise(
         });
       },
     });
-  } else {
+  } else if (!exercise) {
     // Creating new exercise
 
     // Create and save new exercise
@@ -1202,6 +1217,13 @@ function onNewExercise(
         });
       },
     });
+  } else {
+    $q.notify({
+      type: "negative",
+      message: i18n.t("coach.exercise_management.add_error"),
+      position: "bottom",
+    });
+    return;
   }
 }
 

@@ -4,7 +4,7 @@ import {
   ProgramExercise,
   ProgramLine,
 } from "@/helpers/programs/program";
-import type { MaxLift } from "@/helpers/maxlifts/maxlift";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { numberClamp } from "@/helpers/scalar";
 
@@ -525,4 +525,37 @@ export function updateProgramWithBuilderData(
     // Return duplicate of data used to build the program
     resolve(duplicateBuilderData(builderData));
   });
+}
+
+/**
+ * Assign a given reference to the selected line.
+ *
+ * @param line program line where reference shall be assigned.
+ * @param reference line or maxlift identifier or instance.
+ * @param field line field that shall be updated.
+ */
+export function assignReference(
+  line: ProgramLine,
+  reference: ProgramLine | MaxLift | undefined,
+  field:
+    | "sets"
+    | "reps"
+    | "load"
+    | "rpe"
+    | "setsReference"
+    | "repsReference"
+    | "loadReference"
+    | "rpeReference",
+) {
+  // TODO do not allow reference of some lines
+
+  // Update line reference
+  const refField = field.endsWith("Reference") ? field : field + "Reference";
+  if (refField === "loadReference" || refField === "repsReference")
+    line[refField] = reference;
+  if (
+    (refField === "setsReference" || refField === "rpeReference") &&
+    !(reference instanceof MaxLift)
+  )
+    line[refField] = reference;
 }

@@ -35,9 +35,9 @@
     <q-virtual-scroll
       v-else
       style="height: 100%"
-      :items="allWeekDayPairs"
+      :items="filteredWeekDayPairs"
       virtual-scroll-slice-size="2"
-      virtual-scroll-item-size="300"
+      virtual-scroll-item-size="100"
       separator
       v-slot="{ item: [week, day] }"
     >
@@ -49,11 +49,12 @@
           filteredWeekDay[week].includes(day)
         "
         :key="`${week}.${day}`"
+        class="q-pb-md"
       >
         <!-- Show week and day and allow navigation -->
         <div
           v-intersection="dayTitleInteresctionHandler"
-          class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-xs os-day-title"
+          class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-md os-day-title"
         >
           <!-- Week and day names -->
           <h6 class="q-mt-none">
@@ -226,6 +227,28 @@
           "
           @delete="deleteExercise(exerciseIdx)"
           @move="(down) => moveOrderExercise(exerciseIdx, down ? 1 : -1)"
+          @new-exercise="
+            (name) =>
+              emit(
+                'newExercise',
+                name,
+                selectedProgram?.programExercises?.[exerciseIdx],
+              )
+          "
+          @new-variant="
+            (name) =>
+              emit(
+                'newVariant',
+                selectedProgram?.programExercises?.[exerciseIdx].exercise
+                  ?.name ?? '',
+                name,
+                selectedProgram?.programExercises?.[exerciseIdx],
+              )
+          "
+          @require-reference="
+            (line, field) => (selectingReference = { line: line, field: field })
+          "
+          @select-reference="(line) => onReferenceSelection(line)"
         ></TableProgramBuilder>
 
         <!-- New element buttons -->
@@ -274,8 +297,8 @@
 
     <!-- Show dialog to stop reference line selection -->
     <q-dialog
-      :model-value="Boolean(selectingReferenceLine)"
-      @update:model-value="selectingReferenceLine = undefined"
+      :model-value="Boolean(selectingReference)"
+      @update:model-value="selectingReference = undefined"
       seamless
       position="bottom"
     >
@@ -319,10 +342,8 @@ import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManage
 import { stringGetNextFromList } from "@/helpers/scalar";
 import mixpanel from "mixpanel-browser";
 import {
-  duplicateBuilderData,
-  type ProgramBuilderData,
-  type ProgramBuilderExerciseData,
   moveProgramExercise,
+  assignReference,
 } from "@/helpers/programs/builder";
 import { useI18n } from "vue-i18n";
 import {
@@ -402,35 +423,33 @@ const sepWekDay = ".";
 const dayElements = ref<{
   [key: string]: HTMLElement | any;
 }>({}); // FIXME references to days elements
-const exercisesValues = ref<ProgramBuilderData>([]); // FIXME data of each program exercise in flat format
 const selectedProgram = ref<Program>(); // current program
 const editWeekDayName = ref<[string, string]>(); // week and/or day name that is being modified (to clone or move tables)
-const selectingReferenceLine = ref<{
-  exerciseData: ProgramBuilderExerciseData;
-  lineNum: string;
+const selectingReference = ref<{
+  line: ProgramLine;
   field: string;
-}>(); // FIXME useful info to maintain while selecting a reference line
+}>(); // useful info to maintain while selecting a reference line
 const exercisesInfoExpanded = ref<boolean[]>([]); // check if an exercise info table should be expanded or collapsed
-const programHistory = ref<ProgramBuilderData[]>([]); // FIXMENON-REF store changes to data to allow walking history
+const programHistory = ref<Program[]>([]); // FIXMENON-REF store changes to data to allow walking history
 const programHistoryPointer = ref<number>(0); // FIXMENON_REF pointer to current data version in history
 
 // Retrieve and supply current program
 watch(
   () => props.modelValue,
-  () => {
-    if (selectedProgram.value != props.modelValue) {
+  (program) => {
+    if (selectedProgram.value != program) {
       // Empty changes
       if (
-        props.modelValue.uid == undefined ||
-        selectedProgram.value?.uid != props.modelValue.uid ||
+        program.uid == undefined ||
+        selectedProgram.value?.uid != program.uid ||
         programHistory.value.length <= 1
       ) {
         programHistory.value.length = 0;
-        storeChanges();
+        storeChanges(program);
       }
 
       // Set current program to input one
-      selectedProgram.value = props.modelValue;
+      selectedProgram.value = program;
     }
   },
   { immediate: true },
@@ -490,15 +509,15 @@ const allWeekDay = computed(() =>
 );
 
 // Get a reference to weeks and days that can be displayed
-const filteredWeekDay = computed(() =>
-  arrayOfPairsToObject(
-    allWeekDayPairs.value.filter(
-      ([week, day]) =>
-        (props.filter.week.length == 0 || props.filter.week.includes(week)) &&
-        (props.filter.day.length == 0 || props.filter.day.includes(day)),
-    ),
-    true,
+const filteredWeekDayPairs = computed(() =>
+  allWeekDayPairs.value.filter(
+    ([week, day]) =>
+      (props.filter.week.length == 0 || props.filter.week.includes(week)) &&
+      (props.filter.day.length == 0 || props.filter.day.includes(day)),
   ),
+);
+const filteredWeekDay = computed(() =>
+  arrayOfPairsToObject(filteredWeekDayPairs.value, true),
 );
 
 // Check if program has been completely filtered out by filters
@@ -522,52 +541,29 @@ const isProgramFilteredOut = computed(() => {
 });
 
 /**
- * Perform operations on reference selection.
+ * Assign a given reference to the selected line.
  *
  * @param reference line or maxlift identifier or instance.
- * @param type specify whether reference is line or maxlift.
  */
-// FIXME
-// eslint-disable-next-line
-function onReferenceClick(
-  reference: string | ProgramLine | MaxLift,
-  type: "line" | "maxlift" = "line",
-  referenceLine?: typeof selectingReferenceLine.value,
-) {
-  // Clear selection info
-  const lineInfo = referenceLine ?? selectingReferenceLine.value;
-  selectingReferenceLine.value = undefined;
-
-  // Ignore update if line selection is not enabled
-  if (!lineInfo) return;
-
-  // TODO do not allow selection of some lines
-
-  // Update line reference
-  const refField = lineInfo.field + "Ref";
-  const tableRef = lineInfo.exerciseData.data[Number(lineInfo.lineNum)];
-  const parsedReference =
-    reference instanceof ProgramLine || reference instanceof MaxLift
-      ? reference
-      : type == "line"
-      ? props.modelValue.getLines()?.find((line) => line.uid == reference)
-      : type == "maxlift"
-      ? props.maxlifts.find((maxlift) => (maxlift.uid = reference))
-      : undefined;
-  if (refField === "loadRef" || refField === "repsRef")
-    tableRef[refField] = parsedReference;
-  if (
-    (refField === "setsRef" || refField === "rpeRef") &&
-    (!parsedReference || parsedReference instanceof ProgramLine)
-  )
-    tableRef[refField] = parsedReference;
+function onReferenceSelection(reference: ProgramLine) {
+  // Assign reference
+  if (!selectingReference.value) return;
+  assignReference(
+    selectingReference.value.line,
+    reference,
+    selectingReference.value.field as "sets" | "reps" | "load" | "rpe",
+  );
 
   // Mixpanel tracking
   mixpanel.track("Reference Added in Program", {
     Page: "ProgramView",
-    Type: type,
-    Variable: refField,
+    Type:
+      selectingReference.value.line instanceof ProgramLine ? "line" : "maxlift",
+    Variable: selectingReference.value.field,
   });
+
+  // Clear selection info
+  selectingReference.value = undefined;
 
   // Update program
   updateProgram();
@@ -874,7 +870,7 @@ function duplicateWeek(
  *
  * @param weekId base week name.
  */
-function getWeekDisplayName(weekId: ProgramBuilderExerciseData["week"]) {
+function getWeekDisplayName(weekId: string) {
   return i18n.t("coach.program_management.builder.week_name", {
     week: weekId,
   });
@@ -885,27 +881,29 @@ function getWeekDisplayName(weekId: ProgramBuilderExerciseData["week"]) {
  *
  * @param dayId base day name.
  */
-function getDayDisplayName(dayId: ProgramBuilderExerciseData["day"]) {
+function getDayDisplayName(dayId: string) {
   return i18n.t("coach.program_management.builder.day_name", {
     day: dayId,
   });
 }
 
-/**FIXME
+/**
  * Store changes in data for successive undo/redo.
  *
  * @param data changed data value to store.
  */
-function storeChanges(builderData?: ProgramBuilderData | Program) {
-  if (builderData instanceof Program) return; // FIXME
+function storeChanges(program?: Program) {
+  console.log("store", programHistoryPointer.value);
+
   // Store data from current pointer position
   if (programHistoryPointer.value + 1 < programHistory.value.length)
     programHistory.value.length = programHistoryPointer.value + 1;
 
   // Add new element up to max length
-  programHistory.value.push(
-    builderData ?? duplicateBuilderData(exercisesValues.value),
-  );
+  program = program ?? selectedProgram.value;
+  console.log("program", program);
+  if (!program) return;
+  programHistory.value.push(program.duplicate());
   if (programHistory.value.length > props.historyMaxLength)
     programHistory.value = programHistory.value.slice(
       programHistory.value.length - props.historyMaxLength,
@@ -913,9 +911,14 @@ function storeChanges(builderData?: ProgramBuilderData | Program) {
 
   // Update pointer position
   programHistoryPointer.value = programHistory.value.length - 1;
+  console.log(
+    "store end",
+    programHistoryPointer.value,
+    programHistory.value.length,
+  );
 }
 
-/** FIXME
+/**
  * Undo latest modification.
  *
  * @returns true if more undos are possible, false otherwise.
@@ -924,10 +927,10 @@ function undo(): boolean {
   // Restore program from last pointer position
   if (programHistoryPointer.value > 0) {
     programHistoryPointer.value -= 1;
-    exercisesValues.value = duplicateBuilderData(
-      programHistory.value.at(programHistoryPointer.value) ??
-        exercisesValues.value,
-    );
+    if (programHistory.value.at(programHistoryPointer.value))
+      selectedProgram.value = programHistory.value
+        .at(programHistoryPointer.value)!
+        .duplicate();
   }
 
   // Inform about undo operation
@@ -943,7 +946,7 @@ function undo(): boolean {
   return programHistoryPointer.value > 0;
 }
 
-/** FIXME
+/**
  * Redo next modification.
  *
  * @returns true if more redos are possible, false otherwise.
@@ -952,10 +955,10 @@ function redo(): boolean {
   // Try to force next program modification
   if (programHistoryPointer.value + 1 < programHistory.value.length) {
     programHistoryPointer.value += 1;
-    exercisesValues.value = duplicateBuilderData(
-      programHistory.value.at(programHistoryPointer.value) ??
-        exercisesValues.value,
-    );
+    if (programHistory.value.at(programHistoryPointer.value))
+      selectedProgram.value = programHistory.value
+        .at(programHistoryPointer.value)!
+        .duplicate();
   }
 
   // Inform about redo operation
