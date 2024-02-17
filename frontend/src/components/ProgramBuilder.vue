@@ -56,52 +56,68 @@
           v-intersection="dayTitleInteresctionHandler"
           class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-md os-day-title"
         >
-          <!-- Week and day names -->
-          <h6 class="q-mt-none">
-            <span
-              class="underlined-dashed cursor-pointer text-h4 text-margin-xs"
+          <!-- Week name -->
+          <h4 class="q-mt-none underlined-dashed cursor-pointer text-margin-xs">
+            {{ getWeekDisplayName(week) }}
+          </h4>
+
+          <!-- Week management buttons -->
+          <div>
+            <!-- Duplicate week -->
+            <q-btn
+              @click="editWeekDayName = ['', '']"
+              icon="fa-regular fa-clone"
+              size="sm"
+              color="dark-light"
+              flat
+              round
+              :ripple="false"
             >
-              {{ getWeekDisplayName(week) }}
-              <q-menu auto-close>
-                <q-list
-                  v-for="otherWeek in Object.keys(filteredWeekDay).filter(
-                    (oneWeek) => oneWeek != week,
-                  )"
-                  :key="`otherweek${otherWeek}`"
-                  style="min-width: 100px"
-                >
-                  <q-item clickable @click="scrollTo(otherWeek, day)">
-                    <q-item-section>
-                      {{ getWeekDisplayName(otherWeek) }}
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-menu>
-            </span>
-            -
-            <span
-              class="underlined-dashed cursor-pointer text-h6 text-margin-xs"
+              <q-tooltip anchor="top middle" :offset="[0, 40]">
+                {{ $t("coach.program_management.builder.week_duplicate") }}
+              </q-tooltip>
+
+              <FormProgramNewWeekDay
+                v-model="editWeekDayName"
+                @save="
+                  (val?: [string, string]) => {
+                    if (val) duplicateWeek([week, day], val);
+                  }
+                "
+                :title="
+                  $t('coach.program_management.builder.week_duplicate_form')
+                "
+                :cover="false"
+                :single="'week'"
+                anchor="center right"
+                self="center left"
+              >
+              </FormProgramNewWeekDay>
+            </q-btn>
+
+            <!-- Delete week -->
+            <q-btn
+              @click="deleteWeek(week)"
+              icon="fa-regular fa-trash-can"
+              size="sm"
+              color="dark-light"
+              flat
+              round
+              :ripple="false"
             >
-              {{ getDayDisplayName(day) }}
-              <q-menu auto-close>
-                <q-list
-                  v-for="otherDay in filteredWeekDay[week].filter(
-                    (oneDay) => oneDay != day,
-                  )"
-                  :key="`otherweek${otherDay}`"
-                  style="min-width: 100px"
-                >
-                  <q-item clickable @click="scrollTo(week, otherDay)">
-                    <q-item-section>
-                      {{ getDayDisplayName(otherDay) }}
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-menu>
-            </span>
+              <q-tooltip anchor="top middle" :offset="[0, 40]">
+                {{ $t("coach.program_management.builder.week_delete") }}
+              </q-tooltip>
+            </q-btn>
+          </div>
+
+          <q-separator vertical inset class="q-ml-xs q-mr-sm" />
+
+          <h6 class="q-mt-none underlined-dashed cursor-pointer text-margin-xs">
+            {{ getDayDisplayName(day) }}
           </h6>
 
-          <!-- Management buttons -->
+          <!-- Day management buttons -->
           <div>
             <!-- Rename day -->
             <q-btn
@@ -776,8 +792,6 @@ function duplicateDay(
  *
  * @param scheduleInfo schedule info of week to delete.
  */
-// TODO
-// eslint-disable-next-line
 function deleteWeek(scheduleInfo: string | [string, string?, string?]) {
   // Delete all days in week
   const week = scheduleInfo instanceof Array ? scheduleInfo[0] : scheduleInfo;
@@ -814,8 +828,6 @@ function addWeek(
  * @param destination destination week.
  * @param doScroll if true, scroll to the newly created element.
  */
-// TODO
-// eslint-disable-next-line
 function duplicateWeek(
   scheduleInfo: string | [string, string, string?],
   destination: string | [string, string, string?],
