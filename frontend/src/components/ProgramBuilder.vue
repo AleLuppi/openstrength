@@ -34,6 +34,7 @@
     <!-- Display all days -->
     <q-virtual-scroll
       v-else
+      ref="exerciseListElement"
       style="height: 100%"
       :items="filteredWeekDayPairs"
       virtual-scroll-slice-size="2"
@@ -43,7 +44,6 @@
     >
       <!-- Week Day wrapper -->
       <div
-        :ref="(el) => (dayElements[getName([week, day])] = el)"
         v-show="
           Object.keys(filteredWeekDay).includes(week) &&
           filteredWeekDay[week].includes(day)
@@ -70,17 +70,7 @@
                   :key="`otherweek${otherWeek}`"
                   style="min-width: 100px"
                 >
-                  <q-item
-                    clickable
-                    @click="
-                      scrollToElementInParent(
-                        dayElements[getName([otherWeek, day])] ??
-                          dayElements[
-                            getName([otherWeek, filteredWeekDay[otherWeek][0]])
-                          ],
-                      )
-                    "
-                  >
+                  <q-item clickable @click="scrollTo(otherWeek, day)">
                     <q-item-section>
                       {{ getWeekDisplayName(otherWeek) }}
                     </q-item-section>
@@ -101,14 +91,7 @@
                   :key="`otherweek${otherDay}`"
                   style="min-width: 100px"
                 >
-                  <q-item
-                    clickable
-                    @click="
-                      scrollToElementInParent(
-                        dayElements[getName([week, otherDay])],
-                      )
-                    "
-                  >
+                  <q-item clickable @click="scrollTo(week, otherDay)">
                     <q-item-section>
                       {{ getDayDisplayName(otherDay) }}
                     </q-item-section>
@@ -322,15 +305,11 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, defineAsyncComponent } from "vue";
 import {
+  QVirtualScroll,
   debounce as debounceFunction,
   throttle as throttleFunction,
 } from "quasar";
-import { scrollToElementInParent } from "@/helpers/scroller";
-import {
-  arrayFilterUndefined,
-  arrayOfPairsToObject,
-  arraySort,
-} from "@/helpers/array";
+import { arrayCompare, arrayOfPairsToObject, arraySort } from "@/helpers/array";
 import {
   Program,
   ProgramExercise,
@@ -416,13 +395,8 @@ defineExpose({
   },
 });
 
-// Set useful values
-const sepWekDay = ".";
-
 // Set ref
-const dayElements = ref<{
-  [key: string]: HTMLElement | any;
-}>({}); // FIXME references to days elements
+const exerciseListElement = ref<QVirtualScroll>(); // reference to scroller element
 const selectedProgram = ref<Program>(); // current program
 const editWeekDayName = ref<[string, string]>(); // week and/or day name that is being modified (to clone or move tables)
 const selectingReference = ref<{
@@ -759,10 +733,7 @@ function moveDay(
   }
 
   // Scroll to destination day
-  if (doScroll && destination)
-    nextTick(() =>
-      scrollToElementInParent(dayElements.value[getName([toWeek, toDay])]),
-    );
+  if (doScroll && destination) nextTick(() => scrollTo(toWeek, toDay));
 
   // Update program with new naming
   updateProgram();
@@ -998,13 +969,18 @@ function doUpdateProgram(saveChange: boolean = true) {
 }
 
 /**
- * Get the name from a list of IDs by merging them with a separator.
+ * Scroll to the beginning of a selected week and day.
  *
- * @param arr list of ids.
- * @param sep separator to use to build the name.
+ * @param week name of the week to scroll to.
+ * @param day name of the day to scroll to (first day in week if not provided).
  */
-function getName(arr: (string | number)[], sep: string = sepWekDay) {
-  return arrayFilterUndefined(arr).join(sep);
+function scrollTo(week: string, day?: string) {
+  let idx = allWeekDayPairs.value.findIndex((val) =>
+    arrayCompare(val, [week, day]),
+  );
+  if (idx < 0) idx = allWeekDayPairs.value.findIndex((val) => val[0] == week);
+  if (idx < 0) return;
+  exerciseListElement.value?.scrollTo(idx);
 }
 
 // Set method to handle sticky day title
