@@ -1,3 +1,5 @@
+import { inspect } from "util";
+
 /**
  * Check if an object has no key-value pairs.
  *
@@ -113,7 +115,7 @@ export function objectPop<T extends object>(obj: T, key?: keyof T) {
  * @returns value associated to just popped key.
  */
 export function objectDeepCompare(objA: object, objB: object) {
-  return JSON.stringify(objA) === JSON.stringify(objB);
+  return JSON.stringify(inspect(objA)) === JSON.stringify(inspect(objB));
 }
 
 /**
