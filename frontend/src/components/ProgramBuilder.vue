@@ -88,7 +88,7 @@
                   $t('coach.program_management.builder.week_duplicate_form')
                 "
                 :cover="false"
-                :single="'week'"
+                single="week"
                 anchor="center right"
                 self="center left"
               >
