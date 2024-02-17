@@ -278,10 +278,8 @@
         }"
         :deleteEmptyLine="true"
         @row-click="
-          (_1: any, _2: any, idx: number) => {
-            console.log(_1, _2, idx);
-            emit('selectReference', programExercise.lines!.at(idx)!);
-          }
+          (_1: any, _2: any, idx: number) =>
+            emit('selectReference', programExercise.lines!.at(idx)!)
         "
         dense
         :debounce="debounce"

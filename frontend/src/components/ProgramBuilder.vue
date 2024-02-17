@@ -864,15 +864,12 @@ function getDayDisplayName(dayId: string) {
  * @param data changed data value to store.
  */
 function storeChanges(program?: Program) {
-  console.log("store", programHistoryPointer.value);
-
   // Store data from current pointer position
   if (programHistoryPointer.value + 1 < programHistory.value.length)
     programHistory.value.length = programHistoryPointer.value + 1;
 
   // Add new element up to max length
   program = program ?? selectedProgram.value;
-  console.log("program", program);
   if (!program) return;
   programHistory.value.push(program.duplicate());
   if (programHistory.value.length > props.historyMaxLength)
@@ -882,11 +879,6 @@ function storeChanges(program?: Program) {
 
   // Update pointer position
   programHistoryPointer.value = programHistory.value.length - 1;
-  console.log(
-    "store end",
-    programHistoryPointer.value,
-    programHistory.value.length,
-  );
 }
 
 /**
