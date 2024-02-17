@@ -244,7 +244,7 @@ export class AthleteUser extends User {
   coaches?: string[];
   coachesFrom?: (Date | null)[];
   coachesTo?: (Date | null)[];
-  assignedProgramId?: string;
+  assignedProgramId?: string | null;
   assignedPrograms?: string[];
 
   // Workout-related info

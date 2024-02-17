@@ -45,6 +45,15 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  onDelete: {
+    type: Function,
+    required: false,
+  },
+  allowDelete: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
 });
 
 // Define emits
@@ -99,6 +108,9 @@ const columns = computed(() => [
         },
       ]
     : []),
+  ...(props.allowDelete
+    ? [{ name: "delete", align: "center", label: "", field: "delete" }]
+    : []),
 ]);
 
 // Set table rows
@@ -119,6 +131,14 @@ const rows = computed(() => {
     lastmodification: program.lastUpdated
       ? i18n.d(program.lastUpdated, "middle")
       : "Not selected",
+    delete: {
+      element: "button",
+      on: { click: () => props.onDelete?.(program) },
+      icon: "delete",
+      flat: true,
+      round: true,
+      color: "button-negative",
+    },
   }));
 });
 

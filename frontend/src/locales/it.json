@@ -281,7 +281,9 @@
         "add_proceed": "Conferma",
         "update": "Inserisci le informazioni del tuo programma",
         "update_proceed": "Aggiorna programma",
-        "search_program": "Cerca programma..."
+        "search_program": "Cerca programma...",
+        "delete_program_confirm": "Stai per eliminare il programma \"{ program }\", verrà rimosso anche dall'atleta assegnato. Sei sicuro?",
+        "delete_proceed": "Elimina"
       },
       "fields": {
         "program": "Programma",

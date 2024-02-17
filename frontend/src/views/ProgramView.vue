@@ -296,9 +296,12 @@
             {{ $t("coach.program_management.builder.open_recent") }}
           </h6>
           <TableExistingPrograms
+            ref="recentProgramsTableElement"
             :programs="allAssignedPrograms"
             @update:selected="(program) => openProgram(program?.uid)"
             :small="denseView"
+            :on-delete="onProgramDelete"
+            :allow-delete="true"
           />
         </div>
       </template>
@@ -633,6 +636,40 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- Dialog delete a program -->
+    <q-dialog
+      v-model="showDialogDeleteProgram"
+      @hide="deletingProgram = undefined"
+    >
+      <q-card class="q-pa-sm dialog-min-width">
+        <q-card-section class="row items-center q-pb-none">
+          <p>
+            {{
+              $t("coach.program_management.list.delete_program_confirm", {
+                program: deletingProgram?.name,
+              })
+            }}
+          </p>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            :label="$t('common.cancel')"
+            type="reset"
+            color="button-negative"
+            v-close-popup
+          />
+          <q-btn
+            :label="$t('coach.program_management.list.delete_proceed')"
+            @click="if (deletingProgram) deleteProgram(deletingProgram);"
+            color="button-negative"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -728,7 +765,9 @@ const programManagerExpanded = ref(false);
 const programManagerHeight = ref(0);
 const canUndo = ref(false);
 const canRedo = ref(false);
-
+const deletingProgram = ref<Program>();
+const showDialogDeleteProgram = ref(false);
+const recentProgramsTableElement = ref<typeof TableExistingPrograms>();
 // Set ref related to maxlift
 const updatingMaxlift = ref<MaxLift>();
 const searchMaxLift = ref<string>();
@@ -863,6 +902,11 @@ watch(
   },
   { immediate: true },
 );
+
+// Show dialog deleting dialog when required
+watch(deletingProgram, (_newProgram) => {
+  if (_newProgram) showDialogDeleteProgram.value = true;
+});
 
 /**
  * Set saved info and ensure it is preserved.
@@ -1045,6 +1089,72 @@ function assignProgramToAthlete(
       },
     });
   }
+}
+
+/**
+ * Delete one program from list, upon confirmation.
+ */
+function onProgramDelete(program: Program) {
+  deletingProgram.value = program;
+  showDialogDeleteProgram.value = false;
+}
+
+/**
+ * Actually delete the selected program template.
+ *
+ * @param program element that shall be removed.
+ */
+function deleteProgram(program: Program) {
+  // De-assign program from athlete or multiple athletes
+  const currAthlete = coachInfo.athletes?.find(
+    (athlete) => athlete.assignedProgramId === program.uid,
+  );
+  if (currAthlete) {
+    currAthlete.assignedProgramId = null;
+    currAthlete.saveUpdate({
+      onSuccess: () => {
+        // Mixpanel tracking
+        mixpanel.track("Update Athlete", {
+          Type: "Removed program",
+        });
+      },
+      onError: () => {
+        // Mixpanel tracking
+        mixpanel.track("ERROR Update Athlete", {
+          Type: "Removing program",
+        });
+      },
+    });
+  }
+
+  program.remove({
+    onSuccess: () => {
+      coachInfo.programs = coachInfo.programs?.filter(
+        (coachPrograms) => coachPrograms != program,
+      );
+      clearProgram();
+
+      // Register GA4 event
+      event("program_deleted", {
+        event_category: "documentation",
+        event_label: "Program Deleted",
+        value: 1,
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("Program Deleted", {
+        Page: "ProgramView",
+      });
+    },
+  });
+}
+
+/**
+ * Clear program form and hide it.
+ */
+function clearProgram() {
+  deletingProgram.value = undefined;
+  selectedProgram.value = undefined;
 }
 
 /**
