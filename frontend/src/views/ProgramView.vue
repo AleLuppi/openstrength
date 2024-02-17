@@ -258,11 +258,8 @@
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
           :dense="denseView"
-          :class="
-            denseView
-              ? 'q-pl-sm q-pr-none q-ml-sm q-mr-none'
-              : 'q-pa-sm q-mx-md q-my-sm shadow-2'
-          "
+          class="shadow-2 q-my-sm"
+          :class="denseView ? 'q-py-xs q-px-sm q-mx-xs' : 'q-pa-sm q-mx-md'"
           style="border-radius: 24px"
           :style="`height: ${
             programPageHeight - programManagerHeight - 8 * 2
