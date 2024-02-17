@@ -129,6 +129,26 @@
                     selectedProgram.isProgramTemplate === false) ||
                   selectedProgram.isProgramTemplate === undefined
                 "
+                icon="sym_o_download"
+                flat
+                outline
+                color="secondary"
+                @click="showProgramTemplateImportDialog = true"
+                :label="
+                  denseView
+                    ? undefined
+                    : i18n.t(
+                        'coach.programlibrary_management.list.import_template',
+                      )
+                "
+                :class="denseView ? 'q-pa-xs q-ma-none' : ''"
+              ></q-btn>
+              <q-btn
+                v-if="
+                  (selectedProgram &&
+                    selectedProgram.isProgramTemplate === false) ||
+                  selectedProgram.isProgramTemplate === undefined
+                "
                 icon="sym_o_publish"
                 flat
                 outline
@@ -695,6 +715,34 @@
       </q-card>
     </q-dialog>
 
+    <!-- Dialog to import program template into current program -->
+    <q-dialog
+      v-model="showProgramTemplateImportDialog"
+      @hide="programTemplateImportFormElement?.reset"
+    >
+      <q-card v-if="selectedProgram">
+        <q-card-section class="row items-center">
+          <h6>
+            {{
+              $t("coach.programlibrary_management.list.template_import_title")
+            }}
+          </h6>
+        </q-card-section>
+        <FormProgramTemplateImport
+          ref="programTemplateImportFormElement"
+          :program="selectedProgram"
+          @submit="
+            (programTemplate) => {
+              importProgramTemplate(programTemplate);
+              showProgramTemplateImportDialog = false;
+            }
+          "
+          @reset="showProgramTemplateImportDialog = false"
+        >
+        </FormProgramTemplateImport>
+      </q-card>
+    </q-dialog>
+
     <!-- Dialog to save program template -->
     <q-dialog
       v-model="showProgramTemplateSaveDialog"
@@ -756,6 +804,7 @@ import {
 import router, { NamedRoutes } from "@/router";
 import FormProgramInfo from "@/components/forms/FormProgramInfo.vue";
 import FormProgramTemplateSaving from "@/components/forms/FormProgramTemplateSaving.vue";
+import FormProgramTemplateImport from "@/components/forms/FormProgramTemplateImport.vue";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { event } from "vue-gtag";
@@ -820,6 +869,10 @@ const showProgramTemplateFilteredWarning = ref(false);
 const showProgramTemplateSaveDialog = ref(false);
 const programTemplateSavingFormElement =
   ref<typeof FormProgramTemplateSaving>();
+
+const showProgramTemplateImportDialog = ref(false);
+const programTemplateImportFormElement =
+  ref<typeof FormProgramTemplateImport>();
 
 // Set ref related to maxlift
 const updatingMaxlift = ref<MaxLift>();
@@ -1142,6 +1195,16 @@ function saveProgramTemplate(programTemplate: Program) {
       });
     },
   });
+}
+
+/**
+ * Allows importing a program template into the current program instance
+ */
+function importProgramTemplate(programTemplate: Program) {
+  // Get current destination program
+  const destinationProgram = selectedProgram;
+  console.log("destination program", destinationProgram);
+  console.log("template to import", programTemplate);
 }
 
 /**

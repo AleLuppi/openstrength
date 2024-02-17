@@ -37,8 +37,6 @@
             :on-delete="onProgramTemplateDelete"
           ></TableExistingProgramTemplates>
         </q-card>
-
-        <!-- TODO: Dialog to add a new program template -->
       </div>
 
       <!-- Right card: selected program data -->

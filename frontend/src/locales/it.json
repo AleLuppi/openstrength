@@ -395,9 +395,11 @@
         "delete_proceed": "Elimina programma",
         "delete_template_confirm": "Stai per eliminare il programma template \"{ program }\". Sei sicuro?",
         "export_template": "Esporta in libreria",
+        "import_template": "Importa da libreria",
         "template": "Programma Template",
         "filter_active_warning": "Ci sono dei filtri attivi, verrà salvata una versione filtrata del programma, vuoi continuare?",
         "template_saving_title": "Inserisci i dati del tuo programma template",
+        "template_import_title": "Importa un programma template",
         "template_updating_title": "Aggiorna info del programma",
         "no_templates": "Non hai ancora esportato dei programmi template, puoi farlo dal builder programmi",
         "no_selected_template": "Seleziona un programma template per visualizzarne l'anteprima",
@@ -408,7 +410,9 @@
       "fields": {
         "program_info": "Info del programma template",
         "name": "Nome programma",
-        "description": "Note"
+        "description": "Note",
+        "import_title": "Programma da importare",
+        "select_program": "Seleziona programma"
       }
     },
     "maxlift_management": {

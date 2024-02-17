@@ -49,6 +49,11 @@ const props = defineProps({
     type: Function,
     required: false,
   },
+  allowDelete: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
 });
 
 // Define emits
@@ -57,6 +62,7 @@ const emit = defineEmits<{
   "update:selected": [value?: Program];
 }>();
 
+// Set table columns
 // Set table columns
 const columns = computed(() => [
   {
@@ -75,7 +81,9 @@ const columns = computed(() => [
     field: "lastmodification",
     sortable: true,
   },
-  { name: "delete", align: "center", label: "", field: "delete" },
+  ...(props.allowDelete
+    ? [{ name: "delete", align: "center", label: "", field: "delete" }]
+    : []),
 ]);
 
 // Set table rows
