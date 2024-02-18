@@ -32,30 +32,25 @@
       separator
       v-slot="{ item: [week, day], index }"
     >
-      <!-- Week Day wrapper -->
-      <div :key="`${week}.${day}`" class="q-pb-sm">
-        <!-- Show week and day and allow navigation -->
+      <div :key="`${week}.${day}`">
+        <!-- Week wrapper -->
         <div
-          v-intersection="dayTitleInteresctionHandler"
+          v-if="index == 0 || week != allWeekDayPairs[index - 1][0]"
           @click="
             () =>
-              (dayInfoCollapsed[index] = dayCanBeExpanded[index]
-                ? !dayInfoCollapsed[index]
-                : false)
+              allWeekDayPairs.forEach(([weekVal], idx) => {
+                if (weekVal == week) dayInfoCollapsed[idx] = true;
+              })
           "
-          class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-sm os-day-title"
-          :class="{ 'bg-grey-2 disabled q-mx-md': !dayCanBeExpanded[index] }"
+          class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-sm"
         >
           <!-- Week name -->
-          <h4
-            class="q-mt-none cursor-pointer text-margin-xs"
-            :class="dayCanBeExpanded[index] ? 'underlined-dashed' : 'text-h6'"
-          >
+          <h4 class="q-mt-none cursor-pointer text-margin-xs underlined-dashed">
             {{ getWeekDisplayName(week) }}
           </h4>
 
           <!-- Week management buttons -->
-          <div v-show="dayCanBeExpanded[index]">
+          <div>
             <!-- Duplicate week -->
             <q-btn
               @click="editWeekDayName = ['', '']"
@@ -104,104 +99,12 @@
             </q-btn>
           </div>
 
-          <q-separator
-            v-show="dayCanBeExpanded[index]"
-            vertical
-            inset
-            class="q-ml-xs q-mr-sm"
-          />
-
-          <h6
-            class="q-mt-none cursor-pointer text-margin-xs"
-            :class="dayCanBeExpanded[index] ? 'underlined-dashed' : ''"
-          >
-            {{ getDayDisplayName(day) }}
-          </h6>
-
-          <!-- Day management buttons -->
-          <div v-show="dayCanBeExpanded[index]">
-            <!-- Rename day -->
-            <q-btn
-              @click="editWeekDayName = [week, day]"
-              icon="edit"
-              size="sm"
-              color="dark-light"
-              flat
-              round
-              :ripple="false"
-            >
-              <q-tooltip anchor="top middle" :offset="[0, 40]">
-                {{ $t("coach.program_management.builder.day_rename") }}
-              </q-tooltip>
-
-              <FormProgramNewWeekDay
-                v-model="editWeekDayName"
-                @save="
-                  (val?: [string, string]) => {
-                    if (val) moveDay([week, day], val);
-                  }
-                "
-                :cover="false"
-                anchor="center right"
-                self="center right"
-                :offset="[15, 0]"
-              >
-              </FormProgramNewWeekDay>
-            </q-btn>
-
-            <!-- Duplicate day -->
-            <q-btn
-              @click="editWeekDayName = ['', '']"
-              icon="fa-regular fa-clone"
-              size="sm"
-              color="dark-light"
-              flat
-              round
-              :ripple="false"
-            >
-              <q-tooltip anchor="top middle" :offset="[0, 40]">
-                {{ $t("coach.program_management.builder.day_duplicate") }}
-              </q-tooltip>
-
-              <FormProgramNewWeekDay
-                v-model="editWeekDayName"
-                @save="
-                  (val?: [string, string]) => {
-                    if (val) duplicateDay([week, day], val);
-                  }
-                "
-                :title="
-                  $t('coach.program_management.builder.day_duplicate_form')
-                "
-                :cover="false"
-                anchor="center right"
-                self="center left"
-              >
-              </FormProgramNewWeekDay>
-            </q-btn>
-
-            <!-- Delete day -->
-            <q-btn
-              @click="deleteDay([week, day])"
-              icon="fa-regular fa-trash-can"
-              size="sm"
-              color="dark-light"
-              flat
-              round
-              :ripple="false"
-            >
-              <q-tooltip anchor="top middle" :offset="[0, 40]">
-                {{ $t("coach.program_management.builder.day_delete") }}
-              </q-tooltip>
-            </q-btn>
-          </div>
-
           <q-separator size="1px" class="col q-mx-sm" />
 
-          <!-- Expand or collapse day -->
+          <!-- Expand or collapse week -->
           <q-btn
             v-show="dayCanBeExpanded[index]"
-            :icon="dayShowExpanded[index] ? 'expand_less' : 'expand_more'"
+            icon="unfold_less"
             round
             flat
             dense
@@ -209,103 +112,221 @@
           ></q-btn>
         </div>
 
-        <!-- Collapsable element -->
-        <div v-show="dayShowExpanded[index]">
-          <!-- Exercise table -->
-          <TableProgramBuilder
-            v-for="(exerciseIdx, currIdx) in programExercises[week][day]"
-            v-show="
-              filter.exercise.length == 0 ||
-              selectedProgram.programExercises[exerciseIdx].exercise ==
-                undefined ||
-              (selectedProgram.programExercises[exerciseIdx].exercise!.name &&
-                filter.exercise.includes(
-                  selectedProgram.programExercises[exerciseIdx].exercise!.name!,
-                ))
+        <!-- Day wrapper -->
+        <div class="q-pb-sm">
+          <!-- Display day name -->
+          <div
+            v-intersection="dayTitleInteresctionHandler"
+            @click="
+              () =>
+                (dayInfoCollapsed[index] = dayCanBeExpanded[index]
+                  ? !dayInfoCollapsed[index]
+                  : false)
             "
-            :model-value="selectedProgram.programExercises[exerciseIdx]"
-            @update:model-value="updateProgram()"
-            :exercises="exercises"
-            :maxlifts="maxliftsPerExercise"
-            :can-move-up="currIdx > 0"
-            :can-move-down="currIdx < programExercises[week][day].length - 1"
-            :navigate-weeks="Object.keys(filteredWeekDay)"
-            :navigate-days="filteredWeekDay[week]"
-            v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
-            :dense="dense"
-            :key="selectedProgram.programExercises[exerciseIdx].scheduleOrder"
-            @duplicate="
-              (toWeek, toDay) => duplicateExercise(exerciseIdx, [toWeek, toDay])
-            "
-            @delete="deleteExercise(exerciseIdx)"
-            @move="(down) => moveOrderExercise(exerciseIdx, down ? 1 : -1)"
-            @new-exercise="
-              (name) =>
-                emit(
-                  'newExercise',
-                  name,
-                  selectedProgram?.programExercises?.[exerciseIdx],
-                )
-            "
-            @new-variant="
-              (name) =>
-                emit(
-                  'newVariant',
-                  selectedProgram?.programExercises?.[exerciseIdx].exercise
-                    ?.name ?? '',
-                  name,
-                  selectedProgram?.programExercises?.[exerciseIdx],
-                )
-            "
-            @require-reference="
-              (line, field) =>
-                (selectingReference = { line: line, field: field })
-            "
-            @select-reference="(line) => onReferenceSelection(line)"
-          ></TableProgramBuilder>
+            class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-sm os-day-title"
+            :class="{ 'os-day-disabled disabled': !dayCanBeExpanded[index] }"
+          >
+            <!-- Day name -->
+            <h6 class="q-mt-none cursor-pointer text-margin-xs">
+              <span class="os-show-on-sticky">
+                {{ getWeekDisplayName(week) }} -
+              </span>
+              <span :class="{ 'underlined-dashed': dayCanBeExpanded[index] }">{{
+                getDayDisplayName(day)
+              }}</span>
+            </h6>
 
-          <!-- New element buttons -->
-          <div class="row items-center justify-center q-gutter-xs">
-            <!-- New exercise -->
-            <q-btn
-              icon="add"
-              :label="$t('coach.program_management.builder.new_exercise')"
-              @click="addExercise([week, day])"
-              flat
-              rounded
-            >
-              <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-                {{
-                  $t("coach.program_management.builder.new_exercise_tooltip")
-                }}
-              </q-tooltip>
-            </q-btn>
+            <!-- Day management buttons -->
+            <div v-show="dayCanBeExpanded[index]">
+              <!-- Rename day -->
+              <q-btn
+                @click="editWeekDayName = [week, day]"
+                icon="edit"
+                size="sm"
+                color="dark-light"
+                flat
+                round
+                :ripple="false"
+              >
+                <q-tooltip anchor="top middle" :offset="[0, 40]">
+                  {{ $t("coach.program_management.builder.day_rename") }}
+                </q-tooltip>
 
-            <!-- New day -->
-            <q-btn
-              icon="add"
-              :label="$t('coach.program_management.builder.new_day')"
-              @click="addDay([week, day])"
-              flat
-              rounded
-            >
-              <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-                {{ $t("coach.program_management.builder.new_day_tooltip") }}
-              </q-tooltip>
-            </q-btn>
+                <FormProgramNewWeekDay
+                  v-model="editWeekDayName"
+                  @save="
+                    (val?: [string, string]) => {
+                      if (val) moveDay([week, day], val);
+                    }
+                  "
+                  :cover="false"
+                  anchor="center right"
+                  self="center right"
+                  :offset="[15, 0]"
+                >
+                </FormProgramNewWeekDay>
+              </q-btn>
 
-            <!-- New week -->
+              <!-- Duplicate day -->
+              <q-btn
+                @click="editWeekDayName = ['', '']"
+                icon="fa-regular fa-clone"
+                size="sm"
+                color="dark-light"
+                flat
+                round
+                :ripple="false"
+              >
+                <q-tooltip anchor="top middle" :offset="[0, 40]">
+                  {{ $t("coach.program_management.builder.day_duplicate") }}
+                </q-tooltip>
+
+                <FormProgramNewWeekDay
+                  v-model="editWeekDayName"
+                  @save="
+                    (val?: [string, string]) => {
+                      if (val) duplicateDay([week, day], val);
+                    }
+                  "
+                  :title="
+                    $t('coach.program_management.builder.day_duplicate_form')
+                  "
+                  :cover="false"
+                  anchor="center right"
+                  self="center left"
+                >
+                </FormProgramNewWeekDay>
+              </q-btn>
+
+              <!-- Delete day -->
+              <q-btn
+                @click="deleteDay([week, day])"
+                icon="fa-regular fa-trash-can"
+                size="sm"
+                color="dark-light"
+                flat
+                round
+                :ripple="false"
+              >
+                <q-tooltip anchor="top middle" :offset="[0, 40]">
+                  {{ $t("coach.program_management.builder.day_delete") }}
+                </q-tooltip>
+              </q-btn>
+            </div>
+
+            <q-separator size="1px" class="col q-mx-sm" />
+
+            <!-- Expand or collapse day -->
             <q-btn
-              icon="add"
-              :label="$t('coach.program_management.builder.new_week')"
-              @click="addWeek(week)"
+              v-show="dayCanBeExpanded[index]"
+              :icon="dayShowExpanded[index] ? 'expand_less' : 'expand_more'"
+              round
               flat
-              rounded
-            >
-              <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-                {{ $t("coach.program_management.builder.new_week_tooltip") }}
-              </q-tooltip></q-btn
-            >
+              dense
+              color="light-dark"
+            ></q-btn>
+          </div>
+
+          <!-- Collapsable element -->
+          <div v-show="dayShowExpanded[index]">
+            <!-- Exercise table -->
+            <TableProgramBuilder
+              v-for="(exerciseIdx, currIdx) in programExercises[week][day]"
+              v-show="
+                filter.exercise.length == 0 ||
+                selectedProgram.programExercises[exerciseIdx].exercise ==
+                  undefined ||
+                (selectedProgram.programExercises[exerciseIdx].exercise!.name &&
+                  filter.exercise.includes(
+                    selectedProgram.programExercises[exerciseIdx].exercise!
+                      .name!,
+                  ))
+              "
+              :model-value="selectedProgram.programExercises[exerciseIdx]"
+              @update:model-value="updateProgram()"
+              :exercises="exercises"
+              :maxlifts="maxliftsPerExercise"
+              :can-move-up="currIdx > 0"
+              :can-move-down="currIdx < programExercises[week][day].length - 1"
+              :navigate-weeks="Object.keys(filteredWeekDay)"
+              :navigate-days="filteredWeekDay[week]"
+              v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
+              :dense="dense"
+              :key="selectedProgram.programExercises[exerciseIdx].scheduleOrder"
+              @duplicate="
+                (toWeek, toDay) =>
+                  duplicateExercise(exerciseIdx, [toWeek, toDay])
+              "
+              @delete="deleteExercise(exerciseIdx)"
+              @move="(down) => moveOrderExercise(exerciseIdx, down ? 1 : -1)"
+              @new-exercise="
+                (name) =>
+                  emit(
+                    'newExercise',
+                    name,
+                    selectedProgram?.programExercises?.[exerciseIdx],
+                  )
+              "
+              @new-variant="
+                (name) =>
+                  emit(
+                    'newVariant',
+                    selectedProgram?.programExercises?.[exerciseIdx].exercise
+                      ?.name ?? '',
+                    name,
+                    selectedProgram?.programExercises?.[exerciseIdx],
+                  )
+              "
+              @require-reference="
+                (line, field) =>
+                  (selectingReference = { line: line, field: field })
+              "
+              @select-reference="(line) => onReferenceSelection(line)"
+            ></TableProgramBuilder>
+
+            <!-- New element buttons -->
+            <div class="row items-center justify-center q-gutter-xs">
+              <!-- New exercise -->
+              <q-btn
+                icon="add"
+                :label="$t('coach.program_management.builder.new_exercise')"
+                @click="addExercise([week, day])"
+                flat
+                rounded
+              >
+                <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+                  {{
+                    $t("coach.program_management.builder.new_exercise_tooltip")
+                  }}
+                </q-tooltip>
+              </q-btn>
+
+              <!-- New day -->
+              <q-btn
+                icon="add"
+                :label="$t('coach.program_management.builder.new_day')"
+                @click="addDay([week, day])"
+                flat
+                rounded
+              >
+                <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+                  {{ $t("coach.program_management.builder.new_day_tooltip") }}
+                </q-tooltip>
+              </q-btn>
+
+              <!-- New week -->
+              <q-btn
+                icon="add"
+                :label="$t('coach.program_management.builder.new_week')"
+                @click="addWeek(week)"
+                flat
+                rounded
+              >
+                <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+                  {{ $t("coach.program_management.builder.new_week_tooltip") }}
+                </q-tooltip></q-btn
+              >
+            </div>
           </div>
         </div>
       </div>
@@ -1019,10 +1040,10 @@ const dayTitleInteresctionHandler = {
         (entry?.intersectionRect?.top ?? 0)
     ) {
       entry?.target?.classList.add("shadow-1");
-      entry?.target?.classList.add("bg-orange-1");
+      entry?.target?.classList.add("os-day-sticky");
     } else {
       entry?.target?.classList.remove("shadow-1");
-      entry?.target?.classList.remove("bg-orange-1");
+      entry?.target?.classList.remove("os-day-sticky");
     }
     return true;
   },
@@ -1038,10 +1059,35 @@ const dayTitleInteresctionHandler = {
   position: sticky;
   top: -1px;
   padding-top: 1px;
+  padding-inline: 8px;
+  padding-inline-start: 32px;
   z-index: 1;
   border-radius: 12px;
   transition:
     box-shadow 300ms,
     background-color 300ms;
+
+  & .os-show-on-sticky {
+    display: none;
+  }
+
+  &.os-day-sticky {
+    background-color: $orange-1 !important;
+    padding-inline: 8px;
+
+    & .os-show-on-sticky {
+      display: unset;
+    }
+  }
+
+  &.os-day-disabled {
+    background-color: $grey-2 !important;
+    margin-inline: 16px;
+    padding-inline: 16px;
+
+    & .os-show-on-sticky {
+      display: none;
+    }
+  }
 }
 </style>
