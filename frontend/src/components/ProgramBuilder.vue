@@ -228,7 +228,7 @@
           </div>
 
           <!-- Collapsable element -->
-          <div v-show="dayShowExpanded[index]">
+          <div v-if="dayShowExpanded[index]">
             <!-- Exercise table -->
             <TableProgramBuilder
               v-for="(exerciseIdx, currIdx) in programExercises[week][day]"
