@@ -7,8 +7,6 @@ import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { MaxLift } from "../maxlifts/maxlift";
 
 /**
- * TODO: this method was taken from TableProgramBuilder.vue
- * I think it is best to keep it in a separated helper.
  * Get the displayable name of a selected reference.
  *
  * @param reference reference whose name shall be retrieved.
@@ -39,7 +37,6 @@ function getReferenceDisplayName(reference: ProgramLine | MaxLift | undefined) {
  * @param line program line that shall be converted.
  * @returns schema as a string.
  */
-
 export function convertLineToSchema(line: ProgramLine): string {
   const referencedLoadText = line.loadReference
     ? getReferenceDisplayName(line.loadReference)
