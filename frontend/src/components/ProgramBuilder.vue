@@ -223,11 +223,10 @@
           <!-- Collapsable element -->
           <div v-if="dayShowExpanded[index]">
             <!-- Exercise table -->
-            <q-intersection
+            <os-lazy
               v-for="(exerciseIdx, currIdx) in programExercises[week][day]"
               :key="selectedProgram.programExercises[exerciseIdx].scheduleOrder"
-              margin="600px"
-              once
+              margin="1000px"
             >
               <TableProgramBuilder
                 v-show="
@@ -283,7 +282,7 @@
                 "
                 @select-reference="(line) => onReferenceSelection(line)"
               ></TableProgramBuilder>
-            </q-intersection>
+            </os-lazy>
 
             <!-- New element buttons -->
             <div class="row items-center justify-center q-gutter-xs">
