@@ -538,6 +538,14 @@ const dayShowExpanded = computed(() =>
   dayCanBeExpanded.value.map((val, idx) => !dayInfoCollapsed.value[idx] && val),
 );
 
+// Expand all days on filter change
+watch(
+  () => props.filter,
+  () => {
+    dayInfoCollapsed.value = [];
+  },
+);
+
 /**
  * Assign a given reference to the selected line.
  *
