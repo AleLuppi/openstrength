@@ -50,7 +50,7 @@
           </h4>
 
           <!-- Week management buttons -->
-          <div>
+          <div class="q-pl-sm">
             <!-- Duplicate week -->
             <q-btn
               @click="editWeekDayName = ['', '']"
@@ -131,23 +131,12 @@
               <span class="os-show-on-sticky">
                 {{ getWeekDisplayName(week) }} -
               </span>
-              <span :class="{ 'underlined-dashed': dayCanBeExpanded[index] }">{{
-                getDayDisplayName(day)
-              }}</span>
-            </h6>
-
-            <!-- Day management buttons -->
-            <div v-show="dayCanBeExpanded[index]">
-              <!-- Rename day -->
-              <q-btn
-                @click="editWeekDayName = [week, day]"
-                icon="edit"
-                size="sm"
-                color="dark-light"
-                flat
-                round
-                :ripple="false"
+              <span
+                :class="{ 'underlined-dashed': dayCanBeExpanded[index] }"
+                @click.stop="editWeekDayName = [week, day]"
               >
+                {{ getDayDisplayName(day) }}
+
                 <q-tooltip anchor="top middle" :offset="[0, 40]">
                   {{ $t("coach.program_management.builder.day_rename") }}
                 </q-tooltip>
@@ -159,17 +148,19 @@
                       if (val) moveDay([week, day], val);
                     }
                   "
-                  :cover="false"
-                  anchor="center right"
-                  self="center right"
+                  :cover="true"
+                  single="day"
                   :offset="[15, 0]"
                 >
                 </FormProgramNewWeekDay>
-              </q-btn>
+              </span>
+            </h6>
 
+            <!-- Day management buttons -->
+            <div v-show="dayCanBeExpanded[index]" class="q-pl-sm">
               <!-- Duplicate day -->
               <q-btn
-                @click="editWeekDayName = ['', '']"
+                @click.stop="editWeekDayName = ['', '']"
                 icon="fa-regular fa-clone"
                 size="sm"
                 color="dark-light"
@@ -200,7 +191,7 @@
 
               <!-- Delete day -->
               <q-btn
-                @click="deleteDay([week, day])"
+                @click.stop="deleteDay([week, day])"
                 icon="fa-regular fa-trash-can"
                 size="sm"
                 color="dark-light"
