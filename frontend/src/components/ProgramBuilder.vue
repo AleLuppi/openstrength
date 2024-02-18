@@ -28,7 +28,7 @@
       style="height: 100%"
       :items="allWeekDayPairs"
       virtual-scroll-slice-size="2"
-      virtual-scroll-item-size="100"
+      virtual-scroll-item-size="50"
       separator
       v-slot="{ item: [week, day], index }"
     >
@@ -45,7 +45,9 @@
           class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-sm"
         >
           <!-- Week name -->
-          <h4 class="q-mt-none cursor-pointer text-margin-xs underlined-dashed">
+          <h4
+            class="q-mt-none cursor-pointer text-bold text-margin-xs underlined-dashed"
+          >
             {{ getWeekDisplayName(week) }}
           </h4>
 
@@ -221,59 +223,67 @@
           <!-- Collapsable element -->
           <div v-if="dayShowExpanded[index]">
             <!-- Exercise table -->
-            <TableProgramBuilder
+            <q-intersection
               v-for="(exerciseIdx, currIdx) in programExercises[week][day]"
-              v-show="
-                filter.exercise.length == 0 ||
-                selectedProgram.programExercises[exerciseIdx].exercise ==
-                  undefined ||
-                (selectedProgram.programExercises[exerciseIdx].exercise!.name &&
-                  filter.exercise.includes(
-                    selectedProgram.programExercises[exerciseIdx].exercise!
-                      .name!,
-                  ))
-              "
-              :model-value="selectedProgram.programExercises[exerciseIdx]"
-              @update:model-value="updateProgram()"
-              :exercises="exercises"
-              :maxlifts="maxliftsPerExercise"
-              :can-move-up="currIdx > 0"
-              :can-move-down="currIdx < programExercises[week][day].length - 1"
-              :navigate-weeks="Object.keys(filteredWeekDay)"
-              :navigate-days="filteredWeekDay[week]"
-              v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
-              :dense="dense"
               :key="selectedProgram.programExercises[exerciseIdx].scheduleOrder"
-              @duplicate="
-                (toWeek, toDay) =>
-                  duplicateExercise(exerciseIdx, [toWeek, toDay])
-              "
-              @delete="deleteExercise(exerciseIdx)"
-              @move="(down) => moveOrderExercise(exerciseIdx, down ? 1 : -1)"
-              @new-exercise="
-                (name) =>
-                  emit(
-                    'newExercise',
-                    name,
-                    selectedProgram?.programExercises?.[exerciseIdx],
-                  )
-              "
-              @new-variant="
-                (name) =>
-                  emit(
-                    'newVariant',
-                    selectedProgram?.programExercises?.[exerciseIdx].exercise
-                      ?.name ?? '',
-                    name,
-                    selectedProgram?.programExercises?.[exerciseIdx],
-                  )
-              "
-              @require-reference="
-                (line, field) =>
-                  (selectingReference = { line: line, field: field })
-              "
-              @select-reference="(line) => onReferenceSelection(line)"
-            ></TableProgramBuilder>
+              margin="600px"
+              once
+            >
+              <TableProgramBuilder
+                v-show="
+                  filter.exercise.length == 0 ||
+                  selectedProgram.programExercises[exerciseIdx].exercise ==
+                    undefined ||
+                  (selectedProgram.programExercises[exerciseIdx].exercise!
+                    .name &&
+                    filter.exercise.includes(
+                      selectedProgram.programExercises[exerciseIdx].exercise!
+                        .name!,
+                    ))
+                "
+                :model-value="selectedProgram.programExercises[exerciseIdx]"
+                @update:model-value="updateProgram()"
+                :exercises="exercises"
+                :maxlifts="maxliftsPerExercise"
+                :can-move-up="currIdx > 0"
+                :can-move-down="
+                  currIdx < programExercises[week][day].length - 1
+                "
+                :navigate-weeks="Object.keys(filteredWeekDay)"
+                :navigate-days="filteredWeekDay[week]"
+                v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
+                :dense="dense"
+                @duplicate="
+                  (toWeek, toDay) =>
+                    duplicateExercise(exerciseIdx, [toWeek, toDay])
+                "
+                @delete="deleteExercise(exerciseIdx)"
+                @move="(down) => moveOrderExercise(exerciseIdx, down ? 1 : -1)"
+                @new-exercise="
+                  (name) =>
+                    emit(
+                      'newExercise',
+                      name,
+                      selectedProgram?.programExercises?.[exerciseIdx],
+                    )
+                "
+                @new-variant="
+                  (name) =>
+                    emit(
+                      'newVariant',
+                      selectedProgram?.programExercises?.[exerciseIdx].exercise
+                        ?.name ?? '',
+                      name,
+                      selectedProgram?.programExercises?.[exerciseIdx],
+                    )
+                "
+                @require-reference="
+                  (line, field) =>
+                    (selectingReference = { line: line, field: field })
+                "
+                @select-reference="(line) => onReferenceSelection(line)"
+              ></TableProgramBuilder>
+            </q-intersection>
 
             <!-- New element buttons -->
             <div class="row items-center justify-center q-gutter-xs">
@@ -1023,7 +1033,7 @@ const dayTitleInteresctionHandler = {
     boundingClientRect?: { [key: string]: number | undefined };
     intersectionRect?: { [key: string]: number | undefined };
     target?: Element;
-  }) => {
+  }): boolean => {
     // Add classes when element becomes sticky, delete them otherwise
     if (
       !entry?.isIntersecting &&
