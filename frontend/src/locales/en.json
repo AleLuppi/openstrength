@@ -303,6 +303,7 @@
         "end_date": "End date"
       },
       "builder": {
+        "begin": "Start!",
         "save": "Save",
         "saved": "program is saved",
         "not_saved": "there are unsaved changes",

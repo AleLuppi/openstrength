@@ -303,6 +303,7 @@
         "end_date": "Data fine"
       },
       "builder": {
+        "begin": "Inizia!",
         "save": "Salva",
         "saved": "programma salvato",
         "not_saved": "modifiche non salvate",

@@ -14,8 +14,7 @@
         </h6>
       </slot>
       <q-btn
-        icon="add"
-        :label="$t('coach.program_management.builder.new_day')"
+        :label="$t('coach.program_management.builder.begin')"
         @click="addWeek(String(defaultWeekName))"
         rounded
         unelevated
