@@ -22,47 +22,41 @@
       ></q-btn>
     </div>
 
-    <!-- Show something when filters remove any exercise -->
-    <div v-else-if="isProgramFilteredOut" class="text-center">
-      <slot name="empty-filtered">
-        <h6>
-          {{ $t("coach.program_management.filter.all_filtered_out") }}
-        </h6>
-      </slot>
-    </div>
-
     <!-- Display all days -->
     <q-virtual-scroll
       v-else
       ref="exerciseListElement"
       style="height: 100%"
-      :items="filteredWeekDayPairs"
+      :items="allWeekDayPairs"
       virtual-scroll-slice-size="2"
       virtual-scroll-item-size="100"
       separator
-      v-slot="{ item: [week, day] }"
+      v-slot="{ item: [week, day], index }"
     >
       <!-- Week Day wrapper -->
-      <div
-        v-show="
-          Object.keys(filteredWeekDay).includes(week) &&
-          filteredWeekDay[week].includes(day)
-        "
-        :key="`${week}.${day}`"
-        class="q-pb-md"
-      >
+      <div :key="`${week}.${day}`" class="q-pb-sm">
         <!-- Show week and day and allow navigation -->
         <div
           v-intersection="dayTitleInteresctionHandler"
-          class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-md os-day-title"
+          @click="
+            () =>
+              (dayInfoCollapsed[index] = dayCanBeExpanded[index]
+                ? !dayInfoCollapsed[index]
+                : false)
+          "
+          class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-sm os-day-title"
+          :class="{ 'bg-grey-2 disabled q-mx-md': !dayCanBeExpanded[index] }"
         >
           <!-- Week name -->
-          <h4 class="q-mt-none underlined-dashed cursor-pointer text-margin-xs">
+          <h4
+            class="q-mt-none cursor-pointer text-margin-xs"
+            :class="dayCanBeExpanded[index] ? 'underlined-dashed' : 'text-h6'"
+          >
             {{ getWeekDisplayName(week) }}
           </h4>
 
           <!-- Week management buttons -->
-          <div>
+          <div v-show="dayCanBeExpanded[index]">
             <!-- Duplicate week -->
             <q-btn
               @click="editWeekDayName = ['', '']"
@@ -111,14 +105,22 @@
             </q-btn>
           </div>
 
-          <q-separator vertical inset class="q-ml-xs q-mr-sm" />
+          <q-separator
+            v-show="dayCanBeExpanded[index]"
+            vertical
+            inset
+            class="q-ml-xs q-mr-sm"
+          />
 
-          <h6 class="q-mt-none underlined-dashed cursor-pointer text-margin-xs">
+          <h6
+            class="q-mt-none cursor-pointer text-margin-xs"
+            :class="dayCanBeExpanded[index] ? 'underlined-dashed' : ''"
+          >
             {{ getDayDisplayName(day) }}
           </h6>
 
           <!-- Day management buttons -->
-          <div>
+          <div v-show="dayCanBeExpanded[index]">
             <!-- Rename day -->
             <q-btn
               @click="editWeekDayName = [week, day]"
@@ -195,101 +197,117 @@
             </q-btn>
           </div>
 
-          <q-separator inset size="1px" class="col" />
+          <q-separator size="1px" class="col q-mx-sm" />
+
+          <!-- Expand or collapse day -->
+          <q-btn
+            v-show="dayCanBeExpanded[index]"
+            :icon="dayShowExpanded[index] ? 'expand_less' : 'expand_more'"
+            round
+            flat
+            dense
+            color="light-dark"
+          ></q-btn>
         </div>
 
-        <!-- Exercise table -->
-        <TableProgramBuilder
-          v-for="(exerciseIdx, currIdx) in programExercises[week][day]"
-          v-show="
-            filter.exercise.length == 0 ||
-            selectedProgram.programExercises[exerciseIdx].exercise ==
-              undefined ||
-            (selectedProgram.programExercises[exerciseIdx].exercise!.name &&
-              filter.exercise.includes(
-                selectedProgram.programExercises[exerciseIdx].exercise!.name!,
-              ))
-          "
-          :model-value="selectedProgram.programExercises[exerciseIdx]"
-          @update:model-value="updateProgram()"
-          :exercises="exercises"
-          :maxlifts="maxliftsPerExercise"
-          :can-move-up="currIdx > 0"
-          :can-move-down="currIdx < programExercises[week][day].length - 1"
-          :navigate-weeks="Object.keys(filteredWeekDay)"
-          :navigate-days="filteredWeekDay[week]"
-          v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
-          :dense="dense"
-          :key="selectedProgram.programExercises[exerciseIdx].scheduleOrder"
-          @duplicate="
-            (toWeek, toDay) => duplicateExercise(exerciseIdx, [toWeek, toDay])
-          "
-          @delete="deleteExercise(exerciseIdx)"
-          @move="(down) => moveOrderExercise(exerciseIdx, down ? 1 : -1)"
-          @new-exercise="
-            (name) =>
-              emit(
-                'newExercise',
-                name,
-                selectedProgram?.programExercises?.[exerciseIdx],
-              )
-          "
-          @new-variant="
-            (name) =>
-              emit(
-                'newVariant',
-                selectedProgram?.programExercises?.[exerciseIdx].exercise
-                  ?.name ?? '',
-                name,
-                selectedProgram?.programExercises?.[exerciseIdx],
-              )
-          "
-          @require-reference="
-            (line, field) => (selectingReference = { line: line, field: field })
-          "
-          @select-reference="(line) => onReferenceSelection(line)"
-        ></TableProgramBuilder>
+        <!-- Collapsable element -->
+        <div v-show="dayShowExpanded[index]">
+          <!-- Exercise table -->
+          <TableProgramBuilder
+            v-for="(exerciseIdx, currIdx) in programExercises[week][day]"
+            v-show="
+              filter.exercise.length == 0 ||
+              selectedProgram.programExercises[exerciseIdx].exercise ==
+                undefined ||
+              (selectedProgram.programExercises[exerciseIdx].exercise!.name &&
+                filter.exercise.includes(
+                  selectedProgram.programExercises[exerciseIdx].exercise!.name!,
+                ))
+            "
+            :model-value="selectedProgram.programExercises[exerciseIdx]"
+            @update:model-value="updateProgram()"
+            :exercises="exercises"
+            :maxlifts="maxliftsPerExercise"
+            :can-move-up="currIdx > 0"
+            :can-move-down="currIdx < programExercises[week][day].length - 1"
+            :navigate-weeks="Object.keys(filteredWeekDay)"
+            :navigate-days="filteredWeekDay[week]"
+            v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
+            :dense="dense"
+            :key="selectedProgram.programExercises[exerciseIdx].scheduleOrder"
+            @duplicate="
+              (toWeek, toDay) => duplicateExercise(exerciseIdx, [toWeek, toDay])
+            "
+            @delete="deleteExercise(exerciseIdx)"
+            @move="(down) => moveOrderExercise(exerciseIdx, down ? 1 : -1)"
+            @new-exercise="
+              (name) =>
+                emit(
+                  'newExercise',
+                  name,
+                  selectedProgram?.programExercises?.[exerciseIdx],
+                )
+            "
+            @new-variant="
+              (name) =>
+                emit(
+                  'newVariant',
+                  selectedProgram?.programExercises?.[exerciseIdx].exercise
+                    ?.name ?? '',
+                  name,
+                  selectedProgram?.programExercises?.[exerciseIdx],
+                )
+            "
+            @require-reference="
+              (line, field) =>
+                (selectingReference = { line: line, field: field })
+            "
+            @select-reference="(line) => onReferenceSelection(line)"
+          ></TableProgramBuilder>
 
-        <!-- New element buttons -->
-        <div class="row items-center justify-center q-gutter-xs">
-          <!-- New exercise -->
-          <q-btn
-            icon="add"
-            :label="$t('coach.program_management.builder.new_exercise')"
-            @click="addExercise([week, day])"
-            flat
-            rounded
-          >
-            <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-              {{ $t("coach.program_management.builder.new_exercise_tooltip") }}
-            </q-tooltip>
-          </q-btn>
+          <!-- New element buttons -->
+          <div class="row items-center justify-center q-gutter-xs">
+            <!-- New exercise -->
+            <q-btn
+              icon="add"
+              :label="$t('coach.program_management.builder.new_exercise')"
+              @click="addExercise([week, day])"
+              flat
+              rounded
+            >
+              <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+                {{
+                  $t("coach.program_management.builder.new_exercise_tooltip")
+                }}
+              </q-tooltip>
+            </q-btn>
 
-          <!-- New day -->
-          <q-btn
-            icon="add"
-            :label="$t('coach.program_management.builder.new_day')"
-            @click="addDay([week, day])"
-            flat
-            rounded
-          >
-            <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-              {{ $t("coach.program_management.builder.new_day_tooltip") }}
-            </q-tooltip>
-          </q-btn>
+            <!-- New day -->
+            <q-btn
+              icon="add"
+              :label="$t('coach.program_management.builder.new_day')"
+              @click="addDay([week, day])"
+              flat
+              rounded
+            >
+              <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+                {{ $t("coach.program_management.builder.new_day_tooltip") }}
+              </q-tooltip>
+            </q-btn>
 
-          <!-- New week -->
-          <q-btn
-            icon="add"
-            :label="$t('coach.program_management.builder.new_week')"
-            @click="addWeek(week)"
-            flat
-            rounded
-          >
-            <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-              {{ $t("coach.program_management.builder.new_week_tooltip") }}
-            </q-tooltip></q-btn
-          >
+            <!-- New week -->
+            <q-btn
+              icon="add"
+              :label="$t('coach.program_management.builder.new_week')"
+              @click="addWeek(week)"
+              flat
+              rounded
+            >
+              <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+                {{ $t("coach.program_management.builder.new_week_tooltip") }}
+              </q-tooltip></q-btn
+            >
+          </div>
         </div>
       </div>
     </q-virtual-scroll>
@@ -420,8 +438,9 @@ const selectingReference = ref<{
   field: string;
 }>(); // useful info to maintain while selecting a reference line
 const exercisesInfoExpanded = ref<boolean[]>([]); // check if an exercise info table should be expanded or collapsed
-const programHistory = ref<Program[]>([]); // FIXMENON-REF store changes to data to allow walking history
-const programHistoryPointer = ref<number>(0); // FIXMENON_REF pointer to current data version in history
+const dayInfoCollapsed = ref<boolean[]>([]); // check if a day should be expanded or collapsed
+const programHistory = ref<Program[]>([]); // store changes to data to allow walking history
+const programHistoryPointer = ref<number>(0); // pointer to current data version in history
 
 // Retrieve and supply current program
 watch(
@@ -499,36 +518,26 @@ const allWeekDay = computed(() =>
 );
 
 // Get a reference to weeks and days that can be displayed
-const filteredWeekDayPairs = computed(() =>
-  allWeekDayPairs.value.filter(
-    ([week, day]) =>
-      (props.filter.week.length == 0 || props.filter.week.includes(week)) &&
-      (props.filter.day.length == 0 || props.filter.day.includes(day)),
+const filteredWeekDay = computed(() =>
+  arrayOfPairsToObject(
+    allWeekDayPairs.value.filter(
+      ([week, day]) =>
+        (props.filter.week.length == 0 || props.filter.week.includes(week)) &&
+        (props.filter.day.length == 0 || props.filter.day.includes(day)),
+    ),
+    true,
   ),
 );
-const filteredWeekDay = computed(() =>
-  arrayOfPairsToObject(filteredWeekDayPairs.value, true),
+
+// Get day visibility status
+const dayCanBeExpanded = computed(() =>
+  allWeekDayPairs.value.map(
+    ([week, day]) => filteredWeekDay.value[week]?.includes(day),
+  ),
 );
-
-// Check if program has been completely filtered out by filters
-const isProgramFilteredOut = computed(() => {
-  const asdf = !selectedProgram.value?.programExercises?.some(
-    (programExercise) =>
-      programExercise.scheduleWeek &&
-      programExercise.scheduleDay &&
-      Object.keys(filteredWeekDay.value).includes(
-        programExercise.scheduleWeek.toString(),
-      ) &&
-      filteredWeekDay.value[programExercise.scheduleWeek].includes(
-        programExercise.scheduleDay.toString(),
-      ) &&
-      (props.filter.exercise.length == 0 ||
-        (programExercise.exercise?.name &&
-          props.filter.exercise.includes(programExercise.exercise.name))),
-  );
-
-  return asdf;
-});
+const dayShowExpanded = computed(() =>
+  dayCanBeExpanded.value.map((val, idx) => !dayInfoCollapsed.value[idx] && val),
+);
 
 /**
  * Assign a given reference to the selected line.

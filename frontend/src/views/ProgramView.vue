@@ -264,19 +264,7 @@
           :style="`height: ${
             programPageHeight - programManagerHeight - 8 * 2
           }px`"
-        >
-          <template v-slot:empty-filtered>
-            <h6>
-              {{ $t("coach.program_management.filter.all_filtered_out") }}
-            </h6>
-            <q-btn
-              @click="programFilter = { week: [], day: [], exercise: [] }"
-              :label="$t('coach.program_management.filter.clear_filters')"
-              rounded
-              outline
-            />
-          </template>
-        </ProgramBuilder>
+        ></ProgramBuilder>
 
         <SkeletonTableProgramBuilder v-else-if="selectedProgram?.athlete">
         </SkeletonTableProgramBuilder>
