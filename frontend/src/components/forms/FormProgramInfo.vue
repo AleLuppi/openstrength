@@ -165,6 +165,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import type { QForm } from "quasar";
+import { uid } from "quasar";
 import { Program } from "@/helpers/programs/program";
 import { dateGetWithoutTimezone } from "@/helpers/scalar";
 import { AthleteUser } from "@/helpers/users/user";
@@ -237,6 +238,11 @@ function onSubmit() {
   const program = props.program ?? new Program();
   program.name = programName.value;
   program.athlete = programAthlete.value;
+
+  if (program.athlete) {
+    program.athlete.assignedProgramId = program.uid ? program.uid : uid();
+  }
+
   program.startedOn = programStartedOn.value
     ? dateGetWithoutTimezone(programStartedOn.value)
     : undefined;
