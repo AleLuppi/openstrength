@@ -33,7 +33,7 @@
     <!-- Dialog to select among the available program templates to import -->
     <DialogProgramTemplateAssign
       v-model="showProgramSelectionDialog"
-      :programs="allProgramTemplates"
+      :programs="programTemplatesWithExercises"
       v-model:selected="programTemplate"
     >
     </DialogProgramTemplateAssign>
@@ -90,6 +90,14 @@ const allProgramTemplates = computed(
     coachInfo.programs?.filter(
       (program: Program) => program.isProgramTemplate === true,
     ) || [],
+);
+
+// Filter program templates with at least one programExercise
+const programTemplatesWithExercises = computed(() =>
+  allProgramTemplates.value.filter(
+    (program: Program) =>
+      program.programExercises && program.programExercises.length > 0,
+  ),
 );
 
 /**
