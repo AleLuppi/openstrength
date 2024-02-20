@@ -277,7 +277,8 @@
       "list": {
         "title": "Programs library",
         "title_program": "Programs",
-        "program_section": "Your programs",
+        "program_section": "Program info",
+        "programtemplate_section": "Program template info",
         "add": "Add a new program",
         "add_proceed": "Confirm",
         "update": "Insert your program info",
@@ -430,7 +431,8 @@
         "update_error": "Could not update personal record, please retry",
         "no_maxlift": "Add a personal record for the current athlete",
         "no_athlete": "Select an athlete to see related data",
-        "maxlift_section": "Personal records section"
+        "maxlift_section": "Personal records section",
+        "maxlift_section_template": "Personal records of reference"
       },
       "fields": {
         "exercise": "Exercise",

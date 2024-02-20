@@ -344,7 +344,15 @@
             <!-- Max Lifts section -->
             <div v-else-if="showingUtils == UtilsOptions.maxlifts">
               <h6 class="text-margin-xs">
-                {{ $t("coach.maxlift_management.list.maxlift_section") }}
+                {{
+                  selectedProgram &&
+                  (selectedProgram.isProgramTemplate === false ||
+                    selectedProgram.isProgramTemplate === undefined)
+                    ? $t("coach.maxlift_management.list.maxlift_section")
+                    : $t(
+                        "coach.maxlift_management.list.maxlift_section_template",
+                      )
+                }}
               </h6>
 
               <q-card>
@@ -433,7 +441,15 @@
             >
               <div class="row justify-between q-mt-xs">
                 <h6>
-                  {{ $t("coach.program_management.list.program_section") }}
+                  {{
+                    selectedProgram &&
+                    (selectedProgram.isProgramTemplate === false ||
+                      selectedProgram.isProgramTemplate === undefined)
+                      ? $t("coach.program_management.list.program_section")
+                      : $t(
+                          "coach.program_management.list.programtemplate_section",
+                        )
+                  }}
                 </h6>
               </div>
 
@@ -535,17 +551,25 @@
                 }}</q-card-section>
               </q-card>
 
-              <q-separator></q-separator>
+              <div
+                v-if="
+                  selectedProgram &&
+                  (selectedProgram.isProgramTemplate === false ||
+                    selectedProgram.isProgramTemplate === undefined)
+                "
+              >
+                <q-separator></q-separator>
 
-              <!-- Start a new program -->
-              <q-btn
-                icon="add"
-                :label="$t('coach.program_management.builder.new_program')"
-                @click="openNewProgram"
-                rounded
-                outline
-                padding="xs sm"
-              ></q-btn>
+                <!-- Start a new program -->
+                <q-btn
+                  icon="add"
+                  :label="$t('coach.program_management.builder.new_program')"
+                  @click="openNewProgram"
+                  rounded
+                  outline
+                  padding="xs sm"
+                ></q-btn>
+              </div>
             </div>
 
             <!-- Close button in dialog mode -->

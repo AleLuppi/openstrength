@@ -277,7 +277,8 @@
       "list": {
         "title": "Libreria programmi",
         "title_program": "Programmi",
-        "program_section": "I tuoi programmi",
+        "program_section": "Info programma",
+        "programtemplate_section": "Info programma template",
         "add": "Aggiungi un nuovo programma",
         "add_proceed": "Conferma",
         "update": "Inserisci le informazioni del tuo programma",
@@ -430,7 +431,9 @@
         "update_error": "Impossibile aggiornare il massimale, riprova per favore",
         "no_maxlift": "Aggiungi un massimale per l'atleta attuale",
         "no_athlete": "Seleziona un atleta per vedere i dati correlati",
-        "maxlift_section": "Massimali dell'atleta"
+        "maxlift_section": "Massimali dell'atleta",
+        "maxlift_section_template": "Massimali di riferimento"
+
       },
       "fields": {
         "exercise": "Esercizio",
