@@ -1,6 +1,7 @@
 import { uid } from "quasar";
 import { Program, ProgramExercise } from "../programs/program";
 import { AthleteUser } from "../users/user";
+import { moveProgramExercise } from "../programs/builder";
 
 /**
  * Creates a dummy default athlete
@@ -88,4 +89,27 @@ export function convertProgramToProgramTemplate(
   }
 
   return programTemplate;
+}
+
+/**
+ * Imports a program template instance into a program instance
+ */
+export function importProgramTemplateToProgram(
+  programTemplate: Program,
+  programDestination: Program,
+): Program {
+  programTemplate.programExercises?.forEach((progEx) => {
+    const destination: [string, string, string] = [
+      progEx.scheduleWeek?.toString() ?? "1",
+      progEx.scheduleDay?.toString() ?? "1",
+      progEx.scheduleOrder?.toString() ?? "1",
+    ];
+    moveProgramExercise(programDestination, progEx, destination, true, {
+      sourceFallback: true,
+      sourceOffset: 0,
+      looseOrder: true,
+    });
+  });
+
+  return programDestination;
 }

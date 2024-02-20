@@ -829,6 +829,7 @@ import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
+import { importProgramTemplateToProgram } from "@/helpers/programTemplates/programTemplateModels";
 
 // Import components
 const ProgramBuilder = defineAsyncComponent(
@@ -1230,6 +1231,13 @@ function saveProgramTemplate(programTemplate: Program) {
 function importProgramTemplate(programTemplate: Program) {
   // Get current destination program
   const destinationProgram = selectedProgram;
+
+  if (!destinationProgram.value) return;
+
+  importProgramTemplateToProgram(programTemplate, destinationProgram.value);
+
+  onProgramTableUpdate(destinationProgram.value);
+
   console.log("destination program", destinationProgram);
   console.log("template to import", programTemplate);
 }
