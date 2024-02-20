@@ -2,6 +2,7 @@ import { uid } from "quasar";
 import { Program, ProgramExercise } from "../programs/program";
 import { AthleteUser } from "../users/user";
 import { moveProgramExercise } from "../programs/builder";
+import { MaxLift } from "../maxlifts/maxlift";
 
 /**
  * Creates a dummy default athlete
@@ -112,4 +113,67 @@ export function importProgramTemplateToProgram(
   });
 
   return programDestination;
+}
+
+/**
+ *
+ * @param program Allows to extract the unique list of referenced maxlifts from a program instance
+ * @returns
+ */
+export function extractUniqueMaxliftFromProgram(
+  program: Program,
+): MaxLift[] | undefined {
+  const maxliftsTemplate: MaxLift[] = (program.programExercises ?? []).flatMap(
+    (progEx) =>
+      (progEx.lines ?? []).flatMap((line) => {
+        const maxLifts: MaxLift[] = [];
+        if (line.loadReference instanceof MaxLift) {
+          maxLifts.push(line.loadReference);
+        }
+        if (line.repsReference instanceof MaxLift) {
+          maxLifts.push(line.repsReference);
+        }
+        return maxLifts;
+      }),
+  );
+
+  // Return only the unique list of maxlifts
+  const uniqueMaxLiftsSet = new Set<string>();
+  const uniqueMaxlifts = maxliftsTemplate.filter((maxLift) => {
+    const key = maxLift.exercise?.name + "|" + maxLift.type;
+    if (!uniqueMaxLiftsSet.has(key)) {
+      uniqueMaxLiftsSet.add(key);
+      return true;
+    }
+
+    return false;
+  });
+
+  return uniqueMaxlifts;
+}
+
+/**
+ * Checks if input maxlifts are contained inside maxlifts, returns the diff between the two
+ */
+export function getMissingMaxlift(
+  maxliftsToInsert: MaxLift[],
+  maxlifts: MaxLift[] | undefined,
+): MaxLift[] {
+  if (maxlifts !== undefined) {
+    const maxliftsSet = new Set<string>();
+
+    maxlifts.forEach((maxlift) => {
+      const key = maxlift.exercise?.name + "|" + maxlift.type;
+      maxliftsSet.add(key);
+    });
+
+    const missingMaxlifts = maxliftsToInsert.filter((maxlift) => {
+      const key = maxlift.exercise?.name + "|" + maxlift.type;
+      return !maxliftsSet.has(key);
+    });
+
+    return missingMaxlifts;
+  } else {
+    return maxliftsToInsert;
+  }
 }

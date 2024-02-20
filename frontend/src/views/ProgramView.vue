@@ -788,6 +788,29 @@
         </FormProgramTemplateSaving>
       </q-card>
     </q-dialog>
+
+    <!-- Dialog to insert missing maxlifts after program template import -->
+    <q-dialog
+      v-model="showMissingMaxliftDialog"
+      @hide="missingMaxliftsElement?.reset"
+    >
+      <q-card>
+        <q-card-section class="row items-center">
+          <h6>Inserisci i massimali mancanti</h6>
+          <p>
+            Questi valori servono per preservare i calcoli. Potrai comunque
+            cambiare dopo i valori inseriti
+          </p>
+        </q-card-section>
+        <FormMissingMaxlifts
+          ref="missingMaxliftsElement"
+          :maxlifts="missingMaxlifts"
+          @reset="showMissingMaxliftDialog = false"
+          @formSubmitted="updateMissingMaxliftValues"
+        >
+        </FormMissingMaxlifts>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -825,11 +848,16 @@ import router, { NamedRoutes } from "@/router";
 import FormProgramInfo from "@/components/forms/FormProgramInfo.vue";
 import FormProgramTemplateSaving from "@/components/forms/FormProgramTemplateSaving.vue";
 import FormProgramTemplateImport from "@/components/forms/FormProgramTemplateImport.vue";
+import FormMissingMaxlifts from "@/components/forms/FormMissingMaxlifts.vue";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
-import { importProgramTemplateToProgram } from "@/helpers/programTemplates/programTemplateModels";
+import {
+  extractUniqueMaxliftFromProgram,
+  getMissingMaxlift,
+  importProgramTemplateToProgram,
+} from "@/helpers/programTemplates/programTemplateModels";
 
 // Import components
 const ProgramBuilder = defineAsyncComponent(
@@ -901,6 +929,12 @@ const programTemplateSavingFormElement =
 const showProgramTemplateImportDialog = ref(false);
 const programTemplateImportFormElement =
   ref<typeof FormProgramTemplateImport>();
+
+const showMissingMaxliftDialog = ref(false);
+const missingMaxliftsElement = ref<typeof FormMissingMaxlifts>();
+const missingMaxliftsValues = ref<string[]>();
+
+const missingMaxlifts = ref<MaxLift[]>();
 
 // Set ref related to maxlift
 const updatingMaxlift = ref<MaxLift>();
@@ -1225,21 +1259,84 @@ function saveProgramTemplate(programTemplate: Program) {
   });
 }
 
+import { EventEmitter } from "events"; // Import the EventEmitter class
+
+// Define an event emitter instance
+const formEventEmitter = new EventEmitter();
+
+// Update values of the missing maxlifts from the emit
+function updateMissingMaxliftValues(missingValues: string[]) {
+  missingMaxliftsValues.value = missingValues;
+}
+
+// Listen for the form submission event
+formEventEmitter.once("submit", updateMissingMaxliftValues);
+
 /**
  * Allows importing a program template into the current program instance
  */
-function importProgramTemplate(programTemplate: Program) {
+async function importProgramTemplate(programTemplate: Program) {
   // Get current destination program
   const destinationProgram = selectedProgram;
-
   if (!destinationProgram.value) return;
 
-  importProgramTemplateToProgram(programTemplate, destinationProgram.value);
+  // Get maxlifts from the two programs
+  const templateMaxlifts = extractUniqueMaxliftFromProgram(programTemplate);
+  const destinationMaxlifts = extractUniqueMaxliftFromProgram(
+    destinationProgram.value,
+  );
 
-  onProgramTableUpdate(destinationProgram.value);
+  // Show optional dialog to select missing maxlifts
+  missingMaxlifts.value = templateMaxlifts
+    ? getMissingMaxlift(templateMaxlifts, destinationMaxlifts)
+    : undefined;
 
-  console.log("destination program", destinationProgram);
-  console.log("template to import", programTemplate);
+  if (missingMaxlifts.value && missingMaxlifts.value.length > 0) {
+    showMissingMaxliftDialog.value = true;
+
+    // Wait for maxlift values insertion from user
+    await new Promise<void>((resolve) => {
+      formEventEmitter.once("submit", () => {
+        resolve();
+      });
+    });
+
+    // After the form is submitted create the new maxlifts and assign them to the athlete
+    const maxliftValuesToAdd = missingMaxliftsValues.value;
+    const newMaxlifts: MaxLift[] = [];
+    if (maxliftValuesToAdd) {
+      missingMaxlifts.value.forEach((maxlift, index) => {
+        const newMaxlift = new MaxLift();
+        newMaxlift.exercise = maxlift.exercise;
+        newMaxlift.type = maxlift.type;
+        newMaxlift.value = maxliftValuesToAdd[index];
+        newMaxlift.performedOn = new Date();
+        newMaxlift.athlete = destinationProgram.value?.athlete;
+
+        // Save maxlift to DB
+        saveMaxlift(newMaxlift);
+
+        // TODO: qui bisogna sostituire nelle reference i maxlift creati (assicurandosi che abbiano un nuovo uid)
+
+        newMaxlifts.push(newMaxlift);
+      });
+    }
+
+    const finalProgram = importProgramTemplateToProgram(
+      programTemplate,
+      destinationProgram.value,
+    );
+
+    // Reassignment of maxlifts to the new program and athlete done in the form component
+
+    onProgramTableUpdate(finalProgram);
+  } else {
+    const finalProgram = importProgramTemplateToProgram(
+      programTemplate,
+      destinationProgram.value,
+    );
+    onProgramTableUpdate(finalProgram);
+  }
 }
 
 /**
