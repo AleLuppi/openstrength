@@ -250,7 +250,7 @@
         </div>
 
         <!-- Show table to build program -->
-        <TableProgramBuilder
+        <ProgramBuilder
           ref="programBuilderElement"
           v-if="selectedProgram && !coachInfo.whatLoading.includes('program')"
           :model-value="selectedProgram"
@@ -280,20 +280,13 @@
           :filter="programFilter"
           :maxlifts="athleteMaxlifts"
           :dense="denseView"
-          :scroll-offset="programManagerHeight"
-        >
-          <template v-slot:empty-filtered>
-            <h6>
-              {{ $t("coach.program_management.filter.all_filtered_out") }}
-            </h6>
-            <q-btn
-              @click="programFilter = { week: [], day: [], exercise: [] }"
-              :label="$t('coach.program_management.filter.clear_filters')"
-              rounded
-              outline
-            />
-          </template>
-        </TableProgramBuilder>
+          class="shadow-2 q-my-sm"
+          :class="denseView ? 'q-py-xs q-px-sm q-mx-xs' : 'q-pa-sm q-mx-md'"
+          style="border-radius: 24px"
+          :style="`height: ${
+            programPageHeight - programManagerHeight - 8 * 2
+          }px`"
+        ></ProgramBuilder>
 
         <SkeletonTableProgramBuilder v-else-if="selectedProgram?.athlete">
         </SkeletonTableProgramBuilder>
@@ -580,6 +573,11 @@
           icon="drag_indicator"
         />
       </template>
+
+      <!-- Keep track of available height -->
+      <q-resize-observer
+        @resize="({ height }) => (programPageHeight = height)"
+      />
     </q-splitter>
 
     <!-- Dialog to set program info -->
@@ -780,12 +778,10 @@ import {
   defineAsyncComponent,
 } from "vue";
 import { debounce, QDialog, QCard } from "quasar";
-import TableProgramBuilder from "@/components/tables/TableProgramBuilder.vue";
 import { Program, ProgramExercise } from "@/helpers/programs/program";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { useCoachActiveChangesStore } from "@/stores/coachActiveChanges";
-import ChartSelector from "@/components/charts/ChartSelector.vue";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import { useQuasar } from "quasar";
@@ -811,8 +807,14 @@ import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
 
 // Import components
+const ProgramBuilder = defineAsyncComponent(
+  () => import("@/components/ProgramBuilder.vue"),
+);
 const SkeletonTableProgramBuilder = defineAsyncComponent(
   () => import("@/components/skeletons/SkeletonTableProgramBuilder.vue"),
+);
+const ChartSelector = defineAsyncComponent(
+  () => import("@/components/charts/ChartSelector.vue"),
 );
 
 // Define emits
@@ -847,7 +849,7 @@ const showingUtils = ref(UtilsOptions.list);
 
 // Set ref related to program
 const programManagerElement = ref<HTMLElement>();
-const programBuilderElement = ref<typeof TableProgramBuilder>();
+const programBuilderElement = ref<typeof ProgramBuilder>();
 const selectedProgram = ref<Program>();
 const substituteProgramId = ref<string>();
 const oldAthleteAssigned = ref<AthleteUser>();
@@ -860,6 +862,7 @@ const showUnsavedProgramRestoreDialog = ref(false);
 const showAthleteAssigningDialog = ref(false);
 const showShareProgramDialog = ref(false);
 const programManagerExpanded = ref(false);
+const programPageHeight = ref(0);
 const programManagerHeight = ref(0);
 const canUndo = ref(false);
 const canRedo = ref(false);
@@ -1278,15 +1281,28 @@ function onNewExercise(
   variantName?: string,
   programExercise?: ProgramExercise,
 ) {
+  // Check exercise name
+  if (!exerciseName) {
+    $q.notify({
+      type: "negative",
+      message: i18n.t("coach.exercise_management.add_error"),
+      position: "bottom",
+    });
+    return;
+  }
+  const exercise = coachInfo.exercises?.find(
+    (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
+  );
+
   // Check if creating new exercise of variant
-  if (variantName) {
+  if (variantName && exercise) {
     // Creating new variant
 
-    // Get parent exercise
-    const exercise = coachInfo.exercises?.find(
-      (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
+    // Check new variant
+    const variant = exercise.variants?.find(
+      (variant) => variant.name?.toLowerCase() == variantName.toLowerCase(),
     );
-    if (!exercise) {
+    if (variant) {
       $q.notify({
         type: "negative",
         message: i18n.t("coach.exercise_management.add_error"),
@@ -1303,7 +1319,7 @@ function onNewExercise(
     newVariant.saveNew({
       onSuccess: () => {
         // Store variant in local storages
-        exercise.variants?.unshift(newVariant);
+        exercise.variants = (exercise.variants || []).concat([newVariant]);
         if (programExercise) {
           programExercise.exercise = newVariant.exercise;
           programExercise.exerciseVariant = newVariant;
@@ -1344,7 +1360,7 @@ function onNewExercise(
         });
       },
     });
-  } else {
+  } else if (!exercise) {
     // Creating new exercise
 
     // Create and save new exercise
@@ -1405,6 +1421,13 @@ function onNewExercise(
         });
       },
     });
+  } else {
+    $q.notify({
+      type: "negative",
+      message: i18n.t("coach.exercise_management.add_error"),
+      position: "bottom",
+    });
+    return;
   }
 }
 
@@ -1600,7 +1623,7 @@ onBeforeUnmount(() => {
 .os-top-card {
   position: sticky;
   top: 0;
-  z-index: 3;
+  z-index: 1;
   border-radius: 0 0 20px 20px;
 }
 </style>

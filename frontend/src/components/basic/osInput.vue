@@ -85,6 +85,7 @@ defineExpose({
 
   /* Firefox */
   &:deep(input[type="number"]) {
+    appearance: textfield;
     -moz-appearance: textfield;
   }
 }

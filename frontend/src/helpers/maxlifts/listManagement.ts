@@ -13,10 +13,7 @@ export function separateMaxliftPerExerciseAndType(maxlifts: MaxLift[]) {
     "performedOn",
   ).reverse();
   return sortedMaxlifts.reduce(
-    (
-      out: { [key: string]: { [subkey in MaxLiftType]?: MaxLift } },
-      maxlift,
-    ) => {
+    (out: { [key: string]: { [type in MaxLiftType]?: MaxLift } }, maxlift) => {
       if (!maxlift.exercise?.name || !maxlift.type) return out;
       if (!out[maxlift.exercise.name])
         out[maxlift.exercise.name] = {

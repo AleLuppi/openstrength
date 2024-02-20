@@ -64,3 +64,43 @@ export function sortExerciseVariants(variants: ExerciseVariant[]) {
     return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
   });
 }
+
+/**
+ * Find an exercise from a list according to its name.
+ *
+ * @param exercises list of available exercises.
+ * @param exerciseName name of the exercise to search.
+ * @param caseSensitive if true, find exercise with exact name, including characters case.
+ * @returns exercise with selected name, if any.
+ */
+export function getExerciseByName(
+  exercises: Exercise[],
+  exerciseName: string,
+  caseSensitive: boolean = false,
+) {
+  if (caseSensitive)
+    return exercises.find((exercise) => exercise.name == exerciseName);
+  return exercises.find(
+    (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
+  );
+}
+
+/**
+ * Find a variant from a list according to its name.
+ *
+ * @param variants list of available exercise variants.
+ * @param variantName name of the variant to search.
+ * @param caseSensitive if true, find variant with exact name, including characters case.
+ * @returns variant with selected name, if any.
+ */
+export function getExerciseVariantByName(
+  variants: ExerciseVariant[],
+  variantName: string,
+  caseSensitive: boolean = false,
+) {
+  if (caseSensitive)
+    return variants.find((variant) => variant.name == variantName);
+  return variants.find(
+    (variant) => variant.name?.toLowerCase() == variantName.toLowerCase(),
+  );
+}

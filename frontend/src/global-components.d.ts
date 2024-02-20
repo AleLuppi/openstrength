@@ -8,12 +8,14 @@ import osTextCopyable from "@/components/basic/osTextCopyable.vue";
 import osToggleButtons from "@/components/basic/osToggleButtons.vue";
 import osVariableElement from "@/components/basic/osVariableElement.vue";
 import osWrapWithçines from "@/components/basic/osWrapWithçines.vue";
+import { QIntersection } from "quasar";
 
 declare module "@vue/runtime-core" {
   export interface GlobalComponents {
     osButtonSupport: typeof osButtonSupport;
     osField: typeof osField;
     osInput: typeof osInput;
+    osLazy: typeof QIntersection;
     osSelect: typeof osSelect;
     osTable: typeof osTable;
     osTableSheet: typeof osTableSheet;
