@@ -184,8 +184,10 @@ export function convertProgramToCompactView(
     orderedProgramExercises,
   )) {
     const [week, day] = key.split(".");
-    const exerciseFullName = `${programExercise?.exercise?.name ?? ""} - ${
-      programExercise?.exerciseVariant?.name ?? ""
+    const exerciseFullName = `${programExercise?.exercise?.name ?? ""} ${
+      programExercise?.exerciseVariant?.name
+        ? "- " + programExercise?.exerciseVariant?.name
+        : ""
     }`;
 
     let dayEntry = compactView.days.find((entry) => entry.dayName === day);
