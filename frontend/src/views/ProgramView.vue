@@ -790,6 +790,7 @@
     </q-dialog>
 
     <!-- Dialog to insert missing maxlifts after program template import -->
+    <!-- TODO i18n -->
     <q-dialog
       v-model="showMissingMaxliftDialog"
       @hide="missingMaxliftsElement?.reset"
@@ -804,7 +805,7 @@
         </q-card-section>
         <FormMissingMaxlifts
           ref="missingMaxliftsElement"
-          :maxlifts="missingMaxlifts"
+          :maxlifts="missingMaxlifts ?? []"
           @reset="showMissingMaxliftDialog = false"
           @formSubmitted="updateMissingMaxliftValues"
         >
