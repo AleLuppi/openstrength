@@ -163,10 +163,13 @@
               <q-tab-panel name="programs">
                 <!-- If selected athlete has ongoing program show program data form-->
                 <div v-if="selectedAthlete && Boolean(athleteCurrentProgram)">
-                  <FormAthleteProgramInfo
+                  <!--                   <FormAthleteProgramInfo
                     ref="athleteProgramFormElement"
                     :program="athleteFormProgram"
-                  />
+                  /> 
+                  -->
+                  <q-btn>Crea nuovo programma</q-btn>
+                  <TableAthleteAssignedPrograms :programs="athletePrograms" />
                 </div>
 
                 <!-- If selected athlete has no programs at all -->
@@ -338,8 +341,8 @@ import { AthleteUser } from "@/helpers/users/user";
 import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
 import FormAthleteAnagraphicInfo from "@/components/forms/FormAthleteAnagraphicInfo.vue";
-import FormAthleteProgramInfo from "@/components/forms/FormAthleteProgramInfo.vue";
-import { Program } from "@/helpers/programs/program";
+//import FormAthleteProgramInfo from "@/components/forms/FormAthleteProgramInfo.vue";
+//import { Program } from "@/helpers/programs/program";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
 import { event } from "vue-gtag";
@@ -348,6 +351,7 @@ import {
   getAssignedProgram,
 } from "@/helpers/programs/athleteAssignment";
 import mixpanel from "mixpanel-browser";
+import TableAthleteAssignedPrograms from "@/components/tables/TableAthleteAssignedPrograms.vue";
 
 // Init plugin
 const $q = useQuasar();
@@ -394,7 +398,7 @@ const athleteFormElement = ref<typeof FormAthleteAnagraphicInfo>();
 
 // Set additional athlete info ref
 const selectedTab = ref("programs");
-const athleteProgramFormElement = ref<typeof FormAthleteProgramInfo>();
+//const athleteProgramFormElement = ref<typeof FormAthleteProgramInfo>();
 const maxliftFormElement = ref<typeof FormMaxLift>();
 const showAthleteDialog = ref(false); // whether to show dialog to add athlete
 
@@ -436,9 +440,9 @@ const athleteCurrentProgram = computed(() =>
 );
 
 // Get a program to initialize form
-const athleteFormProgram = computed(
+/* const athleteFormProgram = computed(
   () => athleteCurrentProgram.value ?? new Program(),
-);
+); */
 
 // Get maxlifts for the selected athlete
 const athleteMaxlifts = computed(() =>
