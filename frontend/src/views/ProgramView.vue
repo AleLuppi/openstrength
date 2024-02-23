@@ -1131,7 +1131,13 @@ function deleteProgram(program: Program) {
     });
   }
 
-  program.remove({
+  // Delete program
+  program.name = `${program.name ?? ""}__deleted__${program.coachId}/${
+    program.athleteId
+  }`;
+  program.coach = undefined;
+  program.athlete = undefined;
+  program.saveUpdate({
     onSuccess: () => {
       coachInfo.programs = coachInfo.programs?.filter(
         (coachProgram) => coachProgram != program,
