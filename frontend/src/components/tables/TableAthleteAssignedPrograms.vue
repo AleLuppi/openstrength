@@ -12,7 +12,6 @@
         ? 'os-table-max-height-with-header justify-center'
         : 'os-table-max-height justify-center'
     "
-    sort-by="-lastmodification"
   >
     <!-- Set header style -->
     <template v-slot:header="props">
@@ -43,81 +42,67 @@
     </template>
 
     <!-- Custom slot to render date range -->
-    <template v-slot:body-cell-startdate="props">
+    <template v-slot:body-cell-dates="props">
       <q-td :props="props">
-        <div class="row justify-start items-center">
-          <p>da</p>
-
+        <div class="column justify-start items-start">
           <q-badge outline color="info">
             {{ props.row.startdate }}
           </q-badge>
-        </div>
-        <div v-if="props.row.enddate" class="row justify-start items-center">
-          <p>a</p>
 
-          <q-badge outline color="info"> {{ props.row.enddate }} </q-badge>
+          <div
+            v-if="props.row.enddate"
+            class="column justify-center items-center"
+          >
+            <p>{{ $t("common.to") }}</p>
+
+            <q-badge outline color="info"> {{ props.row.enddate }} </q-badge>
+          </div>
         </div>
       </q-td>
     </template>
 
     <!-- Custom slot to render buttons -->
-    <template v-slot:body-cell-edit="props">
-      <q-td :props="props">
-        <q-btn
-          color="light-dark"
-          rounded
-          outline
-          flat
-          :icon="props.row.edit.icon"
-          :label="props.row.edit.label"
-        ></q-btn>
-      </q-td>
-    </template>
-
-    <!-- Custom slot to render buttons -->
-    <template v-slot:body-cell-menu="props">
-      <q-td :props="props">
-        <q-btn-dropdown
-          color="secondary"
-          rounded
-          outline
-          dropdown-icon=""
-          :label="props.row.menu.label"
-        >
-          <q-list>
-            <q-item clickable v-close-popup @click="onItemClick">
-              <q-item-section>
-                <q-item-label>Open in builder</q-item-label>
-                <q-item-label caption>Last mod: February 22, 2024</q-item-label>
-              </q-item-section>
-              <q-item-section side>
-                <q-icon name="info" color="amber" />
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable v-close-popup @click="onItemClick">
-              <q-item-section>
-                <q-item-label>Set as current</q-item-label>
-              </q-item-section>
-              <q-item-section side>
-                <q-icon name="info" color="amber" />
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable v-close-popup @click="onItemClick">
-              <q-item-section>
-                <q-item-label>Delete</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-btn-dropdown>
+    <template v-slot:body-cell-actions="props">
+      <q-td :props="props" class="q-ma-none q-pa-none">
+        <q-btn-group outline flat unelevated>
+          <q-btn
+            stack
+            :color="props.row.info.color"
+            :rounded="props.row.info.rounded"
+            :outline="props.row.info.outline"
+            :flat="props.row.info.flat"
+            :icon="props.row.info.icon"
+            :label="props.row.info.label"
+            @click="props.row.info.on"
+          ></q-btn>
+          <q-btn
+            stack
+            :color="props.row.edit.color"
+            :rounded="props.row.edit.rounded"
+            :outline="props.row.edit.outline"
+            :flat="props.row.edit.flat"
+            :icon="props.row.edit.icon"
+            :label="props.row.edit.label"
+            @click="props.row.edit.on"
+          ></q-btn>
+          <q-btn
+            stack
+            :color="props.row.delete.color"
+            :rounded="props.row.delete.rounded"
+            :outline="props.row.delete.outline"
+            :flat="props.row.delete.flat"
+            :icon="props.row.delete.icon"
+            :label="props.row.delete.label"
+            @click="props.row.delete.on"
+          ></q-btn>
+        </q-btn-group>
       </q-td>
     </template>
   </q-table>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, PropType } from "vue";
+import { computed, PropType } from "vue";
 import { useQuasar } from "quasar";
 import { Program } from "@/helpers/programs/program";
 import { useI18n } from "vue-i18n";
@@ -144,8 +129,9 @@ const props = defineProps({
 
 // Define emits
 const emit = defineEmits<{
-  selection: [evt: Event, row: Object, index: Number];
-  "update:selected": [value?: Program];
+  info: [value?: Program];
+  edit: [value?: Program];
+  delete: [value?: Program];
 }>();
 
 // Set table columns
@@ -158,31 +144,19 @@ const columns = computed(() => [
     field: "name",
     sortable: true,
   },
-
-  ...(!props.small
-    ? [
-        {
-          name: "startdate",
-          required: true,
-          label: i18n.t("common.date"),
-          align: "left",
-          field: "startdate",
-          sortable: true,
-        },
-      ]
-    : []),
-
   {
-    name: "edit",
-    align: "center",
-    label: "",
-    field: "edit",
+    name: "dates",
+    required: true,
+    label: i18n.t("common.date"),
+    align: "left",
+    field: "dates",
+    sortable: true,
   },
   {
-    name: "menu",
+    name: "actions",
     align: "center",
     label: "",
-    field: "menu",
+    field: "actions",
   },
 ]);
 
@@ -204,51 +178,38 @@ const rows = computed(() => {
     lastmodification: program.lastUpdated
       ? i18n.d(program.lastUpdated, "middle")
       : "Not selected",
+    info: {
+      element: "button",
+      on: emit("info", program),
+      label: "Info",
+      icon: "sym_o_info",
+      rounded: true,
+      outline: true,
+      flat: true,
+      color: "light-dark",
+    },
     edit: {
       element: "button",
-      on: { click: () => emit("update:selected", program) },
-      label: "Info",
+      on: emit("edit", program),
+      label: "Edit",
       icon: "sym_o_edit",
       rounded: true,
       outline: true,
-      color: "button-primary",
+      flat: true,
+      color: "light-dark",
     },
-    menu: {
+    delete: {
       element: "button",
-      on: { click: () => emit("update:selected", program) },
-      label: "",
-      icon: "sym_o_more_vert",
+      on: emit("delete", program),
+      label: "Delete",
+      icon: "delete",
       rounded: true,
       outline: true,
-      color: "button-primary",
+      flat: true,
+      color: "light-dark",
     },
   }));
 });
-
-// Set ref
-const selectedRows = ref<typeof rows.value>();
-
-// Update selected rows upon selected program change
-watch(
-  () => props.selected,
-  (selectedProgram) => {
-    const selectedRow = rows.value.find(
-      (row) => row.uid == selectedProgram?.uid,
-    );
-    if (selectedRow) selectedRows.value = [selectedRow];
-  },
-  { immediate: true },
-);
-
-// Update selected program upon program row change
-watch(selectedRows, (value) =>
-  emit(
-    "update:selected",
-    props.programs.find((program) =>
-      value && value.length > 0 ? program.uid === value[0].uid : undefined,
-    ),
-  ),
-);
 </script>
 
 <style scoped lang="scss">

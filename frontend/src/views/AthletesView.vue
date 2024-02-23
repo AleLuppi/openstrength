@@ -169,7 +169,12 @@
                   /> 
                   -->
                   <q-btn>Crea nuovo programma</q-btn>
-                  <TableAthleteAssignedPrograms :programs="athletePrograms" />
+                  <TableAthleteAssignedPrograms
+                    :programs="athletePrograms"
+                    @info:selected="(program) => showProgramInfo(program)"
+                    @edit:selected="() => (showProgramInfoDialog = true)"
+                    @delete:selected="() => (showProgramInfoDialog = true)"
+                  />
                 </div>
 
                 <!-- If selected athlete has no programs at all -->
@@ -327,6 +332,24 @@
           </div>
         </div>
       </div>
+
+      <!-- Dialog for program info -->
+      <q-dialog v-model="showProgramInfoDialog">
+        <q-card class="q-pa-sm dialog-min-width">
+          <q-card-section class="row items-center q-pb-none">
+            <h5>Ciao</h5>
+            <q-space />
+            <q-btn
+              icon="close"
+              flat
+              round
+              dense
+              color="button-negative"
+              v-close-popup
+            />
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </div>
   </q-page>
 </template>
@@ -352,6 +375,7 @@ import {
 } from "@/helpers/programs/athleteAssignment";
 import mixpanel from "mixpanel-browser";
 import TableAthleteAssignedPrograms from "@/components/tables/TableAthleteAssignedPrograms.vue";
+import { Program } from "@/helpers/programs/program";
 
 // Init plugin
 const $q = useQuasar();
@@ -407,6 +431,8 @@ const athleteName = ref(""); // new athlete name
 const athleteSurname = ref(""); // new athlete surname
 const athleteNote = ref(""); // new athlete note
 
+// Set ref for program info
+const showProgramInfoDialog = ref(false);
 // Set ref for max lift declarations
 const searchMaxLift = ref<string>();
 const updatingMaxLift = ref<MaxLift>();
@@ -511,6 +537,11 @@ function saveMaxlift(newMaxLift: MaxLift) {
   showMaxLiftAddDialog.value = false;
 }
 
+function showProgramInfo(program: Program) {
+  console.log(program);
+
+  showProgramInfoDialog.value = true;
+}
 /**
  * Open form with max lift info to allow coach to update them.
  *

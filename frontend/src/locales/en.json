@@ -464,6 +464,10 @@
     "yes": "Yes",
     "no": "No",
     "start": "Start",
-    "end": "End"
+    "end": "End",
+    "to": "to",
+    "info": "Info",
+    "edit": "Open",
+    "delete": "Delete"
   }
 }
