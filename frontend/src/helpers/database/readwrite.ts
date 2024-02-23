@@ -17,6 +17,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebase";
 import { useUserStore } from "@/stores/user";
+import { objectDeepValueToValue } from "@/helpers/object";
 
 /**
  * Add a document to firestore db.
@@ -34,11 +35,13 @@ export async function doAddDoc(
   {
     addUserId = false,
     addCurrentTimestamp = false,
+    undefinedToNull = true,
     onSuccess,
     onError,
   }: {
     addUserId?: boolean | string;
     addCurrentTimestamp?: boolean;
+    undefinedToNull?: boolean;
     onSuccess?: Function;
     onError?: Function;
   } = {},
@@ -58,6 +61,9 @@ export async function doAddDoc(
       ...data,
       datetime: serverTimestamp(),
     };
+
+  // Parse undefined values as null
+  if (undefinedToNull) data = objectDeepValueToValue(data, undefined, null);
 
   // Create doc
   await addDoc(collection(db, collectionName), data)
@@ -87,11 +93,13 @@ export async function doAddDocWithId(
   {
     addUserId = false,
     addCurrentTimestamp = false,
+    undefinedToNull = true,
     onSuccess,
     onError,
   }: {
     addUserId?: boolean | string;
     addCurrentTimestamp?: boolean;
+    undefinedToNull?: boolean;
     onSuccess?: Function;
     onError?: Function;
   } = {},
@@ -111,6 +119,9 @@ export async function doAddDocWithId(
       ...data,
       datetime: serverTimestamp(),
     };
+
+  // Parse undefined values as null
+  if (undefinedToNull) data = objectDeepValueToValue(data, undefined, null);
 
   // Create doc
   const docRef = doc(db, collectionName, docId);
@@ -141,11 +152,13 @@ export async function doUpdateDoc(
   {
     addUserId = false,
     addCurrentTimestamp = false,
+    undefinedToNull = true,
     onSuccess,
     onError,
   }: {
     addUserId?: boolean | string;
     addCurrentTimestamp?: boolean;
+    undefinedToNull?: boolean;
     onSuccess?: Function;
     onError?: Function;
   } = {},
@@ -165,6 +178,9 @@ export async function doUpdateDoc(
       ...data,
       datetime: serverTimestamp(),
     };
+
+  // Parse undefined values as null
+  if (undefinedToNull) data = objectDeepValueToValue(data, undefined, null);
 
   // Update doc
   await updateDoc(doc(db, collectionName, docId), data)
@@ -188,9 +204,11 @@ export async function doGetDocWithID(
   collectionName: string,
   docId: string,
   {
+    nullToUndefined = true,
     onSuccess,
     onError,
   }: {
+    nullToUndefined?: boolean;
     onSuccess?: Function;
     onError?: Function;
   } = {},
@@ -199,7 +217,12 @@ export async function doGetDocWithID(
   const docRef = doc(db, collectionName, docId);
   try {
     const documentSnapshot = await getDoc(docRef);
-    await onSuccess?.(deepConvertTimestampToDate(documentSnapshot.data()));
+    let documentData = deepConvertTimestampToDate(documentSnapshot.data());
+    if (nullToUndefined)
+      documentData = documentData
+        ? objectDeepValueToValue(documentData, null, undefined)
+        : undefined;
+    await onSuccess?.(documentData);
     return documentSnapshot;
   } catch (error) {
     console.error(error);
@@ -223,11 +246,13 @@ export async function doGetDocs(
   {
     ordering,
     numDocs,
+    nullToUndefined = true,
     onSuccess,
     onError,
   }: {
     ordering?: string[];
     numDocs?: number;
+    nullToUndefined?: boolean;
     onSuccess?: Function;
     onError?: Function;
   } = {},
@@ -249,13 +274,18 @@ export async function doGetDocs(
   // Obtain documents
   await getDocs(q)
     .then((querySnapshot) => {
-      const docsData = querySnapshot.docs.reduce(
-        (obj, val) =>
-          val.data() !== undefined
-            ? { ...obj, [val.id]: deepConvertTimestampToDate(val.data()) }
-            : obj,
-        {},
-      );
+      const docsData = querySnapshot.docs.reduce((obj, val) => {
+        const data = val.data();
+        if (data === undefined) return obj;
+        let convertedData = deepConvertTimestampToDate(data);
+        if (nullToUndefined)
+          convertedData = objectDeepValueToValue(
+            convertedData,
+            null,
+            undefined,
+          );
+        return { ...obj, [val.id]: convertedData };
+      }, {});
       onSuccess?.(docsData);
     })
     .catch((error) => {
@@ -380,7 +410,9 @@ export async function changeDocId(
  * @param data document where timestamps may be present.
  * @returns data with converted timestamps to date.
  */
-function deepConvertTimestampToDate(data?: DocumentData) {
+function deepConvertTimestampToDate<T extends DocumentData | undefined>(
+  data: T,
+): T {
   if (data instanceof Object)
     Object.entries(data).forEach(([key, value]) => {
       if (value instanceof Timestamp) data[key] = value.toDate();
