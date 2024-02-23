@@ -1,6 +1,7 @@
 import osButtonSupport from "@/components/basic/osButtonSupport.vue";
 import osField from "@/components/basic/osField.vue";
 import osInput from "@/components/basic/osInput.vue";
+import osInputDate from "@/components/basic/osInputDate.vue";
 import osSelect from "@/components/basic/osSelect.vue";
 import osTable from "@/components/basic/osTable.vue";
 import osTableSheet from "@/components/basic/osTableSheet.vue";
@@ -15,6 +16,7 @@ declare module "@vue/runtime-core" {
     osButtonSupport: typeof osButtonSupport;
     osField: typeof osField;
     osInput: typeof osInput;
+    osInputDate: typeof osInputDate;
     osLazy: typeof QIntersection;
     osSelect: typeof osSelect;
     osTable: typeof osTable;
