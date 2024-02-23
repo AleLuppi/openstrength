@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, PropType } from "vue";
+import { ref, computed, watch, onMounted, shallowRef } from "vue";
 import { colors } from "quasar";
 import {
   Chart,
@@ -70,38 +70,35 @@ Chart.register(
 const { getPaletteColor, lighten } = colors;
 
 // Define props
-const props = defineProps({
-  title: {
-    type: String,
-    required: true,
+const props = withDefaults(
+  defineProps<{
+    title: string;
+    description: string;
+    data?: ChartData<"line", ExerciseChartData[]>;
+    options?: object;
+    type?: "line" | "bar" | "pie";
+    autoUpdate?: boolean;
+    width?: number | string;
+    height?: number | string;
+  }>(),
+  {
+    options: () => ({}),
+    type: "line",
+    autoUpdate: true,
+    width: 400,
+    height: 200,
   },
-  description: {
-    type: String,
-    required: true,
-  },
-  data: {
-    type: Object as PropType<ChartData<"line", ExerciseChartData[]>>,
-  },
-  options: {
-    type: Object,
-    default: () => ({}),
-  },
-  type: {
-    type: String,
-    default: "line", // e.g.: 'line', 'bar', 'pie'
-  },
-  width: {
-    type: [Number, String],
-    default: 400,
-  },
-  height: {
-    type: [Number, String],
-    default: 200,
-  },
+);
+
+// Define expose
+defineExpose({
+  update: renderChart,
 });
 
 // Define refs
 const chartCanvas = ref<HTMLCanvasElement>();
+const chart =
+  shallowRef<Chart<keyof ChartTypeRegistry, ExerciseChartData[], unknown>>();
 
 // Computed property to check if data is invalid
 const dataIsInvalid = computed(() => {
@@ -116,6 +113,13 @@ const dataIsInvalid = computed(() => {
  * Render the chart.
  */
 function renderChart() {
+  // Check if data is valid
+  if (dataIsInvalid.value) {
+    // TODO display error to user
+    console.error("Invalid data.");
+    return;
+  }
+
   // Ensure canvas reference exists
   if (!chartCanvas.value) {
     // TODO display error to user
@@ -124,27 +128,40 @@ function renderChart() {
   }
 
   try {
-    // Add background color to datasets
-    props.data!.datasets.forEach((el, idx) => {
-      let currColor = getPaletteColor("chart-color" + (idx + 1));
-      el.borderColor = currColor;
-      el.backgroundColor = lighten(currColor, 25);
-    });
+    /* eslint-disable */
+    if (chart.value) {
+      chart.value.options = props.options;
+      chart.value.data = props.data!;
+      chart.value.update();
+    } else {
+      // Add background color to datasets
+      props.data!.datasets.forEach((el, idx) => {
+        let currColor = getPaletteColor("chart-color" + (idx + 1));
+        el.borderColor = currColor;
+        el.backgroundColor = lighten(currColor, 25);
+      });
 
-    // Fill canvas
-    const ctx = chartCanvas.value.getContext("2d");
-    new Chart(ctx!, {
-      type: props.type as keyof ChartTypeRegistry,
-      data: props.data!,
-      options: props.options,
-    });
+      // Fill canvas
+      const ctx = chartCanvas.value.getContext("2d");
+      chart.value = new Chart(ctx!, {
+        type: props.type as keyof ChartTypeRegistry,
+        data: props.data!,
+        options: props.options,
+      });
+    }
   } catch (error) {
     console.error("Error rendering chart:", error);
   }
 }
 
 // Watch for changes in data and re-render the chart
-watch(() => props.data, renderChart, { deep: true });
+watch(
+  () => props.data,
+  () => {
+    if (props.autoUpdate) renderChart();
+  },
+  { deep: true },
+);
 
 // Render the chart on component mount
 onMounted(() => {
@@ -153,8 +170,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import "@/styles/quasar.scss";
-
 // TODO move outside of component
 h2 {
   font-size: 1.5rem;

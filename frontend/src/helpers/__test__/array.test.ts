@@ -1,7 +1,31 @@
 import { describe, expect, test } from "vitest";
-import { arraySort } from "../array";
+import { arrayUniqueValues, arrayOfPairsToObject, arraySort } from "../array";
 
 describe("Test @/helpers/array", () => {
+  /**
+   * arrayUniqueValues
+   */
+  describe("'arrayUniqueValues' function", () => {
+    // TODO
+
+    test("array of numeric arrays", () => {
+      const arr = [
+        [1, 1],
+        [2, 2],
+        [3, 3],
+        [1, 1],
+        [3, 3],
+      ];
+      const res = arrayUniqueValues(arr, undefined, true);
+      expect(res).toStrictEqual([
+        [1, 1],
+        [2, 2],
+        [3, 3],
+      ]);
+      expect(res).not.toBe(arr);
+    });
+  });
+
   /**
    * arraySort
    */
@@ -92,6 +116,142 @@ describe("Test @/helpers/array", () => {
         (val, arr) => val * (arr.findIndex((v) => v == val) ?? 100),
       );
       expect(res).toStrictEqual([2, 1, 3, 5, 10, 7]);
+    });
+  });
+
+  /**
+   * arrayOfPairsToObject
+   */
+  describe("'arrayOfPairsToObject' function", () => {
+    test("number pairs", () => {
+      const arr: [number, number][] = [
+        [1, 2],
+        [1, 10],
+        [1, 3],
+        [1, 5],
+        [2, 4],
+        [2, 5],
+      ];
+      const res = arrayOfPairsToObject(arr);
+      expect(res).toBeTypeOf("object");
+      expect(res).toStrictEqual({ 1: [2, 10, 3, 5], 2: [4, 5] });
+    });
+
+    test("string pairs", () => {
+      const arr: [string, string][] = [
+        ["1", "2"],
+        ["1", "10"],
+        ["1", "3"],
+        ["1", "5"],
+        ["2", "4"],
+        ["2", "5"],
+      ];
+      const res = arrayOfPairsToObject(arr);
+      expect(res).toBeTypeOf("object");
+      expect(res).toStrictEqual({
+        1: ["2", "10", "3", "5"],
+        2: ["4", "5"],
+      });
+    });
+
+    test("mixed string and number pairs", () => {
+      const arr: [string | number, string | number][] = [
+        ["1", "2"],
+        [1, "10"],
+        ["1", "3"],
+        [1, "5"],
+        ["2", 4],
+        ["2", "5"],
+        ["2", "2"],
+        [3, 6],
+        [1, 8],
+      ];
+      const res = arrayOfPairsToObject(arr);
+      expect(res).toBeTypeOf("object");
+      expect(res).toStrictEqual({
+        1: ["2", "10", "3", "5", 8],
+        2: [4, "5", "2"],
+        3: [6],
+      });
+    });
+
+    test("pairs with repetitions of different type", () => {
+      const arr: [string | number, string | number][] = [
+        [1, 2],
+        [1, "2"],
+        [1, 3],
+        [1, "3"],
+        ["2", "4"],
+        ["2", 4],
+      ];
+      const res = arrayOfPairsToObject(arr);
+      expect(res).toBeTypeOf("object");
+      expect(res).toStrictEqual({
+        1: [2, "2", 3, "3"],
+        2: ["4", 4],
+      });
+    });
+
+    test("pairs with repetitions of same type", () => {
+      const arr: [string | number, string | number][] = [
+        [1, 2],
+        [1, 2],
+        [1, 2],
+        [1, 3],
+        [1, 3],
+        ["2", "4"],
+        ["2", "4"],
+        [2, "4"],
+      ];
+      const res = arrayOfPairsToObject(arr);
+      expect(res).toBeTypeOf("object");
+      expect(res).toStrictEqual({
+        1: [2, 2, 2, 3, 3],
+        2: ["4", "4", "4"],
+      });
+    });
+
+    test("pairs with repetitions of different type, requiring unique output", () => {
+      const arr: [string | number, string | number][] = [
+        [1, 3],
+        [1, "3"],
+        [1, 2],
+        [1, "2"],
+        ["2", "4"],
+        ["2", 4],
+      ];
+      const res = arrayOfPairsToObject(arr, true);
+      expect(res).toBeTypeOf("object");
+      expect(res).toStrictEqual({
+        1: [2, "2", 3, "3"],
+        2: ["4", 4],
+      });
+    });
+
+    test("pairs with repetitions of same type, requiring unique output", () => {
+      const arr: [string | number, string | number][] = [
+        [1, 2],
+        [1, 2],
+        [1, 2],
+        [1, 3],
+        [1, 3],
+        ["2", "4"],
+        ["2", "4"],
+        [2, "4"],
+      ];
+      const res = arrayOfPairsToObject(arr, true);
+      expect(res).toBeTypeOf("object");
+      expect(res).toStrictEqual({
+        1: [2, 3],
+        2: ["4"],
+      });
+    });
+
+    test("empty array", () => {
+      const arr: [string | number, string | number][] = [];
+      const res = arrayOfPairsToObject(arr);
+      expect(res).toBeTypeOf("object");
+      expect(res).toStrictEqual({});
     });
   });
 });

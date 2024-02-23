@@ -1,6 +1,6 @@
 {
   "name": "openstrength",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "OpenStrength",
   "private": true,
   "scripts": {
@@ -21,6 +21,7 @@
     "moment": "^2.29.4",
     "pinia": "^2.1.6",
     "quasar": "^2.0.0",
+    "util": "^0.12.5",
     "vue": "^3.2.13",
     "vue-gtag": "^2.0.1",
     "vue-i18n": "^9.1.0",

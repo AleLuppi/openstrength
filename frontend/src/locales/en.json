@@ -305,6 +305,7 @@
         "end_date": "End date"
       },
       "builder": {
+        "begin": "Start!",
         "save": "Save",
         "saved": "program is saved",
         "not_saved": "there are unsaved changes",
@@ -335,8 +336,11 @@
         "line_delete": "Delete",
         "day_rename": "Rename",
         "day_duplicate": "Duplicate in another day of this week",
+        "week_duplicate": "Duplicate week",
         "day_duplicate_form": "Duplicate day in...",
+        "week_duplicate_form": "Duplicate week in...",
         "day_delete": "Delete day",
+        "week_delete": "Delete week",
         "empty": "Start your program now by adding your first exercise!",
         "reference_select_line": "Select a line",
         "reference_select_line_help": "Select a line as reference",

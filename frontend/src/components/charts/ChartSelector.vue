@@ -1,15 +1,14 @@
 <template>
-  <!-- TODO: add i18n-->
   <div style="width: 100%">
-    <div class="row justify-between">
+    <div class="row justify-between items-center q-mb-sm">
       <h6 class="text-margin-xs">
         {{ $t("coach.charts_management.list.charts_section") }}
       </h6>
       <q-btn
         @click="updateCharts()"
         icon="fa-solid fa-refresh"
-        outline
-        flat
+        :flat="!oldData"
+        round
         color="secondary"
       >
         <q-tooltip :offset="[10, 10]">
@@ -22,19 +21,23 @@
     <chart-component
       v-for="(chartDataRequest, index) in chartDataRequests"
       :key="chartsKey + index"
-      class="q-mb-sm"
       :title="getChartTitle(chartDataRequest)"
       :description="getChartDescription(chartDataRequest)"
-      :data="chartData[index]"
+      :data="chartData?.[index]"
       :options="getChartOptions(chartDataRequest)"
+      class="q-my-sm"
+      :class="{ disabled: oldData }"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, PropType } from "vue";
-import ChartComponent from "@/components/charts/ChartComponent.vue";
+import { defineAsyncComponent, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { debounce } from "quasar";
+import { ChartData } from "chart.js";
 import {
+  type ExerciseChartData,
   computeChartData,
   createChartOptions,
   formatChartData,
@@ -47,35 +50,31 @@ import {
   OSChartVersion,
 } from "@/helpers/charts/chartTypes";
 import { Program } from "@/helpers/programs/program";
-import { useI18n } from "vue-i18n";
 
+// Import components
+const ChartComponent = defineAsyncComponent(
+  () => import("@/components/charts/ChartComponent.vue"),
+);
+
+// Init plugin
 const i18n = useI18n();
 
 // Define props
-const props = defineProps({
-  program: {
-    type: Program,
-    required: false,
-  },
-  filterExercise: {
-    type: Array as PropType<string[]>,
-    default: undefined,
-    required: false,
-  },
-  filterDay: {
-    type: Array as PropType<string[]>,
-    default: undefined,
-    required: false,
-  },
-  filterWeek: {
-    type: Array as PropType<string[]>,
-    default: undefined,
-    required: false,
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    program?: Program;
+    filterExercise?: string[];
+    filterDay?: string[];
+    filterWeek?: string[];
+  }>(),
+  { filterWeek: undefined, filterDay: undefined, filterExercise: undefined },
+);
 
 // Set ref
 const chartsKey = ref<string>("");
+const chartDataRequests = ref<OSChartDataRequest[]>();
+const chartData = ref<(ChartData<"line", ExerciseChartData[]> | undefined)[]>();
+const oldData = ref(false);
 
 // Set constants
 const chartDescriptions: OSChartDescriptor[] = [
@@ -120,9 +119,28 @@ const chartDescriptions: OSChartDescriptor[] = [
   */
 ];
 
-// Get a list of data requests for program
-const chartDataRequests = computed<OSChartDataRequest[]>(() =>
-  chartDescriptions.map((chartDescriptor) => {
+// Inform user of old data when filters gets updated
+watch(
+  () => props,
+  () => {
+    oldData.value = true;
+    debouncedChartsUpdate();
+  },
+  { deep: true },
+);
+
+/**
+ * Auto-update charts after a delay from last update.
+ */
+const debouncedChartsUpdate = debounce(updateCharts, 10000);
+
+/**
+ * Force reload of chart components to refresh charts data.
+ */
+async function updateCharts() {
+  console.log(props.filterWeek);
+
+  chartDataRequests.value = chartDescriptions.map((chartDescriptor) => {
     return {
       chartInfo: chartDescriptor,
       program: props.program ?? new Program(),
@@ -130,31 +148,14 @@ const chartDataRequests = computed<OSChartDataRequest[]>(() =>
       selectedDays: props.filterDay,
       selectedWeeks: props.filterWeek,
     };
-  }),
-);
+  });
 
-watch(
-  () => [props.filterExercise, props.filterDay, props.filterWeek],
-  () => {
-    updateCharts();
-  },
-  { deep: true },
-);
+  chartData.value = chartDataRequests.value.map((val) =>
+    formatChartData(computeChartData(val)),
+  );
 
-/**
- * Force reload of chart components to refresh charts data.
- */
-function updateCharts() {
-  chartsKey.value = chartsKey.value == "+" ? "-" : "+";
+  oldData.value = false;
 }
-
-/**
- * Computes data
- * @param chartDataRequest
- */
-const chartData = computed(() =>
-  chartDataRequests.value.map((val) => formatChartData(computeChartData(val))),
-);
 
 /**
  * Build chart options.
@@ -185,4 +186,9 @@ function getChartTitle(chartDataRequest: OSChartDataRequest): string {
 function getChartDescription(chartDataRequest: OSChartDataRequest): string {
   return chartDataRequest.chartInfo.chartDescription || "";
 }
+
+// Render charts when component gets mounted
+onMounted(() => {
+  updateCharts();
+});
 </script>

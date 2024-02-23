@@ -156,6 +156,38 @@ export function getProgramUniqueDays(program?: Program, exerciseName?: string) {
 }
 
 /**
+ * Retrieve a list of unique days from a program.
+ *
+ * @param program instance of interest.
+ * @param exerciseName if provided, only consider exercises whose name match the provided one.
+ * @returns sorted list of unique day names.
+ */
+export function getProgramUniqueWeekDayPairs(
+  program?: Program,
+  exerciseName?: string,
+): [string, string][] {
+  return arrayUniqueValues(
+    arrayFilterUndefined(
+      program?.programExercises
+        ?.filter(
+          (exercise) =>
+            !exerciseName || exercise.exercise?.name == exerciseName,
+        )
+        .map((exercise) => {
+          if (exercise.scheduleWeek && exercise.scheduleDay)
+            return [
+              exercise.scheduleWeek.toString(),
+              exercise.scheduleDay.toString(),
+            ];
+          return undefined;
+        }) || [],
+    ),
+    ([week, day]) => week.padStart(100, "0") + day.padStart(100, "0"),
+    true,
+  );
+}
+
+/**
  * Retrieve a list of unique exercise names from a program.
  *
  * @param program instance of interest.
