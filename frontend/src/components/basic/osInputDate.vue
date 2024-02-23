@@ -7,7 +7,7 @@
     :mask="modelValueMask"
     :rules="[
       (val) =>
-        dateFromStringLocale(val)
+        !val || dateFromStringLocale(val)
           ? true
           : $t('form.date_wrong_format', { format: dateGetLocaleFormat() }),
     ]"
@@ -40,13 +40,13 @@ import {
 // Define props (from child)
 export interface osInputDateProps extends Omit<osInputProps, "modelValue"> {
   // model value is a date
-  modelValue: Date | null | undefined;
+  modelValue: Date | undefined;
 
   // whether to show the date selector popup if input is a date
   showDateSelector?: boolean;
 }
 const props = withDefaults(defineProps<osInputDateProps>(), {
-  showDateSelector: false,
+  showDateSelector: true,
 });
 
 // Define methods (expose child's)
@@ -62,7 +62,7 @@ defineExpose({
 
 // Define emits
 const emit = defineEmits<{
-  "update:modelValue": [value: Date];
+  "update:modelValue": [value: Date | undefined];
 }>();
 
 // Set props
@@ -89,6 +89,7 @@ const outModelValue = computed<string | number | null | undefined>({
       } catch {
         // no need to set value if parsing date returns exceptions
       }
+    else emit("update:modelValue", undefined);
   },
 });
 watch(outModelValue, (val) => (inputModelValue.value = val), {
