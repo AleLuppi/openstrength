@@ -282,8 +282,8 @@
         "update": "Inserisci le informazioni del tuo programma",
         "update_proceed": "Aggiorna programma",
         "search_program": "Cerca programma...",
-        "delete_program_confirm": "Stai per eliminare il programma \"{ program }\", verrà rimosso anche dall'atleta assegnato. Sei sicuro?",
-        "delete_proceed": "Elimina"
+        "delete_program_confirm": "Stai per eliminare il programma \"{ program }\", che verrà rimosso anche dall'atleta assegnato. Questa azione è irreversibile.",
+        "delete_proceed": "Elimina il programma"
       },
       "fields": {
         "program": "Programma",

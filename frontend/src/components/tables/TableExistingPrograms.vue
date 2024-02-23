@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, PropType } from "vue";
+import { ref, computed, watch } from "vue";
 import { useQuasar } from "quasar";
 import { Program } from "@/helpers/programs/program";
 import { useI18n } from "vue-i18n";
@@ -32,34 +32,21 @@ const $q = useQuasar();
 const i18n = useI18n();
 
 // Define props
-const props = defineProps({
-  programs: {
-    type: Array as PropType<Program[]>,
-    required: true,
-  },
-  selected: {
-    type: Program,
-    required: false,
-  },
-  small: {
-    type: Boolean,
-    default: false,
-  },
-  onDelete: {
-    type: Function,
-    required: false,
-  },
-  allowDelete: {
-    type: Boolean,
-    default: false,
-    required: false,
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    programs: Program[];
+    selected?: Program;
+    small?: boolean;
+    allowDelete?: boolean;
+  }>(),
+  { small: false, allowDelete: false },
+);
 
 // Define emits
 const emit = defineEmits<{
   selection: [evt: Event, row: Object, index: Number];
   "update:selected": [value?: Program];
+  delete: [program: Program];
 }>();
 
 // Set table columns
@@ -133,7 +120,7 @@ const rows = computed(() => {
       : "Not selected",
     delete: {
       element: "button",
-      on: { click: () => props.onDelete?.(program) },
+      on: { click: () => emit("delete", program) },
       icon: "delete",
       flat: true,
       round: true,

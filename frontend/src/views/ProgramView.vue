@@ -293,8 +293,8 @@
             :programs="allAssignedPrograms"
             @update:selected="(program) => openProgram(program?.uid)"
             :small="denseView"
-            :on-delete="onProgramDelete"
-            :allow-delete="true"
+            @delete="onProgramDelete"
+            allow-delete
           />
         </div>
       </template>
@@ -771,6 +771,7 @@ const canRedo = ref(false);
 const deletingProgram = ref<Program>();
 const showDialogDeleteProgram = ref(false);
 const recentProgramsTableElement = ref<typeof TableExistingPrograms>();
+
 // Set ref related to maxlift
 const updatingMaxlift = ref<MaxLift>();
 const searchMaxLift = ref<string>();
@@ -907,8 +908,8 @@ watch(
 );
 
 // Show dialog deleting dialog when required
-watch(deletingProgram, (_newProgram) => {
-  if (_newProgram) showDialogDeleteProgram.value = true;
+watch(deletingProgram, (programToDelete) => {
+  if (programToDelete) showDialogDeleteProgram.value = true;
 });
 
 /**
@@ -1096,6 +1097,8 @@ function assignProgramToAthlete(
 
 /**
  * Delete one program from list, upon confirmation.
+ *
+ * @param program program that may be deleted.
  */
 function onProgramDelete(program: Program) {
   deletingProgram.value = program;
@@ -1108,12 +1111,10 @@ function onProgramDelete(program: Program) {
  * @param program element that shall be removed.
  */
 function deleteProgram(program: Program) {
-  // De-assign program from athlete or multiple athletes
-  const currAthlete = coachInfo.athletes?.find(
-    (athlete) => athlete.assignedProgramId === program.uid,
-  );
+  // Unassign program from athlete
+  const currAthlete = program.athlete;
   if (currAthlete) {
-    currAthlete.assignedProgramId = null;
+    currAthlete.assignedProgramId = undefined;
     currAthlete.saveUpdate({
       onSuccess: () => {
         // Mixpanel tracking
@@ -1133,7 +1134,7 @@ function deleteProgram(program: Program) {
   program.remove({
     onSuccess: () => {
       coachInfo.programs = coachInfo.programs?.filter(
-        (coachPrograms) => coachPrograms != program,
+        (coachProgram) => coachProgram != program,
       );
       clearProgram();
 
