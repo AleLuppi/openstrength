@@ -87,6 +87,71 @@
         </template>
       </q-table>
 
+      <div v-for="(block, index) in programSnapshot?.weekdays" :key="index">
+        <q-card>
+          <q-card-section>
+            <div class="row justify-between">
+              <h6>
+                {{
+                  `${$t("coach.program_management.builder.week_name", {
+                    week: block.weekName,
+                  })} - ${$t("coach.program_management.builder.day_name", {
+                    day: block.dayName,
+                  })}`
+                }}
+              </h6>
+
+              <q-btn flat round outline icon="done">Set as done</q-btn>
+            </div>
+            <div class="row col-6">
+              <os-input-date
+                v-model="workoutDate"
+                label="Data allenamento"
+                class="row col-3"
+              >
+              </os-input-date>
+            </div>
+          </q-card-section>
+          <q-card-section>
+            <div v-for="(exercise, idx) in block.exercises" :key="idx">
+              <q-card class="q-my-sm">
+                <q-card-section>
+                  <div class="column">
+                    <div class="row justify-between">
+                      <p>{{ exercise.exerciseName + exercise.variantName }}</p>
+                      <div>
+                        <q-btn size="xs" icon="check" round outline></q-btn>
+                      </div>
+                    </div>
+
+                    <p>{{ exercise.note }}</p>
+                  </div>
+                </q-card-section>
+                <q-card-section>
+                  <div
+                    v-for="(setSchema, indx) in exercise.schema"
+                    :key="indx"
+                    class="row justify-between"
+                  >
+                    <p>{{ exercise.schema[indx] }}</p>
+                    <p>{{ exercise.schemaNote[indx] ?? "" }}</p>
+                    <q-btn icon="message" round flat></q-btn>
+                  </div>
+                </q-card-section>
+              </q-card>
+            </div>
+          </q-card-section>
+
+          <q-card-section>
+            <os-input
+              v-model="sessionFeedback"
+              type="textarea"
+              title="Feedback sulla sessione"
+            ></os-input>
+            <q-btn class="full-width"> Salva allenamento </q-btn>
+          </q-card-section>
+        </q-card>
+      </div>
       <!-- TODO: Personal records of reference -->
 
       <!-- TODO: Exercise descriptions -->
