@@ -34,60 +34,69 @@
       </div>
 
       <!-- Visualized program days -->
-      <q-table
-        class="q-ma-md q-mb-lg"
+      <div v-if="showTable">
+        <q-table
+          class="q-ma-md q-mb-lg"
+          v-for="(block, index) in programSnapshot?.weekdays"
+          :key="index"
+          :title="`${$t('coach.program_management.builder.week_name', {
+            week: block.weekName,
+          })} - ${$t('coach.program_management.builder.day_name', {
+            day: block.dayName,
+          })}`"
+          :rows="block.exercises"
+          :columns="columns"
+          wrap-cells
+          row-key="name"
+          :pagination="{ rowsPerPage: 0 }"
+          flat
+          bordered
+          hide-bottom
+          separator="cell"
+          dense
+        >
+          <!-- Set header style -->
+          <template v-slot:header="props">
+            <q-tr :props="props" class="bg-table-header">
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                {{ col.label }}
+              </q-th>
+            </q-tr>
+          </template>
+
+          <!-- Custom slot to render values as HTML content -->
+          <template v-slot:body-cell="props">
+            <q-td :props="props">
+              <div class="q-gutter-y-sm">
+                <div
+                  v-for="value in props.value"
+                  :key="props.col + '_' + value"
+                >
+                  {{ value }}
+                </div>
+              </div>
+            </q-td>
+          </template>
+
+          <!-- Custom slot to render exercise title -->
+          <template v-slot:body-cell-exerciseInfo="props">
+            <q-td :props="props">
+              <div class="text-bold">
+                {{ props.value[0] }}
+              </div>
+              <div>
+                {{ props.value[1] }}
+              </div>
+            </q-td>
+          </template>
+        </q-table>
+      </div>
+
+      <div
         v-for="(block, index) in programSnapshot?.weekdays"
         :key="index"
-        :title="`${$t('coach.program_management.builder.week_name', {
-          week: block.weekName,
-        })} - ${$t('coach.program_management.builder.day_name', {
-          day: block.dayName,
-        })}`"
-        :rows="block.exercises"
-        :columns="columns"
-        wrap-cells
-        row-key="name"
-        :pagination="{ rowsPerPage: 0 }"
-        flat
-        bordered
-        hide-bottom
-        separator="cell"
-        dense
+        class="q-my-md"
       >
-        <!-- Set header style -->
-        <template v-slot:header="props">
-          <q-tr :props="props" class="bg-table-header">
-            <q-th v-for="col in props.cols" :key="col.name" :props="props">
-              {{ col.label }}
-            </q-th>
-          </q-tr>
-        </template>
-
-        <!-- Custom slot to render values as HTML content -->
-        <template v-slot:body-cell="props">
-          <q-td :props="props">
-            <div class="q-gutter-y-sm">
-              <div v-for="value in props.value" :key="props.col + '_' + value">
-                {{ value }}
-              </div>
-            </div>
-          </q-td>
-        </template>
-
-        <!-- Custom slot to render exercise title -->
-        <template v-slot:body-cell-exerciseInfo="props">
-          <q-td :props="props">
-            <div class="text-bold">
-              {{ props.value[0] }}
-            </div>
-            <div>
-              {{ props.value[1] }}
-            </div>
-          </q-td>
-        </template>
-      </q-table>
-
-      <div v-for="(block, index) in programSnapshot?.weekdays" :key="index">
         <q-card>
           <q-card-section>
             <div class="row justify-between">
@@ -101,7 +110,14 @@
                 }}
               </h4>
 
-              <q-btn flat round outline icon="done">Set as done</q-btn>
+              <q-btn
+                flat
+                round
+                outline
+                icon="done"
+                @click="() => (dayShowDone[index] = true)"
+                >Set as done</q-btn
+              >
             </div>
           </q-card-section>
           <q-card-section>
@@ -251,7 +267,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { NamedRoutes } from "@/router";
@@ -262,12 +278,22 @@ import {
   dbCollections,
   dbSubcollections,
 } from "@/helpers/database/collections";
+import {
+  AthleteFeedbackFrozenView,
+  createFeedbackStructure,
+} from "@/helpers/programs/athleteFeedback";
 import { ProgramForzenView } from "@/helpers/programs/program";
 
 // Init plugin
 const route = useRoute();
 const $q = useQuasar();
 const i18n = useI18n();
+
+const showTable = ref(false);
+const workoutDate = ref<Date>();
+const sessionFeedback = ref<string>();
+const setComment = ref<string>();
+const showingVideo = ref<boolean>();
 
 // Get correct program istance
 const programSnapshot = ref<ProgramForzenView>();
@@ -289,6 +315,29 @@ watch(
       },
     ),
   { immediate: true },
+);
+
+// Get correct athlete feedback instance
+const programAthleteFeedback = computed<AthleteFeedbackFrozenView | undefined>(
+  () => {
+    const athlFeedback = programSnapshot.value
+      ? createFeedbackStructure(programSnapshot.value)
+      : undefined;
+
+    return athlFeedback;
+  },
+);
+
+// Set refs for operating the program
+/* const dayShowDone = computed(() =>
+  programAthleteFeedback?.value?.weekdays.map((workoutDay, idx) => !workoutDay[idx].athleteHasDone && workoutDay.athleteHasDone),
+); */
+
+const dayShowDone = computed(
+  () =>
+    programAthleteFeedback?.value?.weekdays.map(
+      (workoutDay) => workoutDay?.athleteHasDone ?? false,
+    ) ?? [],
 );
 
 // Set table columns
