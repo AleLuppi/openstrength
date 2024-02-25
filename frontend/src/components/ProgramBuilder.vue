@@ -752,8 +752,10 @@ function moveDay(
   // Check if source is empty while renaming
   let isSourceEmpty = true;
 
-  // Exit if nothing to reorder
-  if (!selectedProgram.value?.programExercises) return;
+  // Ensure updatable program exercises
+  if (!selectedProgram.value) return;
+  if (!selectedProgram.value.programExercises)
+    selectedProgram.value.programExercises = [];
 
   // Perform move (ordered)
   sortProgramExercises(

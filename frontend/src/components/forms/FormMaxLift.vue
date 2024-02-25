@@ -77,31 +77,12 @@
       >
 
       <!-- Performance date -->
-      <os-input
+      <os-input-date
         v-model="maxliftDate"
         :label="$t('coach.maxlift_management.fields.date')"
-        placeholder="yyyy/mm/dd"
-        outlined
-        dense
-        mask="date"
+        :placeholder="dateGetLocaleFormat()"
         required
-      >
-        <template v-slot:append>
-          <q-icon name="event" class="cursor-pointer">
-            <q-popup-proxy
-              cover
-              transition-show="scale"
-              transition-hide="scale"
-            >
-              <q-date v-model="maxliftDate">
-                <div class="row items-center justify-end">
-                  <q-btn v-close-popup label="Close" color="primary" flat />
-                </div>
-              </q-date>
-            </q-popup-proxy>
-          </q-icon>
-        </template>
-      </os-input>
+      ></os-input-date>
     </q-card-section>
 
     <q-card-actions align="right">
@@ -117,7 +98,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, PropType } from "vue";
 import { QForm } from "quasar";
-import { dateGetWithoutTimezone } from "@/helpers/scalar";
+import { dateGetLocaleFormat, dateGetWithoutTimezone } from "@/helpers/scalar";
 import { Exercise, ExerciseLoadType } from "@/helpers/exercises/exercise";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import { estimate1RMfromNRM } from "@/helpers/charts/chartDatasetComputations";
@@ -160,7 +141,7 @@ const formElement = ref<QForm>();
 const maxliftExercise = ref<string>();
 const maxliftType = ref<MaxLiftType>();
 const maxliftValue = ref<string>();
-const maxliftDate = ref<string>();
+const maxliftDate = ref<Date>();
 
 // Get values to display estimated 1RM
 const maxliftEstimated1RMValue = computed(() =>
@@ -183,10 +164,7 @@ watch(
     maxliftExercise.value = props.maxlift?.exercise?.name;
     maxliftType.value = props.maxlift?.type;
     maxliftValue.value = props.maxlift?.value;
-    maxliftDate.value = (props.maxlift?.performedOn ?? new Date())
-      .toISOString()
-      .split("T")[0]
-      .replaceAll("-", "/");
+    maxliftDate.value = props.maxlift?.performedOn ?? new Date();
   },
   { immediate: true },
 );

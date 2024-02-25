@@ -58,6 +58,9 @@
     "subtitle": "You didn't break anything but we could not find what you are looking for. No worries we will take you to the homepage. Click the link below!",
     "redirect": "Save me please!"
   },
+  "form": {
+    "date_wrong_format": "Date should be formatted as { format }"
+  },
   "user": {
     "auth": {
       "name": "Name",
@@ -281,7 +284,9 @@
         "add_proceed": "Confirm",
         "update": "Insert your program info",
         "update_proceed": "Update program",
-        "search_program": "Search program..."
+        "search_program": "Search program...",
+        "delete_program_confirm": "You are about to delete program \"{ program }\", which will be removed from assigned athlete too. This action cannot be undone.",
+        "delete_proceed": "Delete it"
       },
       "fields": {
         "program": "Program",

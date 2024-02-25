@@ -43,7 +43,7 @@ import { QInput } from "quasar";
 import type { QInputProps, QInputSlots } from "quasar";
 
 // Define props (from child)
-interface extendedInputProps extends QInputProps {
+export interface osInputProps extends QInputProps {
   // input element props (missing in QInputProps)
   placeholder?: string;
   step?: string;
@@ -59,7 +59,7 @@ interface extendedInputProps extends QInputProps {
   // whether a non-empty model value is required to validate a form
   required?: boolean;
 }
-defineProps<extendedInputProps>();
+defineProps<osInputProps>();
 
 // Define methods (expose child's)
 const inputElement = ref<QInput>();
