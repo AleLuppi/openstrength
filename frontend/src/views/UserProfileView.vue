@@ -82,7 +82,7 @@
       outline
       class="q-ma-sm"
       style="position: absolute; bottom: 0px; right: 0px"
-      >v0.3.3</q-badge
+      >v0.3.4</q-badge
     >
   </q-page>
 </template>
