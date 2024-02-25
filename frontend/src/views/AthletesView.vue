@@ -163,17 +163,14 @@
               <q-tab-panel name="programs">
                 <!-- If selected athlete has ongoing program show program data form-->
                 <div v-if="selectedAthlete && Boolean(athleteCurrentProgram)">
-                  <!--                   <FormAthleteProgramInfo
-                    ref="athleteProgramFormElement"
-                    :program="athleteFormProgram"
-                  /> 
-                  -->
                   <q-btn>Crea nuovo programma</q-btn>
-                  <TableAthleteAssignedPrograms
+                  <TableAthletePrograms
                     :programs="athletePrograms"
-                    @info:selected="(program) => showProgramInfo(program)"
-                    @edit:selected="() => (showProgramInfoDialog = true)"
-                    @delete:selected="() => (showProgramInfoDialog = true)"
+                    :on-info="
+                      () => {
+                        showProgramInfoDialog = true;
+                      }
+                    "
                   />
                 </div>
 
@@ -338,6 +335,7 @@
         <q-card class="q-pa-sm dialog-min-width">
           <q-card-section class="row items-center q-pb-none">
             <h5>Ciao</h5>
+
             <q-space />
             <q-btn
               icon="close"
@@ -346,6 +344,12 @@
               dense
               color="button-negative"
               v-close-popup
+            />
+          </q-card-section>
+          <q-card-section>
+            <FormAthleteProgramInfo
+              ref="athleteProgramFormElement"
+              :program="athleteFormProgram"
             />
           </q-card-section>
         </q-card>
@@ -364,8 +368,8 @@ import { AthleteUser } from "@/helpers/users/user";
 import TableManagedAthletes from "@/components/tables/TableManagedAthletes.vue";
 import TableMaxLifts from "@/components/tables/TableMaxLifts.vue";
 import FormAthleteAnagraphicInfo from "@/components/forms/FormAthleteAnagraphicInfo.vue";
-//import FormAthleteProgramInfo from "@/components/forms/FormAthleteProgramInfo.vue";
-//import { Program } from "@/helpers/programs/program";
+import FormAthleteProgramInfo from "@/components/forms/FormAthleteProgramInfo.vue";
+import { Program } from "@/helpers/programs/program";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
 import { event } from "vue-gtag";
@@ -374,8 +378,7 @@ import {
   getAssignedProgram,
 } from "@/helpers/programs/athleteAssignment";
 import mixpanel from "mixpanel-browser";
-import TableAthleteAssignedPrograms from "@/components/tables/TableAthleteAssignedPrograms.vue";
-import { Program } from "@/helpers/programs/program";
+import TableAthletePrograms from "@/components/tables/TableAthletePrograms.vue";
 
 // Init plugin
 const $q = useQuasar();
@@ -466,9 +469,9 @@ const athleteCurrentProgram = computed(() =>
 );
 
 // Get a program to initialize form
-/* const athleteFormProgram = computed(
+const athleteFormProgram = computed(
   () => athleteCurrentProgram.value ?? new Program(),
-); */
+);
 
 // Get maxlifts for the selected athlete
 const athleteMaxlifts = computed(() =>
@@ -537,11 +540,6 @@ function saveMaxlift(newMaxLift: MaxLift) {
   showMaxLiftAddDialog.value = false;
 }
 
-function showProgramInfo(program: Program) {
-  console.log(program);
-
-  showProgramInfoDialog.value = true;
-}
 /**
  * Open form with max lift info to allow coach to update them.
  *
