@@ -49,17 +49,13 @@ const props = defineProps({
     type: Function,
     required: false,
   },
-
-  onDelete: {
-    type: Function,
-    required: false,
-  },
 });
 
 // Define emits
 const emit = defineEmits<{
   selection: [evt: Event, row: Object, index: Number];
   "update:selected": [value?: Program];
+  delete: [program: Program];
 }>();
 
 // Set table columns
@@ -148,7 +144,7 @@ const rows = computed(() => {
     },
     delete: {
       element: "button",
-      on: { click: () => props.onDelete?.(program) },
+      on: { click: () => emit("delete", program) },
       icon: "delete",
       stack: true,
       label: "Delete",

@@ -163,6 +163,7 @@
               <q-tab-panel name="programs">
                 <!-- If selected athlete has ongoing program show program data form-->
                 <div v-if="selectedAthlete && Boolean(athleteCurrentProgram)">
+                  <!-- TODO: i18n -->
                   <q-btn>Crea nuovo programma</q-btn>
                   <TableAthletePrograms
                     :programs="athletePrograms"
@@ -171,6 +172,7 @@
                         showProgramInfoDialog = true;
                       }
                     "
+                    @delete="onProgramDelete"
                   />
                 </div>
 
@@ -330,7 +332,7 @@
         </div>
       </div>
 
-      <!-- Dialog for program info -->
+      <!-- Dialog for editing program info -->
       <q-dialog v-model="showProgramInfoDialog">
         <q-card class="q-pa-sm dialog-min-width">
           <q-card-section class="row items-center q-pb-none">
@@ -352,6 +354,40 @@
               :program="athleteFormProgram"
             />
           </q-card-section>
+        </q-card>
+      </q-dialog>
+
+      <!-- Dialog delete a program -->
+      <q-dialog
+        v-model="showDialogDeleteProgram"
+        @hide="deletingProgram = undefined"
+      >
+        <q-card class="q-pa-sm dialog-min-width">
+          <q-card-section class="row items-center q-pb-none">
+            <p>
+              {{
+                $t("coach.program_management.list.delete_program_confirm", {
+                  program: deletingProgram?.name,
+                })
+              }}
+            </p>
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn
+              flat
+              :label="$t('common.cancel')"
+              type="reset"
+              color="button-negative"
+              v-close-popup
+            />
+            <q-btn
+              :label="$t('coach.program_management.list.delete_proceed')"
+              @click="if (deletingProgram) deleteProgram(deletingProgram);"
+              color="button-negative"
+              v-close-popup
+            />
+          </q-card-actions>
         </q-card>
       </q-dialog>
     </div>
@@ -446,6 +482,9 @@ const athletes = computed(() => coachInfo.athletes || []);
 const programs = computed(() => coachInfo.programs || []);
 const exercises = computed(() => coachInfo.exercises || []);
 const maxlifts = computed(() => coachInfo.maxlifts || []);
+
+const deletingProgram = ref<Program>();
+const showDialogDeleteProgram = ref(false);
 
 // Update table selection
 watch(selectedAthlete, (athlete) =>
@@ -616,6 +655,78 @@ function clearAthlete() {
   athleteSurname.value = "";
   athleteNote.value = "";
   showAthleteDialog.value = false;
+}
+
+/**
+ * Delete one program from list, upon confirmation.
+ *
+ * @param program program that may be deleted.
+ */
+function onProgramDelete(program: Program) {
+  deletingProgram.value = program;
+  showDialogDeleteProgram.value = true;
+}
+
+/**
+ * Actually delete the selected program template.
+ *
+ * @param program element that shall be removed.
+ */
+function deleteProgram(program: Program) {
+  // Unassign program from athlete
+  const currAthlete = program.athlete;
+  if (currAthlete) {
+    currAthlete.assignedProgramId = undefined;
+    currAthlete;
+    currAthlete.saveUpdate({
+      onSuccess: () => {
+        // Mixpanel tracking
+        mixpanel.track("Update Athlete", {
+          Type: "Removed program",
+        });
+      },
+      onError: () => {
+        // Mixpanel tracking
+        mixpanel.track("ERROR Update Athlete", {
+          Type: "Removing program",
+        });
+      },
+    });
+  }
+
+  // Delete program
+  program.name = `${program.name ?? ""}__deleted__${program.coachId}/${
+    program.athleteId
+  }`;
+  program.coach = undefined;
+  program.athlete = undefined;
+  program.saveUpdate({
+    onSuccess: () => {
+      coachInfo.programs = coachInfo.programs?.filter(
+        (coachProgram) => coachProgram != program,
+      );
+      clearProgram();
+
+      // Register GA4 event
+      event("program_deleted", {
+        event_category: "documentation",
+        event_label: "Program Deleted",
+        value: 1,
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("Program Deleted", {
+        Page: "ProgramView",
+      });
+    },
+  });
+}
+
+/**
+ * Clear program form and hide it.
+ */
+function clearProgram() {
+  deletingProgram.value = undefined;
 }
 </script>
 
