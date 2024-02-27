@@ -97,7 +97,7 @@
         :key="index"
         class="q-my-md"
       >
-        <q-card>
+        <q-card :class="dayShowDone[index] ? 'bg-green' : ''">
           <q-card-section>
             <div class="row justify-between">
               <h4>
@@ -114,8 +114,8 @@
                 flat
                 round
                 outline
-                icon="done"
-                @click="() => (dayShowDone[index] = true)"
+                :icon="dayShowDone[index] ? 'edit' : 'done'"
+                @click="() => (dayShowDone[index] = !dayShowDone[index])"
                 >Set as done</q-btn
               >
             </div>
@@ -133,7 +133,9 @@
 
           <q-card-section>
             <div v-for="(exercise, idx) in block.exercises" :key="idx">
-              <q-card class="q-mb-sm">
+              <q-card
+                :class="exerciseShowDone[idx] ? 'q-mb-sm' : 'q-mb-sm bg-green'"
+              >
                 <q-card-section>
                   <div class="column">
                     <div class="row justify-between">
@@ -144,8 +146,18 @@
                           }}</b
                         >
                       </p>
+
                       <div>
-                        <q-btn size="xs" icon="check" round outline></q-btn>
+                        <q-btn
+                          size="xs"
+                          icon="check"
+                          round
+                          outline
+                          @click="
+                            () =>
+                              (exerciseShowDone[idx] = !exerciseShowDone[idx])
+                          "
+                        ></q-btn>
                       </div>
                     </div>
 
@@ -278,10 +290,6 @@ import {
   dbCollections,
   dbSubcollections,
 } from "@/helpers/database/collections";
-import {
-  AthleteFeedbackFrozenView,
-  createFeedbackStructure,
-} from "@/helpers/programs/athleteFeedback";
 import { ProgramForzenView } from "@/helpers/programs/program";
 
 // Init plugin
@@ -294,6 +302,13 @@ const workoutDate = ref<Date>();
 const sessionFeedback = ref<string>();
 const setComment = ref<string>();
 const showingVideo = ref<boolean>();
+
+// Set card behavior
+const dayDone = ref<boolean[]>([]);
+const dayShowDone = computed(() => dayDone.value);
+
+const exerciseDone = ref<boolean[]>([]);
+const exerciseShowDone = computed(() => exerciseDone.value);
 
 // Get correct program istance
 const programSnapshot = ref<ProgramForzenView>();
@@ -318,7 +333,7 @@ watch(
 );
 
 // Get correct athlete feedback instance
-const programAthleteFeedback = computed<AthleteFeedbackFrozenView | undefined>(
+/* const programAthleteFeedback = computed<AthleteFeedbackFrozenView | undefined>(
   () => {
     const athlFeedback = programSnapshot.value
       ? createFeedbackStructure(programSnapshot.value)
@@ -326,19 +341,19 @@ const programAthleteFeedback = computed<AthleteFeedbackFrozenView | undefined>(
 
     return athlFeedback;
   },
-);
+); */
 
 // Set refs for operating the program
 /* const dayShowDone = computed(() =>
   programAthleteFeedback?.value?.weekdays.map((workoutDay, idx) => !workoutDay[idx].athleteHasDone && workoutDay.athleteHasDone),
 ); */
 
-const dayShowDone = computed(
+/* const dayShowDone = computed(
   () =>
     programAthleteFeedback?.value?.weekdays.map(
       (workoutDay) => workoutDay?.athleteHasDone ?? false,
     ) ?? [],
-);
+); */
 
 // Set table columns
 const columns: QTableProps["columns"] = [
