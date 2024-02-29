@@ -6,7 +6,7 @@
 
       <div class="row justify-around">
         <!-- Profile Image-->
-        <q-section class="column align-left q-mx-md">
+        <div class="column align-left q-mx-md">
           <q-img
             v-if="photoUrl"
             :src="photoUrl"
@@ -23,31 +23,31 @@
             :size="$q.screen.lt.sm ? '3em' : '6em'"
             class="justify-center card-icon q-ma-sm"
           />
-        </q-section>
+        </div>
 
         <!-- Name and Surname -->
-        <q-section class="column align-center q-mx-md">
+        <div class="column align-center q-mx-md">
           <p class="text-h6 text-left">
             {{ $t("user.profile.name") }}
           </p>
           <p class="text-left">{{ user.displayName }}</p>
-        </q-section>
+        </div>
 
         <!-- Email -->
-        <q-section class="column align-center q-mx-md">
+        <div class="column align-center q-mx-md">
           <p class="text-h6 text-left">
             {{ $t("user.profile.email") }}
           </p>
           <p class="text-left">{{ user.email }}</p>
-        </q-section>
+        </div>
 
         <!-- Role: athlete or coach -->
-        <q-section class="column align-center q-mx-md">
+        <div class="column align-center q-mx-md">
           <p class="text-h6 text-left">
             {{ $t("user.profile.role") }}
           </p>
           <p class="text-left text-primary">{{ user.role }}</p>
-        </q-section>
+        </div>
       </div>
     </q-card>
 
