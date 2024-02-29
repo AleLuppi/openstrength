@@ -9,7 +9,7 @@
       (val) =>
         !val || dateFromStringLocale(val)
           ? true
-          : $t('form.date_wrong_format', { format: dateGetLocaleFormat() }),
+          : $t('form.date_wrong_format', { format: modelValueFormat }),
     ]"
   >
     <template v-if="showDateSelector" #append>
@@ -20,7 +20,10 @@
           transition-show="scale"
           transition-hide="scale"
         >
-          <q-date v-model="outModelValue" mask="DD/MM/YYYY"></q-date>
+          <q-date
+            v-model="outModelValue"
+            :mask="modelValueFormat.toUpperCase()"
+          ></q-date>
         </q-popup-proxy>
       </q-icon>
     </template>
@@ -96,7 +99,8 @@ watch(outModelValue, (val) => (inputModelValue.value = val), {
   immediate: true,
 });
 
-// Get date mask
+// Get date format and mask
+const modelValueFormat = dateGetLocaleFormat();
 const modelValueMask = dateGetLocaleMask();
 </script>
 
