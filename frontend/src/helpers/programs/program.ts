@@ -138,6 +138,20 @@ export type ProgramLineProps = {
 };
 
 /**
+ * Frozen entity for program line
+ */
+export type ProgramFrozenLine = {
+  load: string | undefined;
+  askLoad?: boolean;
+  reps?: string | undefined;
+  askReps?: boolean;
+  sets?: string | undefined;
+  askSets: boolean;
+  rpe?: string | undefined;
+  askRpe?: boolean;
+};
+
+/**
  * Frozen program object.
  */
 export type ProgramForzenView = {
@@ -154,6 +168,7 @@ export type ProgramForzenView = {
       variantName: string;
       note?: string;
       schema: string[];
+      lines: ProgramFrozenLine[] | undefined;
       schemaNote: string[];
       textFeedback: boolean[];
       videoFeedback: boolean[];

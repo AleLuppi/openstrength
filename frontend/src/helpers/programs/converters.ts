@@ -2,6 +2,7 @@ import {
   Program,
   ProgramLine,
   ProgramForzenView,
+  ProgramFrozenLine,
 } from "@/helpers/programs/program";
 import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { MaxLift } from "../maxlifts/maxlift";
@@ -106,6 +107,29 @@ export function convertLineToSchema(line: ProgramLine): string {
 }
 
 /**
+ * TODO: check logic and decide when to ask for load, reps, sets, rpe insertion (to be done in a second version)
+ * Method to convert between different program lines
+ * @param line
+ * @returns
+ */
+export function convertProgramLineToFrozenLine(
+  line: ProgramLine,
+): ProgramFrozenLine {
+  const frozenLine: ProgramFrozenLine = {
+    load: line.loadValue?.toString(),
+    askLoad: false,
+    reps: line.repsValue?.toString(),
+    askReps: false,
+    sets: line.setsValue?.toString(),
+    askSets: false,
+    rpe: line.rpeValue?.toString(),
+    askRpe: false,
+  };
+
+  return frozenLine;
+}
+
+/**
  * Converts program to an array of flat days.
  *
  * @param program program that shall be converted.
@@ -134,6 +158,9 @@ export function convertProgramToDayBlocks(
         exerciseName: programExercise?.exercise?.name ?? "",
         variantName: programExercise?.exerciseVariant?.name ?? "",
         note: programExercise?.exerciseNote,
+        lines: programExercise.lines?.map(
+          (line) => convertProgramLineToFrozenLine(line) ?? [],
+        ),
         schema:
           programExercise.lines?.map((line) => convertLineToSchema(line)) ?? [],
         schemaNote: programExercise.lines?.map((line) => line.note ?? "") ?? [],
