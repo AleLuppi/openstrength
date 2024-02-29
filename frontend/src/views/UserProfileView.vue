@@ -75,6 +75,15 @@
       :label="$t('user.auth.signout_title')"
       @click="signOut"
     />
+
+    <!-- TODO: Update at each release with the version from package-json-->
+    <q-badge
+      color="secondary"
+      outline
+      class="q-ma-sm"
+      style="position: absolute; bottom: 0px; right: 0px"
+      >v0.3.4</q-badge
+    >
   </q-page>
 </template>
 

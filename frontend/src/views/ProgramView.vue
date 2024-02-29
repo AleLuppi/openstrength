@@ -312,9 +312,12 @@
             {{ $t("coach.program_management.builder.open_recent") }}
           </h6>
           <TableExistingPrograms
+            ref="recentProgramsTableElement"
             :programs="allAssignedPrograms"
             @update:selected="(program) => openProgram(program?.uid)"
             :small="denseView"
+            @delete="onProgramDelete"
+            allow-delete
           />
         </div>
       </template>
@@ -704,6 +707,40 @@
       </q-card>
     </q-dialog>
 
+    <!-- Dialog delete a program -->
+    <q-dialog
+      v-model="showDialogDeleteProgram"
+      @hide="deletingProgram = undefined"
+    >
+      <q-card class="q-pa-sm dialog-min-width">
+        <q-card-section class="row items-center q-pb-none">
+          <p>
+            {{
+              $t("coach.program_management.list.delete_program_confirm", {
+                program: deletingProgram?.name,
+              })
+            }}
+          </p>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            :label="$t('common.cancel')"
+            type="reset"
+            color="button-negative"
+            v-close-popup
+          />
+          <q-btn
+            :label="$t('coach.program_management.list.delete_proceed')"
+            @click="if (deletingProgram) deleteProgram(deletingProgram);"
+            color="button-negative"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
     <!-- Dialog to warn user of filtered template saving -->
     <q-dialog v-model="showProgramTemplateFilteredWarning">
       <q-card>
@@ -920,6 +957,9 @@ const programPageHeight = ref(0);
 const programManagerHeight = ref(0);
 const canUndo = ref(false);
 const canRedo = ref(false);
+const deletingProgram = ref<Program>();
+const showDialogDeleteProgram = ref(false);
+const recentProgramsTableElement = ref<typeof TableExistingPrograms>();
 
 // Set ref related to program templates
 const showProgramTemplateFilteredWarning = ref(false);
@@ -1074,6 +1114,11 @@ watch(
   },
   { immediate: true },
 );
+
+// Show dialog deleting dialog when required
+watch(deletingProgram, (programToDelete) => {
+  if (programToDelete) showDialogDeleteProgram.value = true;
+});
 
 /**
  * Set saved info and ensure it is preserved.
@@ -1397,6 +1442,78 @@ function assignProgramToAthlete(
       },
     });
   }
+}
+
+/**
+ * Delete one program from list, upon confirmation.
+ *
+ * @param program program that may be deleted.
+ */
+function onProgramDelete(program: Program) {
+  deletingProgram.value = program;
+  showDialogDeleteProgram.value = false;
+}
+
+/**
+ * Actually delete the selected program template.
+ *
+ * @param program element that shall be removed.
+ */
+function deleteProgram(program: Program) {
+  // Unassign program from athlete
+  const currAthlete = program.athlete;
+  if (currAthlete) {
+    currAthlete.assignedProgramId = undefined;
+    currAthlete.saveUpdate({
+      onSuccess: () => {
+        // Mixpanel tracking
+        mixpanel.track("Update Athlete", {
+          Type: "Removed program",
+        });
+      },
+      onError: () => {
+        // Mixpanel tracking
+        mixpanel.track("ERROR Update Athlete", {
+          Type: "Removing program",
+        });
+      },
+    });
+  }
+
+  // Delete program
+  program.name = `${program.name ?? ""}__deleted__${program.coachId}/${
+    program.athleteId
+  }`;
+  program.coach = undefined;
+  program.athlete = undefined;
+  program.saveUpdate({
+    onSuccess: () => {
+      coachInfo.programs = coachInfo.programs?.filter(
+        (coachProgram) => coachProgram != program,
+      );
+      clearProgram();
+
+      // Register GA4 event
+      event("program_deleted", {
+        event_category: "documentation",
+        event_label: "Program Deleted",
+        value: 1,
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("Program Deleted", {
+        Page: "ProgramView",
+      });
+    },
+  });
+}
+
+/**
+ * Clear program form and hide it.
+ */
+function clearProgram() {
+  deletingProgram.value = undefined;
+  selectedProgram.value = undefined;
 }
 
 /**

@@ -59,6 +59,9 @@
     "subtitle": "Non hai rotto nulla ma non siamo riusciti a trovare quello che stai cercando. Nessun problema, ti porteremo alla homepage. Clicca sul link qui sotto!",
     "redirect": "Salvami per favore!"
   },
+  "form": {
+    "date_wrong_format": "La data deve del tipo { format }"
+  },
   "user": {
     "auth": {
       "name": "Nome",
@@ -283,7 +286,9 @@
         "add_proceed": "Conferma",
         "update": "Inserisci le informazioni del tuo programma",
         "update_proceed": "Aggiorna programma",
-        "search_program": "Cerca programma..."
+        "search_program": "Cerca programma...",
+        "delete_program_confirm": "Stai per eliminare il programma \"{ program }\", che verrà rimosso anche dall'atleta assegnato. Questa azione è irreversibile.",
+        "delete_proceed": "Elimina il programma"
       },
       "fields": {
         "program": "Programma",

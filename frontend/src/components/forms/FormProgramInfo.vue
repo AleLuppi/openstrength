@@ -50,61 +50,19 @@
       </div>
 
       <!-- Start date -->
-      <os-input
+      <os-input-date
         v-model="programStartedOn"
         :label="$t('coach.program_management.fields.start_date')"
         required
         class="col-6"
-      >
-        <template v-slot:append>
-          <q-icon name="event" class="cursor-pointer">
-            <q-popup-proxy
-              cover
-              transition-show="scale"
-              transition-hide="scale"
-            >
-              <q-date v-model="programStartedOn">
-                <div class="row items-center justify-end">
-                  <q-btn
-                    v-close-popup
-                    :label="$t('common.close')"
-                    color="primary"
-                    flat
-                  />
-                </div>
-              </q-date>
-            </q-popup-proxy>
-          </q-icon>
-        </template>
-      </os-input>
+      ></os-input-date>
 
       <!-- End date -->
-      <os-input
+      <os-input-date
         v-model="programFinishedOn"
         :label="$t('coach.program_management.fields.end_date')"
         class="col-6"
-      >
-        <template v-slot:append>
-          <q-icon name="event" class="cursor-pointer">
-            <q-popup-proxy
-              cover
-              transition-show="scale"
-              transition-hide="scale"
-            >
-              <q-date v-model="programFinishedOn">
-                <div class="row items-center justify-end">
-                  <q-btn
-                    v-close-popup
-                    :label="$t('common.close')"
-                    color="primary"
-                    flat
-                  />
-                </div>
-              </q-date>
-            </q-popup-proxy>
-          </q-icon>
-        </template>
-      </os-input>
+      ></os-input-date>
 
       <!-- Program description -->
       <os-input
@@ -202,8 +160,8 @@ defineExpose({
 const formElement = ref<QForm>();
 const programName = ref<string>();
 const programAthlete = ref<AthleteUser>();
-const programStartedOn = ref<string>();
-const programFinishedOn = ref<string>();
+const programStartedOn = ref<Date>();
+const programFinishedOn = ref<Date>();
 const programDescription = ref<string>();
 const showAthleteAssigningDialog = ref(false);
 const showAthleteProgramOverwiteDialog = ref(false);
@@ -215,12 +173,8 @@ watch(
     if (!program) program = new Program();
     programName.value = program.name;
     programAthlete.value = program.athlete;
-    programStartedOn.value = program.startedOn
-      ? program.startedOn.toISOString().split("T")[0].replaceAll("-", "/")
-      : undefined;
-    programFinishedOn.value = program.finishedOn
-      ? program.finishedOn.toISOString().split("T")[0].replaceAll("-", "/")
-      : undefined;
+    programStartedOn.value = program.startedOn;
+    programFinishedOn.value = program.finishedOn;
     programDescription.value = program.description;
   },
   { immediate: true },

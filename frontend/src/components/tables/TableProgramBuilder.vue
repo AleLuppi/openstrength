@@ -278,8 +278,10 @@
         }"
         :deleteEmptyLine="true"
         @row-click="
-          (_1: any, _2: any, idx: number) =>
-            emit('selectReference', programExercise.lines!.at(idx)!)
+          (_1: any, _2: any, idx: number) => {
+            if (programExercise.lines?.at(idx))
+              emit('selectReference', programExercise.lines.at(idx)!);
+          }
         "
         dense
         :debounce="debounce"
