@@ -21,7 +21,7 @@
         <!-- Max lift value -->
         <os-input
           v-model="maxliftValues[index]"
-          :suffix="getMaxliftSuffix(maxlift.type)"
+          :suffix="getMaxliftUnit(maxlift.type)"
           :label="$t('coach.maxlift_management.fields.value')"
           type="number"
           step="0.01"
@@ -45,6 +45,7 @@
 import { ref, PropType } from "vue";
 import { QForm } from "quasar";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import { getMaxliftUnit } from "@/helpers/maxlifts/utils";
 
 // Set props
 const props = defineProps({
@@ -77,25 +78,6 @@ const maxliftValues = ref<string[]>(
     .map((maxlift) => maxlift.value)
     .filter((value): value is string => typeof value === "string"),
 );
-
-//Gather correct suffix for current selection
-function getMaxliftSuffix(type: string | undefined) {
-  switch (type) {
-    case "1RM":
-    case "3RM":
-    case "5RM":
-    case "6RM":
-    case "8RM":
-    case "10RM":
-      return "kg";
-    case "Max Reps":
-      return "reps";
-    case "Max Time":
-      return "s";
-    default:
-      return "";
-  }
-}
 
 /**
  * Perform operations on form submit.
