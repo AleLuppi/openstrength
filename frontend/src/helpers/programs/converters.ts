@@ -116,13 +116,13 @@ export function convertProgramLineToFrozenLine(
   line: ProgramLine,
 ): ProgramFrozenLine {
   const frozenLine: ProgramFrozenLine = {
-    load: line.loadValue?.toString(),
+    load: line.loadBaseValue?.toString(),
     askLoad: false,
-    reps: line.repsValue?.toString(),
+    reps: line.repsBaseValue?.toString(),
     askReps: false,
-    sets: line.setsValue?.toString(),
+    sets: line.setsBaseValue?.toString(),
     askSets: false,
-    rpe: line.rpeValue?.toString(),
+    rpe: line.rpeBaseValue?.toString(),
     askRpe: false,
   };
 

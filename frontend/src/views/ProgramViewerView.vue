@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md" style="height: 100%">
+  <div class="q-pa-none" style="height: 100%">
     <!-- Show selected program -->
     <div v-if="programSnapshot">
       <!-- Program infos -->
@@ -37,8 +37,8 @@
       <div v-if="showTable">
         <q-table
           class="q-ma-md q-mb-lg"
-          v-for="(block, index) in programSnapshot?.weekdays"
-          :key="index"
+          v-for="(block, indexDay) in programSnapshot?.weekdays"
+          :key="indexDay"
           :title="`${$t('coach.program_management.builder.week_name', {
             week: block.weekName,
           })} - ${$t('coach.program_management.builder.day_name', {
@@ -92,165 +92,14 @@
         </q-table>
       </div>
 
+      <!-- Show Workout day -->
       <div
-        v-for="(block, index) in programSnapshot?.weekdays"
-        :key="index"
-        class="q-my-md"
+        v-for="(block, indexDay) in programSnapshot?.weekdays"
+        :key="indexDay"
+        class="q-my-md q-mx-xs"
       >
-        <q-card :class="dayShowDone[index] ? 'bg-green' : ''">
-          <q-card-section>
-            <div class="row justify-between">
-              <h4>
-                {{
-                  `${$t("coach.program_management.builder.week_name", {
-                    week: block.weekName,
-                  })} - ${$t("coach.program_management.builder.day_name", {
-                    day: block.dayName,
-                  })}`
-                }}
-              </h4>
-
-              <q-btn
-                flat
-                round
-                outline
-                :icon="dayShowDone[index] ? 'edit' : 'done'"
-                @click="() => (dayShowDone[index] = !dayShowDone[index])"
-                >Set as done</q-btn
-              >
-            </div>
-          </q-card-section>
-          <q-card-section>
-            <div class="row col-12">
-              <os-input-date
-                v-model="workoutDate"
-                label="Data allenamento"
-                class="col-12 q-mb-none"
-              >
-              </os-input-date>
-            </div>
-          </q-card-section>
-
-          <q-card-section>
-            <div v-for="(exercise, idx) in block.exercises" :key="idx">
-              <q-card
-                :class="exerciseShowDone[idx] ? 'q-mb-sm' : 'q-mb-sm bg-green'"
-              >
-                <q-card-section>
-                  <div class="column">
-                    <div class="row justify-between">
-                      <p>
-                        <b>
-                          {{
-                            exercise.exerciseName + " " + exercise.variantName
-                          }}</b
-                        >
-                      </p>
-
-                      <div>
-                        <q-btn
-                          size="xs"
-                          icon="check"
-                          round
-                          outline
-                          @click="
-                            () =>
-                              (exerciseShowDone[idx] = !exerciseShowDone[idx])
-                          "
-                        ></q-btn>
-                      </div>
-                    </div>
-
-                    <p>
-                      <i>{{ exercise.note }}</i>
-                    </p>
-                  </div>
-                </q-card-section>
-                <q-card-section>
-                  <div
-                    v-for="(setSchema, indx) in exercise.schema"
-                    :key="indx"
-                    class="row col-12 justify-between items-center"
-                  >
-                    <div class="row justify-start items-center">
-                      <p>{{ exercise.schema[indx] }}</p>
-                      <q-btn
-                        v-if="exercise.schemaNote[indx]"
-                        flat
-                        outline
-                        round
-                        color="info"
-                        icon="sym_o_info"
-                        @click="showing = true"
-                      >
-                        <q-tooltip
-                          anchor="top middle"
-                          self="bottom middle"
-                          :offset="[10, 10]"
-                        >
-                          {{ exercise.schemaNote[indx] ?? "" }}
-                        </q-tooltip>
-                      </q-btn>
-                    </div>
-
-                    <div class="row justify-start items-center">
-                      <q-btn
-                        v-if="exercise.textFeedback[idx]"
-                        icon="sym_o_message"
-                        round
-                        flat
-                      >
-                        <q-popup-edit
-                          style="width: 300px"
-                          v-model="setComment"
-                          v-slot="scope"
-                        >
-                          <os-input
-                            autofocus
-                            type="textarea"
-                            v-model="scope.value"
-                          >
-                          </os-input>
-
-                          <q-btn
-                            class="full-width"
-                            @click.stop.prevent="scope.set"
-                            >Save Comment</q-btn
-                          >
-                        </q-popup-edit>
-                      </q-btn>
-
-                      <q-btn
-                        v-if="exercise.videoFeedback[idx]"
-                        icon="sym_o_videocam"
-                        round
-                        flat
-                        @click="showingVideo = true"
-                      >
-                        <q-tooltip
-                          anchor="top middle"
-                          self="bottom middle"
-                          :offset="[10, 10]"
-                        >
-                          Il tuo coach ha richiesto un video per questa serie
-                        </q-tooltip>
-                      </q-btn>
-                    </div>
-                  </div>
-                </q-card-section>
-              </q-card>
-            </div>
-          </q-card-section>
-
-          <q-card-section>
-            <os-input
-              v-model="sessionFeedback"
-              type="textarea"
-              label="Feedback sulla sessione"
-            ></os-input>
-            <q-btn class="full-width"> Salva allenamento </q-btn>
-          </q-card-section>
-        </q-card>
+        <WorkoutDayForm :block="block" :dayShowDone="dayShowDone[indexDay]">
+        </WorkoutDayForm>
       </div>
       <!-- TODO: Personal records of reference -->
 
@@ -291,6 +140,7 @@ import {
   dbSubcollections,
 } from "@/helpers/database/collections";
 import { ProgramForzenView } from "@/helpers/programs/program";
+import WorkoutDayForm from "@/components/feedback/WorkoutDayForm.vue";
 
 // Init plugin
 const route = useRoute();
@@ -298,17 +148,10 @@ const $q = useQuasar();
 const i18n = useI18n();
 
 const showTable = ref(false);
-const workoutDate = ref<Date>();
-const sessionFeedback = ref<string>();
-const setComment = ref<string>();
-const showingVideo = ref<boolean>();
 
 // Set card behavior
 const dayDone = ref<boolean[]>([]);
 const dayShowDone = computed(() => dayDone.value);
-
-const exerciseDone = ref<boolean[]>([]);
-const exerciseShowDone = computed(() => exerciseDone.value);
 
 // Get correct program istance
 const programSnapshot = ref<ProgramForzenView>();
