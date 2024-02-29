@@ -91,16 +91,18 @@
         <span @click="accept = !accept" class="col" style="min-width: 8em">
           {{ $t("user.auth.acceptance_before") }}
 
-          <router-link :to="{ name: 'privacy_policy' }" @click.stop=""
+          <router-link :to="{ name: NamedRoutes.privacyPolicy }" @click.stop=""
             >{{ $t("layout.views.privacy_policy") }},
           </router-link>
-          <router-link :to="{ name: 'cookie_policy' }" @click.stop="">{{
-            $t("layout.views.cookie_policy")
-          }}</router-link
+          <router-link
+            :to="{ name: NamedRoutes.cookiePolicy }"
+            @click.stop=""
+            >{{ $t("layout.views.cookie_policy") }}</router-link
           >{{ $t("user.auth.acceptance_between")
-          }}<router-link :to="{ name: 'terms_conditions' }" @click.stop="">{{
-            $t("layout.views.terms_conditions")
-          }}</router-link
+          }}<router-link
+            :to="{ name: NamedRoutes.termsConditions }"
+            @click.stop=""
+            >{{ $t("layout.views.terms_conditions") }}</router-link
           >{{ $t("user.auth.acceptance_after") }}
         </span>
       </div>
@@ -128,6 +130,7 @@ import {
 } from "@/helpers/users/auth";
 import { validateEmail, validatePassword } from "@/helpers/validate";
 import { logoFullImage } from "@/assets/sources";
+import { NamedRoutes } from "@/router";
 
 // Init plugin
 const $q = useQuasar();

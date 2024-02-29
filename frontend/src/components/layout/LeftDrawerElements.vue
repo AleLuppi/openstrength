@@ -30,7 +30,7 @@
     <q-item
       clickable
       tag="a"
-      :to="{ name: user.isSignedIn ? 'profile' : 'login' }"
+      :to="{ name: user.isSignedIn ? NamedRoutes.profile : NamedRoutes.login }"
       active-class="os-child-highlight-primary"
       class="link-child os-text-unselected"
     >
@@ -87,27 +87,27 @@ const user = useUserStore();
 // Set navigation in drawer
 const allDrawerPages = [
   {
-    route: "home",
+    route: NamedRoutes.home,
     caption: "layout.views.home",
     icon: "fa-solid fa-house-chimney",
   },
   {
-    route: "athletes",
+    route: NamedRoutes.athletes,
     caption: "layout.views.athletes",
     icon: "fa-solid fa-users",
   },
   {
-    route: "library",
+    route: NamedRoutes.exerciseLibrary,
     caption: "layout.views.library",
     icon: "fa-solid fa-book",
   },
   {
-    route: "program",
+    route: NamedRoutes.program,
     caption: "layout.views.program",
     icon: "fa-solid fa-dumbbell",
   },
   {
-    route: "program_library",
+    route: NamedRoutes.programLibrary,
     caption: "layout.views.programlibrary",
     icon: "fa-solid fa-sheet-plastic",
   },

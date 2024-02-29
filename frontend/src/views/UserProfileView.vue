@@ -56,15 +56,15 @@
       <h6 class="q-mx-md q-py-sm">{{ $t("user.profile.link_title") }}</h6>
 
       <div :class="$q.screen.lt.sm ? 'column q-ml-md' : 'row justify-around'">
-        <router-link :to="{ name: 'privacy_policy' }">{{
+        <router-link :to="{ name: NamedRoutes.privacyPolicy }">{{
           $t("user.profile.privacy_link")
         }}</router-link>
 
-        <router-link :to="{ name: 'cookie_policy' }">{{
+        <router-link :to="{ name: NamedRoutes.cookiePolicy }">{{
           $t("user.profile.cookie_link")
         }}</router-link>
 
-        <router-link :to="{ name: 'terms_conditions' }">{{
+        <router-link :to="{ name: NamedRoutes.termsConditions }">{{
           $t("user.profile.terms_link")
         }}</router-link>
       </div>
@@ -93,6 +93,7 @@ import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { doSignOut } from "@/helpers/users/auth";
 import { useUserStore } from "@/stores/user";
+import { NamedRoutes } from "@/router";
 
 // Init plugin
 const $q = useQuasar();

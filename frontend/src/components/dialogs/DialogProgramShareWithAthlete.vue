@@ -55,7 +55,7 @@ const emit = defineEmits<{
 const urlRelativePath = computed(
   () =>
     router.resolve({
-      name: NamedRoutes.view_program,
+      name: NamedRoutes.viewProgram,
       query: { id: props.programId },
     }).fullPath,
 );
