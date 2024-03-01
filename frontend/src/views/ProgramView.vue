@@ -775,32 +775,11 @@
     </q-dialog>
 
     <!-- Dialog to import program template into current program -->
-    <q-dialog
+    <DialogProgramImportTemplate
       v-model="showProgramTemplateImportDialog"
-      @hide="programTemplateImportFormElement?.reset"
-    >
-      <q-card v-if="selectedProgram">
-        <q-card-section class="row items-center">
-          <h6>
-            {{
-              $t("coach.programlibrary_management.list.template_import_title")
-            }}
-          </h6>
-        </q-card-section>
-        <FormProgramTemplateImport
-          ref="programTemplateImportFormElement"
-          :program="selectedProgram"
-          @submit="
-            (programTemplate) => {
-              importProgramTemplate(programTemplate);
-              showProgramTemplateImportDialog = false;
-            }
-          "
-          @reset="showProgramTemplateImportDialog = false"
-        >
-        </FormProgramTemplateImport>
-      </q-card>
-    </q-dialog>
+      :programs="coachInfo.programs || []"
+      @update:selected="importProgramTemplate"
+    ></DialogProgramImportTemplate>
 
     <!-- Dialog to save program template -->
     <q-dialog
@@ -885,7 +864,6 @@ import {
 import router, { NamedRoutes } from "@/router";
 import FormProgramInfo from "@/components/forms/FormProgramInfo.vue";
 import FormProgramTemplateSaving from "@/components/forms/FormProgramTemplateSaving.vue";
-import FormProgramTemplateImport from "@/components/forms/FormProgramTemplateImport.vue";
 import FormMissingMaxlifts from "@/components/forms/FormMissingMaxlifts.vue";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
@@ -906,6 +884,9 @@ const SkeletonTableProgramBuilder = defineAsyncComponent(
 );
 const ChartSelector = defineAsyncComponent(
   () => import("@/components/charts/ChartSelector.vue"),
+);
+const DialogProgramImportTemplate = defineAsyncComponent(
+  () => import("@/components/dialogs/DialogProgramImportTemplate.vue"),
 );
 
 // Define emits
@@ -968,8 +949,6 @@ const programTemplateSavingFormElement =
   ref<typeof FormProgramTemplateSaving>();
 
 const showProgramTemplateImportDialog = ref(false);
-const programTemplateImportFormElement =
-  ref<typeof FormProgramTemplateImport>();
 
 const showMissingMaxliftDialog = ref(false);
 const missingMaxliftsElement = ref<typeof FormMissingMaxlifts>();
@@ -1321,7 +1300,10 @@ formEventEmitter.once("submit", updateMissingMaxliftValues);
 /**
  * Allows importing a program template into the current program instance
  */
-async function importProgramTemplate(programTemplate: Program) {
+async function importProgramTemplate(programTemplate?: Program) {
+  // Abort if unknown program template
+  if (!programTemplate) return;
+
   // Get current destination program
   const destinationProgram = selectedProgram;
   if (!destinationProgram.value) return;
