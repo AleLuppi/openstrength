@@ -175,29 +175,6 @@ watch(
   { immediate: true },
 );
 
-// Get correct athlete feedback instance
-/* const programAthleteFeedback = computed<AthleteFeedbackFrozenView | undefined>(
-  () => {
-    const athlFeedback = programSnapshot.value
-      ? createFeedbackStructure(programSnapshot.value)
-      : undefined;
-
-    return athlFeedback;
-  },
-); */
-
-// Set refs for operating the program
-/* const dayShowDone = computed(() =>
-  programAthleteFeedback?.value?.weekdays.map((workoutDay, idx) => !workoutDay[idx].athleteHasDone && workoutDay.athleteHasDone),
-); */
-
-/* const dayShowDone = computed(
-  () =>
-    programAthleteFeedback?.value?.weekdays.map(
-      (workoutDay) => workoutDay?.athleteHasDone ?? false,
-    ) ?? [],
-); */
-
 // Set table columns
 const columns: QTableProps["columns"] = [
   {
