@@ -102,15 +102,27 @@
                   {{ exercise.schemaNote[indexLine] ?? "" }}
                 </q-tooltip>
               </q-btn>
+
               <q-btn
                 icon="sym_o_message"
-                :color="exercise.textFeedback[indexLine] ? 'primary' : 'light'"
+                :color="lineTextFeedbacks[indexLine] ? 'primary' : 'light'"
                 flat
                 class="q-mx-xs q-px-xs"
                 @click="
                   showNoteTooltip[indexLine] = !showNoteTooltip[indexLine]
                 "
               >
+                <q-badge
+                  v-if="
+                    exercise.textFeedback[indexLine] &&
+                    !lineTextFeedbacks[indexLine]
+                  "
+                  floating
+                  rounded
+                  color="light"
+                  class="q-mr-xs q-mt-xs"
+                >
+                </q-badge>
                 <q-popup-edit
                   style="width: 70%"
                   v-model="lineTextFeedbacks[indexLine]"
@@ -131,12 +143,20 @@
               <q-btn
                 icon="sym_o_videocam"
                 flat
-                :color="exercise.videoFeedback[indexLine] ? 'primary' : 'light'"
+                color="light"
                 class="q-mx-xs q-px-xs"
                 @click="
                   showVideoTooltip[indexLine] = !showVideoTooltip[indexLine]
                 "
               >
+                <q-badge
+                  v-if="exercise.videoFeedback[indexLine]"
+                  floating
+                  rounded
+                  color="light"
+                  class="q-mr-sm q-mt-xs"
+                >
+                </q-badge>
                 <q-tooltip
                   v-if="exercise.videoFeedback[indexLine]"
                   anchor="top middle"
