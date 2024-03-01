@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from "vue";
+import { computed } from "vue";
 import type { QTableProps } from "quasar";
 import { ProgramCompactView } from "@/helpers/programs/program";
 import {
