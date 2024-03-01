@@ -49,6 +49,7 @@
 
 <script setup lang="ts">
 import { ref, computed, defineAsyncComponent } from "vue";
+import type { QDialogProps } from "quasar";
 import { Program } from "@/helpers/programs/program";
 
 // Import components
@@ -57,10 +58,12 @@ const TableExistingProgramTemplates = defineAsyncComponent(
 );
 
 // Define props
-const props = defineProps<{
-  programs: Program[];
-  selected?: Program;
-}>();
+const props = defineProps<
+  QDialogProps & {
+    programs: Program[];
+    selected?: Program;
+  }
+>();
 
 // Define emits
 const emit = defineEmits<{
