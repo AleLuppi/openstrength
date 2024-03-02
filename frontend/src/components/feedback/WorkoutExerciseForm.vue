@@ -1,5 +1,6 @@
 <template>
   <q-card :class="exerciseDone ? 'q-mb-sm color-border' : 'q-mb-sm '">
+    <!-- TODO: i18n for all the component-->
     <q-card-section>
       <div class="column">
         <div class="row justify-between">
@@ -183,6 +184,7 @@
 </template>
 
 <script setup lang="ts">
+import { AthleteFeedbackExercise } from "@/helpers/programs/athleteFeedback";
 import { ProgramFrozenLine } from "@/helpers/programs/program";
 import { computed, ref } from "vue";
 
@@ -191,6 +193,7 @@ import { computed, ref } from "vue";
 // Define props
 const props = defineProps<{
   exercise: {
+    uid: string;
     exerciseName: string;
     variantName: string;
     note?: string;
@@ -202,6 +205,11 @@ const props = defineProps<{
   };
 }>();
 
+// Define emit
+const emit = defineEmits<{
+  exerciseFeedbackSaved: [feedbackExercise: AthleteFeedbackExercise];
+}>();
+
 // Set ref
 const showNoteTooltip = ref<boolean[]>([]);
 const showVideoTooltip = ref<boolean[]>([]);
@@ -209,22 +217,41 @@ const showVideoTooltip = ref<boolean[]>([]);
 const exerciseDone = ref(false);
 const lineTextFeedbacks = ref<string[]>([]);
 
+if (props.exercise.lines) {
+  lineTextFeedbacks.value = Array(props.exercise.lines.length).fill(undefined);
+}
+
 const exerciseFeedback = computed(() => {
-  const exFeedback = {
+  console.log("fb", lineTextFeedbacks);
+  console.log("fb value", lineTextFeedbacks.value);
+  console.log("fb value at 0", lineTextFeedbacks.value[0]);
+  console.log("fb value at 1", lineTextFeedbacks.value[1]);
+  console.log("fb value at 1", lineTextFeedbacks.value.at(1));
+  const feedbacks = lineTextFeedbacks.value;
+  console.log("feedbacks", feedbacks);
+  console.log("feedbacks at 1", feedbacks[1]);
+
+  const exFeedback: AthleteFeedbackExercise = {
+    uid: props.exercise.uid,
     exerciseName: props.exercise.exerciseName,
     variantName: props.exercise.variantName,
     isExerciseDone: exerciseDone.value,
-    lineFeedbacks: props.exercise.lines?.map((line, idx) => ({
-      athleteTextFeedback: lineTextFeedbacks.value[idx],
-    })),
+    lineFeedbacks:
+      props.exercise.lines?.map((line, idx) => ({
+        athleteLoadFeedback: undefined, //TODO: update for 2nd communication release
+        athleteRepsFeedback: undefined,
+        athleteSetsFeedback: undefined,
+        athleteRpeFeedback: undefined,
+        athleteTextFeedback: feedbacks[idx],
+        athleteVideoFeedback: undefined,
+      })) || [],
   };
 
   return exFeedback;
 });
 
 function saveExerciseFeedback() {
-  //TODO: set emit to parent component
-  console.log("exercise feedback", exerciseFeedback);
+  emit("exerciseFeedbackSaved", exerciseFeedback.value);
 }
 </script>
 

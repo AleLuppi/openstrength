@@ -164,6 +164,7 @@ export type ProgramForzenView = {
     weekName: string;
     dayName: string;
     exercises: {
+      uid: string;
       exerciseName: string;
       variantName: string;
       note?: string;

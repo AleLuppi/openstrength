@@ -6,6 +6,7 @@ import {
 } from "@/helpers/programs/program";
 import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { MaxLift } from "../maxlifts/maxlift";
+import { uid } from "quasar";
 
 /**
  * Get the displayable name of a selected reference.
@@ -155,6 +156,7 @@ export function convertProgramToDayBlocks(
     // Get interesting exercise info
     const exerciseInfo: ProgramForzenView["weekdays"][number]["exercises"][number] =
       {
+        uid: programExercise.uid ?? uid(),
         exerciseName: programExercise?.exercise?.name ?? "",
         variantName: programExercise?.exerciseVariant?.name ?? "",
         note: programExercise?.exerciseNote,

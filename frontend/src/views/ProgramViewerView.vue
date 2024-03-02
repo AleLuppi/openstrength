@@ -98,7 +98,11 @@
         :key="indexDay"
         class="q-my-md q-mx-xs"
       >
-        <WorkoutDayForm :block="block" :dayShowDone="dayShowDone[indexDay]">
+        <WorkoutDayForm
+          :block="block"
+          :dayShowDone="dayShowDone[indexDay]"
+          :feedback="programFeedbacks?.workoutDays.at(indexDay)"
+        >
         </WorkoutDayForm>
       </div>
       <!-- TODO: Personal records of reference -->
@@ -141,6 +145,7 @@ import {
 } from "@/helpers/database/collections";
 import { ProgramForzenView } from "@/helpers/programs/program";
 import WorkoutDayForm from "@/components/feedback/WorkoutDayForm.vue";
+import { AthleteFeedbackFrozenView } from "@/helpers/programs/athleteFeedback";
 
 // Init plugin
 const route = useRoute();
@@ -155,6 +160,12 @@ const dayShowDone = computed(() => dayDone.value);
 
 // Get correct program istance
 const programSnapshot = ref<ProgramForzenView>();
+
+// Get correct associated feedbacks
+const programFeedbacks = ref<AthleteFeedbackFrozenView>();
+
+console.log(programFeedbacks);
+
 watch(
   () => route.query.id,
   (docId) =>

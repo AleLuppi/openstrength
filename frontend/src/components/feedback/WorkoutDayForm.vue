@@ -1,4 +1,5 @@
 <template>
+  <!-- TODO: i18n for all the component -->
   <q-card
     v-if="dayShowCollapsed === undefined || dayShowCollapsed === false"
     class="q-pa-sm"
@@ -27,7 +28,10 @@
 
     <!-- Show single exercise cards -->
     <div v-for="(exercise, indexExerc) in block.exercises" :key="indexExerc">
-      <WorkoutExerciseForm :exercise="exercise"></WorkoutExerciseForm>
+      <WorkoutExerciseForm
+        :exercise="exercise"
+        @exerciseFeedbackSaved="updateDayFeedbacks"
+      ></WorkoutExerciseForm>
     </div>
 
     <os-input
@@ -57,9 +61,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { ProgramFrozenLine } from "@/helpers/programs/program";
 import WorkoutExerciseForm from "./WorkoutExerciseForm.vue";
+import {
+  AthleteFeedbackDay,
+  AthleteFeedbackExercise,
+} from "@/helpers/programs/athleteFeedback";
 
 // Init plugin
 
@@ -69,6 +77,7 @@ const props = defineProps<{
     weekName: string;
     dayName: string;
     exercises: {
+      uid: string;
       exerciseName: string;
       variantName: string;
       note?: string;
@@ -79,6 +88,7 @@ const props = defineProps<{
       videoFeedback: boolean[];
     }[];
   };
+  feedback: AthleteFeedbackDay | undefined;
   dayShowDone: boolean;
 }>();
 
@@ -88,37 +98,35 @@ const workoutNote = ref<string>();
 
 const dayShowCollapsed = ref<boolean>();
 
-/* function saveAthleteDayFeedback() {
-  if (feedbackDay.value) {
-    feedbackDay.value.weekName = props.block.weekName;
-    feedbackDay.value.dayName = props.block.dayName;
-    feedbackDay.value.athleteWorkoutDate = workoutDate.value;
-    feedbackDay.value.athleteWorkoutNote = workoutNote.value;
-    feedbackDay.value.athleteHasDone = isDayDone.value;
+const athleteDayFeedback = computed(() => {
+  const feedbackDay: AthleteFeedbackDay = {
+    weekName: props.block.weekName,
+    dayName: props.block.dayName,
+    athleteHasDone: props.dayShowDone,
+    athleteWorkoutNote: undefined,
+    athleteWorkoutDate: undefined,
+    exercises: props.block.exercises.map((exercise) => ({
+      uid: exercise.uid,
+      exerciseName: exercise.exerciseName,
+      variantName: exercise.variantName,
+      isExerciseDone: false,
+      lineFeedbacks: [],
+    })),
+  };
+  return feedbackDay;
+});
 
-    feedbackDay.value.exercises = props.block.exercises.map(
-      (exercise, indexExerc) => {
-        const linesFeedback = exercise.lines?.map((line, index) => ({
-          athleteLoadFeedback: line.load,
-          athleteRepsFeedback: line.reps,
-          athleteSetsFeedback: line.sets,
-          athleteRpeFeedback: line.rpe,
-          athleteTextFeedback: lineTextFeedbacks.value[index],
-          athleteVideoFeedback: undefined,
-        }));
+function updateDayFeedbacks(feedbackExercise: AthleteFeedbackExercise) {
+  // Substitute received data from emit to the actual exercise feedback
+  athleteDayFeedback.value?.exercises.forEach((exercise) => {
+    if (exercise.uid === feedbackExercise.uid) {
+      exercise = feedbackExercise;
+    }
+  });
 
-        return {
-          exerciseName: exercise.exerciseName,
-          variantName: exercise.variantName,
-          athleteHasDone: exerciseDone.value[indexExerc],
-          linesFeedback: linesFeedback ?? [],
-        };
-      },
-    );
-  }
-
-  console.log("feedback day", feedbackDay);
-} */
+  console.log("Received exercise feedback:", feedbackExercise);
+  console.log("Updated complete day fb: ", athleteDayFeedback.value);
+}
 </script>
 
 <style scoped lang="scss">
