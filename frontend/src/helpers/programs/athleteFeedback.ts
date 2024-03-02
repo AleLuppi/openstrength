@@ -17,24 +17,33 @@ export type AthleteFeedbackDay = {
   athleteHasDone: boolean;
   athleteWorkoutNote?: string;
   athleteWorkoutDate: Date | undefined;
-  exercises: {
-    exerciseName: string;
-    variantName: string;
-    athleteHasDone?: boolean;
-    athleteLoadFeedback?: string;
-    athleteRepsFeedback?: string;
-    athleteSetsFeedback?: string;
-    athleteRpeFeedback?: string;
-    athleteTextFeedback?: string;
-    athleteVideoFeedback?: string;
-  }[];
+  exercises: AthleteFeedbackExercise[];
 };
+
+/**
+ * Athlete feedback for a single exercise
+ */
+export type AthleteFeedbackExercise = {
+  uid: string; //uid of the referenced exercise from ProgramFrozenView
+  exerciseName: string;
+  variantName: string;
+  isExerciseDone?: boolean;
+  lineFeedbacks:{
+    athleteLoadFeedback?: string | undefined;
+    athleteRepsFeedback?: string | undefined;
+    athleteSetsFeedback?: string | undefined;
+    athleteRpeFeedback?: string | undefined;
+    athleteTextFeedback?: string | undefined;
+    athleteVideoFeedback?: string | undefined;
+  }[]
+}
+
 
 /**
  * Create the athlete feedback object starting from a ProgramFrozenView
  * @param program
  */
-export function createFeedbackStructure(
+/* export function createFeedbackStructure(
   program: ProgramForzenView
 ): AthleteFeedbackFrozenView {
   const workoutDays: AthleteFeedbackDay[] = program.weekdays.map((week) => ({
@@ -58,3 +67,4 @@ export function createFeedbackStructure(
 
   return { program, workoutDays };
 }
+ */
