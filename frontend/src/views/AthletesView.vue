@@ -163,8 +163,15 @@
               <q-tab-panel name="programs">
                 <!-- If selected athlete has ongoing program show program data form-->
                 <div v-if="selectedAthlete && Boolean(athleteCurrentProgram)">
-                  <!-- TODO: i18n -->
-                  <q-btn>Crea nuovo programma</q-btn>
+                  <div>
+                    <q-btn
+                      :to="{ name: 'program' }"
+                      icon="sym_o_assignment_add"
+                      :label="$t('coach.program_management.list.add')"
+                      outline
+                      class="q-mb-sm q-mr-sm"
+                    ></q-btn>
+                  </div>
                   <TableAthletePrograms
                     :programs="athletePrograms"
                     :on-info="
@@ -431,7 +438,7 @@ const allTabs = [
     label:
       $q.screen.width < 840
         ? ""
-        : i18n.t("coach.program_management.fields.program"),
+        : i18n.t("coach.program_management.fields.programs"),
     icon: "fa-regular fa-file-lines",
   },
   {

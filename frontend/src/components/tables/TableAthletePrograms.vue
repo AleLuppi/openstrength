@@ -135,10 +135,10 @@ const rows = computed(() => {
     edit: {
       element: "button",
       to: { name: "program", params: { programId: program.uid } },
-      icon: "edit",
+      icon: "open_in_new",
       flat: true,
       round: true,
-      label: "Edit",
+      label: "Open",
       stack: true,
       color: "button-negative",
     },
