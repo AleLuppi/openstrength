@@ -1,10 +1,5 @@
 <template>
-  <q-form
-    ref="formElement"
-    @submit="onSubmit"
-    @reset="onReset"
-    @update="onUpdate"
-  >
+  <q-form ref="formElement" @submit="onSubmit" @reset="onReset">
     <q-card-section>
       <!-- TODO: show list of saved templates -->
 
@@ -44,29 +39,22 @@ import { Program } from "@/helpers/programs/program";
 import { ProgramFilter } from "@/helpers/programTemplates/programTemplateModels";
 import { convertProgramToProgramTemplate } from "@/helpers/programTemplates/programTemplateModels";
 
-// Init plugin
-
 // Set props
-const props = defineProps({
-  program: {
-    type: Program,
-    required: true,
+const props = withDefaults(
+  defineProps<{
+    program: Program;
+    programFilter?: ProgramFilter;
+    updateInfo?: boolean;
+  }>(),
+  {
+    programFilter: () => ({ week: [], day: [], exercise: [] }),
+    updateInfo: false,
   },
-  programFilter: {
-    type: Object as () => ProgramFilter,
-    required: true,
-  },
-  updateInfo: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-});
+);
 
 // Set emits
 const emit = defineEmits<{
   submit: [value: Program];
-  update: [value: Program];
   reset: [];
 }>();
 
@@ -85,6 +73,7 @@ const formElement = ref<QForm>();
 const programTemplateName = ref<string>();
 const programTemplateDescription = ref<string>();
 
+// Update form values based on input program
 watch(
   props.program,
   (program: Program) => {

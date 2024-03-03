@@ -1,5 +1,5 @@
 <template>
-  <q-scroll-area style="height: calc(100vh - 64px - 48px - 48px - 98px)">
+  <div>
     <div v-for="dayBlock in props.compactprogram?.days" :key="dayBlock.dayName">
       <q-table
         v-if="flattenedRows"
@@ -26,7 +26,7 @@
         </template>
       </q-table>
     </div>
-  </q-scroll-area>
+  </div>
 </template>
 
 <script setup lang="ts">
