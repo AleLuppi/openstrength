@@ -119,14 +119,13 @@
 
           <!-- Compact program view -->
           <q-card-section
+            v-if="selectedProgram"
             class="q-py-none q-mb-md col"
             style="overflow-y: scroll"
           >
             <TableCompactProgram
-              v-if="compactProgram"
-              :compactprogram="compactProgram"
-            >
-            </TableCompactProgram>
+              :program="selectedProgram"
+            ></TableCompactProgram>
           </q-card-section>
         </q-card>
       </component>
@@ -228,8 +227,7 @@
 import { ref, computed, watch, defineAsyncComponent } from "vue";
 import { useQuasar, QDialog } from "quasar";
 import { useCoachInfoStore } from "@/stores/coachInfo";
-import { Program, ProgramCompactView } from "@/helpers/programs/program";
-import { convertProgramToCompactView } from "@/helpers/programs/converters";
+import { Program } from "@/helpers/programs/program";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
 import { useI18n } from "vue-i18n";
@@ -255,10 +253,9 @@ const coachInfo = useCoachInfoStore();
 // Set program related ref
 const searchProgram = ref<string>(); // text to search for a program template
 const selectedProgram = ref<Program>(); // program template that is currently selected in left table
-const compactProgram = ref<ProgramCompactView>();
-const deletingProgramTemplate = ref<Program>();
-const showDialogDelete = ref(false);
-const showDialogUpdate = ref(false);
+const deletingProgramTemplate = ref<Program>(); // program that is being deleted
+const showDialogDelete = ref(false); // whether to show dialog to delete program
+const showDialogUpdate = ref(false); // whether to show dialog to update program
 
 // Get template programs
 const programsTemplate = computed(() => {
@@ -279,9 +276,6 @@ watch(deletingProgramTemplate, (deletingProgram) => {
  */
 function onProgramSelection(program?: Program) {
   selectedProgram.value = program;
-  compactProgram.value = program
-    ? convertProgramToCompactView(program)
-    : undefined;
 }
 
 /**
