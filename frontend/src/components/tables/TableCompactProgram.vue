@@ -1,35 +1,34 @@
 <template>
   <div>
-    <div v-for="dayBlock in compactProgram?.days" :key="dayBlock.dayName">
-      <q-table
-        v-if="flattenedRows?.[dayBlock.dayName]"
-        :rows="flattenedRows[dayBlock.dayName]"
-        :columns="columns"
-        :title="'Day ' + dayBlock.dayName"
-        row-key="exercise"
-        wrap-cells
-        :pagination="{ rowsPerPage: 0 }"
-        flat
-        bordered
-        hide-bottom
-        separator="cell"
-        dense
-        class="q-my-sm"
-        table-header-class="bg-table-header"
-      ></q-table>
-    </div>
+    <q-table
+      v-for="day in dayNames"
+      :key="day"
+      :rows="rows[day]"
+      :columns="columns"
+      :title="'Day ' + day"
+      row-key="exercise"
+      wrap-cells
+      :pagination="{ rowsPerPage: 0 }"
+      flat
+      bordered
+      hide-bottom
+      separator="cell"
+      dense
+      class="q-my-sm"
+      table-header-class="bg-table-header"
+    ></q-table>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import type { QTableProps } from "quasar";
-import type { Program } from "@/helpers/programs/program";
+import type { Program, ProgramCompactView } from "@/helpers/programs/program";
+import { convertProgramToCompactView } from "@/helpers/programs/converters";
 import {
-  convertCompactProgramToFlatView,
-  convertProgramToCompactView,
-} from "@/helpers/programs/converters";
-import { getProgramUniqueWeeks } from "@/helpers/programs/linesManagement";
+  getProgramUniqueDays,
+  getProgramUniqueWeeks,
+} from "@/helpers/programs/linesManagement";
 
 // Define props
 const props = defineProps<{
@@ -46,6 +45,11 @@ const weekNames = computed<string[]>(() => {
   return getProgramUniqueWeeks(props.program);
 });
 
+// Get sorted day names
+const dayNames = computed<string[]>(() => {
+  return getProgramUniqueDays(props.program);
+});
+
 // Build table columns dynamically
 const columns = computed<QTableProps["columns"]>(() => [
   // TODO i18n, fix widths
@@ -53,7 +57,7 @@ const columns = computed<QTableProps["columns"]>(() => [
     name: "exercise",
     label: "Exercise",
     align: "left",
-    field: "exerciseFullName",
+    field: "exercise",
     style: "width: 30%",
   },
   ...weekNames.value.map((weekName) => ({
@@ -66,9 +70,42 @@ const columns = computed<QTableProps["columns"]>(() => [
 ]);
 
 // Build table rows dinamically
-const flattenedRows = computed(() => {
-  return compactProgram.value
-    ? convertCompactProgramToFlatView(compactProgram.value)
-    : undefined;
-});
+const rows = computed<{
+  [day: string]: { exercise: string; [week: string]: string }[];
+}>(() => compactProgramToRows(compactProgram.value));
+
+/**
+ * Converts compact program to a flattened view.
+ *
+ * @param compactProgram compact program view.
+ * @returns flattened view of the compact program.
+ */
+function compactProgramToRows(compactProgram: ProgramCompactView): {
+  [day: string]: { exercise: string; [week: string]: string }[];
+} {
+  return compactProgram.reduce(
+    (
+      rows: {
+        [day: string]: { exercise: string; [week: string]: string }[];
+      },
+      dayInfo,
+    ) => {
+      // Add info to correct row/column pair
+      if (!(dayInfo.day in rows)) rows[dayInfo.day] = [];
+      dayInfo.exercises.forEach((compactExercise) => {
+        let exerciseRow = rows[dayInfo.day].find(
+          (row) => row.exercise == compactExercise.exercise,
+        );
+        if (!exerciseRow) {
+          exerciseRow = { exercise: compactExercise.exercise };
+          rows[dayInfo.day].push(exerciseRow);
+        }
+        exerciseRow[dayInfo.week] = compactExercise.schemas.join(", ");
+      });
+
+      return rows;
+    },
+    {},
+  );
+}
 </script>

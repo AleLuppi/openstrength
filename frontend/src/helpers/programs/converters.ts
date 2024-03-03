@@ -163,118 +163,52 @@ export function convertProgramToDayBlocks(
 }
 
 /**
- * Converts program to an array of flat weeks.
+ * Converts program to an array of daily exercises.
  *
  * @param program program that shall be converted.
- * @returns list of flat days with relevant exercise info.
+ * @returns list of program days with relevant exercise info.
  */
 export function convertProgramToCompactView(
   program: Program,
 ): ProgramCompactView {
-  const compactView: ProgramCompactView = { days: [] };
+  const compactProgram: ProgramCompactView = [];
 
-  if (!program.programExercises) return compactView;
+  if (!program.programExercises) return compactProgram;
 
   const orderedProgramExercises = orderProgramExercises(
     program.programExercises,
     (week, day, order) => [week, day, order].join("."),
   );
 
-  for (const [key, programExercise] of Object.entries(
-    orderedProgramExercises,
-  )) {
+  Object.entries(orderedProgramExercises).forEach(([key, programExercise]) => {
+    // Retrieve week, day, and exercise names
     const [week, day] = key.split(".");
-    const exerciseFullName = `${programExercise?.exercise?.name ?? ""} ${
-      programExercise?.exerciseVariant?.name
-        ? "- " + programExercise?.exerciseVariant?.name
-        : ""
-    }`;
+    const exerciseFullName =
+      (programExercise?.exercise?.name ?? "") +
+      (programExercise?.exerciseVariant?.name
+        ? " - " + programExercise?.exerciseVariant?.name
+        : "");
 
-    let dayEntry = compactView.days.find((entry) => entry.dayName === day);
-    if (!dayEntry) {
-      dayEntry = { dayName: day, exercises: [] };
-      compactView.days.push(dayEntry);
-    }
-
-    let exerciseEntry = dayEntry.exercises.find(
-      (exercise) => exercise.exerciseFullName === exerciseFullName,
-    );
-    if (!exerciseEntry) {
-      exerciseEntry = { exerciseFullName, weekSchemas: [] };
-      dayEntry.exercises.push(exerciseEntry);
-    }
-
-    let weekEntry = exerciseEntry.weekSchemas.find(
-      (weekEntry) => weekEntry.weekName === week,
-    );
-    if (!weekEntry) {
-      weekEntry = { weekName: week, schemas: [] };
-      exerciseEntry.weekSchemas.push(weekEntry);
-    }
-
-    if (programExercise.lines) {
-      for (const line of programExercise.lines) {
-        weekEntry.schemas.push(convertLineToSchema(line));
-      }
-    }
-  }
-
-  return compactView;
-}
-
-/**
- * Get unique sorted week names from a compact program view.
- *
- * @param compactProgram compact program view.
- * @returns unique sorted week names.
- */
-export function getWeekNamesFromCompactProgram(
-  compactProgram: ProgramCompactView,
-): string[] {
-  return compactProgram.days
-    .reduce((acc: string[], day) => {
-      day.exercises.forEach((exercise) => {
-        exercise.weekSchemas.forEach((week: { weekName: string }) => {
-          if (!acc.includes(week.weekName)) {
-            acc.push(week.weekName);
-          }
-        });
+    // Optionally add a new day to list
+    if (
+      !(
+        compactProgram.at(-1)?.week === week &&
+        compactProgram.at(-1)?.day === day
+      )
+    )
+      compactProgram.push({
+        week: week,
+        day: day,
+        exercises: [],
       });
-      return acc;
-    }, [])
-    .sort((a, b) => parseInt(a) - parseInt(b));
-}
 
-/**
- * Converts compact program to a flattened view.
- *
- * @param compactProgram compact program view.
- * @returns flattened view of the compact program.
- */
-export function convertCompactProgramToFlatView(
-  compactProgram: ProgramCompactView,
-): Record<string, Record<string, string>[]> {
-  const flattenedProgram: Record<string, Record<string, string>[]> = {};
+    // Store exercise and its related schemas
+    compactProgram.at(-1)!.exercises.push({
+      exercise: exerciseFullName,
+      schemas:
+        programExercise.lines?.map((line) => convertLineToSchema(line)) ?? [],
+    });
+  });
 
-  const weekNames = getWeekNamesFromCompactProgram(compactProgram);
-
-  for (const day of compactProgram.days) {
-    const rows: Record<string, string>[] = [];
-    for (const exercise of day.exercises) {
-      const row: Record<string, string> = {
-        exerciseFullName: exercise.exerciseFullName,
-        dayName: day.dayName,
-      };
-      for (const weekName of weekNames) {
-        const weekSchema = exercise.weekSchemas.find(
-          (week: { weekName: string }) => week.weekName === weekName,
-        );
-        row[weekName] = weekSchema ? weekSchema.schemas.join(", ") : "";
-      }
-      rows.push(row);
-    }
-    flattenedProgram[day.dayName] = rows;
-  }
-
-  return flattenedProgram;
+  return compactProgram;
 }
