@@ -16,7 +16,7 @@
           class="q-mx-sm q-pa-sm os-top-card shadow-5 bg-lightest"
         >
           <!-- Utility buttons -->
-          <div class="row justify-between align-center">
+          <div class="row justify-between">
             <!-- Save button -->
             <div
               @click="saveProgram()"
@@ -121,62 +121,55 @@
               </q-btn>
             </div>
 
-            <!-- Save program as template -->
+            <!-- Import and export template -->
             <div class="row">
-              <q-btn
-                v-if="
-                  (selectedProgram && selectedProgram.isTemplate === false) ||
-                  selectedProgram.isTemplate === undefined
-                "
-                icon="sym_o_download"
-                flat
-                outline
-                color="secondary"
-                @click="showProgramTemplateImportDialog = true"
-                :label="
-                  denseView
-                    ? undefined
-                    : i18n.t(
-                        'coach.programlibrary_management.list.import_template',
-                      )
-                "
-                :class="denseView ? 'q-pa-xs q-ma-none' : ''"
-              ></q-btn>
-              <q-btn
-                v-if="
-                  (selectedProgram && selectedProgram.isTemplate === false) ||
-                  selectedProgram.isTemplate === undefined
-                "
-                icon="sym_o_publish"
-                flat
-                outline
-                color="secondary"
-                @click="
-                  () => {
-                    programFilter.week.length > 0 ||
-                    programFilter.day.length > 0 ||
-                    programFilter.exercise.length > 0
-                      ? (showProgramTemplateFilteredWarning = true)
-                      : (showProgramTemplateSaveDialog = true);
-                  }
-                "
-                :label="
-                  denseView
-                    ? undefined
-                    : i18n.t(
-                        'coach.programlibrary_management.list.export_template',
-                      )
-                "
-                :class="denseView ? 'q-pa-xs q-ma-none' : ''"
-              ></q-btn>
-              <q-badge v-else>{{
-                $t("coach.programlibrary_management.list.template")
-              }}</q-badge>
+              <div v-if="!selectedProgram.isTemplate">
+                <q-btn
+                  icon="sym_o_download"
+                  flat
+                  outline
+                  color="secondary"
+                  @click="showProgramTemplateImportDialog = true"
+                  :label="
+                    denseView
+                      ? undefined
+                      : i18n.t(
+                          'coach.programlibrary_management.list.import_template',
+                        )
+                  "
+                  :class="denseView ? 'q-pa-xs q-ma-none' : ''"
+                ></q-btn>
+                <q-btn
+                  icon="sym_o_publish"
+                  flat
+                  outline
+                  color="secondary"
+                  @click="
+                    () => {
+                      programFilter.week.length ||
+                      programFilter.day.length ||
+                      programFilter.exercise.length
+                        ? (showProgramTemplateFilteredWarning = true)
+                        : (showProgramTemplateSaveDialog = true);
+                    }
+                  "
+                  :label="
+                    denseView
+                      ? undefined
+                      : i18n.t(
+                          'coach.programlibrary_management.list.export_template',
+                        )
+                  "
+                  :class="denseView ? 'q-pa-xs q-ma-none' : ''"
+                ></q-btn>
+              </div>
+              <q-badge v-else>
+                {{ $t("coach.programlibrary_management.list.template") }}
+              </q-badge>
 
               <!-- Get shareable link to program -->
-
               <q-btn
-                v-if="selectedProgram.isTemplate === false"
+                v-if="!selectedProgram.isTemplate"
                 @click="
                   saveProgram();
                   showShareProgramDialog = true;
@@ -346,9 +339,7 @@
             <div v-else-if="showingUtils == UtilsOptions.maxlifts">
               <h6 class="text-margin-xs">
                 {{
-                  selectedProgram &&
-                  (selectedProgram.isTemplate === false ||
-                    selectedProgram.isTemplate === undefined)
+                  selectedProgram && !selectedProgram.isTemplate
                     ? $t("coach.maxlift_management.list.maxlift_section")
                     : $t(
                         "coach.maxlift_management.list.maxlift_section_template",
@@ -443,9 +434,7 @@
               <div class="row justify-between q-mt-xs">
                 <h6>
                   {{
-                    selectedProgram &&
-                    (selectedProgram.isTemplate === false ||
-                      selectedProgram.isTemplate === undefined)
+                    selectedProgram && !selectedProgram.isTemplate
                       ? $t("coach.program_management.list.program_section")
                       : $t(
                           "coach.program_management.list.programtemplate_section",
@@ -456,12 +445,7 @@
 
               <!-- Display and update assigned user -->
               <div
-                v-if="
-                  selectedProgram &&
-                  (selectedProgram.isTemplate === false ||
-                    selectedProgram.isTemplate === undefined) &&
-                  !denseView
-                "
+                v-if="selectedProgram && !selectedProgram.isTemplate"
                 class="row items-center justify-start q-col-gutter-sm"
               >
                 <span class="text-black">
@@ -513,7 +497,7 @@
                     </div>
 
                     <q-btn
-                      v-if="selectedProgram.isTemplate === false"
+                      v-if="!selectedProgram.isTemplate"
                       icon="edit"
                       outline
                       flat
@@ -552,25 +536,17 @@
                 }}</q-card-section>
               </q-card>
 
-              <div
-                v-if="
-                  selectedProgram &&
-                  (selectedProgram.isTemplate === false ||
-                    selectedProgram.isTemplate === undefined)
-                "
-              >
-                <q-separator></q-separator>
+              <q-separator></q-separator>
 
-                <!-- Start a new program -->
-                <q-btn
-                  icon="add"
-                  :label="$t('coach.program_management.builder.new_program')"
-                  @click="openNewProgram"
-                  rounded
-                  outline
-                  padding="xs sm"
-                ></q-btn>
-              </div>
+              <!-- Start a new program -->
+              <q-btn
+                icon="add"
+                :label="$t('coach.program_management.builder.new_program')"
+                @click="openNewProgram"
+                rounded
+                outline
+                padding="xs sm"
+              ></q-btn>
             </div>
 
             <!-- Close button in dialog mode -->
@@ -748,7 +724,7 @@
             color="negative"
             size="sm"
           />
-          <span class="q-ml-sm">
+          <span class="col q-ml-sm">
             {{
               $t("coach.programlibrary_management.list.filter_active_warning")
             }}
@@ -781,10 +757,10 @@
 
     <!-- Dialog to save program template -->
     <q-dialog
-      v-model="showProgramTemplateSaveDialog"
-      @hide="programTemplateSavingFormElement?.reset"
+      :model-value="showProgramTemplateSaveDialog && Boolean(selectedProgram)"
+      @update:model-value="(val) => (showProgramTemplateSaveDialog = val)"
     >
-      <q-card v-if="selectedProgram">
+      <q-card>
         <q-card-section class="row items-center">
           <h6>
             {{
@@ -793,8 +769,7 @@
           </h6>
         </q-card-section>
         <FormProgramTemplateSaving
-          ref="programTemplateSavingFormElement"
-          :program="selectedProgram"
+          :program="selectedProgram!"
           :programFilter="programFilter"
           @reset="showProgramTemplateSaveDialog = false"
           @submit="saveProgramTemplate"
@@ -805,10 +780,7 @@
 
     <!-- Dialog to insert missing maxlifts after program template import -->
     <!-- TODO i18n -->
-    <q-dialog
-      v-model="showMissingMaxliftDialog"
-      @hide="missingMaxliftsElement?.reset"
-    >
+    <q-dialog v-model="showMissingMaxliftDialog">
       <q-card>
         <q-card-section class="row items-center">
           <h6>Inserisci i massimali mancanti</h6>
@@ -818,7 +790,6 @@
           </p>
         </q-card-section>
         <FormMissingMaxlifts
-          ref="missingMaxliftsElement"
           :maxlifts="missingMaxlifts ?? []"
           @reset="showMissingMaxliftDialog = false"
           @formSubmitted="updateMissingMaxliftValues"
@@ -861,14 +832,11 @@ import {
 } from "@/helpers/programs/linesManagement";
 import router, { NamedRoutes } from "@/router";
 import FormProgramInfo from "@/components/forms/FormProgramInfo.vue";
-import FormProgramTemplateSaving from "@/components/forms/FormProgramTemplateSaving.vue";
-import FormMissingMaxlifts from "@/components/forms/FormMissingMaxlifts.vue";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
 import { extractUniqueMaxliftFromProgram } from "@/helpers/programs/programTemplate";
-import { mergePrograms } from "@/helpers/programs/linesManagement";
 import { compareMaxliftLists } from "@/helpers/maxlifts/listManagement";
 
 // Import components
@@ -883,6 +851,12 @@ const ChartSelector = defineAsyncComponent(
 );
 const DialogProgramImportTemplate = defineAsyncComponent(
   () => import("@/components/dialogs/DialogProgramImportTemplate.vue"),
+);
+const FormProgramTemplateSaving = defineAsyncComponent(
+  () => import("@/components/forms/FormProgramTemplateSaving.vue"),
+);
+const FormMissingMaxlifts = defineAsyncComponent(
+  () => import("@/components/forms/FormMissingMaxlifts.vue"),
 );
 
 // Define emits
@@ -941,15 +915,9 @@ const recentProgramsTableElement = ref<typeof TableExistingPrograms>();
 // Set ref related to program templates
 const showProgramTemplateFilteredWarning = ref(false);
 const showProgramTemplateSaveDialog = ref(false);
-const programTemplateSavingFormElement =
-  ref<typeof FormProgramTemplateSaving>();
-
 const showProgramTemplateImportDialog = ref(false);
-
 const showMissingMaxliftDialog = ref(false);
-const missingMaxliftsElement = ref<typeof FormMissingMaxlifts>();
-const missingMaxliftsValues = ref<string[]>();
-
+const missingMaxliftsValues = ref<string[]>(); // FIXME
 const missingMaxlifts = ref<MaxLift[]>();
 
 // Set ref related to maxlift
@@ -1185,13 +1153,12 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
         ) || []).push(currProgram);
 
       // Update athlete profile with new program
-      if (program?.isTemplate === false) {
+      if (!currProgram.isTemplate)
         assignProgramToAthlete(
           currProgram,
           currProgram.athlete,
           oldAthleteAssigned.value,
         );
-      }
 
       // Clear active change on current program
       coachActiveChanges.program = undefined;
@@ -1221,32 +1188,30 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
 }
 
 /**
- * Save current filtered or not filtered program instance as program template.
- * Note: this program instance is ready to be saved as it has already been filtered
- * and prepared in the saving form
+ * Save current program instance as program template.
  *
- * @param program optional program instance that shall be save.
- * @param checkUnsaved if true, only save if program shows active changes.
+ * Save selected program as a program template, optionally applying current
+ * filtering situation to filter out some weeks or days or exercises.
+ * Provided program will be saved as-is, since it already went through
+ * approval phase by user.
+ *
+ * @param programTemplate program instance that will be saved as template.
  */
 function saveProgramTemplate(programTemplate: Program) {
   // Save current program instance
   const currProgram = programTemplate;
-  if (!currProgram) return;
 
+  // Assign program template to user
   currProgram.coach = user.baseUser;
 
+  // Save template
   currProgram.save({
-    saveFrozenView: true,
     onSuccess: () => {
       // Inform user about saved program
-      setSavedValue();
       (coachInfo.programs =
         coachInfo.programs?.filter(
           (program) => program.uid != currProgram.uid,
         ) || []).push(currProgram);
-
-      // Clear active change on current program
-      coachActiveChanges.program = undefined;
 
       // Mixpanel tracking
       mixpanel.track("Template Saved", {
@@ -1279,50 +1244,40 @@ function saveProgramTemplate(programTemplate: Program) {
   });
 }
 
-import { EventEmitter } from "events"; // Import the EventEmitter class
-
-// Define an event emitter instance
-const formEventEmitter = new EventEmitter();
-
-// Update values of the missing maxlifts from the emit
+// FIXME Update values of the missing maxlifts from the emit
 function updateMissingMaxliftValues(missingValues: string[]) {
   missingMaxliftsValues.value = missingValues;
 }
 
-// Listen for the form submission event
-formEventEmitter.once("submit", updateMissingMaxliftValues);
-
 /**
- * Allows importing a program template into the current program instance
+ * Importing a program template into the current program instance.
  */
 async function importProgramTemplate(programTemplate?: Program) {
   // Abort if unknown program template
   if (!programTemplate) return;
 
   // Get current destination program
-  const destinationProgram = selectedProgram;
-  if (!destinationProgram.value) return;
+  const destinationProgram = selectedProgram.value;
+  if (!destinationProgram) return;
 
   // Get maxlifts from the two programs
   const templateMaxlifts = extractUniqueMaxliftFromProgram(programTemplate);
-  const destinationMaxlifts = extractUniqueMaxliftFromProgram(
-    destinationProgram.value,
+  const destinationMaxlifts =
+    extractUniqueMaxliftFromProgram(destinationProgram);
+
+  // Get missing maxlifts in current program
+  [missingMaxlifts.value] = compareMaxliftLists(
+    templateMaxlifts,
+    destinationMaxlifts,
   );
 
-  // Show optional dialog to select missing maxlifts
-  [missingMaxlifts.value] = templateMaxlifts
-    ? compareMaxliftLists(templateMaxlifts, destinationMaxlifts)
-    : [undefined];
+  // FIXME move from old maxlifts to new ones
 
+  // Optionally show dialog to fill missing maxlifts
   if (missingMaxlifts.value && missingMaxlifts.value.length > 0) {
     showMissingMaxliftDialog.value = true;
 
-    // Wait for maxlift values insertion from user
-    await new Promise<void>((resolve) => {
-      formEventEmitter.once("submit", () => {
-        resolve();
-      });
-    });
+    // FIXME check below
 
     // After the form is submitted create the new maxlifts and assign them to the athlete
     const maxliftValuesToAdd = missingMaxliftsValues.value;
@@ -1344,22 +1299,10 @@ async function importProgramTemplate(programTemplate?: Program) {
         newMaxlifts.push(newMaxlift);
       });
     }
-
-    const finalProgram = mergePrograms(
-      programTemplate,
-      destinationProgram.value,
-    );
-
-    // Reassignment of maxlifts to the new program and athlete done in the form component
-
-    onProgramTableUpdate(finalProgram);
-  } else {
-    const finalProgram = mergePrograms(
-      programTemplate,
-      destinationProgram.value,
-    );
-    onProgramTableUpdate(finalProgram);
   }
+
+  // Complete merge
+  programBuilderElement.value?.merge(programTemplate);
 }
 
 /**

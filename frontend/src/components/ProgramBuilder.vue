@@ -381,6 +381,7 @@ import {
 import { useI18n } from "vue-i18n";
 import {
   getProgramUniqueWeekDayPairs,
+  mergePrograms,
   sortProgramExercises,
 } from "@/helpers/programs/linesManagement";
 
@@ -439,6 +440,7 @@ const emit = defineEmits<{
 
 // Define expose
 defineExpose({
+  merge: mergeWithProgram,
   undo: throttleFunction(undo, props.debounce),
   redo: throttleFunction(redo, props.debounce),
   getHistorySteps: () => {
@@ -930,6 +932,20 @@ function storeChanges(program?: Program) {
 
   // Update pointer position
   programHistoryPointer.value = programHistory.value.length - 1;
+}
+
+/**
+ * Undo latest modification.
+ *
+ * @returns true if more undos are possible, false otherwise.
+ */
+function mergeWithProgram(program: Program) {
+  // Merge current program with provided one
+  if (!selectedProgram.value) return;
+  mergePrograms(selectedProgram.value, program, true);
+
+  // Inform parent of update
+  updateProgram();
 }
 
 /**
