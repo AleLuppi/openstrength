@@ -36,6 +36,7 @@ const props = withDefaults(
   defineProps<{
     programs: Program[];
     selected?: Program;
+    showFields?: (keyof Program)[];
     small?: boolean;
     allowDelete?: boolean;
   }>(),
@@ -50,55 +51,76 @@ const emit = defineEmits<{
 }>();
 
 // Set table columns
-const columns = computed(() => [
-  {
-    name: "name",
-    required: true,
-    label: i18n.t("coach.program_management.fields.program"),
-    align: "center",
-    field: "name",
-    sortable: true,
-  },
-  {
-    name: "athletename",
-    required: true,
-    label: i18n.t("coach.program_management.fields.athlete"),
-    align: "center",
-    field: "athletename",
-    sortable: true,
-  },
-  ...(!props.small
-    ? [
-        {
+const columns = computed(() => {
+  const showFields: (keyof Program)[] =
+    props.showFields ??
+    (props.small
+      ? ["name", "athlete"]
+      : ["name", "athlete", "startedOn", "finishedOn", "lastUpdated"]);
+  const outColumns = [];
+  showFields.forEach((key) => {
+    switch (key) {
+      case "name":
+        outColumns.push({
+          name: "name",
+          required: true,
+          label: i18n.t("coach.program_management.fields.program"),
+          align: "center",
+          field: "name",
+          sortable: true,
+        });
+        break;
+      case "athlete":
+        outColumns.push({
+          name: "athletename",
+          required: true,
+          label: i18n.t("coach.program_management.fields.athlete"),
+          align: "center",
+          field: "athletename",
+          sortable: true,
+        });
+        break;
+      case "startedOn":
+        outColumns.push({
           name: "startdate",
           required: true,
           label: i18n.t("common.start"),
           align: "center",
           field: "startdate",
           sortable: true,
-        },
-        {
+        });
+        break;
+      case "finishedOn":
+        outColumns.push({
           name: "enddate",
           required: true,
           label: i18n.t("common.end"),
           align: "center",
           field: "enddate",
           sortable: true,
-        },
-        {
+        });
+        break;
+      case "lastUpdated":
+        outColumns.push({
           name: "lastmodification",
           required: true,
           label: i18n.t("coach.program_management.fields.last_modification"),
           align: "center",
           field: "lastmodification",
           sortable: true,
-        },
-      ]
-    : []),
-  ...(props.allowDelete
-    ? [{ name: "delete", align: "center", label: "", field: "delete" }]
-    : []),
-]);
+        });
+        break;
+    }
+  });
+  if (props.allowDelete)
+    outColumns.push({
+      name: "delete",
+      align: "center",
+      label: "",
+      field: "delete",
+    });
+  return outColumns;
+});
 
 // Set table rows
 const rows = computed(() => {

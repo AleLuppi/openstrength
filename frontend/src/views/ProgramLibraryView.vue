@@ -29,12 +29,14 @@
 
           <q-separator />
 
-          <TableExistingProgramTemplates
+          <TableExistingPrograms
             :programs="programsTemplate"
             @update:selected="onProgramSelection"
             :filter="searchProgram"
             @delete="onProgramTemplateDelete"
-          ></TableExistingProgramTemplates>
+            :show-fields="['name', 'lastUpdated']"
+            allow-delete
+          ></TableExistingPrograms>
         </q-card>
       </div>
 
@@ -236,8 +238,8 @@ import { useI18n } from "vue-i18n";
 const FormProgramTemplateSaving = defineAsyncComponent(
   () => import("@/components/forms/FormProgramTemplateSaving.vue"),
 );
-const TableExistingProgramTemplates = defineAsyncComponent(
-  () => import("@/components/tables/TableExistingProgramTemplates.vue"),
+const TableExistingPrograms = defineAsyncComponent(
+  () => import("@/components/tables/TableExistingPrograms.vue"),
 );
 const TableCompactProgram = defineAsyncComponent(
   () => import("@/components/tables/TableCompactProgram.vue"),
@@ -367,5 +369,17 @@ function clearProgramTemplate() {
 <style scoped lang="scss">
 .os-templateinfo-max-height {
   height: calc(100vh - 38px);
+}
+</style>
+
+<style scoped lang="scss">
+// TODO auto-set with available space
+
+.os-table-max-height {
+  max-height: calc(100vh - 116px - 38px);
+}
+
+.os-table-max-height-with-header {
+  max-height: calc(100vh - 116px - 38px - 50px);
 }
 </style>

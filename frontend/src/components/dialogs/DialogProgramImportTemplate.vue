@@ -25,16 +25,16 @@
 
       <q-separator />
 
-      <TableExistingProgramTemplates
+      <TableExistingPrograms
         ref="programTemplateTableElement"
         :programs="templatePrograms"
         @selection="onProgramSelection"
         :selected="selected"
         @update:selected="onProgramSelected"
         :filter="searchProgram"
-        :allow-delete="false"
+        :show-fields="['name', 'lastUpdated']"
         style="max-height: 60vh"
-      ></TableExistingProgramTemplates>
+      ></TableExistingPrograms>
 
       <q-card-actions align="right">
         <q-btn
@@ -53,8 +53,8 @@ import type { QDialogProps } from "quasar";
 import { Program } from "@/helpers/programs/program";
 
 // Import components
-const TableExistingProgramTemplates = defineAsyncComponent(
-  () => import("@/components/tables/TableExistingProgramTemplates.vue"),
+const TableExistingPrograms = defineAsyncComponent(
+  () => import("@/components/tables/TableExistingPrograms.vue"),
 );
 
 // Define props
