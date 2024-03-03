@@ -227,7 +227,7 @@ export class Program {
 
   // Program is a template if athlete is dummy
   public get isTemplate() {
-    return !this.athlete || this.athlete.isDummy;
+    return Boolean(!this.athlete || this.athlete.isDummy);
   }
 
   constructor({

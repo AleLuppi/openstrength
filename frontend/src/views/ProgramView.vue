@@ -977,9 +977,8 @@ const allAssignedPrograms = computed(
   () =>
     coachInfo.programs?.filter(
       (program) =>
-        (program.uid === program.athlete?.assignedProgramId &&
-          program.isTemplate === false) ||
-        program.isTemplate === undefined,
+        program.uid === program.athlete?.assignedProgramId &&
+        !program.isTemplate,
     ) || [],
 );
 
