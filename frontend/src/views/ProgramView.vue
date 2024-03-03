@@ -867,7 +867,7 @@ import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
-import { extractUniqueMaxliftFromProgram } from "@/helpers/programs/programTemplateModels";
+import { extractUniqueMaxliftFromProgram } from "@/helpers/programs/programTemplate";
 import { mergePrograms } from "@/helpers/programs/linesManagement";
 import { compareMaxliftLists } from "@/helpers/maxlifts/listManagement";
 
@@ -1851,4 +1851,3 @@ onBeforeUnmount(() => {
   border-radius: 0 0 20px 20px;
 }
 </style>
-@/helpers/programs/programTemplateModels

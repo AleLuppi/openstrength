@@ -36,8 +36,8 @@
 import { ref, watch } from "vue";
 import type { QForm } from "quasar";
 import { Program } from "@/helpers/programs/program";
-import { ProgramFilter } from "@/helpers/programs/programTemplateModels";
-import { programToProgramTemplate } from "@/helpers/programs/programTemplateModels";
+import type { ProgramFilter } from "@/helpers/programs/models";
+import { programToProgramTemplate } from "@/helpers/programs/programTemplate";
 
 // Set props
 const props = withDefaults(
@@ -118,4 +118,3 @@ function onReset() {
   emit("reset");
 }
 </script>
-@/helpers/programs/programTemplateModels@/helpers/programs/programTemplateModels
