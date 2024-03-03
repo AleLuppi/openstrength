@@ -408,21 +408,21 @@
         "import_template": "Import from library",
         "template": "Program template",
         "filter_active_warning": "There are active filters, a filtered version of the program will be saved. Do you want to proceed?",
-        "template_saving_title": "Insert your program template data",
-        "template_import_title": "Importa un programma template",
+        "template_saving_title": "Insert your template program data",
+        "template_import_title": "Import template programm",
         "template_updating_title": "Update your program template data",
         "no_templates": "There are no program templates available, you can export one from program builder",
         "no_selected_template": "Select a program template to view a preview",
         "save_success": "Program template correctly saved, you can find it in the program library",
         "update_success": "Program template info correctly updated",
-        "add_error": "Errore, riprova"
+        "add_error": "An error occurred, please retry"
       },
       "fields": {
         "program_info": "Template info",
         "name": "Program name",
         "description": "Note",
-        "import_title": "Programma da importare",
-        "select_program": "Seleziona programma"
+        "import_title": "Program to import",
+        "select_program": "Select a program"
       }
     },
     "maxlift_management": {

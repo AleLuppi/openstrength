@@ -438,7 +438,6 @@
         "no_athlete": "Seleziona un atleta per vedere i dati correlati",
         "maxlift_section": "Massimali dell'atleta",
         "maxlift_section_template": "Massimali di riferimento"
-
       },
       "fields": {
         "exercise": "Esercizio",
