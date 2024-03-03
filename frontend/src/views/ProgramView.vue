@@ -125,9 +125,8 @@
             <div class="row">
               <q-btn
                 v-if="
-                  (selectedProgram &&
-                    selectedProgram.isProgramTemplate === false) ||
-                  selectedProgram.isProgramTemplate === undefined
+                  (selectedProgram && selectedProgram.isTemplate === false) ||
+                  selectedProgram.isTemplate === undefined
                 "
                 icon="sym_o_download"
                 flat
@@ -145,9 +144,8 @@
               ></q-btn>
               <q-btn
                 v-if="
-                  (selectedProgram &&
-                    selectedProgram.isProgramTemplate === false) ||
-                  selectedProgram.isProgramTemplate === undefined
+                  (selectedProgram && selectedProgram.isTemplate === false) ||
+                  selectedProgram.isTemplate === undefined
                 "
                 icon="sym_o_publish"
                 flat
@@ -178,7 +176,7 @@
               <!-- Get shareable link to program -->
 
               <q-btn
-                v-if="selectedProgram.isProgramTemplate === false"
+                v-if="selectedProgram.isTemplate === false"
                 @click="
                   saveProgram();
                   showShareProgramDialog = true;
@@ -349,8 +347,8 @@
               <h6 class="text-margin-xs">
                 {{
                   selectedProgram &&
-                  (selectedProgram.isProgramTemplate === false ||
-                    selectedProgram.isProgramTemplate === undefined)
+                  (selectedProgram.isTemplate === false ||
+                    selectedProgram.isTemplate === undefined)
                     ? $t("coach.maxlift_management.list.maxlift_section")
                     : $t(
                         "coach.maxlift_management.list.maxlift_section_template",
@@ -446,8 +444,8 @@
                 <h6>
                   {{
                     selectedProgram &&
-                    (selectedProgram.isProgramTemplate === false ||
-                      selectedProgram.isProgramTemplate === undefined)
+                    (selectedProgram.isTemplate === false ||
+                      selectedProgram.isTemplate === undefined)
                       ? $t("coach.program_management.list.program_section")
                       : $t(
                           "coach.program_management.list.programtemplate_section",
@@ -460,8 +458,8 @@
               <div
                 v-if="
                   selectedProgram &&
-                  (selectedProgram.isProgramTemplate === false ||
-                    selectedProgram.isProgramTemplate === undefined) &&
+                  (selectedProgram.isTemplate === false ||
+                    selectedProgram.isTemplate === undefined) &&
                   !denseView
                 "
                 class="row items-center justify-start q-col-gutter-sm"
@@ -515,7 +513,7 @@
                     </div>
 
                     <q-btn
-                      v-if="selectedProgram.isProgramTemplate === false"
+                      v-if="selectedProgram.isTemplate === false"
                       icon="edit"
                       outline
                       flat
@@ -557,8 +555,8 @@
               <div
                 v-if="
                   selectedProgram &&
-                  (selectedProgram.isProgramTemplate === false ||
-                    selectedProgram.isProgramTemplate === undefined)
+                  (selectedProgram.isTemplate === false ||
+                    selectedProgram.isTemplate === undefined)
                 "
               >
                 <q-separator></q-separator>
@@ -980,8 +978,8 @@ const allAssignedPrograms = computed(
     coachInfo.programs?.filter(
       (program) =>
         (program.uid === program.athlete?.assignedProgramId &&
-          program.isProgramTemplate === false) ||
-        program.isProgramTemplate === undefined,
+          program.isTemplate === false) ||
+        program.isTemplate === undefined,
     ) || [],
 );
 
@@ -1190,7 +1188,7 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
         ) || []).push(currProgram);
 
       // Update athlete profile with new program
-      if (program?.isProgramTemplate === false) {
+      if (program?.isTemplate === false) {
         assignProgramToAthlete(
           currProgram,
           currProgram.athlete,

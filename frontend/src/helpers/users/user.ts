@@ -52,6 +52,9 @@ export type UserProps = {
   lastAccess?: Date;
   lastNotificationRead?: Date;
 
+  // Whether user instance does not relate to a real person
+  isDummy?: boolean;
+
   // Computed info
   referencename?: string;
   isSignedIn?: boolean;
@@ -83,9 +86,6 @@ export type AthleteUserProps = UserProps & {
   coachesTo?: (Date | null)[];
   assignedProgramId?: string;
   assignedPrograms?: string[];
-
-  // If true athlete is a placeholder for program template
-  isTemplate?: boolean;
 
   // Workout-related info
   height?: string;
@@ -135,6 +135,9 @@ export class User {
    */
   config?: UserConfig;
 
+  // Whether user instance does not relate to a real person
+  isDummy?: boolean;
+
   // Get user displayable name
   public get referenceName() {
     return this.displayName ?? [this.name, this.surname].join(" ");
@@ -166,6 +169,7 @@ export class User {
     lastAccess,
     lastNotificationRead,
     config,
+    isDummy,
   }: UserProps = {}) {
     this.uid = uid;
     this.email = email;
@@ -187,6 +191,7 @@ export class User {
     this.lastAccess = lastAccess;
     this.lastNotificationRead = lastNotificationRead;
     this.config = config;
+    this.isDummy = isDummy;
   }
 
   saveNew({
@@ -250,9 +255,6 @@ export class AthleteUser extends User {
   assignedProgramId?: string;
   assignedPrograms?: string[];
 
-  // Athlete is used as placeholder for program template
-  isTemplate?: boolean;
-
   // Workout-related info
   height?: string;
   weight?: string;
@@ -270,7 +272,6 @@ export class AthleteUser extends User {
     coachesTo,
     assignedProgramId,
     assignedPrograms,
-    isTemplate,
     height,
     weight,
     ...props
@@ -287,7 +288,6 @@ export class AthleteUser extends User {
     this.coachesTo = coachesTo;
     this.assignedProgramId = assignedProgramId;
     this.assignedPrograms = assignedPrograms;
-    this.isTemplate = isTemplate;
     this.height = height;
     this.weight = weight;
   }

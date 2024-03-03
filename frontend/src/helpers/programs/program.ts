@@ -52,7 +52,7 @@ export type ProgramProps = {
   isAssigned?: boolean;
   isOngoing?: boolean;
   isCompleted?: boolean;
-  isProgramTemplate?: boolean;
+  isTemplate?: boolean;
 };
 
 /**
@@ -147,7 +147,7 @@ export type ProgramForzenView = {
   description: string | undefined;
   startedOn: Date | undefined;
   finishedOn: Date | undefined;
-  isProgramTemplate: boolean;
+  isTemplate: boolean;
   weekdays: {
     weekName: string;
     dayName: string;
@@ -168,17 +168,13 @@ export type ProgramForzenView = {
  * Compact program object.
  */
 export type ProgramCompactView = {
-  days: {
-    dayName: string;
-    exercises: {
-      exerciseFullName: string;
-      weekSchemas: {
-        weekName: string;
-        schemas: string[];
-      }[];
-    }[];
+  week: string;
+  day: string;
+  exercises: {
+    exercise: string;
+    schemas: string[];
   }[];
-};
+}[];
 
 /**
  * Training program entity.
@@ -205,14 +201,6 @@ export class Program {
   createdOn?: Date;
   lastUpdated?: Date;
 
-  // Determine if program is a template if assigned to nobody
-  public get isProgramTemplate() {
-    return (
-      Boolean(this.athlete === undefined) ||
-      Boolean(this.athlete?.assignedProgramId === undefined)
-    );
-  }
-
   // Get reference users ID
   public get coachId() {
     return this.coach?.uid;
@@ -235,6 +223,11 @@ export class Program {
   public get isCompleted() {
     // Program is ongoing if it has been started but not finished yet
     return Boolean(this.finishedOn);
+  }
+
+  // Program is a template if athlete is dummy
+  public get isTemplate() {
+    return !this.athlete || this.athlete.isDummy;
   }
 
   constructor({
@@ -439,7 +432,7 @@ export class Program {
       startedOn: programToFreeze.startedOn,
       finishedOn: programToFreeze.finishedOn,
       weekdays: convertProgramToDayBlocks(programToFreeze),
-      isProgramTemplate: programToFreeze.isProgramTemplate ?? false,
+      isTemplate: programToFreeze.isTemplate ?? false,
       frozenOn: new Date(),
     };
     if (save && programToFreeze.uid)

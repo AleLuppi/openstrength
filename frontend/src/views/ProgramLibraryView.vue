@@ -261,9 +261,7 @@ const showDialogUpdate = ref(false); // whether to show dialog to update program
 
 // Get template programs
 const programsTemplate = computed(() => {
-  return (
-    coachInfo.programs?.filter((prog) => prog.isProgramTemplate === true) ?? []
-  );
+  return coachInfo.programs?.filter((prog) => prog.isTemplate === true) ?? [];
 });
 
 // Show dialog deleting dialog when required

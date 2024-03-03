@@ -79,7 +79,7 @@ const searchProgram = ref<string>(); // search field to scan programs
 const templatePrograms = computed(() =>
   props.programs.filter(
     (program: Program) =>
-      program.isProgramTemplate === true &&
+      program.isTemplate === true &&
       program.programExercises &&
       program.programExercises.length > 0,
   ),

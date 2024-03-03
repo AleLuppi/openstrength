@@ -11,7 +11,7 @@ export function createNewDefaultAthleteInstance(program: Program): AthleteUser {
   const defaultAthlete = new AthleteUser();
   defaultAthlete.name = uid();
   defaultAthlete.surname = uid();
-  defaultAthlete.isTemplate = true;
+  defaultAthlete.isDummy = true;
   defaultAthlete.uid = uid();
   defaultAthlete.coachId = program.coachId;
 
