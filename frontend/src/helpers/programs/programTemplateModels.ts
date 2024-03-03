@@ -1,7 +1,7 @@
 import { uid } from "quasar";
-import { Program, ProgramExercise } from "../programs/program";
+import { Program, ProgramExercise } from "./program";
 import { AthleteUser } from "../users/user";
-import { moveProgramExercise } from "../programs/builder";
+import { moveProgramExercise } from "./builder";
 import { MaxLift } from "../maxlifts/maxlift";
 
 /**

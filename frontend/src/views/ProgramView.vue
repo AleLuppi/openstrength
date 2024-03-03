@@ -871,7 +871,7 @@ import {
   extractUniqueMaxliftFromProgram,
   getMissingMaxlift,
   importProgramTemplateToProgram,
-} from "@/helpers/programTemplates/programTemplateModels";
+} from "@/helpers/programs/programTemplateModels";
 
 // Import components
 const ProgramBuilder = defineAsyncComponent(
@@ -1854,3 +1854,4 @@ onBeforeUnmount(() => {
   border-radius: 0 0 20px 20px;
 }
 </style>
+@/helpers/programs/programTemplateModels
