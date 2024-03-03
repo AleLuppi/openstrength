@@ -4,6 +4,7 @@ import {
   RouteRecordName,
   RouteRecordRaw,
 } from "vue-router";
+import { inject } from "vue";
 import { useUserStore } from "@/stores/user";
 import { UserRole } from "@/helpers/users/user";
 import {
@@ -16,6 +17,7 @@ import { defineAsyncComponent } from "vue";
 
 /* Dinamically import the views */
 import HomeView from "@/views/HomeView.vue";
+import { Config } from "@/boot/config";
 const LandingPage = () => import("@/views/LandingPage.vue");
 const LandingConfirmationPage = () =>
   import("@/views/LandingConfirmationPage.vue");
@@ -262,7 +264,8 @@ router.beforeEach(async (to) => {
 /* Set the page title */
 router.afterEach((to) => {
   document.title =
-    (to.meta.title ? to.meta.title + " - " : "") + "OpenStrength";
+    (to.meta.title ? to.meta.title + " - " : "") +
+    (inject("$appProperties") as Config["$appProperties"]).name;
 });
 
 export default router;

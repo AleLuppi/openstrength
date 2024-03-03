@@ -10,6 +10,7 @@ import { Quasar } from "quasar";
 import quasarUserOptions from "./quasar-user-options";
 import i18n from "./i18n";
 import VueSocialSharing from "vue-social-sharing";
+import config from "./boot/config";
 
 // Analytics modules
 import VueGtag from "vue-gtag";
@@ -30,9 +31,6 @@ import osToggleButtons from "./components/basic/osToggleButtons.vue";
 import osVariableElement from "./components/basic/osVariableElement.vue";
 import osWrapWithLines from "./components/basic/osWrapWithLines.vue";
 
-/***** Set constant global properties *****/
-export const globalProperties = {};
-
 /***** Initialize plugins *****/
 // Initialize mixpanel
 mixpanel.init("1132ec256586f264683f340260fca53a", {
@@ -47,8 +45,10 @@ mixpanel.init("1132ec256586f264683f340260fca53a", {
 const app = createApp(App);
 
 // Add global variables to be used in components
-app.provide("globalProperties", globalProperties);
-app.config.globalProperties.$globalProperties = globalProperties;
+Object.entries(config).forEach(([key, val]) => {
+  app.provide(key, val);
+  app.config.globalProperties[key] = val;
+});
 
 // Register components
 app.component("osButtonSupport", osButtonSupport);
