@@ -286,7 +286,9 @@
         "update_proceed": "Aggiorna programma",
         "search_program": "Cerca programma...",
         "delete_program_confirm": "Stai per eliminare il programma \"{ program }\", che verrà rimosso anche dall'atleta assegnato. Questa azione è irreversibile.",
-        "delete_proceed": "Elimina il programma"
+        "delete_proceed": "Elimina il programma",
+        "not_assigned": "Non assegnato",
+        "not_selected": "-"
       },
       "fields": {
         "program": "Programma",

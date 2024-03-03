@@ -2,11 +2,11 @@
   <q-form ref="formElement" @submit="onSubmit">
     <!-- Actual programs -->
     <div>
-      <h6>{{ $t("coach.athlete_management.fields.program_title") }}</h6>
       <div class="q-mb-md">
         <q-btn
           outline
           :to="{ name: 'program', params: { programId: props.program.uid } }"
+          icon="open_in_new"
           :label="$t('coach.athlete_management.call_to_action.modify_program')"
           class="q-mr-md"
           @click="registerProgramOpeningEvent()"

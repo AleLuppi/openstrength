@@ -15,7 +15,6 @@
     @row-click="
       (...params: [Event, Object, Number]) => emit('selection', ...params)
     "
-    selection="single"
     v-model:selected="selectedRows"
     sort-by="-lastmodification"
   ></os-table>
@@ -112,23 +111,25 @@ const rows = computed(() => {
   return props.programs.map((program) => ({
     uid: program.uid,
     name: program.name,
-    athletename: program.athlete?.referenceName ?? "Not assigned",
+    athletename:
+      program.athlete?.referenceName ??
+      i18n.t("coach.program_management.list.not_assigned"),
     startdate: program.startedOn
       ? i18n.d(program.startedOn, "short")
-      : "Not selected",
+      : i18n.t("coach.program_management.list.not_selected"),
     enddate: program.finishedOn
       ? i18n.d(program.finishedOn, "short")
-      : "Not selected",
+      : i18n.t("coach.program_management.list.not_selected"),
     lastmodification: program.lastUpdated
       ? i18n.d(program.lastUpdated, "middle")
-      : "Not selected",
+      : i18n.t("coach.program_management.list.not_selected"),
     info: {
       element: "button",
       on: { click: () => props.onInfo?.(program) },
       icon: "info",
       flat: true,
       round: true,
-      label: "Info",
+      label: i18n.t("common.info"),
       stack: true,
       color: "button-negative",
     },
@@ -138,7 +139,7 @@ const rows = computed(() => {
       icon: "open_in_new",
       flat: true,
       round: true,
-      label: "Open",
+      label: i18n.t("common.open"),
       stack: true,
       color: "button-negative",
     },
@@ -147,7 +148,7 @@ const rows = computed(() => {
       on: { click: () => emit("delete", program) },
       icon: "delete",
       stack: true,
-      label: "Delete",
+      label: i18n.t("common.delete"),
       flat: true,
       round: true,
       color: "button-negative",

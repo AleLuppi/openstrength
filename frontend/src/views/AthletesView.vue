@@ -343,8 +343,7 @@
       <q-dialog v-model="showProgramInfoDialog">
         <q-card class="q-pa-sm dialog-min-width">
           <q-card-section class="row items-center q-pb-none">
-            <h5>Ciao</h5>
-
+            <h6>{{ $t("coach.athlete_management.fields.program_title") }}</h6>
             <q-space />
             <q-btn
               icon="close"
