@@ -1,29 +1,37 @@
-import { uid } from "quasar";
-import { Program, ProgramExercise } from "./program";
+import { Program } from "@/helpers/programs/program";
+import type { ProgramFilter } from "@/helpers/programs/models";
 import { AthleteUser } from "@/helpers/users/user";
-import { moveProgramExercise } from "@/helpers/programs/builder";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import { arrayUniqueValues } from "../array";
 
 /**
- * Creates a dummy default athlete
+ * Create a dummy athlete.
+ *
+ * @param coachId ID of the coach who is creating the dummy athlete.
+ * @returns dummy athlete instance.
  */
-export function createNewDefaultAthleteInstance(program: Program): AthleteUser {
-  const defaultAthlete = new AthleteUser();
-  defaultAthlete.name = uid();
-  defaultAthlete.surname = uid();
-  defaultAthlete.isDummy = true;
-  defaultAthlete.uid = uid();
-  defaultAthlete.coachId = program.coachId;
+function createDefaultAthleteInstance(coachId?: string): AthleteUser {
+  const defaultAthlete = new AthleteUser({
+    name: "dummy",
+    surname: "dummy",
+    isDummy: true,
+    coachId: coachId,
+  });
 
   return defaultAthlete;
 }
 
 /**
- * Initialize program template instance
+ * Initialize program template instance.
+ *
+ * @param program optional program instance to use as a starting point.
+ * @returns program template instamce.
  */
-export function createNewProgramTemplateInstance(program: Program): Program {
-  const programTemplate = program.duplicate();
-  programTemplate.athlete = createNewDefaultAthleteInstance(program);
+function initializeProgramTemplateInstance(program?: Program): Program {
+  const programTemplate = program?.duplicate() ?? new Program();
+  programTemplate.athlete = createDefaultAthleteInstance(
+    programTemplate.coachId,
+  );
   programTemplate.uid = undefined;
   programTemplate.lastUpdated = new Date();
 
@@ -31,149 +39,90 @@ export function createNewProgramTemplateInstance(program: Program): Program {
 }
 
 /**
- * Interface for program filter in builder
+ * Create a filtered instance of the program.
+ *
+ * @param program program that shall be filtered.
+ * @param filter selected weeks, days, and exercises to filter from program.
+ * @param [includeUndefined=false] if true, keep undefined exercises in output program if exercises are being filtered.
  */
-export interface ProgramFilter {
-  week: string[];
-  day: string[];
-  exercise: string[];
+export function filterProgram(
+  program: Program,
+  filter: ProgramFilter,
+  includeUndefined: boolean = false,
+  inplace: boolean = false,
+): Program {
+  const outProgram = inplace ? program : program.duplicate();
+  outProgram.programExercises = outProgram.programExercises?.filter(
+    (programExercise) => {
+      if (
+        filter.week.length > 0 &&
+        (!programExercise.scheduleWeek ||
+          !filter.week.includes(programExercise.scheduleWeek.toString()))
+      ) {
+        return false;
+      }
+      if (
+        filter.day.length > 0 &&
+        (!programExercise.scheduleDay ||
+          !filter.day.includes(programExercise.scheduleDay.toString()))
+      ) {
+        return false;
+      }
+      if (
+        filter.exercise.length > 0 &&
+        ((!programExercise.exercise?.name && !includeUndefined) ||
+          (programExercise.exercise?.name &&
+            !filter.exercise.includes(programExercise.exercise.name)))
+      ) {
+        return false;
+      }
+      return true;
+    },
+  );
+  return outProgram;
 }
 
 /**
- * Create a filtered instance of the program
+ * Convert a program instance into a program template.
+ *
+ * @param program program that shall be converted into a template.
+ * @param programFilter optional filter to be applied during conversion.
+ * @returns program template instance.
  */
-export function filterProgramExercises(
-  programExercises: ProgramExercise[],
-  programFilter: ProgramFilter,
-): ProgramExercise[] {
-  return programExercises.filter((exercise) => {
-    if (
-      programFilter.week.length > 0 &&
-      !programFilter.week.includes(exercise.scheduleWeek?.toString() || "")
-    ) {
-      return false;
-    }
-    if (
-      programFilter.day.length > 0 &&
-      !programFilter.day.includes(exercise.scheduleDay?.toString() || "")
-    ) {
-      return false;
-    }
-    if (
-      programFilter.exercise.length > 0 &&
-      !programFilter.exercise.includes(exercise.exercise?.name || "")
-    ) {
-      return false;
-    }
-    return true;
-  });
-}
-
-/**
- * Converts a program instance into a program template instance
- * by assigning a default athlete
- */
-export function convertProgramToProgramTemplate(
+export function programToProgramTemplate(
   program: Program,
   programFilter?: ProgramFilter,
 ): Program {
-  const programTemplate = createNewProgramTemplateInstance(program);
-  programTemplate.athlete = createNewDefaultAthleteInstance(program);
+  const programTemplate = initializeProgramTemplateInstance(program);
+  programTemplate.athlete = createDefaultAthleteInstance(program.coachId);
 
   // Apply filters if necessary
-  if (programFilter && program.programExercises) {
-    const filteredExercises = filterProgramExercises(
-      program.programExercises,
-      programFilter,
-    );
-    programTemplate.programExercises = filteredExercises;
-  }
+  if (programFilter && program.programExercises)
+    filterProgram(program, programFilter, false, true);
 
   return programTemplate;
 }
 
 /**
- * Imports a program template instance into a program instance
- */
-export function importProgramTemplateToProgram(
-  programTemplate: Program,
-  programDestination: Program,
-): Program {
-  programTemplate.programExercises?.forEach((progEx) => {
-    const destination: [string, string, string] = [
-      progEx.scheduleWeek?.toString() ?? "1",
-      progEx.scheduleDay?.toString() ?? "1",
-      progEx.scheduleOrder?.toString() ?? "1",
-    ];
-    moveProgramExercise(programDestination, progEx, destination, true, {
-      sourceFallback: true,
-      sourceOffset: 0,
-      looseOrder: true,
-    });
-  });
-
-  return programDestination;
-}
-
-/**
+ * Get a list of unique maxlifts referenced in a program.
  *
- * @param program Allows to extract the unique list of referenced maxlifts from a program instance
- * @returns
+ * @param program program instance that contains the maxlifts.
+ * @returns list of unique maxlifts.
  */
-export function extractUniqueMaxliftFromProgram(
-  program: Program,
-): MaxLift[] | undefined {
-  const maxliftsTemplate: MaxLift[] = (program.programExercises ?? []).flatMap(
-    (progEx) =>
-      (progEx.lines ?? []).flatMap((line) => {
-        const maxLifts: MaxLift[] = [];
-        if (line.loadReference instanceof MaxLift) {
-          maxLifts.push(line.loadReference);
-        }
-        if (line.repsReference instanceof MaxLift) {
-          maxLifts.push(line.repsReference);
-        }
-        return maxLifts;
+export function extractUniqueMaxliftFromProgram(program: Program): MaxLift[] {
+  // Get all references maxlifts
+  const maxlifts: MaxLift[] = (program.programExercises ?? []).flatMap(
+    (programExercise) =>
+      (programExercise.lines ?? []).flatMap((line) => {
+        const maxifts: MaxLift[] = [];
+        if (line.loadReference instanceof MaxLift)
+          maxifts.push(line.loadReference);
+        if (line.repsReference instanceof MaxLift)
+          maxifts.push(line.repsReference);
+        return maxifts;
       }),
   );
 
   // Return only the unique list of maxlifts
-  const uniqueMaxLiftsSet = new Set<string>();
-  const uniqueMaxlifts = maxliftsTemplate.filter((maxLift) => {
-    const key = maxLift.exercise?.name + "|" + maxLift.type;
-    if (!uniqueMaxLiftsSet.has(key)) {
-      uniqueMaxLiftsSet.add(key);
-      return true;
-    }
-
-    return false;
-  });
-
-  return uniqueMaxlifts;
-}
-
-/**
- * Checks if input maxlifts are contained inside maxlifts, returns the diff between the two
- */
-export function getMissingMaxlift(
-  maxliftsToInsert: MaxLift[],
-  maxlifts: MaxLift[] | undefined,
-): MaxLift[] {
-  if (maxlifts !== undefined) {
-    const maxliftsSet = new Set<string>();
-
-    maxlifts.forEach((maxlift) => {
-      const key = maxlift.exercise?.name + "|" + maxlift.type;
-      maxliftsSet.add(key);
-    });
-
-    const missingMaxlifts = maxliftsToInsert.filter((maxlift) => {
-      const key = maxlift.exercise?.name + "|" + maxlift.type;
-      return !maxliftsSet.has(key);
-    });
-
-    return missingMaxlifts;
-  } else {
-    return maxliftsToInsert;
-  }
+  return arrayUniqueValues(maxlifts);
 }

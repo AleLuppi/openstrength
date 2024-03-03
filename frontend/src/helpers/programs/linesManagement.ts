@@ -4,6 +4,7 @@ import {
   ProgramLine,
 } from "@/helpers/programs/program";
 import { arrayFilterUndefined, arrayUniqueValues } from "@/helpers/array";
+import { moveProgramExercise } from "@/helpers/programs/builder";
 
 /**
  * Sort program exercises according to week, day, order.
@@ -208,4 +209,33 @@ export function getProgramUniqueExercises(
         .map((exercise) => exercise.exercise?.name) || [],
     ),
   );
+}
+
+/**
+ * Merge two programs into a single instance.
+ *
+ * @param firstProgram destination program.
+ * @param secondProgram program that will be merged into first one.
+ * @param [inplace=true] if true, merge exercises inside first program.
+ */
+export function mergePrograms(
+  firstProgram: Program,
+  secondProgram: Program,
+  inplace: boolean = true,
+): Program {
+  const outProgram = inplace ? firstProgram : firstProgram.duplicate();
+  secondProgram.programExercises?.forEach((programExercise) => {
+    if (
+      !programExercise.scheduleWeek ||
+      !programExercise.scheduleDay ||
+      !programExercise.scheduleOrder
+    )
+      return;
+    moveProgramExercise(outProgram, programExercise, undefined, true, {
+      sourceFallback: true,
+      looseOrder: true,
+    });
+  });
+
+  return outProgram;
 }

@@ -37,7 +37,7 @@ import { ref, watch } from "vue";
 import type { QForm } from "quasar";
 import { Program } from "@/helpers/programs/program";
 import { ProgramFilter } from "@/helpers/programs/programTemplateModels";
-import { convertProgramToProgramTemplate } from "@/helpers/programs/programTemplateModels";
+import { programToProgramTemplate } from "@/helpers/programs/programTemplateModels";
 
 // Set props
 const props = withDefaults(
@@ -97,7 +97,7 @@ function onSubmit() {
 
     emit("submit", programToUpdate);
   } else {
-    const programTemplate = convertProgramToProgramTemplate(
+    const programTemplate = programToProgramTemplate(
       props.program,
       props.programFilter,
     );

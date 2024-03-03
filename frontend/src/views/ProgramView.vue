@@ -867,11 +867,9 @@ import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { reduceExercises } from "@/helpers/exercises/listManagement";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
-import {
-  extractUniqueMaxliftFromProgram,
-  getMissingMaxlift,
-  importProgramTemplateToProgram,
-} from "@/helpers/programs/programTemplateModels";
+import { extractUniqueMaxliftFromProgram } from "@/helpers/programs/programTemplateModels";
+import { mergePrograms } from "@/helpers/programs/linesManagement";
+import { compareMaxliftLists } from "@/helpers/maxlifts/listManagement";
 
 // Import components
 const ProgramBuilder = defineAsyncComponent(
@@ -1312,9 +1310,9 @@ async function importProgramTemplate(programTemplate?: Program) {
   );
 
   // Show optional dialog to select missing maxlifts
-  missingMaxlifts.value = templateMaxlifts
-    ? getMissingMaxlift(templateMaxlifts, destinationMaxlifts)
-    : undefined;
+  [missingMaxlifts.value] = templateMaxlifts
+    ? compareMaxliftLists(templateMaxlifts, destinationMaxlifts)
+    : [undefined];
 
   if (missingMaxlifts.value && missingMaxlifts.value.length > 0) {
     showMissingMaxliftDialog.value = true;
@@ -1347,7 +1345,7 @@ async function importProgramTemplate(programTemplate?: Program) {
       });
     }
 
-    const finalProgram = importProgramTemplateToProgram(
+    const finalProgram = mergePrograms(
       programTemplate,
       destinationProgram.value,
     );
@@ -1356,7 +1354,7 @@ async function importProgramTemplate(programTemplate?: Program) {
 
     onProgramTableUpdate(finalProgram);
   } else {
-    const finalProgram = importProgramTemplateToProgram(
+    const finalProgram = mergePrograms(
       programTemplate,
       destinationProgram.value,
     );
