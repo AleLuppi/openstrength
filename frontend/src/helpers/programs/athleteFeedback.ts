@@ -37,34 +37,3 @@ export type AthleteFeedbackExercise = {
     athleteVideoFeedback?: string | undefined;
   }[]
 }
-
-
-/**
- * Create the athlete feedback object starting from a ProgramFrozenView
- * @param program
- */
-/* export function createFeedbackStructure(
-  program: ProgramForzenView
-): AthleteFeedbackFrozenView {
-  const workoutDays: AthleteFeedbackDay[] = program.weekdays.map((week) => ({
-    weekName: week.weekName,
-    dayName: week.dayName,
-    athleteHasDone: false,
-    athleteWorkoutNote: undefined,
-    athleteWorkoutDate: undefined,
-    exercises: week.exercises.map((exercise) => ({
-      exerciseName: exercise.exerciseName,
-      variantName: exercise.variantName,
-      athleteHasDone: false, // Initialize to false by default
-      athleteLoadFeedback: undefined,
-      athleteRepsFeedback: undefined,
-      athleteSetsFeedback: undefined,
-      athleteRpeFeedback: undefined,
-      athleteTextFeedback: undefined,
-      athleteVideoFeedback: undefined,
-    })),
-  }));
-
-  return { program, workoutDays };
-}
- */

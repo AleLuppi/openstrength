@@ -19,7 +19,10 @@
               :color="exerciseDone ? 'primary' : 'light'"
               round
               :outline="!exerciseDone"
-              @click="() => (exerciseDone = !exerciseDone)"
+              @click="
+                exerciseDone = !exerciseDone;
+                saveExerciseFeedback();
+              "
             ></q-btn>
           </div>
         </div>
@@ -221,13 +224,14 @@ if (props.exercise.lines) {
   lineTextFeedbacks.value = Array(props.exercise.lines.length).fill(undefined);
 }
 
+// TODO: check here why lineTextFeedback[idx] is always undefined
 const exerciseFeedback = computed(() => {
   console.log("fb", lineTextFeedbacks);
   console.log("fb value", lineTextFeedbacks.value);
   console.log("fb value at 0", lineTextFeedbacks.value[0]);
   console.log("fb value at 1", lineTextFeedbacks.value[1]);
   console.log("fb value at 1", lineTextFeedbacks.value.at(1));
-  const feedbacks = lineTextFeedbacks.value;
+  const feedbacks = [...lineTextFeedbacks.value];
   console.log("feedbacks", feedbacks);
   console.log("feedbacks at 1", feedbacks[1]);
 

@@ -30,7 +30,7 @@
     <div v-for="(exercise, indexExerc) in block.exercises" :key="indexExerc">
       <WorkoutExerciseForm
         :exercise="exercise"
-        @exerciseFeedbackSaved="updateDayFeedbacks"
+        @exerciseFeedbackSaved="updateExerciseFeedbacks"
       ></WorkoutExerciseForm>
     </div>
 
@@ -39,7 +39,14 @@
       type="textarea"
       label="Feedback sulla sessione"
     ></os-input>
-    <q-btn class="full-width" @click="dayShowCollapsed = true">
+    <q-btn
+      class="full-width"
+      @click="
+        athleteDayFeedback.athleteHasDone = true;
+        saveDayFeedback();
+        dayShowCollapsed = true;
+      "
+    >
       Salva allenamento
     </q-btn>
   </q-card>
@@ -92,7 +99,12 @@ const props = defineProps<{
   dayShowDone: boolean;
 }>();
 
-// Set UI behaviour
+// Define emit
+const emit = defineEmits<{
+  dayFeedbackSaved: [feedbackDay: AthleteFeedbackDay];
+}>();
+
+// Set ref
 const workoutDate = ref<Date>();
 const workoutNote = ref<string>();
 
@@ -103,21 +115,32 @@ const athleteDayFeedback = computed(() => {
     weekName: props.block.weekName,
     dayName: props.block.dayName,
     athleteHasDone: props.dayShowDone,
-    athleteWorkoutNote: undefined,
-    athleteWorkoutDate: undefined,
-    exercises: props.block.exercises.map((exercise) => ({
+    athleteWorkoutNote: workoutNote.value,
+    athleteWorkoutDate: workoutDate.value,
+
+    exercises: props.block.exercises.map((exercise, idx) => ({
       uid: exercise.uid,
       exerciseName: exercise.exerciseName,
       variantName: exercise.variantName,
-      isExerciseDone: false,
-      lineFeedbacks: [],
+      isExerciseDone: props.feedback?.exercises[idx].isExerciseDone ?? false,
+      lineFeedbacks: props.feedback?.exercises[idx].lineFeedbacks ?? [],
     })),
   };
   return feedbackDay;
 });
 
-function updateDayFeedbacks(feedbackExercise: AthleteFeedbackExercise) {
-  // Substitute received data from emit to the actual exercise feedback
+/**
+ * Emit day feedback to program viewer
+ */
+function saveDayFeedback() {
+  emit("dayFeedbackSaved", athleteDayFeedback.value);
+}
+
+/**
+ * Update actual day feedbacks with exercise data from the emit of child component
+ */
+function updateExerciseFeedbacks(feedbackExercise: AthleteFeedbackExercise) {
+  // Overwrite the actual exercise feedback with the received data from emit
   athleteDayFeedback.value?.exercises.forEach((exercise) => {
     if (exercise.uid === feedbackExercise.uid) {
       exercise = feedbackExercise;

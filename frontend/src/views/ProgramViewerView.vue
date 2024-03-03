@@ -92,6 +92,8 @@
         </q-table>
       </div>
 
+      <!-- Show available weeks -->
+
       <!-- Show Workout day -->
       <div
         v-for="(block, indexDay) in programSnapshot?.weekdays"
@@ -102,6 +104,7 @@
           :block="block"
           :dayShowDone="dayShowDone[indexDay]"
           :feedback="programFeedbacks?.workoutDays.at(indexDay)"
+          @dayFeedbackSaved="updateDayFeedback"
         >
         </WorkoutDayForm>
       </div>
@@ -145,7 +148,10 @@ import {
 } from "@/helpers/database/collections";
 import { ProgramForzenView } from "@/helpers/programs/program";
 import WorkoutDayForm from "@/components/feedback/WorkoutDayForm.vue";
-import { AthleteFeedbackFrozenView } from "@/helpers/programs/athleteFeedback";
+import {
+  AthleteFeedbackDay,
+  AthleteFeedbackFrozenView,
+} from "@/helpers/programs/athleteFeedback";
 
 // Init plugin
 const route = useRoute();
@@ -162,8 +168,8 @@ const dayShowDone = computed(() => dayDone.value);
 const programSnapshot = ref<ProgramForzenView>();
 
 // Get correct associated feedbacks
+// TODO: load program feedbacks from DB
 const programFeedbacks = ref<AthleteFeedbackFrozenView>();
-
 console.log(programFeedbacks);
 
 watch(
@@ -230,6 +236,20 @@ const columns: QTableProps["columns"] = [
     style: "width: 10%",
   },
 ];
+
+/**
+ * Adds the emitted day feedback in the actual athlete feedbacks
+ */
+function updateDayFeedback(feedbackDay: AthleteFeedbackDay) {
+  programFeedbacks.value?.workoutDays.forEach((day) => {
+    if (day.dayName === feedbackDay.dayName) {
+      day = feedbackDay;
+    }
+  });
+
+  console.log("Received day feedback:", feedbackDay);
+  console.log("Updated complete Program fb: ", programFeedbacks.value);
+}
 
 // Operations to perform on component mount
 onMounted(() => {
