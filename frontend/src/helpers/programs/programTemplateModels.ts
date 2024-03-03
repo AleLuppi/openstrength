@@ -1,8 +1,8 @@
 import { uid } from "quasar";
 import { Program, ProgramExercise } from "./program";
-import { AthleteUser } from "../users/user";
-import { moveProgramExercise } from "./builder";
-import { MaxLift } from "../maxlifts/maxlift";
+import { AthleteUser } from "@/helpers/users/user";
+import { moveProgramExercise } from "@/helpers/programs/builder";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 
 /**
  * Creates a dummy default athlete
