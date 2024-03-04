@@ -20,7 +20,7 @@
 
         <!-- Max lift value -->
         <os-input
-          v-model="maxliftValues[index]"
+          v-model="maxlift.value"
           :suffix="getMaxliftUnit(maxlift.type)"
           :label="$t('coach.maxlift_management.fields.value')"
           type="number"
@@ -42,22 +42,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType } from "vue";
-import { QForm } from "quasar";
-import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import { ref, watch } from "vue";
+import type { QForm } from "quasar";
+import type { MaxLift } from "@/helpers/maxlifts/maxlift";
 import { getMaxliftUnit } from "@/helpers/maxlifts/utils";
 
 // Set props
-const props = defineProps({
-  maxlifts: {
-    type: Array as PropType<MaxLift[]>,
-    required: true,
-  },
-});
+const props = defineProps<{ maxlifts: MaxLift[]; clone?: boolean }>();
 
 // Set emits
 const emit = defineEmits<{
-  formSubmitted: [value: string[]];
+  submit: [maxlifts: MaxLift[]];
   reset: [];
 }>();
 
@@ -72,25 +67,31 @@ defineExpose({
 });
 
 // Set ref
-const formElement = ref<QForm>();
-const maxliftValues = ref<string[]>(
-  props.maxlifts
-    .map((maxlift) => maxlift.value)
-    .filter((value): value is string => typeof value === "string"),
+const maxlifts = ref<MaxLift[]>([]); // maxlifts that shall be updated
+const formElement = ref<QForm>(); // form element
+
+// Update maxlifts to input ones
+watch(
+  props.maxlifts,
+  (inMaxlifts) => {
+    maxlifts.value = props.clone
+      ? inMaxlifts.map((maxlift) => maxlift.duplicate(true))
+      : inMaxlifts;
+  },
+  { immediate: true },
 );
 
 /**
  * Perform operations on form submit.
  */
 function onSubmit() {
-  emit("formSubmitted", maxliftValues.value);
+  emit("submit", maxlifts.value);
 }
 
 /**
  * Perform operations on form reset.
  */
 function onReset() {
-  maxliftValues.value = [];
   emit("reset");
 }
 </script>

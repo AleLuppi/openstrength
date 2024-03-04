@@ -791,8 +791,9 @@
         </q-card-section>
         <FormMissingMaxlifts
           :maxlifts="missingMaxlifts ?? []"
+          clone
           @reset="showMissingMaxliftDialog = false"
-          @formSubmitted="updateMissingMaxliftValues"
+          @submit="createMissingMaxlifts"
         >
         </FormMissingMaxlifts>
       </q-card>
@@ -838,6 +839,7 @@ import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
 import { extractUniqueMaxliftFromProgram } from "@/helpers/programs/programTemplate";
 import { compareMaxliftLists } from "@/helpers/maxlifts/listManagement";
+import { arrayFilterUndefined } from "@/helpers/array";
 
 // Import components
 const ProgramBuilder = defineAsyncComponent(
@@ -917,8 +919,9 @@ const showProgramTemplateFilteredWarning = ref(false);
 const showProgramTemplateSaveDialog = ref(false);
 const showProgramTemplateImportDialog = ref(false);
 const showMissingMaxliftDialog = ref(false);
-const missingMaxliftsValues = ref<string[]>(); // FIXME
 const missingMaxlifts = ref<MaxLift[]>();
+const matchingMaxlifts = ref<[MaxLift, MaxLift][]>();
+const selectedTemplate = ref<Program>();
 
 // Set ref related to maxlift
 const updatingMaxlift = ref<MaxLift>();
@@ -1244,61 +1247,79 @@ function saveProgramTemplate(programTemplate: Program) {
   });
 }
 
-// FIXME Update values of the missing maxlifts from the emit
-function updateMissingMaxliftValues(missingValues: string[]) {
-  missingMaxliftsValues.value = missingValues;
+/**
+ * Create new instances for missing maxlifts from program template.
+ *
+ * After creation, they will be inserted into program during merge with template.
+ *
+ * @param maxlifts maxlifts that shall be created.
+ */
+function createMissingMaxlifts(maxlifts: MaxLift[]) {
+  // Add new matching maxlifts
+  const matches: [MaxLift, MaxLift][] = arrayFilterUndefined(
+    maxlifts.map((maxlift, idx) =>
+      (missingMaxlifts.value ?? [])[idx]
+        ? [maxlift, missingMaxlifts.value![idx]]
+        : undefined,
+    ),
+  );
+  matchingMaxlifts.value = (matchingMaxlifts.value ?? []).concat(matches);
+
+  // Save all the new maxlifts
+  coachInfo.maxlifts = coachInfo.maxlifts ?? [];
+  matches.forEach(([maxlift]) => {
+    maxlift.performedOn = new Date();
+    maxlift.athlete = selectedProgram.value?.athlete;
+    maxlift.save();
+    coachInfo.maxlifts!.push(maxlift);
+  });
+
+  // Complete template import
+  mergeProgramTemplate();
+  showMissingMaxliftDialog.value = false;
 }
 
 /**
  * Importing a program template into the current program instance.
+ *
+ * @param programTemplate program template that shall be merged into selected program.
  */
 async function importProgramTemplate(programTemplate?: Program) {
   // Abort if unknown program template
   if (!programTemplate) return;
+  selectedTemplate.value = programTemplate;
 
   // Get current destination program
   const destinationProgram = selectedProgram.value;
   if (!destinationProgram) return;
 
   // Get missing maxlifts in current program
-  const templateMaxlifts = extractUniqueMaxliftFromProgram(programTemplate);
   const destinationMaxlifts = athleteMaxlifts.value ?? [];
-  let matchingMaxlifts = [];
-  [, missingMaxlifts.value, matchingMaxlifts] = compareMaxliftLists(
+  const templateMaxlifts = extractUniqueMaxliftFromProgram(programTemplate);
+  [, missingMaxlifts.value, matchingMaxlifts.value] = compareMaxliftLists(
     destinationMaxlifts,
     templateMaxlifts,
   );
 
   // Optionally show dialog to fill missing maxlifts
-  if (missingMaxlifts.value && missingMaxlifts.value.length > 0) {
-    showMissingMaxliftDialog.value = true;
+  if (missingMaxlifts.value.length > 0) showMissingMaxliftDialog.value = true;
+  else mergeProgramTemplate();
+}
 
-    // FIXME check below
-
-    // After the form is submitted create the new maxlifts and assign them to the athlete
-    const maxliftValuesToAdd = missingMaxliftsValues.value;
-    const newMaxlifts: MaxLift[] = [];
-    if (maxliftValuesToAdd) {
-      missingMaxlifts.value.forEach((maxlift, index) => {
-        const newMaxlift = new MaxLift();
-        newMaxlift.exercise = maxlift.exercise;
-        newMaxlift.type = maxlift.type;
-        newMaxlift.value = maxliftValuesToAdd[index];
-        newMaxlift.performedOn = new Date();
-        newMaxlift.athlete = destinationProgram.value?.athlete;
-
-        // Save maxlift to DB
-        saveMaxlift(newMaxlift);
-
-        // TODO: qui bisogna sostituire nelle reference i maxlift creati (assicurandosi che abbiano un nuovo uid)
-
-        newMaxlifts.push(newMaxlift);
-      });
-    }
-  }
-
+/**
+ * Do merge program with program template via builder component.
+ */
+function mergeProgramTemplate() {
   // Complete merge
-  programBuilderElement.value?.merge(programTemplate, matchingMaxlifts);
+  programBuilderElement.value?.merge(
+    selectedTemplate.value,
+    matchingMaxlifts.value,
+  );
+
+  // Clear template values
+  selectedTemplate.value = undefined;
+  missingMaxlifts.value = undefined;
+  matchingMaxlifts.value = undefined;
 }
 
 /**
