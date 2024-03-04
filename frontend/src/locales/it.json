@@ -420,9 +420,11 @@
       "fields": {
         "program_info": "Info del programma template",
         "name": "Nome programma",
-        "description": "Note",
-        "import_title": "Programma da importare",
-        "select_program": "Seleziona programma"
+        "description": "Note"
+      },
+      "import": {
+        "missing_maxlifts_title": "Inserisci i massimali mancanti",
+        "missing_maxlifts_description": "Per completare l'importazione, inserisci i valori mancanti per l'atleta. Potrai modificarli in seguito nella schermata dei massimali."
       }
     },
     "maxlift_management": {

@@ -779,14 +779,22 @@
     </q-dialog>
 
     <!-- Dialog to insert missing maxlifts after program template import -->
-    <!-- TODO i18n -->
     <q-dialog v-model="showMissingMaxliftDialog">
       <q-card>
         <q-card-section class="row items-center">
-          <h6>Inserisci i massimali mancanti</h6>
+          <h6>
+            {{
+              $t(
+                "coach.programlibrary_management.import.missing_maxlifts_title",
+              )
+            }}
+          </h6>
           <p>
-            Questi valori servono per preservare i calcoli. Potrai comunque
-            cambiare dopo i valori inseriti
+            {{
+              $t(
+                "coach.programlibrary_management.import.missing_maxlifts_description",
+              )
+            }}
           </p>
         </q-card-section>
         <FormMissingMaxlifts

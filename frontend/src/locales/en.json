@@ -420,9 +420,11 @@
       "fields": {
         "program_info": "Template info",
         "name": "Program name",
-        "description": "Note",
-        "import_title": "Program to import",
-        "select_program": "Select a program"
+        "description": "Note"
+      },
+      "import": {
+        "missing_maxlifts_title": "Insert missing max lifts",
+        "missing_maxlifts_description": "To complete template import, insert missing values. You will be able to update them from the list of athlete's personal bests."
       }
     },
     "maxlift_management": {
