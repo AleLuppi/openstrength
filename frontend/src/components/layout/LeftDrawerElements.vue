@@ -19,7 +19,7 @@
 
       <!-- Icon over text on mini drawer -->
       <q-card v-else flat class="q-py-sm bg-inherit width-90">
-        <q-avatar :icon="page.icon" />
+        <q-avatar :icon="page.icon" size="lg" />
         <p>{{ $t(page.caption) }}</p>
       </q-card>
     </q-item>
@@ -45,9 +45,9 @@
         />
       </q-item-section>
       <q-item-section v-if="!props.mini">
-        <q-item-label>{{
-          $t("layout.views." + (user.isSignedIn ? "profile" : "signin"))
-        }}</q-item-label>
+        <q-item-label>
+          {{ $t("layout.views." + (user.isSignedIn ? "profile" : "signin")) }}
+        </q-item-label>
       </q-item-section>
 
       <!-- Icon over text on mini drawer -->
@@ -58,6 +58,7 @@
               ? 'fa-solid fa-circle-user'
               : 'fa-solid fa-right-to-bracket'
           "
+          size="lg"
         />
         <p>
           {{ $t("layout.views." + (user.isSignedIn ? "profile" : "signin")) }}
@@ -102,14 +103,14 @@ const allDrawerPages = [
     icon: "fa-solid fa-book",
   },
   {
-    route: NamedRoutes.program,
-    caption: "layout.views.program",
-    icon: "fa-solid fa-dumbbell",
-  },
-  {
     route: NamedRoutes.programLibrary,
     caption: "layout.views.programlibrary",
     icon: "fa-solid fa-sheet-plastic",
+  },
+  {
+    route: NamedRoutes.program,
+    caption: "layout.views.program",
+    icon: "fa-solid fa-dumbbell",
   },
 ];
 
