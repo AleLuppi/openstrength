@@ -364,7 +364,8 @@
         "new_program_submit": "Proceed",
         "open_recent": "Your recent programs",
         "open_from_recent": "or open a recent program",
-        "view_current": "View current program"
+        "view_current": "View current program", 
+        "compact_view": "Compact view"
       },
       "viewer": {
         "title": "Program for",

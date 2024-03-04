@@ -364,7 +364,8 @@
         "new_program_submit": "Procedi",
         "open_recent": "I tuoi programmi recenti",
         "open_from_recent": "oppure apri recente",
-        "view_current": "Visualizza programma"
+        "view_current": "Visualizza programma",
+        "compact_view": "Compatta"
       },
       "viewer": {
         "title": "Programma di",

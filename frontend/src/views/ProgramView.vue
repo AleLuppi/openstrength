@@ -47,6 +47,16 @@
               </span>
             </div>
 
+            <!-- Toggle compact program visibility -->
+            <q-toggle
+              v-if="
+                selectedProgram && !coachInfo.whatLoading.includes('program')
+              "
+              v-model="isBuilderCompact"
+              :label="$t('coach.program_management.builder.compact_view')"
+              class="q-px-lg"
+            ></q-toggle>
+
             <!-- Undo and redo -->
             <div>
               <q-btn
@@ -241,7 +251,15 @@
         </div>
 
         <!-- Show table to build program -->
+        <TableCompactProgram
+          v-show="isBuilderCompact === true"
+          v-if="selectedProgram && !coachInfo.whatLoading.includes('program')"
+          :program="selectedProgram"
+          class="q-px-lg q-py-md"
+        ></TableCompactProgram>
+
         <ProgramBuilder
+          v-show="isBuilderCompact === false"
           ref="programBuilderElement"
           v-if="selectedProgram && !coachInfo.whatLoading.includes('program')"
           :model-value="selectedProgram"
@@ -853,6 +871,9 @@ import { arrayFilterUndefined } from "@/helpers/array";
 const ProgramBuilder = defineAsyncComponent(
   () => import("@/components/ProgramBuilder.vue"),
 );
+const TableCompactProgram = defineAsyncComponent(
+  () => import("@/components/tables/TableCompactProgram.vue"),
+);
 const SkeletonTableProgramBuilder = defineAsyncComponent(
   () => import("@/components/skeletons/SkeletonTableProgramBuilder.vue"),
 );
@@ -921,6 +942,7 @@ const canRedo = ref(false);
 const deletingProgram = ref<Program>();
 const showDialogDeleteProgram = ref(false);
 const recentProgramsTableElement = ref<typeof TableExistingPrograms>();
+const isBuilderCompact = ref(false);
 
 // Set ref related to program templates
 const showProgramTemplateFilteredWarning = ref(false);
