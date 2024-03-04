@@ -67,22 +67,28 @@ const columns = computed(() => [
     field: "name",
     sortable: true,
   },
-  {
-    name: "startdate",
-    required: true,
-    label: i18n.t("common.start"),
-    align: "center",
-    field: "startdate",
-    sortable: true,
-  },
-  {
-    name: "enddate",
-    required: true,
-    label: i18n.t("common.end"),
-    align: "center",
-    field: "enddate",
-    sortable: true,
-  },
+
+  ...($q.screen.gt.sm
+    ? [
+        {
+          name: "startdate",
+          required: true,
+          label: i18n.t("common.start"),
+          align: "center",
+          field: "startdate",
+          sortable: true,
+        },
+        {
+          name: "enddate",
+          required: true,
+          label: i18n.t("common.end"),
+          align: "center",
+          field: "enddate",
+          sortable: true,
+        },
+      ]
+    : []),
+
   {
     name: "info",
     align: "center",

@@ -343,7 +343,7 @@
       <q-dialog v-model="showProgramInfoDialog">
         <q-card class="q-pa-sm dialog-min-width">
           <q-card-section class="row items-center q-pb-none">
-            <h6>{{ $t("coach.athlete_management.fields.program_title") }}</h6>
+            <h6>{{ $t("coach.athlete_management.fields.program_info") }}</h6>
             <q-space />
             <q-btn
               icon="close"
@@ -358,6 +358,9 @@
             <FormAthleteProgramInfo
               ref="athleteProgramFormElement"
               :program="athleteFormProgram"
+              :isCurrent="
+                selectedAthlete?.assignedProgramId === athleteFormProgram.uid
+              "
             />
           </q-card-section>
         </q-card>

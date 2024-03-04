@@ -2,7 +2,7 @@
   <q-form ref="formElement" @submit="onSubmit">
     <!-- Actual programs -->
     <div>
-      <div class="q-mb-md">
+      <div class="row q-mb-md">
         <q-btn
           outline
           :to="{ name: 'program', params: { programId: props.program.uid } }"
@@ -11,6 +11,15 @@
           class="q-mr-md"
           @click="registerProgramOpeningEvent()"
         ></q-btn>
+
+        <div v-if="props.isCurrent == true" class="column justify-center">
+          <q-badge
+            :label="$t('coach.athlete_management.fields.program_active')"
+            color="positive"
+            outline
+          >
+          </q-badge>
+        </div>
       </div>
 
       <div class="row q-col-gutter-x-md">
@@ -68,6 +77,10 @@ const i18n = useI18n();
 const props = defineProps({
   program: {
     type: Program,
+    required: true,
+  },
+  isCurrent: {
+    type: Boolean,
     required: true,
   },
   onSubmit: {

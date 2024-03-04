@@ -103,7 +103,9 @@ const rows = computed(() => {
     surname: athlete.surname,
     displayName: athlete.displayName,
     program: {
-      element: "chip",
+      element: "badge",
+      outline: false,
+      rounded: true,
       label: athlete.assignedProgramId
         ? i18n.t("coach.athlete_management.fields.program_ongoing")
         : i18n.t("coach.athlete_management.fields.program_unassigned"),
