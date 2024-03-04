@@ -935,14 +935,22 @@ function storeChanges(program?: Program) {
 }
 
 /**
- * Undo latest modification.
+ * Merge one program into selected one and store update.
  *
- * @returns true if more undos are possible, false otherwise.
+ * @param program program that will be merged into selected one.
+ * @param mapMaxlifts optional list of maxlifts to map from first program to second one.
  */
-function mergeWithProgram(program: Program) {
+function mergeWithProgram(
+  program: Program,
+  mapMaxlifts?: [MaxLift, MaxLift][],
+) {
   // Merge current program with provided one
   if (!selectedProgram.value) return;
-  mergePrograms(selectedProgram.value, program, true);
+  mergePrograms(
+    selectedProgram.value,
+    program,
+    mapMaxlifts ?? program.uid != selectedProgram.value.uid,
+  );
 
   // Inform parent of update
   updateProgram();

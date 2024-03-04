@@ -5,6 +5,9 @@ import {
 } from "@/helpers/programs/program";
 import { arrayFilterUndefined, arrayUniqueValues } from "@/helpers/array";
 import { moveProgramExercise } from "@/helpers/programs/builder";
+import { extractUniqueMaxliftFromProgram } from "@/helpers/programs/programTemplate";
+import { compareMaxliftLists } from "@/helpers/maxlifts/listManagement";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 
 /**
  * Sort program exercises according to week, day, order.
@@ -216,13 +219,25 @@ export function getProgramUniqueExercises(
  *
  * @param firstProgram destination program.
  * @param secondProgram program that will be merged into first one.
+ * @param mapMaxlifts if true, find matching maxlifts in the two program to merge them;
+ *                    can also be the list of matching maxlifts that should be mapped during merging.
  * @param [inplace=true] if true, merge exercises inside first program.
  */
 export function mergePrograms(
   firstProgram: Program,
   secondProgram: Program,
+  mapMaxlifts: [MaxLift, MaxLift][] | boolean = true,
   inplace: boolean = true,
 ): Program {
+  // Get matching maxlifts in the two program
+  let matchingMaxlifts: [MaxLift, MaxLift][] = [];
+  const firstMaxlifts = extractUniqueMaxliftFromProgram(firstProgram);
+  if (mapMaxlifts && typeof mapMaxlifts == "boolean") {
+    const secondMaxlifts = extractUniqueMaxliftFromProgram(secondProgram);
+    [, , matchingMaxlifts] = compareMaxliftLists(firstMaxlifts, secondMaxlifts);
+  } else if (mapMaxlifts) matchingMaxlifts = mapMaxlifts;
+
+  // Merge the two programs
   const outProgram = inplace ? firstProgram : firstProgram.duplicate();
   secondProgram.programExercises?.forEach((programExercise) => {
     if (
@@ -234,6 +249,31 @@ export function mergePrograms(
     moveProgramExercise(outProgram, programExercise, undefined, true, {
       sourceFallback: true,
       looseOrder: true,
+    });
+  });
+
+  // Merge known maxlifts
+  const searchingMaxlifts = matchingMaxlifts.map(
+    (maxliftPair) => maxliftPair[1],
+  );
+  outProgram.getLines()?.forEach((line) => {
+    (
+      ["loadReference", "repsReference"] as (
+        | "loadReference"
+        | "repsReference"
+      )[]
+    ).forEach((field) => {
+      if (line[field] instanceof MaxLift) {
+        const maxliftIdx = searchingMaxlifts.findIndex(
+          (maxlift) => maxlift == line[field],
+        );
+
+        // Match found: translate
+        if (maxliftIdx >= 0) line[field] = matchingMaxlifts[maxliftIdx][0];
+        // Unknown maxlift: delete
+        else if (!firstMaxlifts.includes(line[field] as MaxLift))
+          line[field] = undefined;
+      }
     });
   });
 

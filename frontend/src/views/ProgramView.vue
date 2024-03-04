@@ -1260,18 +1260,14 @@ async function importProgramTemplate(programTemplate?: Program) {
   const destinationProgram = selectedProgram.value;
   if (!destinationProgram) return;
 
-  // Get maxlifts from the two programs
-  const templateMaxlifts = extractUniqueMaxliftFromProgram(programTemplate);
-  const destinationMaxlifts =
-    extractUniqueMaxliftFromProgram(destinationProgram);
-
   // Get missing maxlifts in current program
-  [missingMaxlifts.value] = compareMaxliftLists(
-    templateMaxlifts,
+  const templateMaxlifts = extractUniqueMaxliftFromProgram(programTemplate);
+  const destinationMaxlifts = athleteMaxlifts.value ?? [];
+  let matchingMaxlifts = [];
+  [, missingMaxlifts.value, matchingMaxlifts] = compareMaxliftLists(
     destinationMaxlifts,
+    templateMaxlifts,
   );
-
-  // FIXME move from old maxlifts to new ones
 
   // Optionally show dialog to fill missing maxlifts
   if (missingMaxlifts.value && missingMaxlifts.value.length > 0) {
@@ -1302,7 +1298,7 @@ async function importProgramTemplate(programTemplate?: Program) {
   }
 
   // Complete merge
-  programBuilderElement.value?.merge(programTemplate);
+  programBuilderElement.value?.merge(programTemplate, matchingMaxlifts);
 }
 
 /**
