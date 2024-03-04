@@ -97,8 +97,8 @@ export function programToProgramTemplate(
   programTemplate.athlete = createDefaultAthleteInstance(program.coachId);
 
   // Apply filters if necessary
-  if (programFilter && program.programExercises)
-    filterProgram(program, programFilter, false, true);
+  if (programFilter && programTemplate.programExercises)
+    filterProgram(programTemplate, programFilter, false, true);
 
   return programTemplate;
 }
