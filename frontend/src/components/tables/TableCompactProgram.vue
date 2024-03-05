@@ -78,7 +78,7 @@ const columns = computed<QTableProps["columns"]>(() => [
     style: "width: 20%",
   },
   ...weekNames.value.map((weekName) => ({
-    name: weekName,
+    name: `week${weekName}`,
     label: "Week " + weekName,
     align: "left" as const,
     style: "width: 15%",
@@ -88,7 +88,7 @@ const columns = computed<QTableProps["columns"]>(() => [
 
 // Build table rows dinamically
 const rowsTotal = computed<{
-  [day: string]: { exercise: string; [week: string]: string }[];
+  [day: string]: { exercise: string; order: string; [week: string]: string }[];
 }>(() => compactProgramToRows(compactProgram.value));
 
 // Build table rows dynamically
@@ -119,12 +119,16 @@ const rows = computed<{
  * @returns flattened view of the compact program.
  */
 function compactProgramToRows(compactProgram: ProgramCompactView): {
-  [day: string]: { exercise: string; [week: string]: string }[];
+  [day: string]: { exercise: string; order: string; [week: string]: string }[];
 } {
   return compactProgram.reduce(
     (
       rows: {
-        [day: string]: { exercise: string; [week: string]: string }[];
+        [day: string]: {
+          exercise: string;
+          order: string;
+          [week: string]: string;
+        }[];
       },
       dayInfo,
     ) => {
@@ -132,13 +136,16 @@ function compactProgramToRows(compactProgram: ProgramCompactView): {
       if (!(dayInfo.day in rows)) rows[dayInfo.day] = [];
       dayInfo.exercises.forEach((compactExercise) => {
         let exerciseRow = rows[dayInfo.day].find(
-          (row) => row.exercise == compactExercise.exercise,
+          (row) => row.string == compactExercise.order,
         );
         if (!exerciseRow) {
-          exerciseRow = { exercise: compactExercise.exercise };
+          exerciseRow = {
+            exercise: compactExercise.exercise,
+            order: compactExercise.order,
+          };
           rows[dayInfo.day].push(exerciseRow);
         }
-        exerciseRow[dayInfo.week] = compactExercise.schemas.join(", ");
+        exerciseRow[`week${dayInfo.week}`] = compactExercise.schemas.join(", ");
       });
 
       return rows;

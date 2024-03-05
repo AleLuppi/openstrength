@@ -398,7 +398,7 @@
                 <q-separator />
 
                 <TableMaxLifts
-                  :maxlifts="athleteMaxlifts ?? []"
+                  :maxlifts="showingAthleteMaxlifts"
                   @update="onUpdateMaxLift"
                   :filter="searchMaxLift"
                   :no-data-label="
@@ -1018,6 +1018,20 @@ const athleteMaxlifts = computed(
       (maxlift) => maxlift.athlete?.uid == selectedProgram.value?.athleteId,
     ),
 );
+
+// For template program, only show maxlifts referenced in program
+const showingAthleteMaxlifts = computed(() => {
+  if (selectedProgram.value?.isTemplate) {
+    const programMaxliftsUid = extractUniqueMaxliftFromProgram(
+      selectedProgram.value,
+    ).map((maxlift) => maxlift.uid);
+    return (
+      athleteMaxlifts.value?.filter(
+        (maxlift) => maxlift.uid && programMaxliftsUid.includes(maxlift.uid),
+      ) ?? []
+    );
+  } else return athleteMaxlifts.value ?? [];
+});
 
 // Decide whether to display warning dialog on new program
 const showChangeProgramDialog = computed({
