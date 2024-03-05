@@ -141,7 +141,7 @@ export type ProgramLineProps = {
 /**
  * Frozen program object.
  */
-export type ProgramForzenView = {
+export type ProgramFrozenView = {
   athlete: string;
   name: string;
   description: string | undefined;
@@ -423,9 +423,9 @@ export class Program {
   }: {
     program?: Program;
     save?: boolean;
-  } = {}): ProgramForzenView {
+  } = {}): ProgramFrozenView {
     const programToFreeze = program ?? this;
-    const frozenView: ProgramForzenView = {
+    const frozenView: ProgramFrozenView = {
       athlete: programToFreeze.athlete?.referenceName ?? "",
       name: programToFreeze.name ?? "",
       description: programToFreeze.description,
@@ -1094,7 +1094,7 @@ export function addDocProgram(
  * @param onError function to execute when operation fails.
  */
 export function addDocProgramFrozen(
-  programView: ProgramForzenView,
+  programView: ProgramFrozenView,
   programId: string,
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
