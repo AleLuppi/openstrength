@@ -33,11 +33,13 @@ import {
 // Define props
 const props = defineProps<{
   program: Program;
-  filter: {
-    week: string[];
-    day: string[];
-    exercise: string[];
-  };
+  filter:
+    | {
+        week: string[];
+        day: string[];
+        exercise: string[];
+      }
+    | undefined;
 }>();
 
 // Get compact version of program
@@ -48,17 +50,21 @@ const compactProgram = computed(() =>
 // Get sorted week names
 const weekNames = computed<string[]>(() => {
   const weeks = getProgramUniqueWeeks(props.program);
-  return weeks.filter(
-    (wk) => props.filter.week.length == 0 || props.filter.week.includes(wk),
-  );
+  return props.filter
+    ? weeks.filter(
+        (wk) => props.filter.week.length == 0 || props.filter.week.includes(wk),
+      )
+    : weeks;
 });
 
 // Get sorted day names
 const dayNames = computed<string[]>(() => {
   const days = getProgramUniqueDays(props.program);
-  return days.filter(
-    (dd) => props.filter.day.length == 0 || props.filter.day.includes(dd),
-  );
+  return props.filter
+    ? days.filter(
+        (dd) => props.filter.day.length == 0 || props.filter.day.includes(dd),
+      )
+    : days;
 });
 
 // Build table columns dynamically
@@ -89,17 +95,21 @@ const rowsTotal = computed<{
 const rows = computed<{
   [day: string]: { exercise: string; [week: string]: string }[];
 }>(() =>
-  Object.keys(rowsTotal.value).reduce((acc: any, key) => {
-    const filteredDay = rowsTotal.value[key].filter(
-      (row) =>
-        props.filter.exercise.length == 0 ||
-        props.filter.exercise.some((filter) => row.exercise.includes(filter)),
-    );
-    if (filteredDay.length > 0) {
-      acc[key] = filteredDay;
-    }
-    return acc;
-  }, {}),
+  props.filter
+    ? Object.keys(rowsTotal.value).reduce((acc: any, key) => {
+        const filteredDay = rowsTotal.value[key].filter(
+          (row) =>
+            props.filter.exercise.length == 0 ||
+            props.filter.exercise.some((filter) =>
+              row.exercise.includes(filter),
+            ),
+        );
+        if (filteredDay.length > 0) {
+          acc[key] = filteredDay;
+        }
+        return acc;
+      }, {})
+    : rowsTotal.value,
 );
 
 /**
