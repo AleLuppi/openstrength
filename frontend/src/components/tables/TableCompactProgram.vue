@@ -71,7 +71,7 @@ const columns = computed<QTableProps["columns"]>(() => [
 
 // Build table rows dinamically
 const rows = computed<{
-  [day: string]: { exercise: string; [week: string]: string }[];
+  [day: string]: { exercise: string; order: string; [week: string]: string }[];
 }>(() => compactProgramToRows(compactProgram.value));
 
 /**
@@ -81,14 +81,14 @@ const rows = computed<{
  * @returns flattened view of the compact program.
  */
 function compactProgramToRows(compactProgram: ProgramCompactView): {
-  [day: string]: { exercise: string; order: number; [week: string]: string }[];
+  [day: string]: { exercise: string; order: string; [week: string]: string }[];
 } {
   return compactProgram.reduce(
     (
       rows: {
         [day: string]: {
           exercise: string;
-          order: number;
+          order: string;
           [week: string]: string;
         }[];
       },
@@ -98,7 +98,7 @@ function compactProgramToRows(compactProgram: ProgramCompactView): {
       if (!(dayInfo.day in rows)) rows[dayInfo.day] = [];
       dayInfo.exercises.forEach((compactExercise) => {
         let exerciseRow = rows[dayInfo.day].find(
-          (row) => row.order == compactExercise.order,
+          (row) => row.string == compactExercise.order,
         );
         if (!exerciseRow) {
           exerciseRow = {

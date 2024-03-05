@@ -205,7 +205,7 @@ export function convertProgramToCompactView(
     // Store exercise and its related schemas
     compactProgram.at(-1)!.exercises.push({
       exercise: exerciseFullName,
-      order: Number(order),
+      order: order,
       schemas:
         programExercise.lines?.map((line) => convertLineToSchema(line)) ?? [],
     });
