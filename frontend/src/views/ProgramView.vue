@@ -252,7 +252,7 @@
 
         <!-- Show table to build program -->
         <TableCompactProgram
-          v-show="isBuilderCompact === true"
+          v-show="isBuilderCompact"
           v-if="selectedProgram && !coachInfo.whatLoading.includes('program')"
           :program="selectedProgram"
           :filter="programFilter"
@@ -260,7 +260,7 @@
         ></TableCompactProgram>
 
         <ProgramBuilder
-          v-show="isBuilderCompact === false"
+          v-show="!isBuilderCompact"
           ref="programBuilderElement"
           v-if="selectedProgram && !coachInfo.whatLoading.includes('program')"
           :model-value="selectedProgram"

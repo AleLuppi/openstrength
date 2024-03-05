@@ -31,16 +31,17 @@ import {
 } from "@/helpers/programs/linesManagement";
 
 // Define props
-const props = defineProps<{
-  program: Program;
-  filter:
-    | {
-        week: string[];
-        day: string[];
-        exercise: string[];
-      }
-    | undefined;
-}>();
+const props = withDefaults(
+  defineProps<{
+    program: Program;
+    filter?: {
+      week: string[];
+      day: string[];
+      exercise: string[];
+    };
+  }>(),
+  { filter: () => ({ week: [], day: [], exercise: [] }) },
+);
 
 // Get compact version of program
 const compactProgram = computed(() =>
@@ -50,21 +51,17 @@ const compactProgram = computed(() =>
 // Get sorted week names
 const weekNames = computed<string[]>(() => {
   const weeks = getProgramUniqueWeeks(props.program);
-  return props.filter
-    ? weeks.filter(
-        (wk) => props.filter.week.length == 0 || props.filter.week.includes(wk),
-      )
-    : weeks;
+  return weeks.filter(
+    (week) => props.filter.week.length == 0 || props.filter.week.includes(week),
+  );
 });
 
 // Get sorted day names
 const dayNames = computed<string[]>(() => {
   const days = getProgramUniqueDays(props.program);
-  return props.filter
-    ? days.filter(
-        (dd) => props.filter.day.length == 0 || props.filter.day.includes(dd),
-      )
-    : days;
+  return days.filter(
+    (day) => props.filter.day.length == 0 || props.filter.day.includes(day),
+  );
 });
 
 // Build table columns dynamically
@@ -82,34 +79,31 @@ const columns = computed<QTableProps["columns"]>(() => [
     label: "Week " + weekName,
     align: "left" as const,
     style: "width: 15%",
-    field: weekName,
+    field: `week${weekName}`,
   })),
 ]);
 
-// Build table rows dinamically
-const rowsTotal = computed<{
+// Build table rows dynamically
+const allRows = computed<{
   [day: string]: { exercise: string; order: string; [week: string]: string }[];
 }>(() => compactProgramToRows(compactProgram.value));
 
-// Build table rows dynamically
+// Filter rows to only display filtered exercises
 const rows = computed<{
-  [day: string]: { exercise: string; [week: string]: string }[];
+  [day: string]: { exercise: string; order: string; [week: string]: string }[];
 }>(() =>
-  props.filter
-    ? Object.keys(rowsTotal.value).reduce((acc: any, key) => {
-        const filteredDay = rowsTotal.value[key].filter(
-          (row) =>
-            props.filter.exercise.length == 0 ||
-            props.filter.exercise.some((filter) =>
-              row.exercise.includes(filter),
+  Object.entries(allRows.value).reduce((out: any, [day, dayRows]) => {
+    const filteredExercises =
+      props.filter.exercise.length == 0
+        ? dayRows
+        : dayRows.filter((row) =>
+            props.filter.exercise.some(
+              (filter) => row.exercise.startsWith(filter), // TODO make more robust
             ),
-        );
-        if (filteredDay.length > 0) {
-          acc[key] = filteredDay;
-        }
-        return acc;
-      }, {})
-    : rowsTotal.value,
+          );
+    out[day] = filteredExercises;
+    return out;
+  }, {}),
 );
 
 /**

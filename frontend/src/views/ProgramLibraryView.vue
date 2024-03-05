@@ -127,7 +127,6 @@
           >
             <TableCompactProgram
               :program="selectedProgram"
-              :filter="undefined"
             ></TableCompactProgram>
           </q-card-section>
         </q-card>
