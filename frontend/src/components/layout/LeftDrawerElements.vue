@@ -8,6 +8,7 @@
       :to="{ name: page.route }"
       active-class="os-child-highlight-primary"
       class="link-child os-text-unselected"
+      :class="{ 'beta-feature': page.route == NamedRoutes.programLibrary }"
     >
       <!-- Icon near text on expanded drawer -->
       <q-item-section v-if="!props.mini" avatar>
@@ -142,5 +143,17 @@ const drawerPages = computed(() =>
 
 .os-text-unselected {
   color: $os-secondary-6;
+}
+
+.beta-feature::after {
+  content: "beta";
+  display: inline-block;
+  position: absolute;
+  top: 5px;
+  right: 3px;
+  background-color: $indigo-7;
+  color: white;
+  padding: 0 6px;
+  border-radius: 20px;
 }
 </style>
