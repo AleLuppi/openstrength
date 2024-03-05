@@ -81,12 +81,16 @@ const rows = computed<{
  * @returns flattened view of the compact program.
  */
 function compactProgramToRows(compactProgram: ProgramCompactView): {
-  [day: string]: { exercise: string; [week: string]: string }[];
+  [day: string]: { exercise: string; order: number; [week: string]: string }[];
 } {
   return compactProgram.reduce(
     (
       rows: {
-        [day: string]: { exercise: string; [week: string]: string }[];
+        [day: string]: {
+          exercise: string;
+          order: number;
+          [week: string]: string;
+        }[];
       },
       dayInfo,
     ) => {
@@ -94,10 +98,13 @@ function compactProgramToRows(compactProgram: ProgramCompactView): {
       if (!(dayInfo.day in rows)) rows[dayInfo.day] = [];
       dayInfo.exercises.forEach((compactExercise) => {
         let exerciseRow = rows[dayInfo.day].find(
-          (row) => row.exercise == compactExercise.exercise,
+          (row) => row.order == compactExercise.order,
         );
         if (!exerciseRow) {
-          exerciseRow = { exercise: compactExercise.exercise };
+          exerciseRow = {
+            exercise: compactExercise.exercise,
+            order: compactExercise.order,
+          };
           rows[dayInfo.day].push(exerciseRow);
         }
         exerciseRow[dayInfo.week] = compactExercise.schemas.join(", ");

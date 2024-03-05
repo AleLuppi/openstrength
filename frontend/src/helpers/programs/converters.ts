@@ -182,7 +182,7 @@ export function convertProgramToCompactView(
 
   Object.entries(orderedProgramExercises).forEach(([key, programExercise]) => {
     // Retrieve week, day, and exercise names
-    const [week, day] = key.split(".");
+    const [week, day, order] = key.split(".");
     const exerciseFullName =
       (programExercise?.exercise?.name ?? "") +
       (programExercise?.exerciseVariant?.name
@@ -205,6 +205,7 @@ export function convertProgramToCompactView(
     // Store exercise and its related schemas
     compactProgram.at(-1)!.exercises.push({
       exercise: exerciseFullName,
+      order: Number(order),
       schemas:
         programExercise.lines?.map((line) => convertLineToSchema(line)) ?? [],
     });

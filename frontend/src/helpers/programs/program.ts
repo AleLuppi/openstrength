@@ -172,6 +172,7 @@ export type ProgramCompactView = {
   day: string;
   exercises: {
     exercise: string;
+    order: number;
     schemas: string[];
   }[];
 }[];
