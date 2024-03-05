@@ -61,11 +61,11 @@ const columns = computed<QTableProps["columns"]>(() => [
     style: "width: 30%",
   },
   ...weekNames.value.map((weekName) => ({
-    name: weekName,
+    name: `week${weekName}`,
     label: "Week " + weekName,
     align: "left" as const,
     style: "width: 20%",
-    field: weekName,
+    field: `week${weekName}`,
   })),
 ]);
 
@@ -107,7 +107,7 @@ function compactProgramToRows(compactProgram: ProgramCompactView): {
           };
           rows[dayInfo.day].push(exerciseRow);
         }
-        exerciseRow[dayInfo.week] = compactExercise.schemas.join(", ");
+        exerciseRow[`week${dayInfo.week}`] = compactExercise.schemas.join(", ");
       });
 
       return rows;
