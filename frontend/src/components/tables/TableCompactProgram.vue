@@ -33,6 +33,11 @@ import {
 // Define props
 const props = defineProps<{
   program: Program;
+  filter: {
+    week: string[];
+    day: string[];
+    exercise: string[];
+  };
 }>();
 
 // Get compact version of program
@@ -42,12 +47,18 @@ const compactProgram = computed(() =>
 
 // Get sorted week names
 const weekNames = computed<string[]>(() => {
-  return getProgramUniqueWeeks(props.program);
+  const weeks = getProgramUniqueWeeks(props.program);
+  return weeks.filter(
+    (wk) => props.filter.week.length == 0 || props.filter.week.includes(wk),
+  );
 });
 
 // Get sorted day names
 const dayNames = computed<string[]>(() => {
-  return getProgramUniqueDays(props.program);
+  const days = getProgramUniqueDays(props.program);
+  return days.filter(
+    (dd) => props.filter.day.length == 0 || props.filter.day.includes(dd),
+  );
 });
 
 // Build table columns dynamically
@@ -58,21 +69,38 @@ const columns = computed<QTableProps["columns"]>(() => [
     label: "Exercise",
     align: "left",
     field: "exercise",
-    style: "width: 30%",
+    style: "width: 20%",
   },
   ...weekNames.value.map((weekName) => ({
     name: weekName,
     label: "Week " + weekName,
     align: "left" as const,
-    style: "width: 20%",
+    style: "width: 15%",
     field: weekName,
   })),
 ]);
 
 // Build table rows dinamically
-const rows = computed<{
+const rowsTotal = computed<{
   [day: string]: { exercise: string; [week: string]: string }[];
 }>(() => compactProgramToRows(compactProgram.value));
+
+// Build table rows dynamically
+const rows = computed<{
+  [day: string]: { exercise: string; [week: string]: string }[];
+}>(() =>
+  Object.keys(rowsTotal.value).reduce((acc: any, key) => {
+    const filteredDay = rowsTotal.value[key].filter(
+      (row) =>
+        props.filter.exercise.length == 0 ||
+        props.filter.exercise.some((filter) => row.exercise.includes(filter)),
+    );
+    if (filteredDay.length > 0) {
+      acc[key] = filteredDay;
+    }
+    return acc;
+  }, {}),
+);
 
 /**
  * Converts compact program to a flattened view.

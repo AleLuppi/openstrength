@@ -255,6 +255,7 @@
           v-show="isBuilderCompact === true"
           v-if="selectedProgram && !coachInfo.whatLoading.includes('program')"
           :program="selectedProgram"
+          :filter="programFilter"
           class="q-px-lg q-py-md"
         ></TableCompactProgram>
 
