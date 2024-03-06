@@ -163,12 +163,17 @@
           </q-slide-transition>
         </div>
         <osButtonSupport
-          :icons="['fa-regular fa-clone', 'fa-regular fa-trash-can']"
-          :colors="['lighter', 'lighter']"
-          :hover-colors="['info', 'negative']"
+          :icons="[
+            'fa-regular fa-clone',
+            'fa-regular fa-trash-can',
+            'sym_o_info',
+          ]"
+          :colors="['lighter', 'lighter', 'lighter']"
+          :hover-colors="['info', 'negative', 'info']"
           :tooltips="[
             $t('coach.program_management.builder.line_duplicate_in_day'),
             $t('coach.program_management.builder.line_delete'),
+            $t('coach.program_management.builder.view estimation'),
           ]"
           @click="
             (idx: number) => {
@@ -186,6 +191,8 @@
                 case 1:
                   emit('delete');
                   break;
+                case 2:
+                  console.log(programExercise.lines);
                 default:
                   break;
               }
