@@ -21,6 +21,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      
     - name: Setup Node.js 18
       uses: actions/setup-node@v4
       with:
@@ -28,17 +29,25 @@ jobs:
         cache: 'npm'
         cache-dependency-path: 'frontend/package-lock.json'
 
-    - name: Update package-lock.json and push
+    - name: Get package version
       run: |
-        npm install --package-lock-only
+        PACKAGE_VERSION=$(cat package.json | jq -r '.version')
+        echo "Package version $PACKAGE_VERSION"
 
-        if git diff --exit-code --name-only package-lock.json; then
+    - name: Update package-lock.json and config then push
+      run: |
+        npm install --package-lock-only # update version in package-lock
+
+        CONFIG_FILE="./src/boot/config.ts"
+        sed -i -E 's/\bversion\b\s*:\s*"v([^"]*)"/"$PACKAGE_VERSION"/g' $CONFIG_FILE
+
+        if git diff --exit-code --name-only -- package-lock.json $CONFIG_FILE; then
           echo "No change."
         else
-          echo "Ready to push"
-          # git config user.email "github-actions[bot]@users.noreply.github.com"
-          # git config user.name "github-actions[bot]"
-          # git add -f package-lock.json
-          # git commit -m "Update package-lock.json"
-          # git push
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add -f package-lock.json
+          git add -f $CONFIG_FILE
+          git commit -m "Update app version to $PACKAGE_VERSION"
+          git push
         fi
