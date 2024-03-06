@@ -2,14 +2,20 @@
  * Get the unique values in an array.
  *
  * @param array input vector.
- * @param sorted if true, also sort values, if function, apply a transformation to values for sorting purposes.
+ * @param [sorted=true] if true, also sort values, if function, apply a transformation to values for sorting purposes.
+ * @param [deep=false] if true, compare deep object values instead of loose instance comparison.
  * @returns a new array with only unique values.
  */
 export function arrayUniqueValues<T, R>(
   array: T[],
   sorted: boolean | ((val: T, arr: T[]) => R) = true,
+  deep: boolean = false,
 ): T[] {
-  const newArray = [...new Set(array)];
+  const newArray = deep
+    ? Object.values(
+        Object.fromEntries(array.map((v) => [JSON.stringify(v), v])),
+      )
+    : [...new Set(array)];
   if (sorted)
     return arraySort(
       newArray,
@@ -65,6 +71,7 @@ export function arrayCompare(arrayA: any[], arrayB: any[]) {
  *
  * @param array list of objects that shall be sorted.
  * @param field object's key whose paired value will be used to sort.
+ * @param [inplace=false] if true, sort array inplace.
  * @param [sortBy=(val) => val] optional transformation applied to values before comparing them.
  * @returns sorted array.
  */
@@ -75,4 +82,25 @@ export function arraySortObjectsByField<T extends object, R>(
   sortBy: (val: T[keyof T], arr: T[]) => R = (val) => val as R,
 ) {
   return arraySort(array, inplace, (val, arr) => sortBy(val[field], arr));
+}
+
+/**
+ * Transform an array of pairs into an object.
+ *
+ * @param array input array of pairs.
+ * @param [unique=false] if true, ensure list of values only contains unique values.
+ * @returns object having the first value in pairs as keys, and second value in pairs values (array).
+ */
+export function arrayOfPairsToObject<K extends string | number | symbol, V>(
+  array: [K, V][],
+  unique: boolean = false,
+): { [key in K]: V[] } {
+  return array.reduce(
+    (out, [key, value]) => {
+      if (unique) out[key] = arrayUniqueValues([...(out[key] ?? []), value]);
+      else out[key] = (out[key] ?? []).concat([value]);
+      return out;
+    },
+    {} as { [key in K]: V[] },
+  );
 }

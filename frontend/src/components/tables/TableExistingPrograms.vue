@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, PropType } from "vue";
+import { ref, computed, watch } from "vue";
 import { useQuasar } from "quasar";
 import { Program } from "@/helpers/programs/program";
 import { useI18n } from "vue-i18n";
@@ -32,74 +32,95 @@ const $q = useQuasar();
 const i18n = useI18n();
 
 // Define props
-const props = defineProps({
-  programs: {
-    type: Array as PropType<Program[]>,
-    required: true,
-  },
-  selected: {
-    type: Program,
-    required: false,
-  },
-  small: {
-    type: Boolean,
-    default: false,
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    programs: Program[];
+    selected?: Program;
+    showFields?: (keyof Program)[];
+    small?: boolean;
+    allowDelete?: boolean;
+  }>(),
+  { small: false, allowDelete: false },
+);
 
 // Define emits
 const emit = defineEmits<{
   selection: [evt: Event, row: Object, index: Number];
   "update:selected": [value?: Program];
+  delete: [program: Program];
 }>();
 
 // Set table columns
-const columns = computed(() => [
-  {
-    name: "name",
-    required: true,
-    label: i18n.t("coach.program_management.fields.program"),
-    align: "center",
-    field: "name",
-    sortable: true,
-  },
-  {
-    name: "athletename",
-    required: true,
-    label: i18n.t("coach.program_management.fields.athlete"),
-    align: "center",
-    field: "athletename",
-    sortable: true,
-  },
-  ...(!props.small
-    ? [
-        {
+const columns = computed(() => {
+  const showFields: (keyof Program)[] =
+    props.showFields ??
+    (props.small
+      ? ["name", "athlete"]
+      : ["name", "athlete", "startedOn", "finishedOn", "lastUpdated"]);
+  const outColumns = [];
+  showFields.forEach((key) => {
+    switch (key) {
+      case "name":
+        outColumns.push({
+          name: "name",
+          required: true,
+          label: i18n.t("coach.program_management.fields.program"),
+          align: "center",
+          field: "name",
+          sortable: true,
+        });
+        break;
+      case "athlete":
+        outColumns.push({
+          name: "athletename",
+          required: true,
+          label: i18n.t("coach.program_management.fields.athlete"),
+          align: "center",
+          field: "athletename",
+          sortable: true,
+        });
+        break;
+      case "startedOn":
+        outColumns.push({
           name: "startdate",
           required: true,
           label: i18n.t("common.start"),
           align: "center",
           field: "startdate",
           sortable: true,
-        },
-        {
+        });
+        break;
+      case "finishedOn":
+        outColumns.push({
           name: "enddate",
           required: true,
           label: i18n.t("common.end"),
           align: "center",
           field: "enddate",
           sortable: true,
-        },
-        {
+        });
+        break;
+      case "lastUpdated":
+        outColumns.push({
           name: "lastmodification",
           required: true,
           label: i18n.t("coach.program_management.fields.last_modification"),
           align: "center",
           field: "lastmodification",
           sortable: true,
-        },
-      ]
-    : []),
-]);
+        });
+        break;
+    }
+  });
+  if (props.allowDelete)
+    outColumns.push({
+      name: "delete",
+      align: "center",
+      label: "",
+      field: "delete",
+    });
+  return outColumns;
+});
 
 // Set table rows
 const rows = computed(() => {
@@ -119,6 +140,14 @@ const rows = computed(() => {
     lastmodification: program.lastUpdated
       ? i18n.d(program.lastUpdated, "middle")
       : "Not selected",
+    delete: {
+      element: "button",
+      on: { click: () => emit("delete", program) },
+      icon: "delete",
+      flat: true,
+      round: true,
+      color: "button-negative",
+    },
   }));
 });
 

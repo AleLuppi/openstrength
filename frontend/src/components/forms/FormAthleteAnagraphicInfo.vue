@@ -19,28 +19,12 @@
         />
 
         <!--Athlete Birthday-->
-        <os-input
+        <os-input-date
           v-model="athleteBirthday"
           :label="$t('coach.athlete_management.fields.birthday')"
           :readonly="readonly"
           class="col-md-auto col-sm-6 col-12"
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy
-                cover
-                transition-show="scale"
-                transition-hide="scale"
-              >
-                <q-date v-model="athleteBirthday">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </os-input>
+        ></os-input-date>
 
         <os-select
           v-model="athleteGender"

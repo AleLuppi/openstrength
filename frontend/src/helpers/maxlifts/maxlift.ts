@@ -179,6 +179,21 @@ export class MaxLift {
       maxliftToSave.saveUpdate({ onSuccess: onSuccess, onError: onError });
     else maxliftToSave.saveNew({ onSuccess: onSuccess, onError: onError });
   }
+
+  /**
+   * Duplicate maxlift.
+   *
+   * @param shallow avoid copying identifying fields such as uid and parent instance.
+   * @returns a new maxlift with duplicate fields.
+   */
+  duplicate(shallow: boolean = false) {
+    return new MaxLift({
+      ...this,
+      ...(shallow && {
+        uid: undefined,
+      }),
+    });
+  }
 }
 
 /**

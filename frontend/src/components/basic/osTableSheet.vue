@@ -35,7 +35,10 @@
     <template #body="props">
       <q-tr
         :props="props"
-        @click="($attrs.onRowClick as Function)?.(undefined, props.row)"
+        @click="
+          (event: Event) =>
+            ($attrs.onRowClick as Function)?.(event, props.row, props.rowIndex)
+        "
         class="os-tr-selected"
       >
         <q-td
@@ -94,6 +97,7 @@
             name="item"
             v-bind="{
               row: props.row,
+              rowIndex: props.rowIndex,
               col: col,
               value: props.row[col.name],
             }"

@@ -125,7 +125,7 @@ import {
   dbCollections,
   dbSubcollections,
 } from "@/helpers/database/collections";
-import { ProgramForzenView } from "@/helpers/programs/program";
+import { ProgramFrozenView } from "@/helpers/programs/program";
 
 // Init plugin
 const route = useRoute();
@@ -133,17 +133,17 @@ const $q = useQuasar();
 const i18n = useI18n();
 
 // Get correct program istance
-const programSnapshot = ref<ProgramForzenView>();
+const programSnapshot = ref<ProgramFrozenView>();
 watch(
   () => route.query.id,
   (docId) =>
     doGetDocs(
-      `${dbCollections.programs}/${docId}/${dbSubcollections.programsSnapshots}`,
+      `${dbCollections.programs}/${docId}/${dbSubcollections.programSnapshots}`,
       undefined,
       {
         ordering: ["-frozenOn"],
         numDocs: 1,
-        onSuccess: (docVal: { [key: string]: ProgramForzenView }) => {
+        onSuccess: (docVal: { [key: string]: ProgramFrozenView }) => {
           programSnapshot.value = Object.values(docVal)[0];
 
           // Hide loading spinner

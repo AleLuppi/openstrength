@@ -4,11 +4,11 @@
     <q-item
       v-for="page in drawerPages"
       :key="page.route"
-      clickable
       tag="a"
       :to="{ name: page.route }"
       active-class="os-child-highlight-primary"
       class="link-child os-text-unselected"
+      :class="{ 'beta-feature': page.route == NamedRoutes.programLibrary }"
     >
       <!-- Icon near text on expanded drawer -->
       <q-item-section v-if="!props.mini" avatar>
@@ -20,7 +20,7 @@
 
       <!-- Icon over text on mini drawer -->
       <q-card v-else flat class="q-py-sm bg-inherit width-90">
-        <q-avatar :icon="page.icon" />
+        <q-avatar :icon="page.icon" size="lg" />
         <p>{{ $t(page.caption) }}</p>
       </q-card>
     </q-item>
@@ -31,7 +31,7 @@
     <q-item
       clickable
       tag="a"
-      :to="{ name: user.isSignedIn ? 'profile' : 'login' }"
+      :to="{ name: user.isSignedIn ? NamedRoutes.profile : NamedRoutes.login }"
       active-class="os-child-highlight-primary"
       class="link-child os-text-unselected"
     >
@@ -46,9 +46,9 @@
         />
       </q-item-section>
       <q-item-section v-if="!props.mini">
-        <q-item-label>{{
-          $t("layout.views." + (user.isSignedIn ? "profile" : "signin"))
-        }}</q-item-label>
+        <q-item-label>
+          {{ $t("layout.views." + (user.isSignedIn ? "profile" : "signin")) }}
+        </q-item-label>
       </q-item-section>
 
       <!-- Icon over text on mini drawer -->
@@ -59,6 +59,7 @@
               ? 'fa-solid fa-circle-user'
               : 'fa-solid fa-right-to-bracket'
           "
+          size="lg"
         />
         <p>
           {{ $t("layout.views." + (user.isSignedIn ? "profile" : "signin")) }}
@@ -70,7 +71,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import router from "@/router";
+import router, { NamedRoutes } from "@/router";
 import { useUserStore } from "@/stores/user";
 import { routeAccessibleByUser } from "@/router/routeAccessManagement";
 
@@ -88,22 +89,27 @@ const user = useUserStore();
 // Set navigation in drawer
 const allDrawerPages = [
   {
-    route: "home",
+    route: NamedRoutes.home,
     caption: "layout.views.home",
     icon: "fa-solid fa-house-chimney",
   },
   {
-    route: "athletes",
+    route: NamedRoutes.athletes,
     caption: "layout.views.athletes",
     icon: "fa-solid fa-users",
   },
   {
-    route: "library",
+    route: NamedRoutes.exerciseLibrary,
     caption: "layout.views.library",
     icon: "fa-solid fa-book",
   },
   {
-    route: "program",
+    route: NamedRoutes.programLibrary,
+    caption: "layout.views.programlibrary",
+    icon: "fa-solid fa-sheet-plastic",
+  },
+  {
+    route: NamedRoutes.program,
     caption: "layout.views.program",
     icon: "fa-solid fa-dumbbell",
   },
@@ -115,7 +121,10 @@ const drawerPages = computed(() =>
     const route = router
       .getRoutes()
       .find((route) => String(route.name) == page.route);
-    return route && routeAccessibleByUser(user, route);
+    return (
+      route &&
+      (routeAccessibleByUser(user, route) || route.name == NamedRoutes.home)
+    );
   }),
 );
 </script>
@@ -133,6 +142,18 @@ const drawerPages = computed(() =>
 }
 
 .os-text-unselected {
-  color: $os-secondary-6 !important;
+  color: $os-secondary-6;
+}
+
+.beta-feature::after {
+  content: "beta";
+  display: inline-block;
+  position: absolute;
+  top: 5px;
+  right: 3px;
+  background-color: $indigo-7;
+  color: white;
+  padding: 0 6px;
+  border-radius: 20px;
 }
 </style>

@@ -1,3 +1,5 @@
+import { inspect } from "util";
+
 /**
  * Check if an object has no key-value pairs.
  *
@@ -113,7 +115,7 @@ export function objectPop<T extends object>(obj: T, key?: keyof T) {
  * @returns value associated to just popped key.
  */
 export function objectDeepCompare(objA: object, objB: object) {
-  return JSON.stringify(objA) === JSON.stringify(objB);
+  return JSON.stringify(inspect(objA)) === JSON.stringify(inspect(objB));
 }
 
 /**
@@ -124,4 +126,20 @@ export function objectDeepCompare(objA: object, objB: object) {
  */
 export function objectDeepCopy<T extends object>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
+}
+
+/**
+ * Deep convert a specific object value to a new one.
+ *
+ * @param obj object that shall be checked.
+ * @param from original value that must be substituted.
+ * @param to value that replaces the original one.
+ * @returns
+ */
+export function objectDeepValueToValue<T extends object>(
+  obj: T,
+  from: any,
+  to: any,
+): T {
+  return JSON.parse(JSON.stringify(obj, (k, v) => (v === from ? to : v)));
 }

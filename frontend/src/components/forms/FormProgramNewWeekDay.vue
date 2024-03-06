@@ -8,6 +8,7 @@
     <h6 v-if="title" class="q-ma-none text-sm">{{ title }}</h6>
     <div class="row items-center">
       <q-input
+        v-if="!single || single == 'week'"
         autofocus
         dense
         v-model="scope.value[0]"
@@ -19,6 +20,7 @@
         hide-bottom-space
       />
       <q-input
+        v-if="!single || single == 'day'"
         dense
         v-model="scope.value[1]"
         :prefix="$t('coach.program_management.builder.day_name')"
@@ -46,7 +48,12 @@ import { objectDeepCompare } from "@/helpers/object";
 import type { QPopupEditProps } from "quasar";
 
 // Define props and emits
-const props = defineProps<QPopupEditProps & { forceSave?: boolean }>();
+const props = withDefaults(
+  defineProps<
+    QPopupEditProps & { forceSave?: boolean; single?: false | "week" | "day" }
+  >(),
+  { single: false },
+);
 const emit = defineEmits<{
   save: [value: any, initialValue: any];
 }>();

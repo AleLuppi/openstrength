@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { matchNumberUnsignedInteger } from "@/helpers/regex";
 import { arrayUniqueValues } from "@/helpers/array";
 
@@ -14,7 +15,93 @@ export function numberClamp(num: number, min: number, max: number) {
   return Math.min(Math.max(num, min), max);
 }
 
+/**
+ * Round a number preserving a selected number of digits.
+ *
+ * @param num number to round.
+ * @param ndigits how many digits to keep.
+ * @returns rounded decimal number.
+ */
+export function numberRoundToDecimal(num: number, ndigits: number = 0) {
+  const factor = Math.pow(10, Math.max(Math.floor(ndigits), 0));
+  return Math.round(num * factor) / factor;
+}
+
 // ----- Functions related to Date -----
+
+/**
+ * Get date format according to locale.
+ *
+ * Date format should be something similar to "dd/mm/yyyy",
+ * where "d" is day number, "m" is month number, "y" is year number.
+ *
+ * @param [opt="short"] localization date representation option.
+ * @returns date format as string.
+ */
+export function dateGetLocaleFormat(
+  opt: "short" | "middle" | "long" = "short",
+): string {
+  return dateToStringLocale("4567-10-23", opt)
+    .replace(/[4-7]/g, "y")
+    .replace(/[01]/g, "m")
+    .replace(/[23]/g, "d");
+}
+
+/**
+ * Get date mask according to locale.
+ *
+ * Date mask should be something similar to "##/##/####".
+ *
+ * @param [opt="short"] localization date representation option.
+ * @returns date format as string.
+ */
+export function dateGetLocaleMask(
+  opt: "short" | "middle" | "long" = "short",
+): string {
+  return dateGetLocaleFormat(opt).replace(/[ymd]/gi, "#");
+}
+
+/**
+ * Translate a date into a string according to localization.
+ *
+ * @param date date that shall be confirmed.
+ * @param [opt="short"] localization date representation option.
+ * @returns date format as string.
+ */
+export function dateToStringLocale(
+  date: Date | string | number,
+  opt: "short" | "middle" | "long" = "short",
+) {
+  return i18n.global.d(date, opt);
+}
+
+/**
+ * Parse a string into a date according to localization.
+ *
+ * @param strDate string representing the date to parse.
+ * @param [opt="short"] localization date representation option.
+ * @returns date format as string or null if invalid date.
+ */
+export function dateFromStringLocale(
+  strDate: string,
+  opt: "short" | "middle" | "long" = "short",
+): Date | null {
+  const format = dateGetLocaleFormat(opt);
+  const dateInfo = [...format.toLowerCase()].reduce(
+    (out: { y: string; m: string; d: string }, char, idx) => {
+      if (["y", "m", "d"].includes(char))
+        out[char as "y" | "m" | "d"] += strDate[idx];
+      return out;
+    },
+    { y: "", m: "", d: "" },
+  );
+  const date = new Date(
+    Number(dateInfo["y"]),
+    Number(dateInfo["m"]) - 1,
+    Number(dateInfo["d"]),
+  );
+  return date.getFullYear() ? date : null;
+}
 
 /**
  * Clean a date from its timezone offset.

@@ -110,7 +110,7 @@
     <p>
       <span>Luogo del trattamento: Italia &ndash; </span
       ><span>
-        <router-link :to="{ name: 'privacy_policy' }"
+        <router-link :to="{ name: NamedRoutes.privacyPolicy }"
           >Privacy Policy
         </router-link> </span
       ><span>.</span>
@@ -664,3 +664,7 @@
     <p><span></span></p>
   </q-page>
 </template>
+
+<script setup lang="ts">
+import { NamedRoutes } from "@/router";
+</script>
