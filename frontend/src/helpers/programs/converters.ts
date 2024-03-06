@@ -1,7 +1,8 @@
 import {
   Program,
   ProgramLine,
-  ProgramForzenView,
+  ProgramFrozenView,
+  ProgramCompactView,
 } from "@/helpers/programs/program";
 import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { MaxLift } from "../maxlifts/maxlift";
@@ -113,7 +114,7 @@ export function convertLineToSchema(line: ProgramLine): string {
  */
 export function convertProgramToDayBlocks(
   program: Program,
-): ProgramForzenView["weekdays"] {
+): ProgramFrozenView["weekdays"] {
   // Check input
   if (!program.programExercises) return [];
 
@@ -122,14 +123,14 @@ export function convertProgramToDayBlocks(
     program.programExercises,
     (week, day, order) => [week, day, order].join("."),
   );
-  const out: ProgramForzenView["weekdays"] = [];
+  const out: ProgramFrozenView["weekdays"] = [];
 
   Object.entries(programExercises).forEach(([key, programExercise]) => {
     // Retrieve week and day values
     const [week, day] = key.split(".");
 
     // Get interesting exercise info
-    const exerciseInfo: ProgramForzenView["weekdays"][number]["exercises"][number] =
+    const exerciseInfo: ProgramFrozenView["weekdays"][number]["exercises"][number] =
       {
         exerciseName: programExercise?.exercise?.name ?? "",
         variantName: programExercise?.exerciseVariant?.name ?? "",
@@ -159,4 +160,56 @@ export function convertProgramToDayBlocks(
   });
 
   return out;
+}
+
+/**
+ * Converts program to an array of daily exercises.
+ *
+ * @param program program that shall be converted.
+ * @returns list of program days with relevant exercise info.
+ */
+export function convertProgramToCompactView(
+  program: Program,
+): ProgramCompactView {
+  const compactProgram: ProgramCompactView = [];
+
+  if (!program.programExercises) return compactProgram;
+
+  const orderedProgramExercises = orderProgramExercises(
+    program.programExercises,
+    (week, day, order) => [week, day, order].join("."),
+  );
+
+  Object.entries(orderedProgramExercises).forEach(([key, programExercise]) => {
+    // Retrieve week, day, and exercise names
+    const [week, day, order] = key.split(".");
+    const exerciseFullName =
+      (programExercise?.exercise?.name ?? "") +
+      (programExercise?.exerciseVariant?.name
+        ? " - " + programExercise?.exerciseVariant?.name
+        : "");
+
+    // Optionally add a new day to list
+    if (
+      !(
+        compactProgram.at(-1)?.week === week &&
+        compactProgram.at(-1)?.day === day
+      )
+    )
+      compactProgram.push({
+        week: week,
+        day: day,
+        exercises: [],
+      });
+
+    // Store exercise and its related schemas
+    compactProgram.at(-1)!.exercises.push({
+      exercise: exerciseFullName,
+      order: order,
+      schemas:
+        programExercise.lines?.map((line) => convertLineToSchema(line)) ?? [],
+    });
+  });
+
+  return compactProgram;
 }

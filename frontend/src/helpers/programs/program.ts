@@ -52,6 +52,7 @@ export type ProgramProps = {
   isAssigned?: boolean;
   isOngoing?: boolean;
   isCompleted?: boolean;
+  isTemplate?: boolean;
 };
 
 /**
@@ -140,12 +141,13 @@ export type ProgramLineProps = {
 /**
  * Frozen program object.
  */
-export type ProgramForzenView = {
+export type ProgramFrozenView = {
   athlete: string;
   name: string;
   description: string | undefined;
   startedOn: Date | undefined;
   finishedOn: Date | undefined;
+  isTemplate: boolean;
   weekdays: {
     weekName: string;
     dayName: string;
@@ -161,6 +163,19 @@ export type ProgramForzenView = {
   }[];
   frozenOn: Date;
 };
+
+/**
+ * Compact program object.
+ */
+export type ProgramCompactView = {
+  week: string;
+  day: string;
+  exercises: {
+    exercise: string;
+    order: string;
+    schemas: string[];
+  }[];
+}[];
 
 /**
  * Training program entity.
@@ -209,6 +224,11 @@ export class Program {
   public get isCompleted() {
     // Program is ongoing if it has been started but not finished yet
     return Boolean(this.finishedOn);
+  }
+
+  // Program is a template if athlete is dummy
+  public get isTemplate() {
+    return Boolean(!this.athlete || this.athlete.isDummy);
   }
 
   constructor({
@@ -404,15 +424,16 @@ export class Program {
   }: {
     program?: Program;
     save?: boolean;
-  } = {}): ProgramForzenView {
+  } = {}): ProgramFrozenView {
     const programToFreeze = program ?? this;
-    const frozenView: ProgramForzenView = {
+    const frozenView: ProgramFrozenView = {
       athlete: programToFreeze.athlete?.referenceName ?? "",
       name: programToFreeze.name ?? "",
       description: programToFreeze.description,
       startedOn: programToFreeze.startedOn,
       finishedOn: programToFreeze.finishedOn,
       weekdays: convertProgramToDayBlocks(programToFreeze),
+      isTemplate: programToFreeze.isTemplate ?? false,
       frozenOn: new Date(),
     };
     if (save && programToFreeze.uid)
@@ -1074,7 +1095,7 @@ export function addDocProgram(
  * @param onError function to execute when operation fails.
  */
 export function addDocProgramFrozen(
-  programView: ProgramForzenView,
+  programView: ProgramFrozenView,
   programId: string,
   { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
 ) {
