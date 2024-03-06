@@ -39,7 +39,9 @@ jobs:
         npm install --package-lock-only # update version in package-lock
 
         CONFIG_FILE="./src/boot/config.ts"
-        sed -i -E 's/\bversion\b\s*:\s*"v([^"]*)"/"$PACKAGE_VERSION"/g' $CONFIG_FILE
+        if sed -i -E 's/\bversion\b\s*:\s*"v([^"]*)"/"$PACKAGE_VERSION"/g' $CONFIG_FILE; then
+          git diff -U0 -- $CONFIG_FILE | grep -Po '(?<=^\+)(?!\+\+).*'
+        fi
 
         if git diff --exit-code --name-only -- package-lock.json $CONFIG_FILE; then
           echo "No change."
@@ -48,6 +50,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git add -f package-lock.json
           git add -f $CONFIG_FILE
-          git commit -m "Update app version to $PACKAGE_VERSION"
-          git push
+          git status
+          #git commit -m "Update app version to $PACKAGE_VERSION"
+          #git push
         fi
