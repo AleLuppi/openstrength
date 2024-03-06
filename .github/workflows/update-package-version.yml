@@ -41,7 +41,7 @@ jobs:
 
         # update version in app config
         CONFIG_FILE="./src/boot/config.ts"
-        if sed -i -E "s/\bversion\b\s*:\s*\"v([^"]*)\"/$PACKAGE_VERSION/g" $CONFIG_FILE; then
+        if sed -i -E "s/\bversion\b\s*:\s*\"v([^\"]*)\"/$PACKAGE_VERSION/g" $CONFIG_FILE; then
           git diff -U0 -- $CONFIG_FILE | grep -Po '(?<=^\+)(?!\+\+).*'
         fi
 
