@@ -36,13 +36,16 @@ jobs:
 
     - name: Update package-lock.json and config then push
       run: |
-        npm install --package-lock-only # update version in package-lock
+        # update version in package-lock
+        npm install --no-audit --package-lock-only
 
+        # update version in app config
         CONFIG_FILE="./src/boot/config.ts"
-        if sed -i -E 's/\bversion\b\s*:\s*"v([^"]*)"/"$PACKAGE_VERSION"/g' $CONFIG_FILE; then
+        if sed -i -E "s/\bversion\b\s*:\s*\"v([^"]*)\"/$PACKAGE_VERSION/g" $CONFIG_FILE; then
           git diff -U0 -- $CONFIG_FILE | grep -Po '(?<=^\+)(?!\+\+).*'
         fi
 
+        # commit changes
         if git diff --exit-code --name-only -- package-lock.json $CONFIG_FILE; then
           echo "No change."
         else
