@@ -1,0 +1,45 @@
+# This workflow will update package version number throughout the project
+# and create a tag with matching version number on main branch.
+
+name: Update Package Version
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Update package-lock.json and push
+      run: |
+        cd frontend
+        npm install --package-lock-only
+
+        if git diff --exit-code --name-only package-lock.json; then
+          echo "No change."
+        else
+          echo "Ready to push"
+          # git config user.email "github-actions[bot]@users.noreply.github.com"
+          # git config user.name "github-actions[bot]"
+          # git add -f package-lock.json
+          # git commit -m "Update package-lock.json"
+          # git push
+        fi
