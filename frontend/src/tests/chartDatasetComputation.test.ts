@@ -4,7 +4,7 @@ import {
   calculateRepsFromTable,
   calculateRpeFromTable,
   estimateMissingLineProps,
-} from "../chartDatasetComputations";
+} from "@/helpers/charts/chartDatasetComputations";
 import { ProgramLine } from "@/helpers/programs/program";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
 
