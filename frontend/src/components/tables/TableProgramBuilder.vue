@@ -427,6 +427,7 @@ import {
   getExerciseByName,
   getExerciseVariantByName,
 } from "@/helpers/exercises/listManagement";
+import { arrayPushToNullable } from "@/helpers/array";
 
 // Import components
 const FormProgramNewWeekDay = defineAsyncComponent(
@@ -503,10 +504,18 @@ const exerciseData = computed({
       ? programLinesToTable(programExercise.value.lines)
       : [],
   set: (data) => {
-    programExercise.value.lines = tableToProgramLines(
-      data,
-      programExercise.value,
-    );
+    const lines = tableToProgramLines(data, programExercise.value);
+    lines.forEach((line, idx) => {
+      if (programExercise.value.lines?.[idx])
+        Object.assign(programExercise.value.lines[idx], line);
+      else
+        programExercise.value.lines = arrayPushToNullable(
+          programExercise.value.lines,
+          line,
+        );
+    });
+    if (programExercise.value.lines)
+      programExercise.value.lines.length = lines.length;
     emitProgramExercise();
   },
 });

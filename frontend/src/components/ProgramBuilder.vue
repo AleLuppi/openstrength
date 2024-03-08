@@ -778,7 +778,7 @@ function moveDay(
     isSourceEmpty = false;
   });
 
-  // Optionally add a table is source is empty
+  // Optionally add a table if source is empty
   if (createIfEmpty && isSourceEmpty) {
     addExercise([toWeek, toDay]);
 
