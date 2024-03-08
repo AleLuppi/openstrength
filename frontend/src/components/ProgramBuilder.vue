@@ -55,7 +55,7 @@
           <div class="q-pl-sm">
             <!-- Duplicate week -->
             <q-btn
-              @click="editWeekDayName = ['', '']"
+              @click.stop="editWeekDayName = ['', '']"
               icon="fa-regular fa-clone"
               size="sm"
               color="dark-light"
@@ -87,7 +87,7 @@
 
             <!-- Delete week -->
             <q-btn
-              @click="deleteWeek(week)"
+              @click.stop="deleteWeek(week)"
               icon="fa-regular fa-trash-can"
               size="sm"
               color="dark-light"
