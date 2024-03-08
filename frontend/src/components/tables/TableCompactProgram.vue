@@ -130,7 +130,7 @@ function compactProgramToRows(compactProgram: ProgramCompactView): {
       if (!(dayInfo.day in rows)) rows[dayInfo.day] = [];
       dayInfo.exercises.forEach((compactExercise) => {
         let exerciseRow = rows[dayInfo.day].find(
-          (row) => row.string == compactExercise.order,
+          (row) => row.order == compactExercise.order,
         );
         if (!exerciseRow) {
           exerciseRow = {
