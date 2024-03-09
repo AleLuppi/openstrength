@@ -79,7 +79,6 @@ const oldData = ref(false);
 // Set constants
 const chartDescriptions: OSChartDescriptor[] = [
   // TODO i18n
-
   {
     chartType: OSChartType.Volume,
     chartVersion: OSChartVersion.TotalVolume,
@@ -101,7 +100,9 @@ const chartDescriptions: OSChartDescriptor[] = [
     chartTitle: i18n.t("coach.charts_management.list.tot_sets_title"),
     chartDescription: i18n.t("coach.charts_management.list.tot_sets_desc"),
   },
-  /* {
+
+  /* TODO
+  {
     chartType: OSChartType.Intensity,
     chartVersion: OSChartVersion.MaxIntensityKg,
     xAxisType: OSAvailableXType.Weeks,
@@ -116,7 +117,8 @@ const chartDescriptions: OSChartDescriptor[] = [
     chartTitle: "Average intensity varying weeks",
     chartDescription:
       "Average intensity used in the weeks [kg]. Note: values set as % are computed only if referred to something",
-  }, */
+  },
+  */
 ];
 
 // Inform user of old data when filters gets updated

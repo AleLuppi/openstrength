@@ -171,8 +171,6 @@ export function computeDataForExercise(
           String(day),
         );
 
-        //let estimatedLines = computeLines(lines);
-
         totalValueForDay += calculationFunction(lines) ?? 0;
       });
 

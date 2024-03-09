@@ -1,4 +1,3 @@
-//import { max } from "moment";
 import { ExerciseLoadType } from "@/helpers/exercises/exercise";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import { ProgramLine } from "@/helpers/programs/program";
@@ -331,9 +330,10 @@ export function calculateTotalVolume(programLines: ProgramLine[]): number {
 
 /*********** INTENSITY CALCULATIONS *************/
 /**
- * This method compute the max intensity in kg
- * @param programLines
- * @returns
+ * Compute the max intensity in kg.
+ *
+ * @param programLines lines from which max intensity shall be retrieved.
+ * @returns max intensity.
  */
 export function calculateMaxIntensityKg(programLines: ProgramLine[]): number {
   if (programLines.length === 0) {
@@ -351,9 +351,10 @@ export function calculateMaxIntensityKg(programLines: ProgramLine[]): number {
 }
 
 /**
- * This method compute the max intensity in %
- * @param programLines
- * @returns
+ * Compute the average intensity in percentage.
+ *
+ * @param programLines lines from which average intensity shall be retrieved.
+ * @returns average intensity.
  */
 export function calculateAverageIntensityKg(
   programLines: ProgramLine[],

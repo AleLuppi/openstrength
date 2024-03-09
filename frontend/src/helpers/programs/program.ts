@@ -25,11 +25,6 @@ import {
   matchNumberUnsignedFloatWithOptionalUnit,
   matchNumberUnsignedInteger,
 } from "@/helpers/regex";
-/* import {
-  calculateRepsFromTable,
-  calculateRpeFromTable,
-  rpeRepsTable,
-} from "../charts/chartDatasetComputations"; */
 import { convertProgramToDayBlocks } from "@/helpers/programs/converters";
 
 /**
@@ -646,8 +641,7 @@ export class ProgramLine {
         // Ensure the computed value is between 0 and 10
         return Math.max(0, Math.min(10, computedValue));
       }
-    }
-    else return undefined;
+    } else return undefined;
   }
 
   // Operations
