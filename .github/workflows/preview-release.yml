@@ -1,0 +1,22 @@
+# This workflow will create a preview url whenever a push is made
+# to the release branch, that collects changes ready for deploy.
+
+name: Preview release
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  build_and_preview:
+    if: "${{ github.event.pull_request.head.repo.full_name == github.repository }}"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci && npm run build
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_OPENSTRENGTH }}"
+          projectId: openstrength

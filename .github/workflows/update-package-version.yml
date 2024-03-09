@@ -1,62 +1,83 @@
 # This workflow will update package version number throughout the project
 # and create a tag with matching version number on main branch.
+# If necessary, a new tag will be created from new package version.
 
 name: Update Package Version
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
 
 jobs:
-  build:
-
+  job-update:
     runs-on: ubuntu-latest
 
     defaults:
       run:
-        working-directory: 'frontend'
+        working-directory: "frontend"
+
+    outputs:
+      package-version: ${{ steps.update-version.outputs.PACKAGE_VERSION }}
+      require-tag: ${{ steps.update-version.outputs.REQUIRE_TAG }}
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js 18
-      uses: actions/setup-node@v4
-      with:
-        node-version: 18
-        cache: 'npm'
-        cache-dependency-path: 'frontend/package-lock.json'
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Get package version
-      id: package-version
-      run: |
-        PACKAGE_VERSION=$(cat package.json | jq -r '.version')
-        echo "Package version $PACKAGE_VERSION"
-        echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+          cache-dependency-path: "frontend/package-lock.json"
 
-    - name: Update package-lock.json and config then push
-      env:
+      - name: Get package version
+        id: package-version
+        run: |
+          PACKAGE_VERSION=$(cat package.json | jq -r '.version')
+          echo "Package version $PACKAGE_VERSION"
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Update package-lock.json and config then push
+        id: update-version
+        env:
           PACKAGE_VERSION: ${{ steps.package-version.outputs.PACKAGE_VERSION }}
-      run: |
-        # update version in package-lock
-        npm install --no-audit --no-fund --package-lock-only
+        run: |
+          # update version in package-lock
+          npm install --no-audit --no-fund --package-lock-only
 
-        # update version in app config
-        CONFIG_FILE="./src/boot/config.ts"
-        if sed -i -E "s/(\bversion\b\s*:\s*\"v)[^\"]*\"/\1$PACKAGE_VERSION\"/g w /dev/stdout" $CONFIG_FILE; then
-          git diff -U0 -- $CONFIG_FILE
-        fi
+          # update version in app config
+          CONFIG_FILE="./src/boot/config.ts"
+          if sed -i -E "s/(\bversion\b\s*:\s*\"v)[^\"]*\"/\1$PACKAGE_VERSION\"/g w /dev/stdout" $CONFIG_FILE; then
+            git diff -U0 -- $CONFIG_FILE
+          fi
 
-        # commit changes
-        if git diff --exit-code --name-only -- package-lock.json $CONFIG_FILE; then
-          echo "No change."
-        else
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          git add -f package-lock.json
-          git add -f $CONFIG_FILE
-          git commit -m "Update app version to $PACKAGE_VERSION"
-          git push
-        fi
+          # commit changes
+          if git diff --exit-code --name-only -- package-lock.json $CONFIG_FILE; then
+            echo "No change."
+          else
+            echo "REQUIRE_TAG=yes" >> "$GITHUB_OUTPUT"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git config user.name "github-actions[bot]"
+            git add -f package-lock.json
+            git add -f $CONFIG_FILE
+            git commit -m "Update app version to $PACKAGE_VERSION"
+            git push
+          fi
+
+  job-tag:
+    needs: job-update
+    if: needs.job-update.outputs.require-tag == 'yes'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump version and push tag
+        id: tag-version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ needs.job-update.outputs.package-version }}
+          tag_prefix: v
