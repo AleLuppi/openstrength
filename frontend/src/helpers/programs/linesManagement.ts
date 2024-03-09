@@ -237,16 +237,16 @@ export function mergePrograms(
     [, , matchingMaxlifts] = compareMaxliftLists(firstMaxlifts, secondMaxlifts);
   } else if (mapMaxlifts) matchingMaxlifts = mapMaxlifts;
 
-  // Merge the two programs
+  // Merge the two programs (duplicate to avoid affecting merging program)
   const outProgram = inplace ? firstProgram : firstProgram.duplicate();
-  secondProgram.programExercises?.forEach((programExercise) => {
-    if (
-      !programExercise.scheduleWeek ||
-      !programExercise.scheduleDay ||
-      !programExercise.scheduleOrder
-    )
-      return;
-    moveProgramExercise(outProgram, programExercise, undefined, true, {
+  secondProgram.duplicate().programExercises?.forEach((programExercise) => {
+    // Must know where exercise should go
+    if (!programExercise.scheduleWeek || !programExercise.scheduleDay) return;
+
+    // To preserve line references, instead of duplicating program exercise from merging program,
+    // it is necessary to move the exercise from one program to the other
+    programExercise.scheduleOrder = Infinity;
+    moveProgramExercise(outProgram, programExercise, undefined, false, {
       sourceFallback: true,
       looseOrder: true,
     });

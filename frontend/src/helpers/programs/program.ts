@@ -253,7 +253,7 @@ export class Program {
     this.description = description;
     this.labels = labels;
     programExercises?.forEach((exercise) => {
-      if (!exercise.program) exercise.program = this;
+      exercise.program = this;
     });
     this.programExercises = programExercises;
     this.coach = coach;
@@ -358,17 +358,36 @@ export class Program {
    * @param shallow avoid copying identifying fields such as uid and parent instance.
    * @returns a new program with duplicate fields.
    */
-  duplicate(shallow: boolean = false) {
-    return new Program({
+  duplicate(shallow: boolean = false): Program {
+    const programClone = new Program({
       ...this,
       programExercises: this.programExercises?.map((programExercise) =>
-        programExercise.duplicate(),
+        programExercise.duplicate(shallow),
       ),
       ...(shallow && {
         uid: undefined,
         name: undefined,
       }),
     });
+
+    // Rewire program line references inside new program
+    const originalLines = this.getLines() ?? [];
+    const clonedLines = programClone.getLines() ?? [];
+    clonedLines.forEach((clonedLine) => {
+      (
+        ["loadReference", "repsReference"] as (
+          | "loadReference"
+          | "repsReference"
+        )[]
+      ).forEach((field) => {
+        const idx = clonedLine[field]
+          ? originalLines.findIndex((line) => line == clonedLine[field])
+          : -1;
+        if (idx >= 0) clonedLine[field] = clonedLines[idx];
+      });
+    });
+
+    return programClone;
   }
 
   /**
@@ -491,7 +510,7 @@ export class ProgramExercise {
     this.exerciseVariant = exerciseVariant;
     this.exerciseNote = exerciseNote;
     lines?.forEach((line) => {
-      if (!line.programExercise) line.programExercise = this;
+      line.programExercise = this;
     });
     this.lines = lines;
   }

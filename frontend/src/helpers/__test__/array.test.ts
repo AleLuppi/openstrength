@@ -1,5 +1,10 @@
 import { describe, expect, test } from "vitest";
-import { arrayUniqueValues, arrayOfPairsToObject, arraySort } from "../array";
+import {
+  arrayUniqueValues,
+  arrayOfPairsToObject,
+  arraySort,
+  arrayZip,
+} from "../array";
 
 describe("Test @/helpers/array", () => {
   /**
@@ -252,6 +257,27 @@ describe("Test @/helpers/array", () => {
       const res = arrayOfPairsToObject(arr);
       expect(res).toBeTypeOf("object");
       expect(res).toStrictEqual({});
+    });
+  });
+
+  /**
+   * arrayZip
+   */
+  describe("'arrayZip' function", () => {
+    // TODO
+
+    test("arrays of numbers", () => {
+      const arr1 = [1, 2, 3, 4, 5];
+      const arr2 = [6, 7, 8, 9, 0];
+      const res = arrayZip([arr1, arr2]);
+      expect(res).toStrictEqual([
+        [1, 6],
+        [2, 7],
+        [3, 8],
+        [4, 9],
+        [5, 0],
+      ]);
+      expect(res).not.toBe(arr1);
     });
   });
 });
