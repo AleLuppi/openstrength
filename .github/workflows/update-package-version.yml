@@ -15,7 +15,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: "frontend"
+        working-directory: ${{ vars.FRONTEND_WORKING_DIRECTORY }}
 
     outputs:
       package-version: ${{ steps.update-version.outputs.PACKAGE_VERSION }}
