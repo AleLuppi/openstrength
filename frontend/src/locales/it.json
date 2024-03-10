@@ -17,9 +17,10 @@
       "home": "Home",
       "home_title": "Homepage",
       "athletes": "Atleti",
-      "library": "Libreria",
+      "library": "Libreria Esercizi",
       "library_title": "Libreria",
       "program": "Programmi",
+      "programlibrary": "Libreria Programmi",
       "program_title": "Programmi",
       "profile": "Profilo",
       "signin": "Accedi",
@@ -279,7 +280,8 @@
       "list": {
         "title": "Libreria programmi",
         "title_program": "Programmi",
-        "program_section": "I tuoi programmi",
+        "program_section": "Info programma",
+        "programtemplate_section": "Info programma template",
         "add": "Aggiungi un nuovo programma",
         "add_proceed": "Conferma",
         "update": "Inserisci le informazioni del tuo programma",
@@ -362,7 +364,8 @@
         "new_program_submit": "Procedi",
         "open_recent": "I tuoi programmi recenti",
         "open_from_recent": "oppure apri recente",
-        "view_current": "Visualizza programma"
+        "view_current": "Visualizza programma",
+        "compact_view": "Compatta"
       },
       "viewer": {
         "title": "Programma di",
@@ -395,6 +398,36 @@
         "all_filtered_out": "Niente da mostrare"
       }
     },
+    "programlibrary_management": {
+      "list": {
+        "title": "Programmi template",
+        "search": "Cerca template...",
+        "open": "Apri nel builder",
+        "delete_proceed": "Elimina programma",
+        "delete_template_confirm": "Stai per eliminare il programma template \"{ program }\". Sei sicuro?",
+        "export_template": "Esporta in libreria",
+        "import_template": "Importa da libreria",
+        "template": "Programma Template",
+        "filter_active_warning": "Ci sono dei filtri attivi, verrà salvata una versione filtrata del programma, vuoi continuare?",
+        "template_saving_title": "Inserisci i dati del tuo programma template",
+        "template_import_title": "Importa un programma template",
+        "template_updating_title": "Aggiorna info del programma",
+        "no_templates": "Non hai ancora esportato dei programmi template, puoi farlo dal builder programmi",
+        "no_selected_template": "Seleziona un programma template per visualizzarne l'anteprima",
+        "save_success": "Modello di programma salvato correttamente, lo trovi in libreria programmi",
+        "update_success": "Program template info correctly updated",
+        "add_error": "Errore, riprova"
+      },
+      "fields": {
+        "program_info": "Info del programma template",
+        "name": "Nome programma",
+        "description": "Note"
+      },
+      "import": {
+        "missing_maxlifts_title": "Inserisci i massimali mancanti",
+        "missing_maxlifts_description": "Per completare l'importazione, inserisci i valori mancanti per l'atleta. Potrai modificarli in seguito nella schermata dei massimali."
+      }
+    },
     "maxlift_management": {
       "list": {
         "search_maxlift": "Cerca...",
@@ -406,7 +439,8 @@
         "update_error": "Impossibile aggiornare il massimale, riprova per favore",
         "no_maxlift": "Aggiungi un massimale per l'atleta attuale",
         "no_athlete": "Seleziona un atleta per vedere i dati correlati",
-        "maxlift_section": "Massimali dell'atleta"
+        "maxlift_section": "Massimali dell'atleta",
+        "maxlift_section_template": "Massimali di riferimento"
       },
       "fields": {
         "exercise": "Esercizio",
@@ -451,6 +485,7 @@
     "cancel": "Annulla",
     "default": "Default",
     "continue": "Continua",
+    "proceed": "Procedi",
     "finish": "Fine",
     "or": "o",
     "or_long": "oppure",

@@ -52,6 +52,9 @@ export type UserProps = {
   lastAccess?: Date;
   lastNotificationRead?: Date;
 
+  // Whether user instance does not relate to a real person
+  isDummy?: boolean;
+
   // Computed info
   referencename?: string;
   isSignedIn?: boolean;
@@ -132,6 +135,9 @@ export class User {
    */
   config?: UserConfig;
 
+  // Whether user instance does not relate to a real person
+  isDummy?: boolean;
+
   // Get user displayable name
   public get referenceName() {
     return this.displayName ?? [this.name, this.surname].join(" ");
@@ -163,6 +169,7 @@ export class User {
     lastAccess,
     lastNotificationRead,
     config,
+    isDummy,
   }: UserProps = {}) {
     this.uid = uid;
     this.email = email;
@@ -184,6 +191,7 @@ export class User {
     this.lastAccess = lastAccess;
     this.lastNotificationRead = lastNotificationRead;
     this.config = config;
+    this.isDummy = isDummy;
   }
 
   saveNew({

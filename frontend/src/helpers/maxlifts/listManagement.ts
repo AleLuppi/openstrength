@@ -1,5 +1,5 @@
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
-import { arraySortObjectsByField } from "@/helpers/array";
+import { arraySortObjectsByField, arrayUniqueValues } from "@/helpers/array";
 import { objectSortKeysByList } from "../object";
 
 /**
@@ -30,4 +30,45 @@ export function separateMaxliftPerExerciseAndType(maxlifts: MaxLift[]) {
     },
     {},
   );
+}
+
+/**
+ * Compare two lists of maxlifts and get the differences.
+ *
+ * Note: maxlifts are not compared by instance, rather by exercise and
+ * maxlift type they refer to.
+ *
+ * @param maxliftsOne first list of maxlifts.
+ * @param maxliftsTwo second list of maxlifts.
+ * @returns maxlifts in first list only, maxlifts in second list only, and pairs of matching maxlifts.
+ */
+export function compareMaxliftLists(
+  maxliftsOne: MaxLift[],
+  maxliftsTwo: MaxLift[],
+): [MaxLift[], MaxLift[], [MaxLift, MaxLift][]] {
+  // Prepare outputs
+  const maxliftsInOne: MaxLift[] = [];
+  const maxliftsInTwo: MaxLift[] = [];
+  const maxliftsMatch: [MaxLift, MaxLift][] = [];
+
+  // Separate maxlifts
+  const separatedOne = separateMaxliftPerExerciseAndType(maxliftsOne);
+  const separatedTwo = separateMaxliftPerExerciseAndType(maxliftsTwo);
+
+  // Compare maxlifts
+  arrayUniqueValues(
+    Object.keys(separatedOne).concat(Object.keys(separatedTwo)),
+  ).forEach((exercise) => {
+    const types1 = separatedOne[exercise];
+    const types2 = separatedTwo[exercise];
+    Object.values(MaxLiftType).forEach((type) => {
+      const maxlift1 = types1?.[type];
+      const maxlift2 = types2?.[type];
+      if (maxlift1 && !maxlift2) maxliftsInOne.push(maxlift1);
+      else if (maxlift2 && !maxlift1) maxliftsInTwo.push(maxlift2);
+      else if (maxlift1 && maxlift2) maxliftsMatch.push([maxlift1, maxlift2]);
+    });
+  });
+
+  return [maxliftsInOne, maxliftsInTwo, maxliftsMatch];
 }

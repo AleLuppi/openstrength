@@ -146,7 +146,7 @@ import {
   dbCollections,
   dbSubcollections,
 } from "@/helpers/database/collections";
-import { ProgramForzenView } from "@/helpers/programs/program";
+import { ProgramFrozenView } from "@/helpers/programs/program";
 import WorkoutDayForm from "@/components/feedback/WorkoutDayForm.vue";
 import {
   AthleteFeedbackDay,
@@ -165,7 +165,7 @@ const dayDone = ref<boolean[]>([]);
 const dayShowDone = computed(() => dayDone.value);
 
 // Get correct program istance
-const programSnapshot = ref<ProgramForzenView>();
+const programSnapshot = ref<ProgramFrozenView>();
 
 // Get correct associated feedbacks
 // TODO: load program feedbacks from DB
@@ -181,7 +181,7 @@ watch(
       {
         ordering: ["-frozenOn"],
         numDocs: 1,
-        onSuccess: (docVal: { [key: string]: ProgramForzenView }) => {
+        onSuccess: (docVal: { [key: string]: ProgramFrozenView }) => {
           programSnapshot.value = Object.values(docVal)[0];
 
           // Hide loading spinner

@@ -149,6 +149,7 @@
 import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
 import { UserRole } from "@/helpers/users/user";
+import { NamedRoutes } from "@/router";
 
 // Define emits
 defineEmits<{
@@ -161,19 +162,19 @@ const user = useUserStore();
 // Set coach action buttons
 const buttonsCoachAction = [
   {
-    to: "athletes",
+    to: NamedRoutes.athletes,
     icon: "person_add",
     title: "homepage.actions.to_athletes",
     subtitle: "homepage.actions.to_athletes_caption",
   },
   {
-    to: "library",
+    to: NamedRoutes.exerciseLibrary,
     icon: "edit_calendar",
     title: "homepage.actions.to_library",
     subtitle: "homepage.actions.to_library_caption",
   },
   {
-    to: "program",
+    to: NamedRoutes.program,
     icon: "rocket_launch",
     title: "homepage.actions.to_program",
     subtitle: "homepage.actions.to_program_caption",

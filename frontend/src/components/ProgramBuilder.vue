@@ -55,7 +55,7 @@
           <div class="q-pl-sm">
             <!-- Duplicate week -->
             <q-btn
-              @click="editWeekDayName = ['', '']"
+              @click.stop="editWeekDayName = ['', '']"
               icon="fa-regular fa-clone"
               size="sm"
               color="dark-light"
@@ -87,7 +87,7 @@
 
             <!-- Delete week -->
             <q-btn
-              @click="deleteWeek(week)"
+              @click.stop="deleteWeek(week)"
               icon="fa-regular fa-trash-can"
               size="sm"
               color="dark-light"
@@ -381,6 +381,7 @@ import {
 import { useI18n } from "vue-i18n";
 import {
   getProgramUniqueWeekDayPairs,
+  mergePrograms,
   sortProgramExercises,
 } from "@/helpers/programs/linesManagement";
 
@@ -439,6 +440,7 @@ const emit = defineEmits<{
 
 // Define expose
 defineExpose({
+  merge: mergeWithProgram,
   undo: throttleFunction(undo, props.debounce),
   redo: throttleFunction(redo, props.debounce),
   getHistorySteps: () => {
@@ -776,7 +778,7 @@ function moveDay(
     isSourceEmpty = false;
   });
 
-  // Optionally add a table is source is empty
+  // Optionally add a table if source is empty
   if (createIfEmpty && isSourceEmpty) {
     addExercise([toWeek, toDay]);
 
@@ -930,6 +932,28 @@ function storeChanges(program?: Program) {
 
   // Update pointer position
   programHistoryPointer.value = programHistory.value.length - 1;
+}
+
+/**
+ * Merge one program into selected one and store update.
+ *
+ * @param program program that will be merged into selected one.
+ * @param mapMaxlifts optional list of maxlifts to map from first program to second one.
+ */
+function mergeWithProgram(
+  program: Program,
+  mapMaxlifts?: [MaxLift, MaxLift][],
+) {
+  // Merge current program with provided one
+  if (!selectedProgram.value) return;
+  mergePrograms(
+    selectedProgram.value,
+    program,
+    mapMaxlifts ?? program.uid != selectedProgram.value.uid,
+  );
+
+  // Inform parent of update
+  updateProgram();
 }
 
 /**
