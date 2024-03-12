@@ -8,7 +8,7 @@
       :to="{ name: page.route }"
       active-class="os-child-highlight-primary"
       class="link-child os-text-unselected"
-      :class="{ 'beta-feature': page.route == NamedRoutes.programLibrary }"
+      :class="{ 'beta-feature': false }"
     >
       <!-- Icon near text on expanded drawer -->
       <q-item-section v-if="!props.mini" avatar>
@@ -99,6 +99,11 @@ const allDrawerPages = [
     icon: "fa-solid fa-users",
   },
   {
+    route: NamedRoutes.program,
+    caption: "layout.views.program",
+    icon: "fa-solid fa-dumbbell",
+  },
+  {
     route: NamedRoutes.exerciseLibrary,
     caption: "layout.views.library",
     icon: "fa-solid fa-book",
@@ -107,11 +112,6 @@ const allDrawerPages = [
     route: NamedRoutes.programLibrary,
     caption: "layout.views.programlibrary",
     icon: "fa-solid fa-sheet-plastic",
-  },
-  {
-    route: NamedRoutes.program,
-    caption: "layout.views.program",
-    icon: "fa-solid fa-dumbbell",
   },
 ];
 
