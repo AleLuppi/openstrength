@@ -261,7 +261,9 @@ export function estimateMissingLineProps(
   }
 
   if (loadPercentage && reps && !rpe) {
-    const estimatedRpe = calculateRpeFromTable(loadPercentage, reps);
+    const estimatedRpe =
+      loadPercentage >= 100 ? 10 : calculateRpeFromTable(loadPercentage, reps);
+
     line.rpeBaseValue = `${estimatedRpe}`;
   } else if (!loadPercentage && reps && rpe) {
     const estimatedLoad = calculatePercentage1RM(reps, rpe);

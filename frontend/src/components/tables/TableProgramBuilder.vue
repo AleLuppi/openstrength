@@ -173,7 +173,7 @@
           :tooltips="[
             $t('coach.program_management.builder.line_duplicate_in_day'),
             $t('coach.program_management.builder.line_delete'),
-            $t('coach.program_management.builder.view estimation'),
+            'Mostra carichi stimati',
           ]"
           @click="
             (idx: number) => {
@@ -192,7 +192,9 @@
                   emit('delete');
                   break;
                 case 2:
-                  console.log(programExercise.lines);
+                  stressorToShow = [
+                    ...getExerciseStressors(programExercise.lines),
+                  ];
                 default:
                   break;
               }
@@ -216,6 +218,11 @@
               self="center left"
             >
             </FormProgramNewWeekDay>
+          </template>
+          <template #slot-2>
+            <p v-for="(line, idx) in stressorToShow" :key="idx" class="text-h6">
+              {{ line }}
+            </p>
           </template>
         </osButtonSupport>
       </div>
@@ -420,7 +427,7 @@
 import { ref, defineAsyncComponent, computed } from "vue";
 import { ProgramExercise, ProgramLine } from "@/helpers/programs/program";
 import {
-  type MaxLift,
+  MaxLift,
   type MaxLiftType,
   MaxLiftTypesPerValue,
 } from "@/helpers/maxlifts/maxlift";
@@ -435,6 +442,7 @@ import {
   getExerciseVariantByName,
 } from "@/helpers/exercises/listManagement";
 import { arrayPushToNullable } from "@/helpers/array";
+import { estimateMissingLineProps } from "@/helpers/charts/chartDatasetComputations";
 
 // Import components
 const FormProgramNewWeekDay = defineAsyncComponent(
@@ -497,7 +505,7 @@ const emit = defineEmits<{
 
 // Set ref
 const editWeekDayName = ref<string[]>(); // week and/or day name that is being modified (to clone or move tables)
-
+const stressorToShow = ref<string[]>();
 // Retrieve and supply current program exercise
 const programExercise = computed(() => props.modelValue);
 function emitProgramExercise() {
@@ -627,6 +635,50 @@ function getReferenceDisplayName(reference: ProgramLine | MaxLift | undefined) {
       (reference.lineOrder != undefined ? reference.lineOrder + 1 : "-")
     );
   else return reference.type ?? ""; // TODO i18n
+}
+
+/**
+ * Computes the missing parameters for the provided lines
+ */
+function getExerciseStressors(lines: ProgramLine[] | undefined): string[] {
+  const stressors: string[] = [];
+  if (!lines) {
+    stressors.push("Compila delle linee");
+    return stressors;
+  }
+
+  lines.forEach((line) => {
+    if (line.loadReference instanceof MaxLift) {
+      const estimatedLine = estimateMissingLineProps(
+        line,
+        Number(line.loadReference.value),
+      );
+
+      const load = line.loadValue
+        ? `Load: ${line.loadValue} kg`
+        : `Load (stimato): ${estimatedLine?.loadValue} kg`;
+      const reps = line.repsValue
+        ? `Reps: ${line.repsValue}`
+        : `Reps (stimate): ${estimatedLine?.repsValue}`;
+      const sets = line.setsValue ? `Set: ${line.setsValue}` : `Set: 1`;
+      const rpe = line.rpeValue
+        ? `RPE: ${line.rpeValue}`
+        : `RPE (stimato): ${
+            estimatedLine?.rpeValue ? estimatedLine?.rpeValue : "ciao"
+          }`;
+      const maxRef = `${line.loadReference.type}: ${line.loadReference.value} kg`;
+      stressors.push(`${load}, ${reps}, ${sets}, ${rpe}, ${maxRef}`);
+    } else {
+      const load = line.loadValue ? `Load: ${line.loadValue} kg` : undefined;
+      const reps = line.repsValue ? `Reps: ${line.repsValue}` : undefined;
+      const sets = line.setsValue ? `Set: ${line.setsValue}` : undefined;
+      const rpe = line.rpeValue ? `RPE: ${line.rpeValue}` : undefined;
+      if (load && reps && sets && rpe) {
+        stressors.push(`${load}, ${reps}, ${sets}, ${rpe}`);
+      }
+    }
+  });
+  return stressors;
 }
 </script>
 
