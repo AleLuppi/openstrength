@@ -1,10 +1,10 @@
-import { ProgramForzenView } from "./program";
+import { ProgramFrozenView } from "./program";
 
 /**
  * Athlete feedback frozen program
  */
 export type AthleteFeedbackFrozenView = {
-  program: ProgramForzenView; //parent program to which it is referenced
+  program: ProgramFrozenView; //parent program to which it is referenced
   workoutDays: AthleteFeedbackDay[];
 };
 
@@ -12,7 +12,7 @@ export type AthleteFeedbackFrozenView = {
  * Athlete feedback for a single day
  */
 export type AthleteFeedbackDay = {
-  weekName: string; 
+  weekName: string;
   dayName: string;
   athleteHasDone: boolean;
   athleteWorkoutNote?: string;
@@ -27,13 +27,13 @@ export type AthleteFeedbackExercise = {
   uid: string; //uid of the referenced exercise from ProgramFrozenView
   exerciseName: string;
   variantName: string;
-  isExerciseDone?: boolean;
-  lineFeedbacks:{
+  isExerciseDone?: boolean | undefined;
+  lineFeedbacks: {
     athleteLoadFeedback?: string | undefined;
     athleteRepsFeedback?: string | undefined;
     athleteSetsFeedback?: string | undefined;
     athleteRpeFeedback?: string | undefined;
     athleteTextFeedback?: string | undefined;
     athleteVideoFeedback?: string | undefined;
-  }[]
-}
+  }[];
+};
