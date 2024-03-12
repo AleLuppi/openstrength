@@ -43,7 +43,7 @@
       >
         <WorkoutDayForm
           :block="block"
-          :dayShowDone="dayShowDone[indexDay]"
+          :completed="dayShowDone[indexDay]"
           :feedback="programFeedbacks?.workoutDays.at(indexDay)"
           @dayFeedbackSaved="updateDayFeedback"
         >
@@ -106,7 +106,6 @@ const programSnapshot = ref<ProgramFrozenView>();
 // Get correct associated feedbacks
 // TODO: load program feedbacks from DB
 const programFeedbacks = ref<AthleteFeedbackFrozenView>();
-console.log(programFeedbacks);
 
 watch(
   () => route.query.id,
@@ -137,9 +136,6 @@ function updateDayFeedback(feedbackDay: AthleteFeedbackDay) {
       day = feedbackDay;
     }
   });
-
-  console.log("Received day feedback:", feedbackDay);
-  console.log("Updated complete Program fb: ", programFeedbacks.value);
 }
 
 // Operations to perform on component mount
