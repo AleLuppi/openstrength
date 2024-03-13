@@ -258,7 +258,7 @@ router.beforeEach(async (to) => {
       name: (to.meta.redirectNotAuthorized ??
         NamedRoutes.notFound) as RouteRecordName,
     };
-    // FIXME redirect to a "restriced access" page if redirectNotAuthorized is unknown
+    // TODO redirect to a "restriced access" page if redirectNotAuthorized is unknown
   }
 
   // Check if authenticated user needs to be redirected
