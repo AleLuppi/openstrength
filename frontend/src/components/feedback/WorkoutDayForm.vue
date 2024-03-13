@@ -4,6 +4,7 @@
     class="q-pa-sm items-center justify-between"
     :class="{
       'cursor-pointer row': dayShowCollapsed,
+      'border-positive': modelValue?.completed,
     }"
     @click="dayShowCollapsed = false"
   >
@@ -38,7 +39,6 @@
         :class="{
           'os-next-exercise': isNext && idxExercise == nextExerciseIdx,
         }"
-        :style="idxExercise == nextExerciseIdx ? 'margin-top: 2em' : ''"
       ></WorkoutExerciseForm>
 
       <div class="row q-py-md">
@@ -62,7 +62,7 @@
     </div>
 
     <!-- Otherwise show expansion button -->
-    <q-btn v-else icon="expand_more" flat></q-btn>
+    <q-btn v-else icon="expand_more" color="positive" flat></q-btn>
   </q-card>
 </template>
 
@@ -81,7 +81,7 @@ const props = withDefaults(
     // current feedback on the day
     modelValue: ProgramDayFeedback | undefined;
 
-    // set if day is next in program
+    // set if day is next to be done in program
     isNext: boolean;
   }>(),
   { isNext: false },
@@ -145,6 +145,7 @@ watch(
  * Emit daily feedback.
  */
 function completeDay() {
+  dayShowCollapsed.value = true;
   dayFeedback.value.completed = true;
   dayFeedback.value.completedOn = new Date();
   emit("update:modelValue", dayFeedback.value);
@@ -157,6 +158,7 @@ function completeDay() {
 /* TODO i18n */
 .os-next-exercise {
   border: 3px solid $primary;
+  margin-top: 2em;
 
   &::after {
     content: "Prossimo esercizio!";

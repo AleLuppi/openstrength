@@ -43,8 +43,13 @@
       >
         <WorkoutDayForm
           :programDay="block"
-          :modelValue="programFeedbacks?.feedbacks.at(indexDay)"
-          @update:modelValue="updateDayFeedback"
+          :modelValue="programFeedbacks.feedbacks[indexDay]"
+          @update:modelValue="
+            (val) => {
+              programFeedbacks.feedbacks[indexDay] = val;
+              saveFeedback();
+            }
+          "
           :isNext="nextDayIdx == indexDay"
         >
         </WorkoutDayForm>
@@ -76,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from "vue";
+import { ref, watch, onMounted, computed, defineAsyncComponent } from "vue";
 import { useRoute } from "vue-router";
 import { NamedRoutes } from "@/router";
 import { useQuasar } from "quasar";
@@ -86,28 +91,32 @@ import {
   dbSubcollections,
 } from "@/helpers/database/collections";
 import { ProgramFrozenView } from "@/helpers/programs/program";
-import WorkoutDayForm from "@/components/feedback/WorkoutDayForm.vue";
-import { ProgramDayFeedback, ProgramFeedback } from "@/helpers/programs/models";
+import { ProgramFeedback } from "@/helpers/programs/models";
+
+// Import components
+const WorkoutDayForm = defineAsyncComponent(
+  () => import("@/components/feedback/WorkoutDayForm.vue"),
+);
 
 // Init plugin
 const route = useRoute();
 const $q = useQuasar();
 
-// Get correct program istance
-const programSnapshot = ref<ProgramFrozenView>();
-
-// Get correct associated feedbacks
-// TODO: load program feedbacks from DB
-const programFeedbacks = ref<ProgramFeedback>();
+// Set ref
+const programSnapshot = ref<ProgramFrozenView>(); // current program snapshot
+// FIXME: load/store program feedbacks from DB
+const programFeedbacks = ref<ProgramFeedback>({ feedbacks: [] }); // feedbacks associated to program
 
 // Find which is the next day athlete should check
-const nextDayIdx = computed(
-  () =>
-    programFeedbacks.value?.feedbacks.findIndex(
-      (feedback) => !feedback.completed,
-    ) ?? 0,
-);
+const nextDayIdx = computed(() => {
+  const idx = programFeedbacks.value.feedbacks.findIndex(
+    (feedback) => !feedback.completed,
+  );
+  if (idx < 0) return programFeedbacks.value.feedbacks.length;
+  return idx;
+});
 
+// Retrieve requested program document
 watch(
   () => route.query.id,
   (docId) =>
@@ -129,14 +138,11 @@ watch(
 );
 
 /**
- * Adds the emitted day feedback in the actual athlete feedbacks
+ * FIXME
  */
-function updateDayFeedback(feedbackDay: ProgramDayFeedback) {
-  programFeedbacks.value?.feedbacks.forEach((day) => {
-    if (day.dayName === feedbackDay.dayName) {
-      day = feedbackDay;
-    }
-  });
+function saveFeedback() {
+  // FIXME
+  console.log(programFeedbacks);
 }
 
 // Operations to perform on component mount
