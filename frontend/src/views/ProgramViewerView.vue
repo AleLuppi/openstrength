@@ -42,10 +42,10 @@
         class="q-my-md q-mx-xs"
       >
         <WorkoutDayForm
-          :block="block"
-          :completed="dayShowDone[indexDay]"
-          :feedback="programFeedbacks?.workoutDays.at(indexDay)"
-          @dayFeedbackSaved="updateDayFeedback"
+          :programDay="block"
+          :modelValue="programFeedbacks?.feedbacks.at(indexDay)"
+          @update:modelValue="updateDayFeedback"
+          :isNext="nextDayIdx == indexDay"
         >
         </WorkoutDayForm>
       </div>
@@ -87,25 +87,26 @@ import {
 } from "@/helpers/database/collections";
 import { ProgramFrozenView } from "@/helpers/programs/program";
 import WorkoutDayForm from "@/components/feedback/WorkoutDayForm.vue";
-import {
-  AthleteFeedbackDay,
-  AthleteFeedbackFrozenView,
-} from "@/helpers/programs/athleteFeedback";
+import { ProgramDayFeedback, ProgramFeedback } from "@/helpers/programs/models";
 
 // Init plugin
 const route = useRoute();
 const $q = useQuasar();
-
-// Set card behavior
-const dayDone = ref<boolean[]>([]);
-const dayShowDone = computed(() => dayDone.value);
 
 // Get correct program istance
 const programSnapshot = ref<ProgramFrozenView>();
 
 // Get correct associated feedbacks
 // TODO: load program feedbacks from DB
-const programFeedbacks = ref<AthleteFeedbackFrozenView>();
+const programFeedbacks = ref<ProgramFeedback>();
+
+// Find which is the next day athlete should check
+const nextDayIdx = computed(
+  () =>
+    programFeedbacks.value?.feedbacks.findIndex(
+      (feedback) => !feedback.completed,
+    ) ?? 0,
+);
 
 watch(
   () => route.query.id,
@@ -130,8 +131,8 @@ watch(
 /**
  * Adds the emitted day feedback in the actual athlete feedbacks
  */
-function updateDayFeedback(feedbackDay: AthleteFeedbackDay) {
-  programFeedbacks.value?.workoutDays.forEach((day) => {
+function updateDayFeedback(feedbackDay: ProgramDayFeedback) {
+  programFeedbacks.value?.feedbacks.forEach((day) => {
     if (day.dayName === feedbackDay.dayName) {
       day = feedbackDay;
     }

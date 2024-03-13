@@ -12,9 +12,9 @@
       <h4 class="q-my-none">
         {{
           `${$t("coach.program_management.builder.week_name", {
-            week: props.block.weekName,
+            week: props.programDay.weekName,
           })} - ${$t("coach.program_management.builder.day_name", {
-            day: props.block.dayName,
+            day: props.programDay.dayName,
           })}`
         }}
       </h4>
@@ -31,12 +31,14 @@
     <div v-if="!dayShowCollapsed">
       <!-- Show single exercise cards -->
       <WorkoutExerciseForm
-        v-for="(exercise, indexExerc) in block.exercises"
-        :key="indexExerc"
+        v-for="(exercise, idxExercise) in programDay.exercises"
+        :key="idxExercise"
+        v-model="dayFeedback.exercisesFeedback[idxExercise]"
         :exercise="exercise"
-        @exerciseFeedbackSaved="updateExerciseFeedbacks"
-        :class="{ 'os-next-exercise': indexExerc == nextExIdx }"
-        :style="indexExerc == nextExIdx ? 'margin-top: 2em' : ''"
+        :class="{
+          'os-next-exercise': isNext && idxExercise == nextExerciseIdx,
+        }"
+        :style="idxExercise == nextExerciseIdx ? 'margin-top: 2em' : ''"
       ></WorkoutExerciseForm>
 
       <div class="row q-py-md">
@@ -53,11 +55,7 @@
         />
         <q-btn
           class="col-12"
-          @click.stop="
-            athleteDayFeedback.athleteHasDone = true;
-            saveDayFeedback();
-            dayShowCollapsed = true;
-          "
+          @click.stop="completeDay"
           label="Salva allenamento"
         />
       </div>
@@ -69,96 +67,94 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { ProgramFrozenLine } from "@/helpers/programs/program";
+import { computed, ref, watch } from "vue";
+import { ProgramFrozenView } from "@/helpers/programs/program";
 import WorkoutExerciseForm from "./WorkoutExerciseForm.vue";
-import {
-  AthleteFeedbackDay,
-  AthleteFeedbackExercise,
-} from "@/helpers/programs/athleteFeedback";
-
-// Init plugin
+import { ProgramDayFeedback } from "@/helpers/programs/models";
 
 // Define props
-const props = defineProps<{
-  block: {
-    weekName: string;
-    dayName: string;
-    exercises: {
-      uid: string;
-      exerciseName: string;
-      variantName: string;
-      note?: string;
-      schema: string[];
-      lines: ProgramFrozenLine[] | undefined;
-      schemaNote: string[];
-      textFeedback: boolean[];
-      videoFeedback: boolean[];
-    }[];
-  };
-  feedback: AthleteFeedbackDay | undefined;
-  completed: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    // single frozen program day
+    programDay: ProgramFrozenView["weekdays"][number];
+
+    // current feedback on the day
+    modelValue: ProgramDayFeedback | undefined;
+
+    // set if day is next in program
+    isNext: boolean;
+  }>(),
+  { isNext: false },
+);
 
 // Define emit
 const emit = defineEmits<{
-  dayFeedbackSaved: [feedbackDay: AthleteFeedbackDay];
+  "update:modelValue": [value: ProgramDayFeedback];
+  complete: [];
 }>();
 
 // Set ref
-const workoutDate = ref<Date>(new Date());
-const workoutNote = ref<string>();
-const dayShowCollapsed = ref<boolean>(false);
+const workoutDate = ref<Date>(new Date()); // day on which exercises have been performed
+const workoutNote = ref<string>(""); // optional feedback text on the day
+const dayShowCollapsed = ref<boolean>(false); // whether to show collapsed day
 
-const athleteDayFeedback = ref<AthleteFeedbackDay>({
-  weekName: props.block.weekName,
-  dayName: props.block.dayName,
-  athleteHasDone: props.completed,
-  athleteWorkoutNote: workoutNote.value,
-  athleteWorkoutDate: workoutDate.value,
+// FIXME
+const dayFeedback = ref<ProgramDayFeedback>({
+  weekName: props.programDay.weekName,
+  dayName: props.programDay.dayName,
+  completed: props.modelValue?.completed ?? false,
+  textFeedback: workoutNote.value,
+  completedOn: workoutDate.value,
 
-  exercises: props.block.exercises.map((exercise, idx) => ({
+  exercisesFeedback: props.programDay.exercises.map((exercise, idx) => ({
     uid: exercise.uid,
     exerciseName: exercise.exerciseName,
     variantName: exercise.variantName,
-    isExerciseDone: props.feedback?.exercises[idx].isExerciseDone,
-    lineFeedbacks: props.feedback?.exercises[idx].lineFeedbacks ?? [],
+    completed: props.modelValue?.exercisesFeedback[idx].completed,
+    linesFeedback: props.modelValue?.exercisesFeedback[idx].linesFeedback ?? [],
   })),
 });
 
-const nextExIdx = computed(() =>
-  athleteDayFeedback.value.exercises.findIndex((exercise) => {
-    return exercise.isExerciseDone == undefined;
+// Find which is the next exercise athlete should perform
+const nextExerciseIdx = computed(() =>
+  dayFeedback.value.exercisesFeedback.findIndex((exercise) => {
+    return !exercise.completed && exercise.willComplete != false;
   }),
 );
 
-/**
- * Emit day feedback to program viewer
- */
-function saveDayFeedback() {
-  emit("dayFeedbackSaved", athleteDayFeedback.value);
-}
+// Show day expanded or collapsed following requests from parent
+watch(
+  () => props.modelValue?.completed,
+  (isCompleted) => (dayShowCollapsed.value = isCompleted ?? false),
+  { immediate: true },
+);
+
+// Update internal model to input model value
+watch(
+  () => props.modelValue,
+  (value) =>
+    (dayFeedback.value = value ?? {
+      weekName: props.programDay.weekName,
+      dayName: props.programDay.dayName,
+      completed: false,
+      exercisesFeedback: [],
+    }),
+);
 
 /**
- * Update actual day feedbacks with exercise data from the emit of child component
+ * Emit daily feedback.
  */
-function updateExerciseFeedbacks(feedbackExercise: AthleteFeedbackExercise) {
-  // Overwrite the actual exercise feedback with the received data from emit
-  athleteDayFeedback.value.exercises = athleteDayFeedback.value.exercises.map(
-    (exercise) => {
-      if (exercise.uid === feedbackExercise.uid) return feedbackExercise;
-      return exercise;
-    },
-  );
+function completeDay() {
+  dayFeedback.value.completed = true;
+  dayFeedback.value.completedOn = new Date();
+  emit("update:modelValue", dayFeedback.value);
+  emit("complete");
 }
 </script>
 
 <style scoped lang="scss">
-.color-border {
-  border: 2px solid $primary;
-}
-
-// TODO
+/* Highlight next exercise */
+/* TODO i18n */
 .os-next-exercise {
   border: 3px solid $primary;
 
