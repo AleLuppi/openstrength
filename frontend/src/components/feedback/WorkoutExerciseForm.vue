@@ -76,12 +76,22 @@
                     ? 'visible'
                     : 'hidden',
                 }"
+                @click="
+                  showInfoTooltip[indexLine] = !showInfoTooltip[indexLine]
+                "
+                @touchend.prevent="
+                  showInfoTooltip[indexLine] = !showInfoTooltip[indexLine]
+                "
+                @mouseenter="showInfoTooltip[indexLine] = true"
+                @mouseleave="showInfoTooltip[indexLine] = false"
               >
                 <q-tooltip
+                  v-model="showInfoTooltip[indexLine]"
                   anchor="top middle"
                   self="bottom middle"
                   :offset="[10, 10]"
                   class="bg-lighter bordered text-xs"
+                  no-parent-event
                 >
                   {{ exercise.schemaNote[indexLine] }}
                 </q-tooltip>
@@ -175,7 +185,7 @@
 import { ProgramExerciseFeedback } from "@/helpers/programs/models";
 import { ProgramFrozenView } from "@/helpers/programs/program";
 import { stringCapitalize } from "@/helpers/scalar";
-import { ref, watch } from "vue";
+import { ref, watch, onMounted, onUnmounted } from "vue";
 
 // Define props
 const props = defineProps<{
@@ -192,8 +202,9 @@ const emit = defineEmits<{
 }>();
 
 // Set ref
-const exerciseDone = ref<boolean | undefined>(undefined);
-const lineTextFeedbacks = ref<string[]>([]);
+const exerciseDone = ref<boolean | undefined>(undefined); // whether exercise has been completed
+const lineTextFeedbacks = ref<string[]>([]); // store text feedbacks
+const showInfoTooltip = ref<boolean[]>([]); // whether to show info tooltip for each line
 
 // Set constant values
 const lineValueTypes: ("load" | "reps" | "sets" | "rpe")[] = [
@@ -268,6 +279,21 @@ function saveExerciseFeedback() {
   };
   emit("update:modelValue", exerciseFeedback);
 }
+
+/**
+ * Manually hide all open tooltips.
+ */
+function resetTooltips() {
+  showInfoTooltip.value.length = 0;
+}
+
+onMounted(() => {
+  window.addEventListener("scroll", resetTooltips);
+});
+
+onUnmounted(() => {
+  window.addEventListener("scroll", resetTooltips);
+});
 </script>
 
 <style scoped lang="scss">
