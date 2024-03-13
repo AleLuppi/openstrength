@@ -1,36 +1,44 @@
 <template>
-  <div class="q-pa-none" style="height: 100%">
+  <q-page class="q-pa-xs">
     <!-- Show selected program -->
     <div v-if="programSnapshot">
       <!-- Program infos -->
-      <div class="q-mx-md">
-        <div class="row justify-between">
-          <h3 class="text-margin-xs">
+      <div class="q-my-lg q-mx-md row items-center justify-evenly">
+        <div
+          :class="{
+            'col-12 row items-center': $q.screen.lt.sm,
+          }"
+        >
+          <h5 class="text-margin-xs">
             {{ $t("coach.program_management.viewer.title") }}
+          </h5>
+          <h3 class="text-margin-xs" :class="{ 'q-px-md': $q.screen.lt.sm }">
             {{ programSnapshot.athlete }}
           </h3>
         </div>
 
-        <p>
-          <b>{{ $t("coach.program_management.viewer.program_name") }} </b>
-          {{ programSnapshot.name }}
-        </p>
-        <p v-if="programSnapshot.description">
-          <b>{{ $t("coach.program_management.viewer.description") }}</b>
-          {{ programSnapshot.description }}
-        </p>
-        <p>
-          <b>{{ $t("coach.program_management.viewer.frozen_date") }} </b>
-          {{ $d(programSnapshot.frozenOn, "short") }}
-        </p>
-        <p v-if="programSnapshot.startedOn">
-          <b>{{ $t("coach.program_management.viewer.start_date") }}</b>
-          {{ $d(programSnapshot.startedOn, "short") }}
-        </p>
-        <p v-if="programSnapshot.startedOn && programSnapshot.finishedOn">
-          <b>{{ $t("coach.program_management.viewer.end_date") }}</b>
-          {{ $d(programSnapshot.finishedOn, "short") }}
-        </p>
+        <div :class="{ 'col-12': $q.screen.lt.sm }">
+          <p>
+            <b>{{ $t("coach.program_management.viewer.program_name") }} </b>
+            {{ programSnapshot.name }}
+          </p>
+          <p v-if="programSnapshot.description">
+            <b>{{ $t("coach.program_management.viewer.description") }}</b>
+            {{ programSnapshot.description }}
+          </p>
+          <p>
+            <b>{{ $t("coach.program_management.viewer.frozen_date") }} </b>
+            {{ $d(programSnapshot.frozenOn, "short") }}
+          </p>
+          <p v-if="programSnapshot.startedOn">
+            <b>{{ $t("coach.program_management.viewer.start_date") }}</b>
+            {{ $d(programSnapshot.startedOn, "short") }}
+          </p>
+          <p v-if="programSnapshot.startedOn && programSnapshot.finishedOn">
+            <b>{{ $t("coach.program_management.viewer.end_date") }}</b>
+            {{ $d(programSnapshot.finishedOn, "short") }}
+          </p>
+        </div>
       </div>
 
       <!-- Show available weeks -->
@@ -39,7 +47,8 @@
       <div
         v-for="(block, indexDay) in programSnapshot?.weekdays"
         :key="indexDay"
-        class="q-my-md q-mx-xs"
+        class="q-my-md"
+        :class="{ 'q-mx-xl': $q.screen.gt.sm }"
       >
         <WorkoutDayForm
           :programDay="block"
@@ -77,7 +86,7 @@
         class="q-ma-lg"
       />
     </div>
-  </div>
+  </q-page>
 </template>
 
 <script setup lang="ts">
