@@ -63,7 +63,7 @@
           @update:modelValue="
             (val) => {
               programFeedbacks.feedbacks[indexDay] = val;
-              saveFeedback();
+              saveFeedback(programFeedbacks, programId ?? undefined);
             }
           "
           :isNext="nextDayIdx == indexDay"
@@ -173,6 +173,7 @@ import {
 } from "@/helpers/database/collections";
 import { ProgramFrozenView } from "@/helpers/programs/program";
 import { ProgramFeedback } from "@/helpers/programs/models";
+import { saveFeedback } from "@/helpers/programs/programFeedback";
 import { UserRole } from "@/helpers/users/user";
 
 // Import components
@@ -194,9 +195,12 @@ const programSnapshot = ref<ProgramFrozenView>(); // current program snapshot
 const programFeedbacks = ref<ProgramFeedback>({ feedbacks: [] }); // feedbacks associated to program
 const showCompactProgram = ref<boolean>(false);
 
+// Get requested program id
+const programId = computed(() => String(route.query.id));
+
 // Retrieve requested program document
 watch(
-  () => route.query.id,
+  programId,
   (docId) =>
     doGetDocs(
       `${dbCollections.programs}/${docId}/${dbSubcollections.programSnapshots}`,
@@ -268,14 +272,6 @@ const columns: QTableProps["columns"] = [
     style: "width: 10%",
   },
 ];
-
-/**
- * FIXME
- */
-function saveFeedback() {
-  // FIXME
-  console.log(programFeedbacks);
-}
 
 // Operations to perform on component mount
 onMounted(() => {

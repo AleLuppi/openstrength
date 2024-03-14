@@ -19,6 +19,9 @@ export interface ProgramFilter {
 export type ProgramFeedback = {
   program?: Program;
   feedbacks: ProgramDayFeedback[];
+  createdOn?: Date;
+  updatedOn?: Date[];
+  uid?: string;
 };
 
 /**
