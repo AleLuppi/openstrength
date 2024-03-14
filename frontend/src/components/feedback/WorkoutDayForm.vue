@@ -42,11 +42,7 @@
       ></WorkoutExerciseForm>
 
       <div class="row q-py-md">
-        <os-input-date
-          v-model="workoutDate"
-          label="Data allenamento"
-          class="col-12"
-        />
+        <os-input-date v-model="workoutDate" label="Data allenamento" />
         <os-input
           v-model="workoutNote"
           type="textarea"
@@ -55,8 +51,17 @@
         />
         <q-btn
           class="col-12"
-          @click.stop="completeDay"
-          label="Salva allenamento"
+          @click.stop="completeDay()"
+          :label="
+            modelValue?.completed ? 'Salva modifiche' : 'Salva allenamento'
+          "
+        />
+        <q-btn
+          v-if="modelValue?.completed"
+          class="q-mt-md col-12"
+          @click.stop="completeDay(false)"
+          flat
+          label="Segna come non completato"
         />
       </div>
     </div>
@@ -143,11 +148,13 @@ watch(
 
 /**
  * Emit daily feedback.
+ *
+ * @param [completed=true] whether day can be considered completed by athlete.
  */
-function completeDay() {
-  dayShowCollapsed.value = true;
-  dayFeedback.value.completed = true;
-  dayFeedback.value.completedOn = new Date();
+function completeDay(completed: boolean = true) {
+  dayShowCollapsed.value = completed;
+  dayFeedback.value.completed = completed;
+  dayFeedback.value.completedOn = completed ? new Date() : undefined;
   emit("update:modelValue", dayFeedback.value);
   emit("complete");
 }
