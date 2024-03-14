@@ -1,14 +1,13 @@
 <template>
   <q-card
     :class="{
-      'bg-green-3 os-completed': exerciseDone == true,
-      'bg-red-3 os-wontdo': exerciseDone == false,
+      'bg-green-3 os-completed': exerciseDone,
     }"
     class="q-mb-sm"
   >
     <!-- TODO: i18n for all the component-->
     <q-expansion-item
-      :model-value="exerciseDone == undefined"
+      :model-value="!exerciseDone"
       @update:model-value="toggleDone"
       hide-expand-icon
     >
@@ -23,16 +22,10 @@
 
             <q-btn
               size="xs"
-              :icon="exerciseDone == false ? 'close' : 'check'"
-              :color="
-                exerciseDone == true
-                  ? 'positive'
-                  : exerciseDone == false
-                  ? 'negative'
-                  : 'primary'
-              "
+              icon="check"
+              :color="exerciseDone ? 'positive' : 'primary'"
               round
-              :outline="exerciseDone == undefined"
+              :outline="!exerciseDone"
             ></q-btn>
           </div>
 
@@ -218,41 +211,19 @@ const lineValueLabels = Object.fromEntries(
 );
 
 // Initialize exercise completed
-watch(
-  props.modelValue,
-  (val) =>
-    (exerciseDone.value =
-      val.completed || (val.willComplete ?? true ? undefined : false)),
-  {
-    immediate: true,
-  },
-);
+watch(props.modelValue, (val) => (exerciseDone.value = val.completed), {
+  immediate: true,
+});
 
 /**
  * Toggle between the completion states of the exercise.
  *
  * Exercise can be:
  *  - done -> value "true"
- *  - won't do -> value "false"
- *  - to do -> value "undefined"
+ *  - not done -> value "false"
  */
 function toggleDone() {
-  switch (exerciseDone.value) {
-    case true:
-      exerciseDone.value = false;
-      break;
-
-    case false:
-      exerciseDone.value = undefined;
-      break;
-
-    case undefined:
-      exerciseDone.value = true;
-      break;
-
-    default:
-      exerciseDone.value = undefined;
-  }
+  exerciseDone.value = !exerciseDone.value;
   saveExerciseFeedback();
 }
 
@@ -263,8 +234,8 @@ function saveExerciseFeedback() {
   const exerciseFeedback: ProgramExerciseFeedback = {
     exerciseName: props.exercise.exerciseName,
     variantName: props.exercise.variantName,
-    completed: exerciseDone.value == true,
-    willComplete: exerciseDone.value != false,
+    completed: exerciseDone.value ?? false,
+    willComplete: true,
     linesFeedback:
       props.exercise.lines?.map((line, idx) => {
         return {
