@@ -1,6 +1,6 @@
 import { ProgramFeedback } from "@/helpers/programs/models";
 import { Program } from "@/helpers/programs/program";
-import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
+import { doAddDoc, doGetDocs, doUpdateDoc } from "@/helpers/database/readwrite";
 import {
   dbCollections,
   dbSubcollections,
@@ -56,10 +56,48 @@ export function saveFeedback(
       addCurrentTimestamp: "createdOn",
       onSuccess: (docRef: DocumentReference) => {
         feedback.uid = docRef.id;
-        onSuccess?.();
+        onSuccess?.(docRef);
       },
       onError: onError,
     });
   }
   return true;
+}
+
+/**
+ * Save the feedback of a program in database.
+ *
+ * @param program program or program ID to select where to store feedback.
+ * @param onSuccess function to execute when write operation is successful.
+ * @param onError function to execute when write operation fails.
+ * @returns true if feedback save is requested, false otherwise (don't know program ID).
+ */
+export async function loadLatestFeedback(
+  program: Program | string,
+  {
+    onSuccess,
+    onError,
+  }: {
+    onSuccess?: (feedback: ProgramFeedback) => void;
+    onError?: Function;
+  } = {},
+): Promise<ProgramFeedback | undefined> {
+  const programId = program instanceof Program ? program.uid : program;
+  if (!programId) return;
+  let feedback: ProgramFeedback | undefined = undefined;
+  await doGetDocs(
+    `${dbCollections.programs}/${programId}/${dbSubcollections.programFeedbacks}`,
+    undefined,
+    {
+      ordering: ["-createdOn"],
+      numDocs: 1,
+      onSuccess: (docVal: { [key: string]: ProgramFeedback }) => {
+        feedback = Object.values(docVal)[0];
+        feedback!.uid = Object.keys(docVal)[0];
+        onSuccess?.(feedback);
+      },
+      onError: onError,
+    },
+  );
+  return feedback;
 }

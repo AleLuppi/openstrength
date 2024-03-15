@@ -173,7 +173,10 @@ import {
 } from "@/helpers/database/collections";
 import { ProgramFrozenView } from "@/helpers/programs/program";
 import { ProgramFeedback } from "@/helpers/programs/models";
-import { saveFeedback } from "@/helpers/programs/programFeedback";
+import {
+  loadLatestFeedback,
+  saveFeedback,
+} from "@/helpers/programs/programFeedback";
 import { UserRole } from "@/helpers/users/user";
 
 // Import components
@@ -191,7 +194,6 @@ const user = useUserStore();
 
 // Set ref
 const programSnapshot = ref<ProgramFrozenView>(); // current program snapshot
-// FIXME: load/store program feedbacks from DB
 const programFeedbacks = ref<ProgramFeedback>({ feedbacks: [] }); // feedbacks associated to program
 const showCompactProgram = ref<boolean>(false);
 
@@ -201,7 +203,7 @@ const programId = computed(() => String(route.query.id));
 // Retrieve requested program document
 watch(
   programId,
-  (docId) =>
+  (docId) => {
     doGetDocs(
       `${dbCollections.programs}/${docId}/${dbSubcollections.programSnapshots}`,
       undefined,
@@ -215,7 +217,11 @@ watch(
           $q.loading.hide();
         },
       },
-    ),
+    );
+    loadLatestFeedback(docId, {
+      onSuccess: (feedback) => (programFeedbacks.value = feedback),
+    });
+  },
   { immediate: true },
 );
 
