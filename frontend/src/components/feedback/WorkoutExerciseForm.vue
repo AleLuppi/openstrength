@@ -183,7 +183,7 @@ import { ref, watch, onMounted, onUnmounted } from "vue";
 // Define props
 const props = defineProps<{
   // current feedback on exercise by athlete
-  modelValue: ProgramExerciseFeedback;
+  modelValue: ProgramExerciseFeedback | undefined;
 
   // frozen program exercise info
   exercise: ProgramFrozenView["weekdays"][number]["exercises"][number];
@@ -211,9 +211,19 @@ const lineValueLabels = Object.fromEntries(
 );
 
 // Initialize exercise completed
-watch(props.modelValue, (val) => (exerciseDone.value = val.completed), {
-  immediate: true,
-});
+watch(
+  () => props.modelValue,
+  (val) => {
+    exerciseDone.value = val?.completed ?? false;
+    lineTextFeedbacks.value =
+      val?.linesFeedback.map(
+        (lineFeedback) => lineFeedback.textFeedback ?? "",
+      ) ?? [];
+  },
+  {
+    immediate: true,
+  },
+);
 
 /**
  * Toggle between the completion states of the exercise.

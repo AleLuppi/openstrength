@@ -219,7 +219,9 @@ watch(
       },
     );
     loadLatestFeedback(docId, {
-      onSuccess: (feedback) => (programFeedbacks.value = feedback),
+      onSuccess: (feedback) => {
+        programFeedbacks.value = feedback;
+      },
     });
   },
   { immediate: true },

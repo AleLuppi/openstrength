@@ -107,17 +107,8 @@ const dayShowCollapsed = ref<boolean>(false); // whether to show collapsed day
 const dayFeedback = ref<ProgramDayFeedback>({
   weekName: props.programDay.weekName,
   dayName: props.programDay.dayName,
-  completed: props.modelValue?.completed ?? false,
-  textFeedback: workoutNote.value,
-  completedOn: workoutDate.value,
-
-  exercisesFeedback: props.programDay.exercises.map((exercise, idx) => ({
-    uid: exercise.uid,
-    exerciseName: exercise.exerciseName,
-    variantName: exercise.variantName,
-    completed: props.modelValue?.exercisesFeedback[idx].completed,
-    linesFeedback: props.modelValue?.exercisesFeedback[idx].linesFeedback ?? [],
-  })),
+  completed: false,
+  exercisesFeedback: [],
 });
 
 // Find which is the next exercise athlete should perform
@@ -137,13 +128,15 @@ watch(
 // Update internal model to input model value
 watch(
   () => props.modelValue,
-  (value) =>
-    (dayFeedback.value = value ?? {
+  (value) => {
+    dayFeedback.value = value ?? {
       weekName: props.programDay.weekName,
       dayName: props.programDay.dayName,
       completed: false,
       exercisesFeedback: [],
-    }),
+    };
+  },
+  { immediate: true },
 );
 
 /**
@@ -154,7 +147,9 @@ watch(
 function completeDay(completed: boolean = true) {
   dayShowCollapsed.value = completed;
   dayFeedback.value.completed = completed;
-  dayFeedback.value.completedOn = completed ? new Date() : undefined;
+  dayFeedback.value.completedOn = completed ? workoutDate.value : undefined;
+  dayFeedback.value.textFeedback = workoutNote.value;
+  console.log(dayFeedback);
   emit("update:modelValue", dayFeedback.value);
   emit("complete");
 }
