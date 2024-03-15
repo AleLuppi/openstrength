@@ -67,7 +67,7 @@
           "
         />
         <q-btn
-          v-if="modelValue?.completed"
+          v-if="!readonly && modelValue?.completed"
           class="q-mt-md col-12"
           @click.stop="completeDay(false)"
           flat
@@ -163,10 +163,6 @@ function completeDay(completed: boolean = true) {
     dayFeedback.value.completedOn = completed ? workoutDate.value : undefined;
     dayFeedback.value.textFeedback = workoutNote.value;
     if (completed) emit("complete");
-    emit("update:modelValue", dayFeedback.value);
-  } else if (!completed) {
-    // Allow setting day as not completed in read only mode too
-    dayFeedback.value.completed = completed;
     emit("update:modelValue", dayFeedback.value);
   }
 }
