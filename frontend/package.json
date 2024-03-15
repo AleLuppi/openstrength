@@ -1,6 +1,6 @@
 {
   "name": "openstrength",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "OpenStrength",
   "private": true,
   "scripts": {
