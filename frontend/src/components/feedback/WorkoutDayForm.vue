@@ -66,6 +66,13 @@
               : 'Salva allenamento'
           "
         />
+        <q-btn
+          v-if="!readonly && modelValue?.completed"
+          class="q-mt-md col-12"
+          @click.stop="completeDay(false)"
+          flat
+          label="Segna come non completato"
+        />
       </div>
     </div>
 
@@ -156,16 +163,14 @@ function completeDay(completed: boolean = true) {
     dayFeedback.value.completed = completed;
     dayFeedback.value.completedOn = completed ? workoutDate.value : undefined;
     dayFeedback.value.textFeedback = workoutNote.value;
-    if (completed) emit("complete");
-    emit("update:modelValue", dayFeedback.value);
+    if (completed) {
+      emit("complete");
 
-    // Mixpanel tracking
-    mixpanel.track("Athlete Feedback: Day completed", {
-      Feedback: workoutNote.value,
-    });
-  } else if (!completed) {
-    // Allow setting day as not completed in read only mode too
-    dayFeedback.value.completed = completed;
+      // Mixpanel tracking
+      mixpanel.track("Athlete Feedback: Day completed", {
+        Feedback: workoutNote.value,
+      });
+    }
     emit("update:modelValue", dayFeedback.value);
   }
 }
