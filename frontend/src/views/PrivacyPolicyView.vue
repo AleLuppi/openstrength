@@ -676,7 +676,7 @@
         >Questa Applicazione fa utilizzo di Strumenti di Tracciamento. Per
         saperne di pi&ugrave;, gli Utenti possono consultare la&nbsp;</span
       ><span>
-        <router-link :to="{ name: 'cookie_policy' }"
+        <router-link :to="{ name: NamedRoutes.cookiePolicy }"
           >Cookie Policy
         </router-link> </span
       ><span>.</span>
@@ -1109,3 +1109,7 @@
     <p><span></span></p>
   </q-page>
 </template>
+
+<script setup lang="ts">
+import { NamedRoutes } from "@/router";
+</script>

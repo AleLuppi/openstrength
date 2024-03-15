@@ -43,7 +43,7 @@ const drawerItems = [
   {
     id: "maxlifts",
     tooltip: "coach.program_management.builder.show_maxlifts_tooltip",
-    icon: "fa-solid fa-table-list",
+    icon: "fa-solid fa-medal",
   },
 ];
 </script>

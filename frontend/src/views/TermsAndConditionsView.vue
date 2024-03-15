@@ -290,7 +290,7 @@
         dell’APP o del sito internet sono raccolti e trattati nel rispetto della
         normativa vigente. Informazioni più dettagliate sull’utilizzo dei dati
         personali da parte del titolare sono disponibili nella
-        <router-link :to="{ name: 'privacy_policy' }"
+        <router-link :to="{ name: NamedRoutes.privacyPolicy }"
           >Privacy Policy.
         </router-link></span
       >
@@ -350,3 +350,7 @@
     </p>
   </q-page>
 </template>
+
+<script setup lang="ts">
+import { NamedRoutes } from "@/router";
+</script>

@@ -70,6 +70,14 @@ service cloud.firestore {
         allow update: if (userSignedIn() && (request.auth.uid == getDocData(/programs/$(programId)).coachId)); // only proprietary
         allow delete: if (userSignedIn() && (request.auth.uid == getDocData(/programs/$(programId)).coachId)); // only proprietary
       }
+
+      // Manage "feedbacks" subcollection
+      match /feedbacks/{feedbackId} {
+        allow read: if true || (userSignedIn() && (request.auth.uid == getDocData(/programs/$(programId)).coachId)); // TODO only assigned athlete or relative coach
+        allow create: if true; // TODO only assigned athlete or relative coach
+        allow update: if true; // TODO only assigned athlete or relative coach
+        allow delete: if false; // only admin
+      }
     }
 
     // Manage "maxlifts" collection

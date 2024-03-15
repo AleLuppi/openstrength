@@ -195,6 +195,7 @@ export function moveProgramExercise(
     const storingExercise = duplicate
       ? programExercise.duplicate(true)
       : programExercise;
+    storingExercise.program = programExercise.program;
     storingExercise.scheduleWeek = destination[0];
     storingExercise.scheduleDay = destination[1];
     storingExercise.scheduleOrder = destination[2];

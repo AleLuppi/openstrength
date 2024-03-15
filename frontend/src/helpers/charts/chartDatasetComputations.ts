@@ -87,7 +87,7 @@ export function estimate1RMfromNRM(
 /**
  * Method to compute the percentage of 1RM [%] from the rpe-reps table
  * @param reps repetition number from 1 to 15
- * @param rpe rep from 6.5 to 10 at 0.5 increments
+ * @param rpe rpe from 6.5 to 10 at 0.5 increments
  * @param rpeTable actual instance of rpe table (2D array)
  * @returns Given a reps number and an rpe, returns the % of the 1RM as a number from 1 to 100
  */
@@ -101,20 +101,181 @@ export function calculatePercentage1RM(
     return undefined;
   }
 
-  const rpeIndex = 7 - Math.round((rpe - 6.5) * 2);
-  const repsIndex = reps - 1;
-  const percentage1RM = rpeTable[rpeIndex][repsIndex];
+  const floorReps = Math.floor(reps);
+  const ceilReps = Math.ceil(reps);
 
-  return percentage1RM;
+  const floorRpe = Math.floor(rpe);
+  const ceilRpe = Math.ceil(rpe);
+
+  if (floorReps === ceilReps && floorRpe === ceilRpe) {
+    // Integer reps, use the table directly
+    const rpeIndex = 7 - Math.round((rpe - 6.5) * 2);
+    const repsIndex = floorReps - 1;
+    return rpeTable[rpeIndex][repsIndex];
+  } else {
+    // Fractional reps, interpolate between the two nearest integer reps
+    const rpeIndex = 7 - Math.round((rpe - 6.5) * 2);
+    const floorRepsIndex = floorReps - 1;
+    const ceilRepsIndex = ceilReps - 1;
+
+    const floorPercentage = rpeTable[rpeIndex][floorRepsIndex];
+    const ceilPercentage = rpeTable[rpeIndex][ceilRepsIndex];
+
+    // Linear interpolation
+    const fraction = reps - floorReps;
+    return floorPercentage + (ceilPercentage - floorPercentage) * fraction;
+  }
 }
 
-//TODO: substitute BaseValue with Value
+/**
+ * Method to compute the number of reps given a % of the RM and rpe
+ * @param percentage from 0 to 100, indicates load/1RM
+ * @param rpe rpe from 6.5 to 10 at 0.5 increments
+ * @param rpeTable actual instance of rpe table (2D array)
+ * @returns number of reps for that specific load% and RPE
+ */
+export function calculateRepsFromTable(
+  percentage: number,
+  rpe: number,
+  rpeTable: number[][] = rpeRepsTable,
+): number | undefined {
+  if (
+    percentage < 0 ||
+    percentage > 100 ||
+    rpe < 6.5 ||
+    rpe > 10 ||
+    !rpeTable
+  ) {
+    console.error("Invalid percentage, RPE values, or RPE table.");
+    return undefined;
+  }
+
+  const rpeIndex = 7 - Math.round((rpe - 6.5) * 2);
+  const row = rpeTable[rpeIndex];
+
+  // Find the two nearest percentages
+  let lowerIndex = 0;
+  let upperIndex = row.length - 1;
+
+  for (let i = 0; i < row.length; i++) {
+    if (row[i] === percentage) {
+      // Exact match, return the corresponding reps
+      return i + 1;
+    }
+
+    if (row[i] < percentage && row[i] > row[lowerIndex]) {
+      lowerIndex = i;
+    } else if (row[i] > percentage && row[i] < row[upperIndex]) {
+      upperIndex = i;
+    }
+  }
+
+  const lowerPercentage = row[lowerIndex];
+  const upperPercentage = row[upperIndex];
+
+  const lowerReps = lowerIndex + 1;
+  const upperReps = upperIndex + 1;
+
+  // Linear interpolation
+  const fraction =
+    (percentage - lowerPercentage) / (upperPercentage - lowerPercentage);
+  const reps = lowerReps + fraction * (upperReps - lowerReps);
+
+  // Round to the nearest integer
+  return Math.round(reps);
+}
+
+/**
+ * Method to compute the rpe given a % of the RM and reps
+ * @param percentage from 0 to 100, indicates load/1RM
+ * @param reps reps number
+ * @param rpeTable actual instance of rpe table (2D array)
+ * @returns rpe from 6.5 to 10 at 0.5 increments
+ */
+export function calculateRpeFromTable(
+  percentage: number,
+  reps: number,
+  rpeTable: number[][] = rpeRepsTable,
+): number | undefined {
+  if (
+    percentage < 0 ||
+    percentage > 100 ||
+    reps < 1 ||
+    reps > 15 ||
+    !rpeTable
+  ) {
+    console.error("Invalid percentage, reps values, or RPE table.");
+    return undefined;
+  }
+
+  const repsIndex = reps - 1;
+  const column = rpeTable.map((row) => row[repsIndex]);
+
+  // Iterate over the row to find the closest value to the provided percentage
+  const closestIndex = column
+    .map((value, index) => ({ index, diff: Math.abs(value - percentage) }))
+    .reduce((min, current) => (current.diff < min.diff ? current : min)).index;
+
+  const rpe = 6.5 + 0.5 * (7 - closestIndex);
+
+  return rpe;
+}
 
 /**
  * Fallback method when no available computational methods are present
  */
 export function computeUndefined(): number | undefined {
   return undefined;
+}
+
+/************ COMPLETE LINE COMPUTATIONS ************/
+/**
+ * Computes or estimates the remaining parameters of a line
+ */
+export function estimateMissingLineProps(
+  programLine: ProgramLine,
+  maxliftValue: number,
+): ProgramLine | undefined {
+  const line = programLine.duplicate();
+
+  const load =
+    line.loadValue ??
+    line.loadComputedValue ??
+    line.loadSupposedValue ??
+    undefined;
+  const reps =
+    line.repsValue ??
+    line.repsComputedValue ??
+    line.repsSupposedValue ??
+    undefined;
+  const rpe =
+    line.rpeValue ??
+    line.rpeComputedValue ??
+    line.rpeSupposedValue ??
+    undefined;
+
+  //TODO: Ensure load is a percentage (if in kg, transform into a percentage)
+  let loadPercentage = undefined;
+  if (load) {
+    loadPercentage = 100 * (load / maxliftValue);
+  }
+
+  if (loadPercentage && reps && !rpe) {
+    const estimatedRpe = calculateRpeFromTable(loadPercentage, reps);
+    line.rpeBaseValue = `${estimatedRpe}`;
+  } else if (!loadPercentage && reps && rpe) {
+    const estimatedLoad = calculatePercentage1RM(reps, rpe);
+    //line.loadBaseValue = `${estimatedLoad}%`;
+
+    line.loadBaseValue = estimatedLoad
+      ? (Math.round(estimatedLoad * 100) / 100).toString() + "%"
+      : undefined;
+  } else if (loadPercentage && !reps && rpe) {
+    const estimatedReps = calculateRepsFromTable(loadPercentage, rpe);
+    line.repsBaseValue = `${estimatedReps}`;
+  }
+
+  return line;
 }
 
 /*********** VOLUME CALCULATIONS *************/
@@ -169,92 +330,48 @@ export function calculateTotalVolume(programLines: ProgramLine[]): number {
 
 /*********** INTENSITY CALCULATIONS *************/
 /**
- * Computes the maximum intensity as the maximum load of the passed lines.
- * Overloaded method: if a maxlift is passed computes the max intensity as load/1RM
- * @param programLines
- * @returns
+ * Compute the max intensity in kg.
+ *
+ * @param programLines lines from which max intensity shall be retrieved.
+ * @returns max intensity.
  */
-export function calculateMaxIntensity(programLines: ProgramLine[]): number;
-export function calculateMaxIntensity(
-  programLines: ProgramLine[],
-  maxLift: MaxLift,
-): number;
-export function calculateMaxIntensity(
-  programLines: ProgramLine[],
-  maxLift?: MaxLift,
-): number {
+export function calculateMaxIntensityKg(programLines: ProgramLine[]): number {
   if (programLines.length === 0) {
     return 0;
   }
 
-  // Find the maximum loadBaseValue among the lines
-  const maxLoadBaseValue = programLines.reduce((max, line) => {
-    const loadBaseValue = parseFloat(
-      (line.loadBaseValue || "0").replace(/[^0-9.]/g, ""),
-    );
-
-    return isNaN(loadBaseValue) ? max : Math.max(max, loadBaseValue);
+  // Find the maximum load as [kg] value among the lines
+  const maxIntensity = programLines.reduce((max, line) => {
+    const load =
+      line.loadValue ?? line.loadComputedValue ?? line.loadSupposedValue ?? 0;
+    return isNaN(load) ? max : Math.max(max, load);
   }, 0);
 
-  if (maxLift && maxLift.type === MaxLiftType._1RM) {
-    // If maxLift is of type 1RM, compute Intensity = maxLoadBaseValue / maxLift.value
-    const maxLiftValue = parseFloat(maxLift.value || "0");
-    return maxLiftValue !== 0 ? maxLoadBaseValue / maxLiftValue : 0;
-  } else {
-    // If no maxLift return the load
-    return maxLoadBaseValue;
-  }
+  return maxIntensity;
 }
 
 /**
- * Computes the cumulative intensity from an array of program lines provided
- * TODO: implement calculations also with 1RM
- * NOTE: no chart is necessary for this
- * @param programLines
- * @returns
+ * Compute the average intensity in percentage.
+ *
+ * @param programLines lines from which average intensity shall be retrieved.
+ * @returns average intensity.
  */
-export function calculateCumulativeIntensity(
+export function calculateAverageIntensityKg(
   programLines: ProgramLine[],
 ): number {
   if (programLines.length === 0) {
     return 0;
   }
 
-  const cumulativeIntensity = programLines.reduce(
-    (totalCumulatedIntensity, line) => {
-      const load = parseFloat(
-        (line.loadBaseValue || "0").replace(/[^0-9.]/g, ""),
-      );
-      const sets = parseInt(line.setsBaseValue || "0", 10);
+  const loadValues = programLines
+    .map(
+      (line) =>
+        line.loadValue ?? line.loadComputedValue ?? line.loadSupposedValue ?? 0,
+    )
+    .filter((value) => value !== null && !isNaN(value) && value !== 0);
 
-      // If load or sets are NaN, ignore the line
-      if (!isNaN(load) && !isNaN(sets)) {
-        const lineIntensity = load * sets;
-        return totalCumulatedIntensity + lineIntensity;
-      } else {
-        return totalCumulatedIntensity;
-      }
-    },
-    0,
-  );
+  const sum = loadValues.reduce((accumulator, value) => accumulator + value, 0);
+  const averageIntensity = loadValues.length > 0 ? sum / loadValues.length : 0;
 
-  return cumulativeIntensity;
-}
-
-/**
- * Computes the mean intensity over the provided program lines
- * @param programLines
- * @returns
- */
-export function calculateMeanIntensity(programLines: ProgramLine[]): number {
-  const cumulativeIntensity = calculateCumulativeIntensity(programLines);
-  const totalSets = calculateTotalSets(programLines);
-
-  if (totalSets === 0) {
-    return 0;
-  }
-
-  // Compute and return the ratio
-  const meanIntensity = cumulativeIntensity / totalSets;
-  return meanIntensity;
+  return averageIntensity;
 }

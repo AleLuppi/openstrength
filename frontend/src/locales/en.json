@@ -17,9 +17,10 @@
       "home": "Home",
       "home_title": "Homepage",
       "athletes": "Athletes",
-      "library": "Library",
+      "library": "Exercise Library",
       "library_title": "Library",
       "program": "Program",
+      "programlibrary": "Program Library",
       "program_title": "Program",
       "profile": "Profile",
       "signin": "Sign in",
@@ -279,7 +280,8 @@
       "list": {
         "title": "Programs library",
         "title_program": "Programs",
-        "program_section": "Your programs",
+        "program_section": "Program info",
+        "programtemplate_section": "Program template info",
         "add": "Add a new program",
         "add_proceed": "Confirm",
         "update": "Insert your program info",
@@ -362,7 +364,8 @@
         "new_program_submit": "Proceed",
         "open_recent": "Your recent programs",
         "open_from_recent": "or open a recent program",
-        "view_current": "View current program"
+        "view_current": "View current program",
+        "compact_view": "Compact view"
       },
       "viewer": {
         "title": "Program for",
@@ -384,7 +387,8 @@
         "send_program_title": "Your program is ready!",
         "send_program_description": "You can see the details at this link.",
         "dialog_title": "Send this link to your athlete",
-        "preview": "View preview"
+        "preview": "View preview",
+        "compact_view": "Compact view"
       },
       "filter": {
         "title": "Filter by...",
@@ -393,6 +397,36 @@
         "filter_exercise": "exercise",
         "clear_filters": "Clear filters",
         "all_filtered_out": "Nothing to show"
+      }
+    },
+    "programlibrary_management": {
+      "list": {
+        "title": "Program templates",
+        "search": "Search template...",
+        "open": "Open in builder",
+        "delete_proceed": "Delete program",
+        "delete_template_confirm": "You are about to delete the program template named \"{ program }\". Are you sure?",
+        "export_template": "Export to library",
+        "import_template": "Import from library",
+        "template": "Program template",
+        "filter_active_warning": "There are active filters, a filtered version of the program will be saved. Do you want to proceed?",
+        "template_saving_title": "Insert your template program data",
+        "template_import_title": "Import template programm",
+        "template_updating_title": "Update your program template data",
+        "no_templates": "There are no program templates available, you can export one from program builder",
+        "no_selected_template": "Select a program template to view a preview",
+        "save_success": "Program template correctly saved, you can find it in the program library",
+        "update_success": "Program template info correctly updated",
+        "add_error": "An error occurred, please retry"
+      },
+      "fields": {
+        "program_info": "Template info",
+        "name": "Program name",
+        "description": "Note"
+      },
+      "import": {
+        "missing_maxlifts_title": "Insert missing max lifts",
+        "missing_maxlifts_description": "To complete template import, insert missing values. You will be able to update them from the list of athlete's personal bests."
       }
     },
     "maxlift_management": {
@@ -406,7 +440,8 @@
         "update_error": "Could not update personal record, please retry",
         "no_maxlift": "Add a personal record for the current athlete",
         "no_athlete": "Select an athlete to see related data",
-        "maxlift_section": "Personal records section"
+        "maxlift_section": "Personal records section",
+        "maxlift_section_template": "Personal records of reference"
       },
       "fields": {
         "exercise": "Exercise",
@@ -451,6 +486,7 @@
     "cancel": "Cancel",
     "default": "Default",
     "continue": "Continue",
+    "proceed": "Proceed",
     "finish": "Finish",
     "or": "or",
     "or_long": "or",

@@ -25,6 +25,7 @@ const AthletesView = () => import("@/views/AthletesView.vue");
 const LibraryView = () => import("@/views/LibraryView.vue");
 const ProgramView = () => import("@/views/ProgramView.vue");
 const ProgramViewerView = () => import("@/views/ProgramViewerView.vue");
+const ProgramLibraryView = () => import("@/views/ProgramLibraryView.vue");
 const UserLoginView = () => import("@/views/UserLoginView.vue");
 const UserRegisterView = () => import("@/views/UserRegisterView.vue");
 const UserProfileView = () => import("@/views/UserProfileView.vue");
@@ -43,19 +44,20 @@ const RightDrawerProgramElements = defineAsyncComponent(
 export enum NamedRoutes {
   home = "home",
   landing = "landing",
-  landing_confirmation = "landing_confirmation",
+  landingConfirmation = "landingConfirmation",
   athletes = "athletes",
-  library = "library",
+  exerciseLibrary = "exerciseLibrary",
   program = "program",
+  programLibrary = "programLibrary",
   view = "view",
-  view_program = "program_view",
+  viewProgram = "viewProgram",
   login = "login",
   register = "register",
   profile = "profile",
-  privacy_policy = "privacy_policy",
-  cookie_policy = "cookie_policy",
-  terms_conditions = "terms_conditions",
-  not_found = "not_found",
+  privacyPolicy = "privacyPolicy",
+  cookiePolicy = "cookiePolicy",
+  termsConditions = "termsConditions",
+  notFound = "notFound",
 }
 
 /**
@@ -105,7 +107,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: "/confirmation",
-    name: NamedRoutes.landing_confirmation,
+    name: NamedRoutes.landingConfirmation,
     component: LandingConfirmationPage,
     meta: {
       title: "Welcome",
@@ -126,7 +128,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: "/library",
-    name: NamedRoutes.library,
+    name: NamedRoutes.exerciseLibrary,
     component: LibraryView,
     meta: {
       title: "Library",
@@ -148,6 +150,16 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/program-library",
+    name: NamedRoutes.programLibrary,
+    component: ProgramLibraryView,
+    meta: {
+      title: "Program Library",
+      restrictAccessByRole: [UserRole.coach],
+      redirectNotAuthorized: "home",
+    },
+  },
+  {
     path: "/view",
     name: NamedRoutes.view,
     meta: {
@@ -159,7 +171,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: "program",
-        name: NamedRoutes.view_program,
+        name: NamedRoutes.viewProgram,
         component: ProgramViewerView,
         meta: {
           title: "View program",
@@ -197,7 +209,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: "/privacy-policy",
-    name: NamedRoutes.privacy_policy,
+    name: NamedRoutes.privacyPolicy,
     component: PrivacyPolicyView,
     meta: {
       title: "Privacy Policy",
@@ -205,7 +217,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: "/cookie-policy",
-    name: NamedRoutes.cookie_policy,
+    name: NamedRoutes.cookiePolicy,
     component: CookiePolicyView,
     meta: {
       title: "Cookie Policy",
@@ -213,7 +225,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: "/terms-and-conditions",
-    name: NamedRoutes.terms_conditions,
+    name: NamedRoutes.termsConditions,
     component: TermsAndConditionView,
     meta: {
       title: "Terms and Conditions",
@@ -222,7 +234,7 @@ const routes: RouteRecordRaw[] = [
   {
     // page not found
     path: "/:pathMatch(.*)*",
-    name: NamedRoutes.not_found,
+    name: NamedRoutes.notFound,
     component: PageNotFoundView,
     meta: {
       title: "Page not found",
@@ -243,9 +255,10 @@ router.beforeEach(async (to) => {
   if (!routeAccessibleByRole(user, to) || !routeAccessibleByLevel(user, to)) {
     // Redirect user
     return {
-      name: (to.meta.redirectNotAuthorized ?? "not_found") as RouteRecordName,
+      name: (to.meta.redirectNotAuthorized ??
+        NamedRoutes.notFound) as RouteRecordName,
     };
-    // FIXME redirect to a "restriced access" page if redirectNotAuthorized is unknown
+    // TODO redirect to a "restriced access" page if redirectNotAuthorized is unknown
   }
 
   // Check if authenticated user needs to be redirected

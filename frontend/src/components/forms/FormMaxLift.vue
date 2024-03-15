@@ -103,6 +103,7 @@ import { Exercise, ExerciseLoadType } from "@/helpers/exercises/exercise";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import { estimate1RMfromNRM } from "@/helpers/charts/chartDatasetComputations";
 import { AthleteUser } from "@/helpers/users/user";
+import { getMaxliftUnit } from "@/helpers/maxlifts/utils";
 
 // Set props
 const props = defineProps({
@@ -175,23 +176,7 @@ const maxliftSelectedExercise = computed(() =>
 );
 
 // Gather correct suffix for current selection
-const maxliftValueSuffix = computed(() => {
-  switch (maxliftType.value) {
-    case MaxLiftType._1RM:
-    case MaxLiftType._3RM:
-    case MaxLiftType._5RM:
-    case MaxLiftType._6RM:
-    case MaxLiftType._8RM:
-    case MaxLiftType._10RM:
-      return "kg";
-    case MaxLiftType._maxrep:
-      return "reps";
-    case MaxLiftType._maxtime:
-      return "s";
-    default:
-      return "";
-  }
-});
+const maxliftValueSuffix = computed(() => getMaxliftUnit(maxliftType.value));
 
 /**
  * Calculate estimate of 1RM value.
