@@ -21,7 +21,7 @@
       </h4>
 
       <q-icon
-        v-if="dayShowCollapsed"
+        v-if="modelValue?.completed"
         name="sym_o_check"
         size="sm"
         color="positive"
@@ -39,21 +39,31 @@
         :class="{
           'os-next-exercise': isNext && idxExercise == nextExerciseIdx,
         }"
+        :readonly="readonly"
       ></WorkoutExerciseForm>
 
       <div class="row q-py-md">
-        <os-input-date v-model="workoutDate" label="Data allenamento" />
+        <os-input-date
+          v-model="workoutDate"
+          label="Data allenamento"
+          :readonly="readonly"
+        />
         <os-input
           v-model="workoutNote"
           type="textarea"
           label="Feedback sulla sessione"
           class="col-12"
+          :readonly="readonly"
         />
         <q-btn
           class="col-12"
           @click.stop="completeDay()"
           :label="
-            modelValue?.completed ? 'Salva modifiche' : 'Salva allenamento'
+            readonly
+              ? 'Chiudi'
+              : modelValue?.completed
+              ? 'Salva modifiche'
+              : 'Salva allenamento'
           "
         />
         <q-btn
@@ -88,8 +98,11 @@ const props = withDefaults(
 
     // set if day is next to be done in program
     isNext: boolean;
+
+    // whether to show component for reading only and not update
+    readonly: boolean;
   }>(),
-  { isNext: false },
+  { isNext: false, readonly: false },
 );
 
 // Define emit
@@ -102,14 +115,12 @@ const emit = defineEmits<{
 const workoutDate = ref<Date>(new Date()); // day on which exercises have been performed
 const workoutNote = ref<string>(""); // optional feedback text on the day
 const dayShowCollapsed = ref<boolean>(false); // whether to show collapsed day
-
-// FIXME
 const dayFeedback = ref<ProgramDayFeedback>({
   weekName: props.programDay.weekName,
   dayName: props.programDay.dayName,
   completed: false,
   exercisesFeedback: [],
-});
+}); // feedback on program day
 
 // Find which is the next exercise athlete should perform
 const nextExerciseIdx = computed(() =>
@@ -146,12 +157,18 @@ watch(
  */
 function completeDay(completed: boolean = true) {
   dayShowCollapsed.value = completed;
-  dayFeedback.value.completed = completed;
-  dayFeedback.value.completedOn = completed ? workoutDate.value : undefined;
-  dayFeedback.value.textFeedback = workoutNote.value;
-  console.log(dayFeedback);
-  emit("update:modelValue", dayFeedback.value);
-  emit("complete");
+  if (!props.readonly) {
+    // Update feedback if not in read only mode
+    dayFeedback.value.completed = completed;
+    dayFeedback.value.completedOn = completed ? workoutDate.value : undefined;
+    dayFeedback.value.textFeedback = workoutNote.value;
+    if (completed) emit("complete");
+    emit("update:modelValue", dayFeedback.value);
+  } else if (!completed) {
+    // Allow setting day as not completed in read only mode too
+    dayFeedback.value.completed = completed;
+    emit("update:modelValue", dayFeedback.value);
+  }
 }
 </script>
 

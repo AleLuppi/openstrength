@@ -69,6 +69,7 @@
           :isNext="nextDayIdx == indexDay"
           class="q-my-md"
           :class="{ 'q-mx-xl': $q.screen.gt.sm }"
+          :readonly="user.role == UserRole.coach"
         >
         </WorkoutDayForm>
       </div>

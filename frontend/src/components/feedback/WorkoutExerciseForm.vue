@@ -1,15 +1,18 @@
 <template>
   <q-card
     :class="{
-      'bg-green-3 os-completed': exerciseDone,
+      'os-completed': exerciseDone,
     }"
     class="q-mb-sm"
   >
     <!-- TODO: i18n for all the component-->
     <q-expansion-item
-      :model-value="!exerciseDone"
+      :model-value="readonly || !exerciseDone"
       @update:model-value="toggleDone"
       hide-expand-icon
+      :header-class="{
+        'bg-green-3 ': exerciseDone,
+      }"
     >
       <template #header>
         <div class="q-py-sm full-width">
@@ -131,10 +134,17 @@
                     }
                   "
                 >
-                  <os-input autofocus type="textarea" v-model="scope.value" />
-                  <q-btn class="full-width" @click.stop.prevent="scope.set">
-                    Save Comment
-                  </q-btn>
+                  <os-input
+                    autofocus
+                    type="textarea"
+                    v-model="scope.value"
+                    :readonly="readonly"
+                  />
+                  <q-btn
+                    class="full-width"
+                    @click.stop.prevent="scope.set"
+                    :label="readonly ? 'Chiudi' : 'Salva commento'"
+                  />
                 </q-popup-edit>
               </q-btn>
 
@@ -181,13 +191,19 @@ import { stringCapitalize } from "@/helpers/scalar";
 import { ref, watch, onMounted, onUnmounted } from "vue";
 
 // Define props
-const props = defineProps<{
-  // current feedback on exercise by athlete
-  modelValue: ProgramExerciseFeedback | undefined;
+const props = withDefaults(
+  defineProps<{
+    // current feedback on exercise by athlete
+    modelValue: ProgramExerciseFeedback | undefined;
 
-  // frozen program exercise info
-  exercise: ProgramFrozenView["weekdays"][number]["exercises"][number];
-}>();
+    // frozen program exercise info
+    exercise: ProgramFrozenView["weekdays"][number]["exercises"][number];
+
+    //
+    readonly: boolean;
+  }>(),
+  { readonly: false },
+);
 
 // Define emit
 const emit = defineEmits<{
@@ -233,6 +249,7 @@ watch(
  *  - not done -> value "false"
  */
 function toggleDone() {
+  if (props.readonly) return;
   exerciseDone.value = !exerciseDone.value;
   saveExerciseFeedback();
 }
