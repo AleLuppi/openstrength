@@ -1110,6 +1110,13 @@ watch(deletingProgram, (programToDelete) => {
   if (programToDelete) showDialogDeleteProgram.value = true;
 });
 
+// Register mixpanel event when view is switched to compact
+watch(isBuilderCompact, () => {
+  // Mixpanel tracking
+  if (isBuilderCompact.value === true) {
+    mixpanel.track("Builder switched to compact");
+  }
+});
 /**
  * Set saved info and ensure it is preserved.
  */
