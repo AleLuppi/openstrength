@@ -86,6 +86,7 @@ import { computed, ref, watch } from "vue";
 import { ProgramFrozenView } from "@/helpers/programs/program";
 import WorkoutExerciseForm from "./WorkoutExerciseForm.vue";
 import { ProgramDayFeedback } from "@/helpers/programs/models";
+import mixpanel from "mixpanel-browser";
 
 // Define props
 const props = withDefaults(
@@ -164,6 +165,11 @@ function completeDay(completed: boolean = true) {
     dayFeedback.value.textFeedback = workoutNote.value;
     if (completed) emit("complete");
     emit("update:modelValue", dayFeedback.value);
+
+    // Mixpanel tracking
+    mixpanel.track("Athlete Feedback: Day completed", {
+      Feedback: workoutNote.value,
+    });
   } else if (!completed) {
     // Allow setting day as not completed in read only mode too
     dayFeedback.value.completed = completed;
