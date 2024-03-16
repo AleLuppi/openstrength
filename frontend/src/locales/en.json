@@ -368,7 +368,7 @@
         "new_program_submit": "Proceed",
         "open_recent": "Your recent programs",
         "open_from_recent": "or open a recent program",
-        "view_current": "View current program", 
+        "view_current": "View current program",
         "compact_view": "Compact view"
       },
       "viewer": {
@@ -391,7 +391,8 @@
         "send_program_title": "Your program is ready!",
         "send_program_description": "You can see the details at this link.",
         "dialog_title": "Send this link to your athlete",
-        "preview": "View preview"
+        "preview": "View preview",
+        "compact_view": "Compact view"
       },
       "filter": {
         "title": "Filter by...",

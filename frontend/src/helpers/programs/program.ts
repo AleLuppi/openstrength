@@ -12,12 +12,16 @@ import { User, CoachUser, AthleteUser, UserRole } from "@/helpers/users/user";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import {
+  matchNumberFloatInBrackets,
+  matchNumberFractionFloat,
   matchNumberFractionInteger,
   matchNumberFractionPercentageFloat,
   matchNumberIntegerInBrackets,
   matchNumberOptionallySignedPercentageFloat,
+  matchNumberSignedFloat,
   matchNumberSignedFloatWithOptionalUnit,
   matchNumberSignedInteger,
+  matchNumberUnsignedFloat,
   matchNumberUnsignedFloatWithOptionalUnit,
   matchNumberUnsignedInteger,
 } from "@/helpers/regex";
@@ -139,6 +143,20 @@ export type ProgramLineProps = {
 };
 
 /**
+ * Frozen entity for program line
+ */
+export type ProgramFrozenLine = {
+  load: string | undefined;
+  askLoad?: boolean;
+  reps?: string | undefined;
+  askReps?: boolean;
+  sets?: string | undefined;
+  askSets: boolean;
+  rpe?: string | undefined;
+  askRpe?: boolean;
+};
+
+/**
  * Frozen program object.
  */
 export type ProgramFrozenView = {
@@ -152,10 +170,12 @@ export type ProgramFrozenView = {
     weekName: string;
     dayName: string;
     exercises: {
+      uid: string;
       exerciseName: string;
       variantName: string;
       note?: string;
       schema: string[];
+      lines: ProgramFrozenLine[] | undefined;
       schemaNote: string[];
       textFeedback: boolean[];
       videoFeedback: boolean[];
@@ -249,7 +269,7 @@ export class Program {
     this.description = description;
     this.labels = labels;
     programExercises?.forEach((exercise) => {
-      if (!exercise.program) exercise.program = this;
+      exercise.program = this;
     });
     this.programExercises = programExercises;
     this.coach = coach;
@@ -354,17 +374,36 @@ export class Program {
    * @param shallow avoid copying identifying fields such as uid and parent instance.
    * @returns a new program with duplicate fields.
    */
-  duplicate(shallow: boolean = false) {
-    return new Program({
+  duplicate(shallow: boolean = false): Program {
+    const programClone = new Program({
       ...this,
       programExercises: this.programExercises?.map((programExercise) =>
-        programExercise.duplicate(),
+        programExercise.duplicate(shallow),
       ),
       ...(shallow && {
         uid: undefined,
         name: undefined,
       }),
     });
+
+    // Rewire program line references inside new program
+    const originalLines = this.getLines() ?? [];
+    const clonedLines = programClone.getLines() ?? [];
+    clonedLines.forEach((clonedLine) => {
+      (
+        ["loadReference", "repsReference"] as (
+          | "loadReference"
+          | "repsReference"
+        )[]
+      ).forEach((field) => {
+        const idx = clonedLine[field]
+          ? originalLines.findIndex((line) => line == clonedLine[field])
+          : -1;
+        if (idx >= 0) clonedLine[field] = clonedLines[idx];
+      });
+    });
+
+    return programClone;
   }
 
   /**
@@ -487,7 +526,7 @@ export class ProgramExercise {
     this.exerciseVariant = exerciseVariant;
     this.exerciseNote = exerciseNote;
     lines?.forEach((line) => {
-      if (!line.programExercise) line.programExercise = this;
+      line.programExercise = this;
     });
     this.lines = lines;
   }
@@ -584,8 +623,8 @@ export class ProgramLine {
     return undefined;
   }
   public get rpeValue(): number | undefined {
-    if (this.rpeBaseValue && matchNumberUnsignedInteger(this.rpeBaseValue)) {
-      const parsedRPE = parseInt(this.rpeBaseValue);
+    if (this.rpeBaseValue && matchNumberUnsignedFloat(this.rpeBaseValue)) {
+      const parsedRPE = Number(this.rpeBaseValue);
       return parsedRPE >= 0 && parsedRPE <= 10 ? parsedRPE : undefined;
     } else return this.rpeComputedValue;
   }
@@ -599,8 +638,9 @@ export class ProgramLine {
       }
     } else return undefined;
   }
-  //TODO: add case from rpe table (load and rpe present)
+  //TODO: check
   get repsComputedValue(): number | undefined {
+    // Computed from reference to other values
     if (this.repsReference && this.refRepsValue) {
       if (this.repsOperation && matchNumberSignedInteger(this.repsOperation)) {
         const operationValue = parseInt(this.repsOperation);
@@ -609,6 +649,7 @@ export class ProgramLine {
     } else return undefined;
   }
   get loadComputedValue(): number | undefined {
+    // Computed from reference
     if (this.loadReference && this.refLoadValue) {
       if (
         this.loadOperation?.trim() &&
@@ -623,13 +664,13 @@ export class ProgramLine {
           return this.refLoadValue + parseFloat(this.loadOperation);
       } else return undefined;
     }
-
     return undefined;
   }
   get rpeComputedValue(): number | undefined {
+    // Computed from reference to other values
     if (this.rpeReference?.rpeValue) {
-      if (this.rpeOperation && matchNumberSignedInteger(this.rpeOperation)) {
-        const operationValue = parseInt(this.rpeOperation);
+      if (this.rpeOperation && matchNumberSignedFloat(this.rpeOperation)) {
+        const operationValue = parseFloat(this.rpeOperation);
         const computedValue = this.rpeReference.rpeValue + operationValue;
 
         // Ensure the computed value is between 0 and 10
@@ -856,8 +897,8 @@ export class ProgramLine {
     return undefined;
   }
   get rpeSupposedValue(): number | undefined {
-    if (this.rpeBaseValue && matchNumberFractionInteger(this.rpeBaseValue)) {
-      const [secondNumber, firstNumber] = matchNumberFractionInteger(
+    if (this.rpeBaseValue && matchNumberFractionFloat(this.rpeBaseValue)) {
+      const [secondNumber, firstNumber] = matchNumberFractionFloat(
         this.rpeBaseValue,
       )!
         .slice(1, 3)
@@ -865,19 +906,19 @@ export class ProgramLine {
       return (secondNumber + firstNumber) / 2;
     } else if (
       this.rpeBaseValue &&
-      matchNumberIntegerInBrackets(this.rpeBaseValue)
+      matchNumberFloatInBrackets(this.rpeBaseValue)
     ) {
-      return parseInt(matchNumberIntegerInBrackets(this.rpeBaseValue)?.at(1)!);
+      return parseFloat(matchNumberFloatInBrackets(this.rpeBaseValue)?.at(1)!);
     } else if (this.rpeOperation !== undefined) {
       const referenceValue =
         this.rpeReference?.rpeComputedValue ??
         this.rpeReference?.rpeSupposedValue;
       if (referenceValue !== undefined) {
-        return referenceValue + parseInt(this.rpeOperation);
+        return referenceValue + parseFloat(this.rpeOperation);
       } else {
         const referenceSupposedValue = this.rpeReference?.rpeSupposedValue;
         return referenceSupposedValue !== undefined
-          ? referenceSupposedValue + parseInt(this.rpeOperation)
+          ? referenceSupposedValue + parseFloat(this.rpeOperation)
           : undefined;
       }
     } else {

@@ -104,3 +104,31 @@ export function arrayOfPairsToObject<K extends string | number | symbol, V>(
     {} as { [key in K]: V[] },
   );
 }
+
+/**
+ * Zip two or more arrays into group of values in a single array.
+ *
+ * @param [pad=false] if true, preserve longest array length, otherwise stick with shortest length.
+ * @param arrays any number of arrays to zip.
+ * @returns an array containing list of values from each input arrays in order.
+ */
+export function arrayZip<T>(arrays: T[][], pad: boolean = false): T[][] {
+  const length = Math[pad ? "max" : "min"](...arrays.map((arr) => arr.length));
+
+  return Array(length)
+    .fill(undefined)
+    .map((_, i) => arrays.map((a) => a[i]));
+}
+
+/**
+ * Push a value to an possibly undefined array.
+ *
+ * @param array possibly undefined array.
+ * @param value value to push.
+ * @returns array instance with inserted value.
+ */
+export function arrayPushToNullable<T>(array: T[] | undefined, value: T): T[] {
+  const outArray = array || [];
+  outArray.push(value);
+  return outArray;
+}

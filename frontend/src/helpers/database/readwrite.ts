@@ -40,7 +40,7 @@ export async function doAddDoc(
     onError,
   }: {
     addUserId?: boolean | string;
-    addCurrentTimestamp?: boolean;
+    addCurrentTimestamp?: boolean | string;
     undefinedToNull?: boolean;
     onSuccess?: Function;
     onError?: Function;
@@ -55,15 +55,16 @@ export async function doAddDoc(
     };
   }
 
+  // Parse undefined values as null
+  if (undefinedToNull) data = objectDeepValueToValue(data, undefined, null);
+
   // Add timestamp if required
   if (addCurrentTimestamp)
     data = {
       ...data,
-      datetime: serverTimestamp(),
+      [addCurrentTimestamp === true ? "datetime" : addCurrentTimestamp]:
+        serverTimestamp(),
     };
-
-  // Parse undefined values as null
-  if (undefinedToNull) data = objectDeepValueToValue(data, undefined, null);
 
   // Create doc
   await addDoc(collection(db, collectionName), data)
@@ -98,7 +99,7 @@ export async function doAddDocWithId(
     onError,
   }: {
     addUserId?: boolean | string;
-    addCurrentTimestamp?: boolean;
+    addCurrentTimestamp?: boolean | string;
     undefinedToNull?: boolean;
     onSuccess?: Function;
     onError?: Function;
@@ -113,15 +114,16 @@ export async function doAddDocWithId(
     };
   }
 
+  // Parse undefined values as null
+  if (undefinedToNull) data = objectDeepValueToValue(data, undefined, null);
+
   // Add timestamp if required
   if (addCurrentTimestamp)
     data = {
       ...data,
-      datetime: serverTimestamp(),
+      [addCurrentTimestamp === true ? "datetime" : addCurrentTimestamp]:
+        serverTimestamp(),
     };
-
-  // Parse undefined values as null
-  if (undefinedToNull) data = objectDeepValueToValue(data, undefined, null);
 
   // Create doc
   const docRef = doc(db, collectionName, docId);
@@ -157,7 +159,7 @@ export async function doUpdateDoc(
     onError,
   }: {
     addUserId?: boolean | string;
-    addCurrentTimestamp?: boolean;
+    addCurrentTimestamp?: boolean | string;
     undefinedToNull?: boolean;
     onSuccess?: Function;
     onError?: Function;
@@ -172,15 +174,16 @@ export async function doUpdateDoc(
     };
   }
 
+  // Parse undefined values as null
+  if (undefinedToNull) data = objectDeepValueToValue(data, undefined, null);
+
   // Add timestamp if required
   if (addCurrentTimestamp)
     data = {
       ...data,
-      datetime: serverTimestamp(),
+      [addCurrentTimestamp === true ? "datetime" : addCurrentTimestamp]:
+        serverTimestamp(),
     };
-
-  // Parse undefined values as null
-  if (undefinedToNull) data = objectDeepValueToValue(data, undefined, null);
 
   // Update doc
   await updateDoc(doc(db, collectionName, docId), data)
