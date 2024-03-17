@@ -12,11 +12,27 @@
           @click="registerProgramOpeningEvent()"
         ></q-btn>
 
-        <q-badge
-          v-if="props.isCurrent == true"
-          :label="$t('coach.athlete_management.fields.program_active')"
-          color="positive"
+        <q-chip
+          :label="
+            $t(
+              'coach.athlete_management.fields.' +
+                (props.isCurrent ? 'program_active' : 'program_ready'),
+            )
+          "
+          :color="props.isCurrent ? 'positive' : 'info'"
         />
+      </div>
+
+      <div v-if="!props.isCurrent" class="q-my-lg">
+        <p>
+          {{ $t("coach.athlete_management.assign.another_program_assigned") }}
+          <a
+            @click="emit('assign', program)"
+            class="cursor-pointer text-primary"
+          >
+            {{ $t("coach.athlete_management.assign.assign_this") }}
+          </a>
+        </p>
       </div>
 
       <div class="row q-col-gutter-x-md">
@@ -82,6 +98,7 @@ const props = withDefaults(
 // Define emits
 const emit = defineEmits<{
   submit: [program: Program];
+  assign: [program: Program];
 }>();
 
 // Set expose

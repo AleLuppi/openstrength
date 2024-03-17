@@ -365,6 +365,7 @@
               :isCurrent="
                 selectedAthlete?.assignedProgramId === infoProgram!.uid
               "
+              @assign="assignProgram"
             />
           </q-card-section>
         </q-card>
@@ -428,6 +429,7 @@ import {
 } from "@/helpers/programs/athleteAssignment";
 import mixpanel from "mixpanel-browser";
 import { NamedRoutes } from "@/router";
+import { assignProgramToAthlete } from "@/helpers/programs/programManager";
 
 // Import components
 const TableExistingPrograms = defineAsyncComponent(
@@ -667,6 +669,26 @@ function clearAthlete() {
   athleteSurname.value = "";
   athleteNote.value = "";
   showAthleteDialog.value = false;
+}
+
+/**
+ * Set a program as the currently assigned program to selected athlete.
+ *
+ * @param program program that shall be set as currently ongoing.
+ */
+function assignProgram(program: Program) {
+  if (selectedAthlete.value)
+    assignProgramToAthlete(program, selectedAthlete.value, {
+      onError: () => {
+        $q.notify({
+          type: "negative",
+          message: i18n.t(
+            "coach.program_management.builder.save_assignment_error",
+          ),
+          position: "bottom",
+        });
+      },
+    });
 }
 
 /**

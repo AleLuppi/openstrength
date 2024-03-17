@@ -176,6 +176,7 @@
         "update": "Aggiorna info sull'atleta",
         "program_title": "Programma attivo",
         "program_active": "Programma attivo",
+        "program_ready": "Programma pronto",
         "program_info": "Info programma",
         "program_name": "Nome del programma",
         "program_start": "Data di inizio",
@@ -188,6 +189,10 @@
         "athlete_info": "Informazioni sull'atleta",
         "anagraphic": "Anagrafica",
         "personal_best": "Massimali"
+      },
+      "assign": {
+        "another_program_assigned": "L'atleta sta seguendo un altro programma.",
+        "assign_this": "Assegna questo programma"
       },
       "call_to_action": {
         "title": "Crea un programma per",

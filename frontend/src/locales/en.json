@@ -176,6 +176,7 @@
         "update": "Update athlete",
         "program_title": "Active program",
         "program_active": "Active program",
+        "program_ready": "Program ready",
         "program_info": "Program info",
         "program_name": "Program Name",
         "program_start": "Start Date",
@@ -188,6 +189,10 @@
         "athlete_info": "Athlete Info",
         "anagraphic": "Anagraphic",
         "personal_best": "Personal Best"
+      },
+      "assign": {
+        "another_program_assigned": "Athlete is currently working on another program.",
+        "assign_this": "Assign this program"
       },
       "call_to_action": {
         "title": "Create a program for",

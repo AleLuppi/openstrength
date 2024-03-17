@@ -852,7 +852,6 @@ import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssign
 import DialogProgramShareWithAthlete from "@/components/dialogs/DialogProgramShareWithAthlete.vue";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
 import TableExistingPrograms from "@/components/tables/TableExistingPrograms.vue";
-import { AthleteUser } from "@/helpers/users/user";
 import {
   getProgramUniqueWeeks,
   getProgramUniqueDays,
@@ -867,6 +866,7 @@ import mixpanel from "mixpanel-browser";
 import { extractUniqueMaxliftFromProgram } from "@/helpers/programs/programTemplate";
 import { compareMaxliftLists } from "@/helpers/maxlifts/listManagement";
 import { arrayFilterUndefined } from "@/helpers/array";
+import { assignProgramToAthlete } from "@/helpers/programs/programManager";
 
 // Import components
 const ProgramBuilder = defineAsyncComponent(
@@ -926,7 +926,6 @@ const programManagerElement = ref<HTMLElement>();
 const programBuilderElement = ref<typeof ProgramBuilder>();
 const selectedProgram = ref<Program>();
 const substituteProgramId = ref<string>();
-const oldAthleteAssigned = ref<AthleteUser>();
 const programSaved = ref(true);
 const filterWeek = ref<string[]>();
 const filterDay = ref<string[]>();
@@ -1071,18 +1070,6 @@ watch(
 // Try (but not force) to open a new program when requested
 watch(substituteProgramId, (programId?: string) => openProgram(programId));
 
-// Perform operations when program saved status change
-watch(
-  programSaved,
-  (isSaved) => {
-    if (isSaved) {
-      // Save info on athlete currently assigned to program
-      oldAthleteAssigned.value = selectedProgram.value?.athlete;
-    }
-  },
-  { immediate: true },
-);
-
 // Perform operations on program update
 watch(selectedProgram, (program) => {
   // Active changes on current program
@@ -1201,12 +1188,18 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
         ) || []).push(currProgram);
 
       // Update athlete profile with new program
-      if (!currProgram.isTemplate)
-        assignProgramToAthlete(
-          currProgram,
-          currProgram.athlete,
-          oldAthleteAssigned.value,
-        );
+      if (!currProgram.isTemplate && currProgram.athlete)
+        assignProgramToAthlete(currProgram, currProgram.athlete, {
+          onError: () => {
+            $q.notify({
+              type: "negative",
+              message: i18n.t(
+                "coach.program_management.builder.save_assignment_error",
+              ),
+              position: "bottom",
+            });
+          },
+        });
 
       // Clear active change on current program
       coachActiveChanges.program = undefined;
@@ -1373,58 +1366,6 @@ function mergeProgramTemplate() {
 const autosaveProgram = debounce(() => {
   saveProgram(undefined, true);
 }, 60 * 1000 /* debounce 60 seconds */);
-
-/**
- * Assign a program to an athlete and save the update.
- *
- * @param program program that shall be assigned to athlete.
- * @param athlete athlete to which program shall be assigned.
- * @param oldAthlete old athlete to which program was assigned and shall now be unassigned.
- */
-function assignProgramToAthlete(
-  program: Program,
-  athlete?: AthleteUser,
-  oldAthlete?: AthleteUser,
-) {
-  // Update athlete info
-  if (athlete) {
-    athlete.assignedProgramId = program.uid;
-    if (program.uid)
-      (athlete.assignedPrograms = athlete.assignedPrograms || []).push(
-        program.uid,
-      );
-
-    // Store changes
-    athlete.saveUpdate({
-      onError: () => {
-        $q.notify({
-          type: "negative",
-          message: i18n.t(
-            "coach.program_management.builder.save_assignment_error",
-          ),
-          position: "bottom",
-        });
-      },
-    });
-  }
-
-  // Optionally remove program from a previously assigned athlete
-  if (oldAthlete && oldAthlete != athlete) {
-    oldAthlete.assignedProgramId = undefined;
-    oldAthlete.saveUpdate({
-      onError: () => {
-        $q.notify({
-          type: "negative",
-          message: i18n.t(
-            "coach.program_management.builder.save_unassignment_error",
-            { name: oldAthlete.referenceName },
-          ),
-          position: "bottom",
-        });
-      },
-    });
-  }
-}
 
 /**
  * Delete one program from list, upon confirmation.
