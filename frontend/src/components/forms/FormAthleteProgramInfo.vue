@@ -2,7 +2,7 @@
   <q-form ref="formElement" @submit="onSubmit">
     <!-- Actual programs -->
     <div>
-      <div class="row q-mb-md">
+      <div class="row items-center justify-between q-mb-md">
         <q-btn
           outline
           :to="{ name: 'program', params: { programId: props.program.uid } }"
@@ -12,14 +12,11 @@
           @click="registerProgramOpeningEvent()"
         ></q-btn>
 
-        <div v-if="props.isCurrent == true" class="column justify-center">
-          <q-badge
-            :label="$t('coach.athlete_management.fields.program_active')"
-            color="positive"
-            outline
-          >
-          </q-badge>
-        </div>
+        <q-badge
+          v-if="props.isCurrent == true"
+          :label="$t('coach.athlete_management.fields.program_active')"
+          color="positive"
+        />
       </div>
 
       <div class="row q-col-gutter-x-md">
@@ -74,19 +71,18 @@ const $q = useQuasar();
 const i18n = useI18n();
 
 // Set props
-const props = defineProps({
-  program: {
-    type: Program,
-    required: true,
-  },
-  isCurrent: {
-    type: Boolean,
-    required: true,
-  },
-  onSubmit: {
-    type: Function,
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    program: Program;
+    isCurrent: boolean;
+  }>(),
+  { isCurrent: false },
+);
+
+// Define emits
+const emit = defineEmits<{
+  submit: [program: Program];
+}>();
 
 // Set expose
 defineExpose({
@@ -130,7 +126,7 @@ function onSubmit() {
   program.finishedOn = programFinishedOn.value;
   program.description = programDescription.value;
 
-  props.onSubmit?.(program);
+  emit("submit", program);
 
   program.saveUpdate({
     saveFrozenView: true,

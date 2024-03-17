@@ -682,39 +682,24 @@ function onProgramDelete(program: Program) {
  * @param program element that shall be removed.
  */
 function deleteProgram(program: Program) {
-  // Unassign program from athlete
-  const currAthlete = program.athlete;
-  if (currAthlete) {
-    currAthlete.assignedProgramId = undefined;
-    currAthlete;
-    currAthlete.saveUpdate({
-      onSuccess: () => {
-        // Mixpanel tracking
-        mixpanel.track("Update Athlete", {
-          Type: "Removed program",
-        });
-      },
-      onError: () => {
-        // Mixpanel tracking
-        mixpanel.track("ERROR Update Athlete", {
-          Type: "Removing program",
-        });
-      },
-    });
-  }
-
-  // Delete program
-  program.name = `${program.name ?? ""}__deleted__${program.coachId}/${
-    program.athleteId
-  }`;
-  program.coach = undefined;
-  program.athlete = undefined;
-  program.saveUpdate({
+  program.remove({
+    onAthleteUpdateSuccess: () => {
+      // Mixpanel tracking
+      mixpanel.track("Update Athlete", {
+        Type: "Removed program",
+      });
+    },
+    onAthleteUpdateError: () => {
+      // Mixpanel tracking
+      mixpanel.track("ERROR Update Athlete", {
+        Type: "Removing program",
+      });
+    },
     onSuccess: () => {
       coachInfo.programs = coachInfo.programs?.filter(
         (coachProgram) => coachProgram != program,
       );
-      clearProgram();
+      deletingProgram.value = undefined;
 
       // Register GA4 event
       event("program_deleted", {
@@ -729,13 +714,6 @@ function deleteProgram(program: Program) {
       });
     },
   });
-}
-
-/**
- * Clear program form and hide it.
- */
-function clearProgram() {
-  deletingProgram.value = undefined;
 }
 </script>
 
