@@ -2,15 +2,37 @@
   <q-form ref="formElement" @submit="onSubmit">
     <!-- Actual programs -->
     <div>
-      <h6>{{ $t("coach.athlete_management.fields.program_title") }}</h6>
-      <div class="q-mb-md">
+      <div class="row items-center justify-between q-mb-md">
         <q-btn
           outline
           :to="{ name: 'program', params: { programId: props.program.uid } }"
+          icon="open_in_new"
           :label="$t('coach.athlete_management.call_to_action.modify_program')"
           class="q-mr-md"
           @click="registerProgramOpeningEvent()"
         ></q-btn>
+
+        <q-chip
+          :label="
+            $t(
+              'coach.athlete_management.fields.' +
+                (props.isCurrent ? 'program_active' : 'program_ready'),
+            )
+          "
+          :color="props.isCurrent ? 'positive' : 'info'"
+        />
+      </div>
+
+      <div v-if="!props.isCurrent" class="q-my-lg">
+        <p>
+          {{ $t("coach.athlete_management.assign.another_program_assigned") }}
+          <a
+            @click="emit('assign', program)"
+            class="cursor-pointer text-primary"
+          >
+            {{ $t("coach.athlete_management.assign.assign_this") }}
+          </a>
+        </p>
       </div>
 
       <div class="row q-col-gutter-x-md">
@@ -65,15 +87,19 @@ const $q = useQuasar();
 const i18n = useI18n();
 
 // Set props
-const props = defineProps({
-  program: {
-    type: Program,
-    required: true,
-  },
-  onSubmit: {
-    type: Function,
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    program: Program;
+    isCurrent: boolean;
+  }>(),
+  { isCurrent: false },
+);
+
+// Define emits
+const emit = defineEmits<{
+  submit: [program: Program];
+  assign: [program: Program];
+}>();
 
 // Set expose
 defineExpose({
@@ -117,7 +143,7 @@ function onSubmit() {
   program.finishedOn = programFinishedOn.value;
   program.description = programDescription.value;
 
-  props.onSubmit?.(program);
+  emit("submit", program);
 
   program.saveUpdate({
     saveFrozenView: true,

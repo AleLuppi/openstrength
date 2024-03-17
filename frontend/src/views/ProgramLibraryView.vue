@@ -334,6 +334,18 @@ function onProgramTemplateUpdate(program: Program) {
  */
 function deleteProgram(program: Program) {
   program.remove({
+    onAthleteUpdateSuccess: () => {
+      // Mixpanel tracking
+      mixpanel.track("Update Athlete", {
+        Type: "Removed program",
+      });
+    },
+    onAthleteUpdateError: () => {
+      // Mixpanel tracking
+      mixpanel.track("ERROR Update Athlete", {
+        Type: "Removing program",
+      });
+    },
     onSuccess: () => {
       coachInfo.programs = coachInfo.programs?.filter(
         (coachPrograms) => coachPrograms != program,
