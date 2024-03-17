@@ -347,7 +347,7 @@
         "
       >
         <q-card class="q-pa-sm dialog-min-width">
-          <q-card-section class="row items-between q-pb-none">
+          <q-card-section class="row justify-between q-pb-none">
             <h6>{{ $t("coach.athlete_management.fields.program_info") }}</h6>
             <q-btn
               icon="close"
