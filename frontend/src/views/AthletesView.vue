@@ -163,22 +163,22 @@
               <q-tab-panel name="programs">
                 <!-- If selected athlete has ongoing program show program data form-->
                 <div v-if="selectedAthlete && Boolean(athleteCurrentProgram)">
-                  <div>
-                    <q-btn
-                      :to="{ name: 'program' }"
-                      icon="sym_o_assignment_add"
-                      :label="$t('coach.program_management.list.add')"
-                      outline
-                      class="q-mb-sm q-mr-sm"
-                    ></q-btn>
-                  </div>
-                  <TableAthletePrograms
+                  <q-btn
+                    :to="{
+                      name: NamedRoutes.program,
+                      query: { new: true, athlete: selectedAthlete.uid },
+                    }"
+                    icon="sym_o_assignment_add"
+                    :label="$t('coach.program_management.list.add')"
+                    outline
+                    class="q-mb-sm q-mr-sm"
+                  ></q-btn>
+                  <TableExistingPrograms
                     :programs="athletePrograms"
-                    :on-info="
-                      () => {
-                        showProgramInfoDialog = true;
-                      }
-                    "
+                    :show-fields="['name', 'startedOn', 'finishedOn']"
+                    allow-open
+                    allow-delete
+                    v-model:selected="infoProgram"
                     @delete="onProgramDelete"
                   />
                 </div>
@@ -340,11 +340,15 @@
       </div>
 
       <!-- Dialog for editing program info -->
-      <q-dialog v-model="showProgramInfoDialog">
+      <q-dialog
+        :model-value="Boolean(infoProgram)"
+        @update:model-value="
+          (val) => (infoProgram = val ? infoProgram : undefined)
+        "
+      >
         <q-card class="q-pa-sm dialog-min-width">
-          <q-card-section class="row items-center q-pb-none">
+          <q-card-section class="row items-between q-pb-none">
             <h6>{{ $t("coach.athlete_management.fields.program_info") }}</h6>
-            <q-space />
             <q-btn
               icon="close"
               flat
@@ -356,10 +360,9 @@
           </q-card-section>
           <q-card-section>
             <FormAthleteProgramInfo
-              ref="athleteProgramFormElement"
-              :program="athleteFormProgram"
+              :program="infoProgram!"
               :isCurrent="
-                selectedAthlete?.assignedProgramId === athleteFormProgram.uid
+                selectedAthlete?.assignedProgramId === infoProgram!.uid
               "
             />
           </q-card-section>
@@ -404,7 +407,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, watch } from "vue";
+import { ref, computed, nextTick, watch, defineAsyncComponent } from "vue";
 import { useQuasar, QDialog } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
@@ -423,7 +426,12 @@ import {
   getAssignedProgram,
 } from "@/helpers/programs/athleteAssignment";
 import mixpanel from "mixpanel-browser";
-import TableAthletePrograms from "@/components/tables/TableAthletePrograms.vue";
+import { NamedRoutes } from "@/router";
+
+// Import components
+const TableExistingPrograms = defineAsyncComponent(
+  () => import("@/components/tables/TableExistingPrograms.vue"),
+);
 
 // Init plugin
 const $q = useQuasar();
@@ -470,7 +478,6 @@ const athleteFormElement = ref<typeof FormAthleteAnagraphicInfo>();
 
 // Set additional athlete info ref
 const selectedTab = ref("programs");
-//const athleteProgramFormElement = ref<typeof FormAthleteProgramInfo>();
 const maxliftFormElement = ref<typeof FormMaxLift>();
 const showAthleteDialog = ref(false); // whether to show dialog to add athlete
 
@@ -480,7 +487,10 @@ const athleteSurname = ref(""); // new athlete surname
 const athleteNote = ref(""); // new athlete note
 
 // Set ref for program info
-const showProgramInfoDialog = ref(false);
+const infoProgram = ref<Program>();
+const deletingProgram = ref<Program>();
+const showDialogDeleteProgram = ref(false);
+
 // Set ref for max lift declarations
 const searchMaxLift = ref<string>();
 const updatingMaxLift = ref<MaxLift>();
@@ -491,9 +501,6 @@ const athletes = computed(() => coachInfo.athletes || []);
 const programs = computed(() => coachInfo.programs || []);
 const exercises = computed(() => coachInfo.exercises || []);
 const maxlifts = computed(() => coachInfo.maxlifts || []);
-
-const deletingProgram = ref<Program>();
-const showDialogDeleteProgram = ref(false);
 
 // Update table selection
 watch(selectedAthlete, (athlete) =>
@@ -514,11 +521,6 @@ const athleteCurrentProgram = computed(() =>
   selectedAthlete.value
     ? getAssignedProgram(selectedAthlete.value, programs.value)
     : undefined,
-);
-
-// Get a program to initialize form
-const athleteFormProgram = computed(
-  () => athleteCurrentProgram.value ?? new Program(),
 );
 
 // Get maxlifts for the selected athlete

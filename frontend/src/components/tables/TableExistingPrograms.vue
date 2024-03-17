@@ -26,6 +26,7 @@ import { ref, computed, watch } from "vue";
 import { useQuasar } from "quasar";
 import { Program } from "@/helpers/programs/program";
 import { useI18n } from "vue-i18n";
+import { NamedRoutes } from "@/router";
 
 // Init plugin
 const $q = useQuasar();
@@ -34,19 +35,40 @@ const i18n = useI18n();
 // Define props
 const props = withDefaults(
   defineProps<{
+    // Programs to display
     programs: Program[];
+
+    // Model value of currently selected program
     selected?: Program;
+
+    // Optional list of specific fields to display
     showFields?: (keyof Program)[];
+
+    // Whether to shorten the list of fields to display, only used if showFields is undefined
     small?: boolean;
+
+    // Whether to show action buttons on table rows
+    allowInfo?: boolean;
+    allowOpen?: boolean;
     allowDelete?: boolean;
+
+    // Show labels under each action button
+    showButtonLabel?: boolean;
   }>(),
-  { small: false, allowDelete: false },
+  {
+    small: false,
+    allowInfo: false,
+    allowOpen: false,
+    allowDelete: false,
+    showButtonLabel: false,
+  },
 );
 
 // Define emits
 const emit = defineEmits<{
   selection: [evt: Event, row: Object, index: Number];
   "update:selected": [value?: Program];
+  info: [program: Program];
   delete: [program: Program];
 }>();
 
@@ -112,12 +134,26 @@ const columns = computed(() => {
         break;
     }
   });
-  if (props.allowDelete)
+  if (props.allowInfo)
     outColumns.push({
-      name: "delete",
+      name: "oninfo",
       align: "center",
       label: "",
-      field: "delete",
+      field: "oninfo",
+    });
+  if (props.allowOpen)
+    outColumns.push({
+      name: "onopen",
+      align: "center",
+      label: "",
+      field: "onopen",
+    });
+  if (props.allowDelete)
+    outColumns.push({
+      name: "ondelete",
+      align: "center",
+      label: "",
+      field: "ondelete",
     });
   return outColumns;
 });
@@ -130,22 +166,46 @@ const rows = computed(() => {
   return props.programs.map((program) => ({
     uid: program.uid,
     name: program.name,
-    athletename: program.athlete?.referenceName ?? "Not assigned",
+    athletename:
+      program.athlete?.referenceName ??
+      i18n.t("coach.program_management.list.not_assigned"),
     startdate: program.startedOn
       ? i18n.d(program.startedOn, "short")
-      : "Not selected",
+      : i18n.t("coach.program_management.list.not_selected"),
     enddate: program.finishedOn
       ? i18n.d(program.finishedOn, "short")
-      : "Not selected",
+      : i18n.t("coach.program_management.list.not_selected"),
     lastmodification: program.lastUpdated
       ? i18n.d(program.lastUpdated, "middle")
-      : "Not selected",
-    delete: {
+      : i18n.t("coach.program_management.list.not_selected"),
+    oninfo: {
+      element: "button",
+      on: { click: () => emit("info", program) },
+      icon: "info",
+      flat: true,
+      round: true,
+      label: props.showButtonLabel ? i18n.t("common.info") : undefined,
+      stack: true,
+      color: "button-negative",
+    },
+    onopen: {
+      element: "button",
+      to: { name: NamedRoutes.program, params: { programId: program.uid } },
+      icon: "open_in_new",
+      flat: true,
+      round: true,
+      label: props.showButtonLabel ? i18n.t("common.open") : undefined,
+      stack: true,
+      color: "button-negative",
+    },
+    ondelete: {
       element: "button",
       on: { click: () => emit("delete", program) },
       icon: "delete",
       flat: true,
       round: true,
+      label: props.showButtonLabel ? i18n.t("common.delete") : undefined,
+      stack: true,
       color: "button-negative",
     },
   }));
