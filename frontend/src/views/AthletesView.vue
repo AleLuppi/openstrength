@@ -175,6 +175,7 @@
                   ></q-btn>
                   <TableExistingPrograms
                     :programs="athletePrograms"
+                    :active-program="athleteCurrentProgram"
                     :show-fields="['name', 'startedOn', 'finishedOn']"
                     allow-open
                     allow-delete

@@ -47,6 +47,9 @@ const props = withDefaults(
     // Whether to shorten the list of fields to display, only used if showFields is undefined
     small?: boolean;
 
+    // Select active program to highlight in table
+    activeProgram?: Program;
+
     // Whether to show action buttons on table rows
     allowInfo?: boolean;
     allowOpen?: boolean;
@@ -155,6 +158,13 @@ const columns = computed(() => {
       label: "",
       field: "ondelete",
     });
+  if (props.activeProgram)
+    outColumns.splice(1, 0, {
+      name: "ongoing",
+      align: "center",
+      label: "",
+      field: "ongoing",
+    });
   return outColumns;
 });
 
@@ -178,6 +188,15 @@ const rows = computed(() => {
     lastmodification: program.lastUpdated
       ? i18n.d(program.lastUpdated, "middle")
       : i18n.t("coach.program_management.list.not_selected"),
+    ongoing:
+      props.activeProgram == program
+        ? {
+            element: "chip",
+            label: i18n.t("coach.athlete_management.fields.program_ongoing"),
+            color: "positive",
+            size: "sm",
+          }
+        : "",
     oninfo: {
       element: "button",
       on: { click: () => emit("info", program) },
