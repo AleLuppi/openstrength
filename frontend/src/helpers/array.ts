@@ -132,3 +132,16 @@ export function arrayPushToNullable<T>(array: T[] | undefined, value: T): T[] {
   outArray.push(value);
   return outArray;
 }
+
+/**
+ * Preserve a single value in a list of subsequent equal values in array.
+ *
+ * @param arr array that shall be cleaned.
+ * @returns array with cleaned subsequent values.
+ */
+export function arrayUniqueSubsequentValues<T>(arr: T[]): T[] {
+  return arr.reduce((out: T[], val) => {
+    if (out.length == 0 || val != out.at(-1)) out.push(val);
+    return out;
+  }, []);
+}

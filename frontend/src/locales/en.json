@@ -175,6 +175,9 @@
         "note": "Note",
         "update": "Update athlete",
         "program_title": "Active program",
+        "program_active": "Active program",
+        "program_ready": "Program ready",
+        "program_info": "Program info",
         "program_name": "Program Name",
         "program_start": "Start Date",
         "program_finish": "End Date",
@@ -186,6 +189,10 @@
         "athlete_info": "Athlete Info",
         "anagraphic": "Anagraphic",
         "personal_best": "Personal Best"
+      },
+      "assign": {
+        "another_program_assigned": "Athlete is currently working on another program.",
+        "assign_this": "Assign this program"
       },
       "call_to_action": {
         "title": "Create a program for",
@@ -288,7 +295,9 @@
         "update_proceed": "Update program",
         "search_program": "Search program...",
         "delete_program_confirm": "You are about to delete program \"{ program }\", which will be removed from assigned athlete too. This action cannot be undone.",
-        "delete_proceed": "Delete it"
+        "delete_proceed": "Delete it",
+        "not_assigned": "Unassigned",
+        "not_selected": "-"
       },
       "fields": {
         "program": "Program",
@@ -505,6 +514,9 @@
     "yes": "Yes",
     "no": "No",
     "start": "Start",
-    "end": "End"
+    "end": "End",
+    "info": "Info",
+    "edit": "Open",
+    "delete": "Delete"
   }
 }

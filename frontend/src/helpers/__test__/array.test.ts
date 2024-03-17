@@ -4,6 +4,7 @@ import {
   arrayOfPairsToObject,
   arraySort,
   arrayZip,
+  arrayUniqueSubsequentValues,
 } from "../array";
 
 describe("Test @/helpers/array", () => {
@@ -278,6 +279,18 @@ describe("Test @/helpers/array", () => {
         [5, 0],
       ]);
       expect(res).not.toBe(arr1);
+    });
+  });
+
+  /**
+   * arrayUniqueSubsequentValues
+   */
+  describe("'arrayUniqueSubsequentValues' function", () => {
+    test("array of numbers", () => {
+      const arr = [1, 2, 3, 3, 3, 3, 4, 4, 3, 3, 3];
+      const res = arrayUniqueSubsequentValues(arr);
+      expect(res).toStrictEqual([1, 2, 3, 4, 3]);
+      expect(res).not.toBe(arr);
     });
   });
 });

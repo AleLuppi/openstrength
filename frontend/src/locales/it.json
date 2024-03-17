@@ -175,6 +175,9 @@
         "note": "Nota",
         "update": "Aggiorna info sull'atleta",
         "program_title": "Programma attivo",
+        "program_active": "Programma attivo",
+        "program_ready": "Programma pronto",
+        "program_info": "Info programma",
         "program_name": "Nome del programma",
         "program_start": "Data di inizio",
         "program_finish": "Data di fine",
@@ -186,6 +189,10 @@
         "athlete_info": "Informazioni sull'atleta",
         "anagraphic": "Anagrafica",
         "personal_best": "Massimali"
+      },
+      "assign": {
+        "another_program_assigned": "L'atleta sta seguendo un altro programma.",
+        "assign_this": "Assegna questo programma"
       },
       "call_to_action": {
         "title": "Crea un programma per",
@@ -288,7 +295,9 @@
         "update_proceed": "Aggiorna programma",
         "search_program": "Cerca programma...",
         "delete_program_confirm": "Stai per eliminare il programma \"{ program }\", che verrà rimosso anche dall'atleta assegnato. Questa azione è irreversibile.",
-        "delete_proceed": "Elimina il programma"
+        "delete_proceed": "Elimina il programma",
+        "not_assigned": "Non assegnato",
+        "not_selected": "-"
       },
       "fields": {
         "program": "Programma",
@@ -505,6 +514,9 @@
     "yes": "Sì",
     "no": "No",
     "start": "Inizio",
-    "end": "Fine"
+    "end": "Fine",
+    "info": "Info",
+    "edit": "Apri",
+    "delete": "Elimina"
   }
 }
