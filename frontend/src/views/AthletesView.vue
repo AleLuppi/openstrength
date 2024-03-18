@@ -177,6 +177,7 @@
                     :programs="athletePrograms"
                     :active-program="athleteCurrentProgram"
                     :show-fields="['name', 'startedOn', 'finishedOn']"
+                    sort-by="-startedOn"
                     allow-open
                     allow-delete
                     v-model:selected="infoProgram"

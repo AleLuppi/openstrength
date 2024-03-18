@@ -17,7 +17,7 @@
     "
     selection="single"
     v-model:selected="selectedRows"
-    sort-by="-lastmodification"
+    :sort-by="sortBy"
   ></os-table>
 </template>
 
@@ -27,6 +27,7 @@ import { useQuasar } from "quasar";
 import { Program } from "@/helpers/programs/program";
 import { useI18n } from "vue-i18n";
 import { NamedRoutes } from "@/router";
+import { dateFromStringLocale } from "@/helpers/scalar";
 
 // Init plugin
 const $q = useQuasar();
@@ -35,28 +36,31 @@ const i18n = useI18n();
 // Define props
 const props = withDefaults(
   defineProps<{
-    // Programs to display
+    // programs to display
     programs: Program[];
 
-    // Model value of currently selected program
+    // model value of currently selected program
     selected?: Program;
 
-    // Optional list of specific fields to display
+    // optional list of specific fields to display
     showFields?: (keyof Program)[];
 
-    // Whether to shorten the list of fields to display, only used if showFields is undefined
+    // whether to shorten the list of fields to display, only used if showFields is undefined
     small?: boolean;
 
-    // Select active program to highlight in table
+    // select active program to highlight in table
     activeProgram?: Program;
 
-    // Whether to show action buttons on table rows
+    // whether to show action buttons on table rows
     allowInfo?: boolean;
     allowOpen?: boolean;
     allowDelete?: boolean;
 
-    // Show labels under each action button
+    // show labels under each action button
     showButtonLabel?: boolean;
+
+    // select column to sort at the beginning
+    sortBy?: string;
   }>(),
   {
     small: false,
@@ -64,6 +68,7 @@ const props = withDefaults(
     allowOpen: false,
     allowDelete: false,
     showButtonLabel: false,
+    sortBy: "-lastUpdated",
   },
 );
 
@@ -97,42 +102,51 @@ const columns = computed(() => {
         break;
       case "athlete":
         outColumns.push({
-          name: "athletename",
+          name: "athleteName",
           required: true,
           label: i18n.t("coach.program_management.fields.athlete"),
           align: "center",
-          field: "athletename",
+          field: "athleteName",
           sortable: true,
         });
         break;
       case "startedOn":
         outColumns.push({
-          name: "startdate",
+          name: "startedOn",
           required: true,
           label: i18n.t("common.start"),
           align: "center",
-          field: "startdate",
+          field: "startedOn",
           sortable: true,
+          sort: (a: string, b: string) =>
+            (dateFromStringLocale(a, "short") as any) -
+            (dateFromStringLocale(b, "short") as any),
         });
         break;
       case "finishedOn":
         outColumns.push({
-          name: "enddate",
+          name: "finishedOn",
           required: true,
           label: i18n.t("common.end"),
           align: "center",
-          field: "enddate",
+          field: "finishedOn",
           sortable: true,
+          sort: (a: string, b: string) =>
+            (dateFromStringLocale(a, "short") as any) -
+            (dateFromStringLocale(b, "short") as any),
         });
         break;
       case "lastUpdated":
         outColumns.push({
-          name: "lastmodification",
+          name: "lastUpdated",
           required: true,
           label: i18n.t("coach.program_management.fields.last_modification"),
           align: "center",
-          field: "lastmodification",
+          field: "lastUpdated",
           sortable: true,
+          sort: (a: string, b: string) =>
+            (dateFromStringLocale(a, "short") as any) -
+            (dateFromStringLocale(b, "short") as any),
         });
         break;
     }
@@ -176,16 +190,16 @@ const rows = computed(() => {
   return props.programs.map((program) => ({
     uid: program.uid,
     name: program.name,
-    athletename:
+    athleteName:
       program.athlete?.referenceName ??
       i18n.t("coach.program_management.list.not_assigned"),
-    startdate: program.startedOn
+    startedOn: program.startedOn
       ? i18n.d(program.startedOn, "short")
       : i18n.t("coach.program_management.list.not_selected"),
-    enddate: program.finishedOn
+    finishedOn: program.finishedOn
       ? i18n.d(program.finishedOn, "short")
       : i18n.t("coach.program_management.list.not_selected"),
-    lastmodification: program.lastUpdated
+    lastUpdated: program.lastUpdated
       ? i18n.d(program.lastUpdated, "middle")
       : i18n.t("coach.program_management.list.not_selected"),
     ongoing:
