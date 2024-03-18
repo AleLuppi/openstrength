@@ -186,13 +186,15 @@
 
                 <!-- If selected athlete has no programs at all -->
                 <div v-else-if="selectedAthlete && Boolean(athletePrograms)">
-                  <!-- TODO: pass athlete id -->
                   <div
                     class="row q-gutter-lg justify-center items-center"
                     style="height: 100%"
                   >
                     <router-link
-                      :to="{ name: 'program', params: { programId: 1234 } }"
+                      :to="{
+                        name: NamedRoutes.program,
+                        query: { new: 'true', athlete: selectedAthlete.uid },
+                      }"
                       class="link-child"
                     >
                       <q-card
