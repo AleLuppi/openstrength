@@ -608,8 +608,8 @@
             :program="selectedProgram"
             :athlete="proposedAthlete"
             @submit="
-              (program) => {
-                saveProgram(program);
+              (program, assignIt) => {
+                saveProgram(program, assignIt);
                 showNewProgramDialog = false;
               }
             "
@@ -1183,9 +1183,14 @@ function onProgramTableUpdate(program: Program) {
  * Save current program instance.
  *
  * @param program optional program instance that shall be save.
- * @param checkUnsaved if true, only save if program shows active changes.
+ * @param [assignToAthlete=false] if true, also assign program to athlete and save it.
+ * @param [checkUnsaved=false] if true, only save if program shows active changes.
  */
-function saveProgram(program?: Program, checkUnsaved: boolean = false) {
+function saveProgram(
+  program?: Program,
+  assignToAthlete: boolean = false,
+  checkUnsaved: boolean = false,
+) {
   // Check if program is unsaved
   if (checkUnsaved && programSaved.value) return;
 
@@ -1204,7 +1209,7 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
         ) || []).push(currProgram);
 
       // Update athlete profile with new program
-      if (!currProgram.isTemplate && currProgram.athlete)
+      if (assignToAthlete && !currProgram.isTemplate && currProgram.athlete)
         assignProgramToAthlete(currProgram, currProgram.athlete, {
           onError: () => {
             $q.notify({
@@ -1380,7 +1385,7 @@ function mergeProgramTemplate() {
  * Autosave program with debounce.
  */
 const autosaveProgram = debounce(() => {
-  saveProgram(undefined, true);
+  saveProgram(undefined, false, true);
 }, 60 * 1000 /* debounce 60 seconds */);
 
 /**
@@ -1746,7 +1751,7 @@ function keydownHandler(event: KeyboardEvent) {
   // Save program on ctrl + s
   if (event.ctrlKey && event.key.toLowerCase() === "s") {
     event.preventDefault();
-    saveProgram(undefined, true);
+    saveProgram(undefined, false, true);
   }
 
   // Undo changes on ctrl + z
@@ -1780,7 +1785,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   // Clear autosave, and save program if required
   autosaveProgram.cancel();
-  saveProgram(undefined, true);
+  saveProgram(undefined, false, true);
 
   // Remove key press event listener
   document.addEventListener("keydown", keydownHandler);

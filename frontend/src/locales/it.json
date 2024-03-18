@@ -316,7 +316,8 @@
         "note": "Nota",
         "last_modification": "Ultima modifica",
         "start_date": "Data inizio",
-        "end_date": "Data fine"
+        "end_date": "Data fine",
+        "assign_now": "Assegna subito all'atleta"
       },
       "builder": {
         "begin": "Inizia!",

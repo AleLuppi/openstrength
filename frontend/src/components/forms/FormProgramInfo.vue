@@ -40,14 +40,21 @@
                     <img :src="programAthlete.photoUrl" />
                   </q-avatar>
                 </q-item-section>
-                <q-item-section>{{
-                  programAthlete.referenceName
-                }}</q-item-section>
+                <q-item-section>
+                  {{ programAthlete.referenceName }}
+                </q-item-section>
               </q-item>
             </q-btn>
           </template>
         </os-field>
       </div>
+
+      <!-- Whether to immediately assign program to athlete -->
+      <q-toggle
+        v-model="programAssignNow"
+        :label="$t('coach.program_management.fields.assign_now')"
+        class="col-12 q-mb-md"
+      ></q-toggle>
 
       <!-- Start date -->
       <os-input-date
@@ -85,38 +92,6 @@
       :athletes="coachInfo.athletes ?? []"
       v-model:selected="programAthlete"
     ></DialogProgramAssignAthlete>
-
-    <q-dialog v-model="showAthleteProgramOverwiteDialog">
-      <q-card>
-        <q-card-section class="row q-col-gutter-md items-center">
-          <div class="col-1">
-            <q-icon
-              name="fa-solid fa-circle-exclamation"
-              color="primary"
-              size="md"
-            />
-          </div>
-          <div class="col-11">
-            {{
-              $t("coach.program_management.builder.warn_assignment", {
-                name: programAthlete?.referenceName,
-              })
-            }}
-          </div>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn
-            flat
-            :label="$t('common.cancel')"
-            color="secondary"
-            @click="programAthlete = undefined"
-            v-close-popup
-          />
-          <q-btn :label="$t('common.continue')" color="primary" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
   </q-form>
 </template>
 
@@ -141,7 +116,7 @@ const props = defineProps<{
 
 // Define emits
 const emit = defineEmits<{
-  submit: [program: Program];
+  submit: [program: Program, assign?: boolean];
 }>();
 
 // Get coach info
@@ -164,8 +139,8 @@ const programAthlete = ref<AthleteUser>();
 const programStartedOn = ref<Date>();
 const programFinishedOn = ref<Date>();
 const programDescription = ref<string>();
+const programAssignNow = ref<boolean>(false);
 const showAthleteAssigningDialog = ref(false);
-const showAthleteProgramOverwiteDialog = ref(false);
 
 // Update shown info according to selected program
 watch(
@@ -192,7 +167,7 @@ watch(
 
 // Show warning dialog when necessary
 watch(programAthlete, (athlete) => {
-  if (athlete?.assignedProgramId) showAthleteProgramOverwiteDialog.value = true;
+  if (athlete) programAssignNow.value = !athlete.assignedProgramId;
 });
 
 /**
@@ -216,6 +191,6 @@ function onSubmit() {
     IsProgramDescriptionSet: program.description ? true : false,
   });
 
-  emit("submit", program);
+  emit("submit", program, programAssignNow.value);
 }
 </script>
