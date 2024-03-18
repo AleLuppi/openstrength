@@ -435,7 +435,10 @@ export class Program {
 
     // Unassign program from athlete
     const currAthlete = programToDelete.athlete;
-    if (currAthlete) {
+    if (
+      currAthlete?.assignedProgramId &&
+      currAthlete.assignedProgramId == programToDelete.uid
+    ) {
       currAthlete.assignedProgramId = undefined;
       currAthlete.saveUpdate({
         onSuccess: onAthleteUpdateSuccess,

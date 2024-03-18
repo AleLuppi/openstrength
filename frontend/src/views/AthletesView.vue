@@ -122,7 +122,7 @@
       <!-- Right card: selected athlete data -->
       <component
         :is="$q.screen.lt.sm ? QDialog : 'div'"
-        v-if="Boolean(selectedAthlete)"
+        v-if="selectedAthlete"
         :model-value="Boolean(selectedAthlete)"
         @update:model-value="selectedAthlete = undefined"
         class="col-7"
@@ -162,7 +162,7 @@
               <!-- Program info -->
               <q-tab-panel name="programs">
                 <!-- If selected athlete has ongoing program show program data form-->
-                <div v-if="selectedAthlete && Boolean(athleteCurrentProgram)">
+                <div v-if="athletePrograms.length">
                   <q-btn
                     :to="{
                       name: NamedRoutes.program,
@@ -185,7 +185,7 @@
                 </div>
 
                 <!-- If selected athlete has no programs at all -->
-                <div v-else-if="selectedAthlete && Boolean(athletePrograms)">
+                <div v-else>
                   <div
                     class="row q-gutter-lg justify-center items-center"
                     style="height: 100%"
