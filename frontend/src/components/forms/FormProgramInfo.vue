@@ -131,11 +131,13 @@ import { useCoachInfoStore } from "@/stores/coachInfo";
 import mixpanel from "mixpanel-browser";
 
 // Define props
-const props = defineProps({
-  program: {
-    type: Program,
-  },
-});
+const props = defineProps<{
+  // optional program to initialize info, otherwise start with empty info
+  program: Program | undefined;
+
+  // optional athlete to assign to program if not already assigned
+  athlete?: AthleteUser;
+}>();
 
 // Define emits
 const emit = defineEmits<{
@@ -175,6 +177,15 @@ watch(
     programStartedOn.value = program.startedOn;
     programFinishedOn.value = program.finishedOn;
     programDescription.value = program.description;
+  },
+  { immediate: true },
+);
+
+// Select proposed athlete
+watch(
+  () => props.athlete,
+  (athlete) => {
+    if (!programAthlete.value) programAthlete.value = athlete;
   },
   { immediate: true },
 );

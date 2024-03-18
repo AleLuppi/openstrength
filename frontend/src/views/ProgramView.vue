@@ -606,6 +606,7 @@
         <q-card-section>
           <FormProgramInfo
             :program="selectedProgram"
+            :athlete="proposedAthlete"
             @submit="
               (program) => {
                 saveProgram(program);
@@ -921,27 +922,29 @@ const splitterThresholdValue = 15;
 const splitterModel = ref(0);
 const showingUtils = ref(UtilsOptions.list);
 
-// Set ref related to program
+// Set ref related to program management
 const programManagerElement = ref<HTMLElement>();
 const programBuilderElement = ref<typeof ProgramBuilder>();
 const selectedProgram = ref<Program>();
 const substituteProgramId = ref<string>();
-const programSaved = ref(true);
-const filterWeek = ref<string[]>();
-const filterDay = ref<string[]>();
-const filterExercise = ref<string[]>();
 const showNewProgramDialog = ref(false);
 const showUnsavedProgramRestoreDialog = ref(false);
 const showAthleteAssigningDialog = ref(false);
 const showShareProgramDialog = ref(false);
 const programManagerExpanded = ref(false);
+const deletingProgram = ref<Program>();
+const showDialogDeleteProgram = ref(false);
+const recentProgramsTableElement = ref<typeof TableExistingPrograms>();
+
+// Set ref related to program builder
+const programSaved = ref(true);
+const filterWeek = ref<string[]>();
+const filterDay = ref<string[]>();
+const filterExercise = ref<string[]>();
 const programPageHeight = ref(0);
 const programManagerHeight = ref(0);
 const canUndo = ref(false);
 const canRedo = ref(false);
-const deletingProgram = ref<Program>();
-const showDialogDeleteProgram = ref(false);
-const recentProgramsTableElement = ref<typeof TableExistingPrograms>();
 const isBuilderCompact = ref(false);
 
 // Set ref related to program templates
@@ -1041,6 +1044,11 @@ const showChangeProgramDialog = computed({
     if (!newValue) substituteProgramId.value = undefined;
   },
 });
+
+const proposedAthlete = computed(
+  () =>
+    coachInfo.athletes?.find((athlete) => athlete.uid == route.query.athlete),
+);
 
 // Update selected program upon request from router
 watch(
