@@ -18,7 +18,7 @@ jobs:
         working-directory: ${{ vars.FRONTEND_WORKING_DIRECTORY }}
 
     outputs:
-      package-version: ${{ steps.update-version.outputs.PACKAGE_VERSION }}
+      tag-version: ${{ steps.update-version.outputs.PACKAGE_VERSION }}
       require-tag: ${{ steps.update-version.outputs.REQUIRE_TAG }}
 
     steps:
@@ -68,16 +68,20 @@ jobs:
 
   job-tag:
     needs: job-update
-    if: needs.job-update.outputs.require-tag == 'yes'
+    # if: needs.job-update.outputs.require-tag == 'yes'
 
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Print test
+        run: echo ${{ needs.job-update.outputs.tag-version }}
       - name: Bump version and push tag
         id: tag-version
         uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          custom_tag: ${{ needs.job-update.outputs.package-version }}
+          custom_tag: ${{ needs.job-update.outputs.tag-version }}
           tag_prefix: v
