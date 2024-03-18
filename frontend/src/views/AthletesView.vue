@@ -122,7 +122,7 @@
       <!-- Right card: selected athlete data -->
       <component
         :is="$q.screen.lt.sm ? QDialog : 'div'"
-        v-if="Boolean(selectedAthlete)"
+        v-if="selectedAthlete"
         :model-value="Boolean(selectedAthlete)"
         @update:model-value="selectedAthlete = undefined"
         class="col-7"
@@ -162,7 +162,7 @@
               <!-- Program info -->
               <q-tab-panel name="programs">
                 <!-- If selected athlete has ongoing program show program data form-->
-                <div v-if="selectedAthlete && Boolean(athleteCurrentProgram)">
+                <div v-if="athletePrograms.length">
                   <q-btn
                     :to="{
                       name: NamedRoutes.program,
@@ -177,6 +177,7 @@
                     :programs="athletePrograms"
                     :active-program="athleteCurrentProgram"
                     :show-fields="['name', 'startedOn', 'finishedOn']"
+                    sort-by="-startedOn"
                     allow-open
                     allow-delete
                     v-model:selected="infoProgram"
@@ -185,14 +186,16 @@
                 </div>
 
                 <!-- If selected athlete has no programs at all -->
-                <div v-else-if="selectedAthlete && Boolean(athletePrograms)">
-                  <!-- TODO: pass athlete id -->
+                <div v-else>
                   <div
                     class="row q-gutter-lg justify-center items-center"
                     style="height: 100%"
                   >
                     <router-link
-                      :to="{ name: 'program', params: { programId: 1234 } }"
+                      :to="{
+                        name: NamedRoutes.program,
+                        query: { new: 'true', athlete: selectedAthlete.uid },
+                      }"
                       class="link-child"
                     >
                       <q-card

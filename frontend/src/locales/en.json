@@ -316,7 +316,8 @@
         "note": "Note",
         "last_modification": "Last update",
         "start_date": "Start date",
-        "end_date": "End date"
+        "end_date": "End date",
+        "assign_now": "Assign now to athlete"
       },
       "builder": {
         "begin": "Start!",
