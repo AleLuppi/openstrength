@@ -375,7 +375,9 @@
         "open_recent": "Your recent programs",
         "open_from_recent": "or open a recent program",
         "view_current": "View current program",
-        "compact_view": "Compact view"
+        "compact_view": "Compact view",
+        "feedback_from_athlete": "Feedback from athlete",
+        "feedback_from_athlete_refresh_tooltip": "Click here to update the view"
       },
       "viewer": {
         "title": "Program for",

@@ -568,6 +568,42 @@
               ></q-btn>
             </div>
 
+            <!-- Feedbacks section -->
+            <div v-else-if="showingUtils == UtilsOptions.feedbacks">
+              <div class="row justify-between items-center q-mb-sm">
+                <h6 class="text-margin-xs">
+                  {{
+                    $t("coach.program_management.builder.feedback_from_athlete")
+                  }}
+                </h6>
+                <q-btn
+                  @click="updateFeedbackView"
+                  icon="fa-solid fa-refresh"
+                  :flat="!isFrozenViewOld"
+                  round
+                  color="secondary"
+                >
+                  <q-tooltip :offset="[10, 10]">
+                    {{
+                      $t(
+                        "coach.program_management.builder.feedback_from_athlete_refresh_tooltip",
+                      )
+                    }}
+                  </q-tooltip>
+                </q-btn>
+              </div>
+
+              <!-- TODO add -->
+              <WorkoutDayForm
+                v-for="(block, indexDay) in programFrozenView?.weekdays"
+                :key="indexDay"
+                :programDay="block"
+                :modelValue="programFeedbacks?.feedbacks[indexDay]"
+                class="q-my-md"
+                readonly
+              ></WorkoutDayForm>
+            </div>
+
             <!-- Close button in dialog mode -->
             <q-btn
               v-if="denseView"
@@ -840,7 +876,11 @@ import {
   defineAsyncComponent,
 } from "vue";
 import { debounce, QDialog, QCard } from "quasar";
-import { Program, ProgramExercise } from "@/helpers/programs/program";
+import {
+  Program,
+  ProgramExercise,
+  ProgramFrozenView,
+} from "@/helpers/programs/program";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { useCoachActiveChangesStore } from "@/stores/coachActiveChanges";
@@ -868,6 +908,8 @@ import { extractUniqueMaxliftFromProgram } from "@/helpers/programs/programTempl
 import { compareMaxliftLists } from "@/helpers/maxlifts/listManagement";
 import { arrayFilterUndefined } from "@/helpers/array";
 import { assignProgramToAthlete } from "@/helpers/programs/programManager";
+import { loadLatestFeedback } from "@/helpers/programs/programFeedback";
+import { ProgramFeedback } from "@/helpers/programs/models";
 
 // Import components
 const ProgramBuilder = defineAsyncComponent(
@@ -890,6 +932,9 @@ const FormProgramTemplateSaving = defineAsyncComponent(
 );
 const FormMissingMaxlifts = defineAsyncComponent(
   () => import("@/components/forms/FormMissingMaxlifts.vue"),
+);
+const WorkoutDayForm = defineAsyncComponent(
+  () => import("@/components/feedback/WorkoutDayForm.vue"),
 );
 
 // Define emits
@@ -915,6 +960,7 @@ const UtilsOptions = {
   list: "list",
   charts: "charts",
   maxlifts: "maxlifts",
+  feedbacks: "feedbacks",
 };
 const splitterThresholdValue = 15;
 
@@ -961,6 +1007,11 @@ const updatingMaxlift = ref<MaxLift>();
 const searchMaxLift = ref<string>();
 const showMaxliftAddDialog = ref(false);
 const maxliftFormElement = ref<typeof FormMaxLift>();
+
+// Set ref related to feedbacks
+const programFrozenView = ref<ProgramFrozenView>();
+const programFeedbacks = ref<ProgramFeedback>();
+const isFrozenViewOld = ref<boolean>(true);
 
 // Set ref for responsiveness
 const denseView = computed(() => !$q.screen.gt.sm);
@@ -1177,6 +1228,9 @@ function onProgramTableUpdate(program: Program) {
 
   // Start autosave
   autosaveProgram();
+
+  // Inform of old frozen view
+  isFrozenViewOld.value = true;
 }
 
 /**
@@ -1692,6 +1746,25 @@ function openNewProgram() {
 }
 
 /**
+ * Get feedback to display to coach.
+ */
+function updateFeedbackView() {
+  isFrozenViewOld.value = false;
+  if (!selectedProgram.value?.uid) return;
+
+  // Update frozen view
+  programFrozenView.value = selectedProgram.value?.freeze();
+
+  // Load feedback
+  if (!programFeedbacks.value)
+    loadLatestFeedback(selectedProgram.value.uid, {
+      onSuccess: (feedback) => {
+        programFeedbacks.value = feedback;
+      },
+    });
+}
+
+/**
  * Open unsaved modified program in builder.
  */
 function onUnsavedProgramRestore() {
@@ -1720,6 +1793,7 @@ function handleDrawerClick(clickParam: number) {
     case 0:
     case 1:
     case 2:
+    case 3:
       toShow = Object.values(UtilsOptions)[clickParam];
       break;
     default:
