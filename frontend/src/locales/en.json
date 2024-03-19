@@ -192,7 +192,7 @@
       },
       "assign": {
         "another_program_assigned": "Athlete is currently working on another program.",
-        "assign_this": "Assign this program"
+        "assign_this": "Click here to start this program instead"
       },
       "call_to_action": {
         "title": "Create a program for",
@@ -317,7 +317,7 @@
         "last_modification": "Last update",
         "start_date": "Start date",
         "end_date": "End date",
-        "assign_now": "Assign now to athlete"
+        "assign_now": "This program is currently ongoing"
       },
       "builder": {
         "begin": "Start!",

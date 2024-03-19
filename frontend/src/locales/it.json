@@ -192,7 +192,7 @@
       },
       "assign": {
         "another_program_assigned": "L'atleta sta seguendo un altro programma.",
-        "assign_this": "Assegna questo programma"
+        "assign_this": "Clicca qui per sostituirlo con questo"
       },
       "call_to_action": {
         "title": "Crea un programma per",
@@ -317,7 +317,7 @@
         "last_modification": "Ultima modifica",
         "start_date": "Data inizio",
         "end_date": "Data fine",
-        "assign_now": "Assegna subito all'atleta"
+        "assign_now": "Programma attuale dell'atleta"
       },
       "builder": {
         "begin": "Inizia!",
