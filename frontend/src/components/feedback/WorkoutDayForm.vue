@@ -66,13 +66,6 @@
               : 'Salva allenamento'
           "
         />
-        <q-btn
-          v-if="modelValue?.completed"
-          class="q-mt-md col-12"
-          @click.stop="completeDay(false)"
-          flat
-          label="Segna come non completato"
-        />
       </div>
     </div>
 
