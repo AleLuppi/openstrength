@@ -8,7 +8,7 @@ export type Config = {
 const config: Config = {
   $appProperties: {
     name: "OpenStrength",
-    version: "v0.5.1",
+    version: "v0.5.2",
   },
 };
 
