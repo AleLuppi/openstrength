@@ -75,7 +75,7 @@
               ></q-btn>
             </div>
 
-            <!-- Maxlift and Charts -->
+            <!-- Mobile utility buttons -->
             <div v-if="denseView" class="row">
               <!-- Program info and open new -->
               <q-btn
@@ -125,6 +125,24 @@
                 "
                 @click="
                   showingUtils = UtilsOptions.maxlifts;
+                  showUtilsDialog = true;
+                "
+              >
+              </q-btn>
+
+              <!-- Show Feedbacks -->
+              <q-btn
+                icon="fa-regular fa-comment-dots"
+                class="q-pa-sm"
+                outline
+                flat
+                :color="
+                  showUtilsDialog && showingUtils == UtilsOptions.feedbacks
+                    ? 'primary'
+                    : 'light-dark'
+                "
+                @click="
+                  showingUtils = UtilsOptions.feedbacks;
                   showUtilsDialog = true;
                 "
               >
@@ -593,7 +611,6 @@
                 </q-btn>
               </div>
 
-              <!-- TODO add -->
               <WorkoutDayForm
                 v-for="(block, indexDay) in programFrozenView?.weekdays"
                 :key="indexDay"
