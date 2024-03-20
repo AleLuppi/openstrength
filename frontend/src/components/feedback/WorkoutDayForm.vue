@@ -67,7 +67,7 @@
           "
         />
         <q-btn
-          v-if="modelValue?.completed"
+          v-if="!readonly && modelValue?.completed"
           class="q-mt-md col-12"
           @click.stop="completeDay(false)"
           flat
@@ -98,10 +98,10 @@ const props = withDefaults(
     modelValue: ProgramDayFeedback | undefined;
 
     // set if day is next to be done in program
-    isNext: boolean;
+    isNext?: boolean;
 
     // whether to show component for reading only and not update
-    readonly: boolean;
+    readonly?: boolean;
   }>(),
   { isNext: false, readonly: false },
 );
@@ -147,6 +147,8 @@ watch(
       completed: false,
       exercisesFeedback: [],
     };
+    workoutDate.value = value?.completedOn ?? new Date();
+    workoutNote.value = value?.textFeedback ?? "";
   },
   { immediate: true },
 );
@@ -163,16 +165,14 @@ function completeDay(completed: boolean = true) {
     dayFeedback.value.completed = completed;
     dayFeedback.value.completedOn = completed ? workoutDate.value : undefined;
     dayFeedback.value.textFeedback = workoutNote.value;
-    if (completed) emit("complete");
-    emit("update:modelValue", dayFeedback.value);
+    if (completed) {
+      emit("complete");
 
-    // Mixpanel tracking
-    mixpanel.track("Athlete Feedback: Day completed", {
-      Feedback: workoutNote.value,
-    });
-  } else if (!completed) {
-    // Allow setting day as not completed in read only mode too
-    dayFeedback.value.completed = completed;
+      // Mixpanel tracking
+      mixpanel.track("Athlete Feedback: Day completed", {
+        Feedback: workoutNote.value,
+      });
+    }
     emit("update:modelValue", dayFeedback.value);
   }
 }

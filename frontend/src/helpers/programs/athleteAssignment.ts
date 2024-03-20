@@ -13,7 +13,9 @@ export function getAllAssignedPrograms(
   programs: Program[],
 ) {
   return programs.filter(
-    (program) => program.uid && athlete.assignedPrograms?.includes(program.uid),
+    (program) =>
+      (program.uid && athlete.assignedPrograms?.includes(program.uid)) ||
+      (athlete.uid && athlete.uid == program.athleteId),
   );
 }
 

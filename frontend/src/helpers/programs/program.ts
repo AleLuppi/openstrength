@@ -407,13 +407,65 @@ export class Program {
   }
 
   /**
-   * Remove the program from database.
+   * Remove the program from the list of coach programs.
    *
    * @param program element that shall be removed.
    * @param onSuccess function to execute when operation is successful.
    * @param onError function to execute when operation fails.
    */
   remove({
+    program,
+    onAthleteUpdateSuccess,
+    onAthleteUpdateError,
+    onSuccess,
+    onError,
+  }: {
+    program?: Program;
+    onAthleteUpdateSuccess?: Function;
+    onAthleteUpdateError?: Function;
+    onSuccess?: Function;
+    onError?: Function;
+  } = {}) {
+    // Ensure program is mapped onto a database document
+    const programToDelete = program || this;
+    if (!programToDelete.uid) {
+      onError?.();
+      return;
+    }
+
+    // Unassign program from athlete
+    const currAthlete = programToDelete.athlete;
+    if (
+      currAthlete?.assignedProgramId &&
+      currAthlete.assignedProgramId == programToDelete.uid
+    ) {
+      currAthlete.assignedProgramId = undefined;
+      currAthlete.saveUpdate({
+        onSuccess: onAthleteUpdateSuccess,
+        onError: onAthleteUpdateError,
+      });
+    }
+
+    // Hide program from coach
+    programToDelete.name = `${programToDelete.name ?? ""}__deleted__${
+      programToDelete.coachId
+    }/${programToDelete.athleteId}`;
+    programToDelete.coach = undefined;
+    programToDelete.athlete = undefined;
+    programToDelete.saveUpdate({
+      onSuccess: onSuccess,
+      onError: onError,
+    });
+  }
+
+  /**
+   * Delete the program from database.
+   *
+   * @param program element that shall be deleted.
+   * @param onSuccess function to execute when operation is successful.
+   * @param onError function to execute when operation fails.
+   */
+  delete({
     program,
     onSuccess,
     onError,
