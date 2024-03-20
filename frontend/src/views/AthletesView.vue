@@ -172,11 +172,16 @@
                     :label="$t('coach.program_management.list.add')"
                     outline
                     class="q-mb-sm q-mr-sm"
+                    :class="{ 'full-width': denseView }"
                   ></q-btn>
                   <TableExistingPrograms
                     :programs="athletePrograms"
-                    :active-program="athleteCurrentProgram"
-                    :show-fields="['name', 'startedOn', 'finishedOn']"
+                    :active-program="
+                      denseView ? undefined : athleteCurrentProgram
+                    "
+                    :show-fields="
+                      denseView ? ['name'] : ['name', 'startedOn', 'finishedOn']
+                    "
                     sort-by="-startedOn"
                     allow-open
                     allow-delete
@@ -496,6 +501,7 @@ const athleteNote = ref(""); // new athlete note
 const infoProgram = ref<Program>();
 const deletingProgram = ref<Program>();
 const showDialogDeleteProgram = ref(false);
+const denseView = computed(() => !$q.screen.gt.sm);
 
 // Set ref for max lift declarations
 const searchMaxLift = ref<string>();
