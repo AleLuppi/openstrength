@@ -20,12 +20,22 @@
 </template>
 
 <script setup lang="ts">
+import {
+  fasBarsStaggered,
+  fasChartLine,
+  fasMedal,
+  farCommentDots,
+} from "@quasar/extras/fontawesome-v6";
+
+// Define props
 withDefaults(
   defineProps<{
     active: number;
   }>(),
   { active: -1 },
 );
+
+// Define emits
 const emit = defineEmits(["drawerClick"]);
 
 // Set items in drawer
@@ -33,17 +43,22 @@ const drawerItems = [
   {
     id: "list",
     tooltip: "coach.program_management.builder.show_program_list",
-    icon: "fa-solid fa-bars-staggered",
+    icon: fasBarsStaggered,
   },
   {
     id: "charts",
     tooltip: "coach.program_management.builder.show_charts_tooltip",
-    icon: "fa-solid fa-chart-line",
+    icon: fasChartLine,
   },
   {
     id: "maxlifts",
     tooltip: "coach.program_management.builder.show_maxlifts_tooltip",
-    icon: "fa-solid fa-medal",
+    icon: fasMedal,
+  },
+  {
+    id: "feedbacks",
+    tooltip: "coach.program_management.builder.show_feedbacks_tooltip",
+    icon: farCommentDots,
   },
 ];
 </script>

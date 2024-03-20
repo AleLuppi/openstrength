@@ -122,7 +122,7 @@
       <!-- Right card: selected athlete data -->
       <component
         :is="$q.screen.lt.sm ? QDialog : 'div'"
-        v-if="Boolean(selectedAthlete)"
+        v-if="selectedAthlete"
         :model-value="Boolean(selectedAthlete)"
         @update:model-value="selectedAthlete = undefined"
         class="col-7"
@@ -162,22 +162,40 @@
               <!-- Program info -->
               <q-tab-panel name="programs">
                 <!-- If selected athlete has ongoing program show program data form-->
-                <div v-if="selectedAthlete && Boolean(athleteCurrentProgram)">
-                  <FormAthleteProgramInfo
-                    ref="athleteProgramFormElement"
-                    :program="athleteFormProgram"
+                <div v-if="athletePrograms.length">
+                  <q-btn
+                    :to="{
+                      name: NamedRoutes.program,
+                      query: { new: true, athlete: selectedAthlete.uid },
+                    }"
+                    icon="sym_o_assignment_add"
+                    :label="$t('coach.program_management.list.add')"
+                    outline
+                    class="q-mb-sm q-mr-sm"
+                  ></q-btn>
+                  <TableExistingPrograms
+                    :programs="athletePrograms"
+                    :active-program="athleteCurrentProgram"
+                    :show-fields="['name', 'startedOn', 'finishedOn']"
+                    sort-by="-startedOn"
+                    allow-open
+                    allow-delete
+                    v-model:selected="infoProgram"
+                    @delete="onProgramDelete"
                   />
                 </div>
 
                 <!-- If selected athlete has no programs at all -->
-                <div v-else-if="selectedAthlete && Boolean(athletePrograms)">
-                  <!-- TODO: pass athlete id -->
+                <div v-else>
                   <div
                     class="row q-gutter-lg justify-center items-center"
                     style="height: 100%"
                   >
                     <router-link
-                      :to="{ name: 'program', params: { programId: 1234 } }"
+                      :to="{
+                        name: NamedRoutes.program,
+                        query: { new: 'true', athlete: selectedAthlete.uid },
+                      }"
                       class="link-child"
                     >
                       <q-card
@@ -324,12 +342,77 @@
           </div>
         </div>
       </div>
+
+      <!-- Dialog for editing program info -->
+      <q-dialog
+        :model-value="Boolean(infoProgram)"
+        @update:model-value="
+          (val) => (infoProgram = val ? infoProgram : undefined)
+        "
+      >
+        <q-card class="q-pa-sm dialog-min-width">
+          <q-card-section class="row justify-between q-pb-none">
+            <h6>{{ $t("coach.athlete_management.fields.program_info") }}</h6>
+            <q-btn
+              icon="close"
+              flat
+              round
+              dense
+              color="button-negative"
+              v-close-popup
+            />
+          </q-card-section>
+          <q-card-section>
+            <FormAthleteProgramInfo
+              :program="infoProgram!"
+              :isCurrent="
+                selectedAthlete?.assignedProgramId === infoProgram!.uid
+              "
+              @assign="assignProgram"
+            />
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
+      <!-- Dialog delete a program -->
+      <q-dialog
+        v-model="showDialogDeleteProgram"
+        @hide="deletingProgram = undefined"
+      >
+        <q-card class="q-pa-sm dialog-min-width">
+          <q-card-section class="row items-center q-pb-none">
+            <p>
+              {{
+                $t("coach.program_management.list.delete_program_confirm", {
+                  program: deletingProgram?.name,
+                })
+              }}
+            </p>
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn
+              flat
+              :label="$t('common.cancel')"
+              type="reset"
+              color="button-negative"
+              v-close-popup
+            />
+            <q-btn
+              :label="$t('coach.program_management.list.delete_proceed')"
+              @click="if (deletingProgram) deleteProgram(deletingProgram);"
+              color="button-negative"
+              v-close-popup
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, watch } from "vue";
+import { ref, computed, nextTick, watch, defineAsyncComponent } from "vue";
 import { useQuasar, QDialog } from "quasar";
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores/user";
@@ -348,6 +431,13 @@ import {
   getAssignedProgram,
 } from "@/helpers/programs/athleteAssignment";
 import mixpanel from "mixpanel-browser";
+import { NamedRoutes } from "@/router";
+import { assignProgramToAthlete } from "@/helpers/programs/programManager";
+
+// Import components
+const TableExistingPrograms = defineAsyncComponent(
+  () => import("@/components/tables/TableExistingPrograms.vue"),
+);
 
 // Init plugin
 const $q = useQuasar();
@@ -364,7 +454,7 @@ const allTabs = [
     label:
       $q.screen.width < 840
         ? ""
-        : i18n.t("coach.program_management.fields.program"),
+        : i18n.t("coach.program_management.fields.programs"),
     icon: "fa-regular fa-file-lines",
   },
   {
@@ -394,7 +484,6 @@ const athleteFormElement = ref<typeof FormAthleteAnagraphicInfo>();
 
 // Set additional athlete info ref
 const selectedTab = ref("programs");
-const athleteProgramFormElement = ref<typeof FormAthleteProgramInfo>();
 const maxliftFormElement = ref<typeof FormMaxLift>();
 const showAthleteDialog = ref(false); // whether to show dialog to add athlete
 
@@ -402,6 +491,11 @@ const showAthleteDialog = ref(false); // whether to show dialog to add athlete
 const athleteName = ref(""); // new athlete name
 const athleteSurname = ref(""); // new athlete surname
 const athleteNote = ref(""); // new athlete note
+
+// Set ref for program info
+const infoProgram = ref<Program>();
+const deletingProgram = ref<Program>();
+const showDialogDeleteProgram = ref(false);
 
 // Set ref for max lift declarations
 const searchMaxLift = ref<string>();
@@ -433,11 +527,6 @@ const athleteCurrentProgram = computed(() =>
   selectedAthlete.value
     ? getAssignedProgram(selectedAthlete.value, programs.value)
     : undefined,
-);
-
-// Get a program to initialize form
-const athleteFormProgram = computed(
-  () => athleteCurrentProgram.value ?? new Program(),
 );
 
 // Get maxlifts for the selected athlete
@@ -583,6 +672,76 @@ function clearAthlete() {
   athleteSurname.value = "";
   athleteNote.value = "";
   showAthleteDialog.value = false;
+}
+
+/**
+ * Set a program as the currently assigned program to selected athlete.
+ *
+ * @param program program that shall be set as currently ongoing.
+ */
+function assignProgram(program: Program) {
+  if (selectedAthlete.value)
+    assignProgramToAthlete(program, selectedAthlete.value, {
+      onError: () => {
+        $q.notify({
+          type: "negative",
+          message: i18n.t(
+            "coach.program_management.builder.save_assignment_error",
+          ),
+          position: "bottom",
+        });
+      },
+    });
+}
+
+/**
+ * Delete one program from list, upon confirmation.
+ *
+ * @param program program that may be deleted.
+ */
+function onProgramDelete(program: Program) {
+  deletingProgram.value = program;
+  showDialogDeleteProgram.value = true;
+}
+
+/**
+ * Actually delete the selected program template.
+ *
+ * @param program element that shall be removed.
+ */
+function deleteProgram(program: Program) {
+  program.remove({
+    onAthleteUpdateSuccess: () => {
+      // Mixpanel tracking
+      mixpanel.track("Update Athlete", {
+        Type: "Removed program",
+      });
+    },
+    onAthleteUpdateError: () => {
+      // Mixpanel tracking
+      mixpanel.track("ERROR Update Athlete", {
+        Type: "Removing program",
+      });
+    },
+    onSuccess: () => {
+      coachInfo.programs = coachInfo.programs?.filter(
+        (coachProgram) => coachProgram != program,
+      );
+      deletingProgram.value = undefined;
+
+      // Register GA4 event
+      event("program_deleted", {
+        event_category: "documentation",
+        event_label: "Program Deleted",
+        value: 1,
+      });
+
+      // Mixpanel tracking
+      mixpanel.track("Program Deleted", {
+        Page: "ProgramView",
+      });
+    },
+  });
 }
 </script>
 

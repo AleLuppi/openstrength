@@ -119,6 +119,16 @@ export function dateGetWithoutTimezone(date?: Date | string) {
 // ----- Functions related to String -----
 
 /**
+ * Capitalize the first letter of a string.
+ *
+ * @param str text that shall be capitalized.
+ * @returns original text with first letter upper case.
+ */
+export function stringCapitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/**
  * Given a string, return the text that comes immediately after.
  *
  * Example of next texts:

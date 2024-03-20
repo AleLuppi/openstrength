@@ -175,6 +175,9 @@
         "note": "Note",
         "update": "Update athlete",
         "program_title": "Active program",
+        "program_active": "Active program",
+        "program_ready": "Program ready",
+        "program_info": "Program info",
         "program_name": "Program Name",
         "program_start": "Start Date",
         "program_finish": "End Date",
@@ -186,6 +189,10 @@
         "athlete_info": "Athlete Info",
         "anagraphic": "Anagraphic",
         "personal_best": "Personal Best"
+      },
+      "assign": {
+        "another_program_assigned": "Athlete is currently working on another program.",
+        "assign_this": "Click here to start this program instead"
       },
       "call_to_action": {
         "title": "Create a program for",
@@ -288,7 +295,9 @@
         "update_proceed": "Update program",
         "search_program": "Search program...",
         "delete_program_confirm": "You are about to delete program \"{ program }\", which will be removed from assigned athlete too. This action cannot be undone.",
-        "delete_proceed": "Delete it"
+        "delete_proceed": "Delete it",
+        "not_assigned": "Unassigned",
+        "not_selected": "-"
       },
       "fields": {
         "program": "Program",
@@ -307,7 +316,8 @@
         "note": "Note",
         "last_modification": "Last update",
         "start_date": "Start date",
-        "end_date": "End date"
+        "end_date": "End date",
+        "assign_now": "This program is currently ongoing"
       },
       "builder": {
         "begin": "Start!",
@@ -364,8 +374,10 @@
         "new_program_submit": "Proceed",
         "open_recent": "Your recent programs",
         "open_from_recent": "or open a recent program",
-        "view_current": "View current program", 
-        "compact_view": "Compact view"
+        "view_current": "View current program",
+        "compact_view": "Compact view",
+        "feedback_from_athlete": "Feedback from athlete",
+        "feedback_from_athlete_refresh_tooltip": "Click here to update the view"
       },
       "viewer": {
         "title": "Program for",
@@ -387,7 +399,8 @@
         "send_program_title": "Your program is ready!",
         "send_program_description": "You can see the details at this link.",
         "dialog_title": "Send this link to your athlete",
-        "preview": "View preview"
+        "preview": "View preview",
+        "compact_view": "Compact view"
       },
       "filter": {
         "title": "Filter by...",
@@ -504,6 +517,9 @@
     "yes": "Yes",
     "no": "No",
     "start": "Start",
-    "end": "End"
+    "end": "End",
+    "info": "Info",
+    "edit": "Open",
+    "delete": "Delete"
   }
 }

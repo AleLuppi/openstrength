@@ -134,7 +134,7 @@ export function objectDeepCopy<T extends object>(obj: T): T {
  * @param obj object that shall be checked.
  * @param from original value that must be substituted.
  * @param to value that replaces the original one.
- * @returns
+ * @returns updated object with mapped values.
  */
 export function objectDeepValueToValue<T extends object>(
   obj: T,

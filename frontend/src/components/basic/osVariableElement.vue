@@ -34,6 +34,9 @@
   <!-- Optionally render chip -->
   <q-chip ref="element" v-else-if="type == 'chip'" v-bind="elementProps" />
 
+  <!-- Optionally render badge -->
+  <q-badge ref="element" v-else-if="type == 'badge'" v-bind="elementProps" />
+
   <!-- Optionally render avatar -->
   <q-avatar ref="element" v-else-if="type == 'avatar'" v-bind="elementProps">
     <img v-if="elementProps.src" :src="elementProps.src" />
