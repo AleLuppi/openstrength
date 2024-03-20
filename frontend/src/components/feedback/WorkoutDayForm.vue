@@ -98,10 +98,10 @@ const props = withDefaults(
     modelValue: ProgramDayFeedback | undefined;
 
     // set if day is next to be done in program
-    isNext: boolean;
+    isNext?: boolean;
 
     // whether to show component for reading only and not update
-    readonly: boolean;
+    readonly?: boolean;
   }>(),
   { isNext: false, readonly: false },
 );
@@ -147,6 +147,8 @@ watch(
       completed: false,
       exercisesFeedback: [],
     };
+    workoutDate.value = value?.completedOn ?? new Date();
+    workoutNote.value = value?.textFeedback ?? "";
   },
   { immediate: true },
 );
