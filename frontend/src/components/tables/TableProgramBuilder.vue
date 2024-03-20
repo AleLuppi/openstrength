@@ -191,10 +191,8 @@
                   emit('delete');
                   break;
                 case 2:
+                  emit('update:lineComputedInfo', programExercise.lines);
                   showDialogStressors = true;
-                  stressorToShow = [
-                    ...getExerciseStressors(programExercise.lines),
-                  ];
                 default:
                   break;
               }
@@ -225,7 +223,7 @@
               class="bg-lightest bordered"
             >
               <p
-                v-for="(line, idx) in stressorToShow"
+                v-for="(line, idx) in showLinesComputedInfo"
                 :key="idx"
                 class="column text-sm"
               >
@@ -451,7 +449,6 @@ import {
   getExerciseVariantByName,
 } from "@/helpers/exercises/listManagement";
 import { arrayPushToNullable } from "@/helpers/array";
-import { estimateMissingLineProps } from "@/helpers/charts/chartDatasetComputations";
 
 // Import components
 const FormProgramNewWeekDay = defineAsyncComponent(
@@ -486,6 +483,9 @@ const props = withDefaults(
 
     // Debounce input elements by provided amount (ms)
     debounce?: number;
+
+    // Computed stressors for lines
+    lineComputedInfo?: string[];
   }>(),
   {
     exercises: () => [],
@@ -505,6 +505,7 @@ const emit = defineEmits<{
   "update:expanded": [expanded: boolean];
   duplicate: [week: string, day: string];
   delete: [];
+  "update:lineComputedInfo": [lines: ProgramLine[] | undefined];
   move: [down: boolean];
   newExercise: [exerciseName: string];
   newVariant: [variantName: string];
@@ -514,7 +515,6 @@ const emit = defineEmits<{
 
 // Set ref
 const editWeekDayName = ref<string[]>(); // week and/or day name that is being modified (to clone or move tables)
-const stressorToShow = ref<string[]>();
 const showDialogStressors = ref(false);
 // Retrieve and supply current program exercise
 const programExercise = computed(() => props.modelValue);
@@ -601,6 +601,13 @@ const showExpanded = computed({
   },
 });
 
+const showLinesComputedInfo = computed({
+  get: () => props.lineComputedInfo,
+  set: (val) => {
+    emit("update:lineComputedInfo", val);
+  },
+});
+
 /**
  * Decide whether to show reference button in a cell or not.
  *
@@ -645,76 +652,6 @@ function getReferenceDisplayName(reference: ProgramLine | MaxLift | undefined) {
       (reference.lineOrder != undefined ? reference.lineOrder + 1 : "-")
     );
   else return reference.type ?? ""; // TODO i18n
-}
-
-/**
- * Computes the missing parameters for the provided lines
- */
-function getExerciseStressors(lines: ProgramLine[] | undefined): string[] {
-  const stressors: string[] = [];
-  if (!lines) {
-    stressors.push("Non ci sono dati disponibili, compila l'esercizio");
-    return stressors;
-  }
-
-  lines.forEach((line) => {
-    // If some values are empty, estimate them
-    let estimatedLoad = undefined;
-    let estimatedReps = undefined;
-    let estimatedRpe = undefined;
-    //let estimatedSets = undefined;
-    //let maxRef = undefined;
-
-    if (
-      line.loadBaseValue === "" ||
-      line.repsBaseValue === "" ||
-      line.rpeBaseValue === "" ||
-      line.setsBaseValue === ""
-    ) {
-      if (line.loadReference instanceof MaxLift) {
-        const estimatedLine = estimateMissingLineProps(
-          line,
-          Number(line.loadReference.value),
-        );
-
-        estimatedLoad = estimatedLine?.loadValue;
-        estimatedReps = estimatedLine?.repsValue;
-        estimatedRpe = estimatedLine?.rpeValue;
-        //estimatedSets = estimatedLine?.setsValue;
-        //maxRef = `${line.loadReference?.type}: ${line.loadReference.value} kg`;
-      }
-
-      const load = line.loadValue
-        ? `${line.loadValue} kg`
-        : estimatedLoad
-        ? `(${estimatedLoad} kg)`
-        : undefined;
-
-      const reps = line.repsValue
-        ? `${line.repsValue}`
-        : estimatedReps
-        ? `(${estimatedReps})`
-        : undefined;
-
-      const sets = line.setsValue ? `x${line.setsValue}s` : undefined;
-      const rpe = line.rpeValue
-        ? `@${line.rpeValue}`
-        : estimatedRpe
-        ? `(@${estimatedRpe})`
-        : "";
-
-      /*   stressors.push(
-        `${load} ${reps}x${sets}s @${rpe} ${maxRef ? maxRef : ""}`,
-      ); */
-
-      stressors.push(
-        `${load ? load : ""} ${reps ? reps : ""}${sets ? sets : ""} ${
-          rpe ? rpe : ""
-        }`,
-      );
-    }
-  });
-  return stressors;
 }
 </script>
 
