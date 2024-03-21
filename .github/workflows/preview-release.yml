@@ -30,3 +30,4 @@ jobs:
           projectId: openstrength
           channelId: ${{ steps.package-version.outputs.PACKAGE_VERSION }}
           entryPoint: ${{ vars.FRONTEND_WORKING_DIRECTORY }}
+          firebaseToolsVersion: v13.3.1
