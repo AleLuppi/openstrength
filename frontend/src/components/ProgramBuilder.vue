@@ -744,13 +744,10 @@ function getExerciseStressors(lines: ProgramLine[] | undefined): string[] {
   }
 
   lines.forEach((line) => {
-    console.log(line);
     // If some values are empty, estimate them
     let estimatedLoad = undefined;
     let estimatedReps = undefined;
     let estimatedRpe = undefined;
-    //let estimatedSets = undefined;
-    //let maxRef = undefined;
 
     // Estimate if something is missing
     if (
@@ -776,7 +773,6 @@ function getExerciseStressors(lines: ProgramLine[] | undefined): string[] {
           estimatedLine?.rpeValue ??
           estimatedLine?.loadComputedValue ??
           estimatedLine?.loadSupposedValue;
-        //maxRef = `${line.loadReference?.type}: ${line.loadReference.value} kg`;
       } else if (
         line.loadReference instanceof ProgramLine &&
         getMaxliftValue(line.programExercise?.exercise?.name)
@@ -792,15 +788,9 @@ function getExerciseStressors(lines: ProgramLine[] | undefined): string[] {
             maxliftValue,
           );
 
-          // TODO: Add maxlift to estimated line
-
           // Assign estimated values to reference line
           line.loadReference = estimatedLineReference;
 
-          // Assign missing reference to maxlift
-          console.log("base line", line);
-          console.log("estimated reference", estimatedLineReference);
-          console.log("line load ref", line.loadReference);
           // Recompute actual line values
           const estimatedLine = estimateMissingLineProps(line, maxliftValue);
 
