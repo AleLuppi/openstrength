@@ -26,12 +26,12 @@ export function arrayUniqueValues<T, R>(
 }
 
 /**
- * Get the unique values in an array.
+ * Sort the values of an array.
  *
  * @param array input vector.
- * @param sorted if true, also sort values.
+ * @param inplace if true, sort array in place, otherwise create a new array.
  * @param [sortBy=(val) => val] optional transformation applied to values before comparing them.
- * @returns a new array with only unique values.
+ * @returns a new array with sorted values.
  */
 export function arraySort<T, R>(
   array: T[],

@@ -3,7 +3,8 @@ import {
   ProgramExercise,
   ProgramLine,
 } from 'src/helpers/programs/program';
-import { arrayFilterUndefined, arrayUniqueValues } from 'src/helpers/array';
+import { arrayFilterUndefined,
+  arraySort, arrayUniqueValues } from 'src/helpers/array';
 import { moveProgramExercise } from 'src/helpers/programs/builder';
 import { extractUniqueMaxliftFromProgram } from 'src/helpers/programs/programTemplate';
 import { compareMaxliftLists } from 'src/helpers/maxlifts/listManagement';
@@ -18,11 +19,11 @@ import { MaxLift } from 'src/helpers/maxlifts/maxlift';
  */
 export function sortProgramExercises(
   exercises: ProgramExercise[],
-  sortLines = true
-) {
+  sortLines = true,
+): ProgramExercise[] {
   if (sortLines)
     exercises.forEach((exercise) => {
-      if (exercise.lines) exercise.lines = sortProgramLines(exercise.lines);
+      if (exercise.lines) sortProgramLines(exercise.lines, true);
     });
   return [...exercises].sort((exerciseA, exerciseB) => {
     // Prepare variables
@@ -59,19 +60,14 @@ export function sortProgramExercises(
  * Sort program lines according to line order.
  *
  * @param lines program lines to sort.
+ * @param inplace if true, sort lines in place, otherwise create a new array.
  * @returns sorted program lines.
  */
-export function sortProgramLines(lines: ProgramLine[]) {
-  return [...lines].sort((lineA, lineB) => {
-    // Prepare variables
-    const orderA = lineA.lineOrder ?? lineB.lineOrder ?? 99;
-    const orderB = lineB.lineOrder ?? orderA;
-
-    // Sort lines by order
-    if (orderA < orderB) return -1;
-    else if (orderA > orderB) return 1;
-    return 0;
-  });
+export function sortProgramLines(
+  lines: ProgramLine[],
+  inplace: boolean = false,
+) {
+  return arraySort(lines, inplace, (line) => line.lineOrder);
 }
 
 /**
