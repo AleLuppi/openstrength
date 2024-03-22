@@ -744,6 +744,7 @@ function getExerciseStressors(lines: ProgramLine[] | undefined): string[] {
   }
 
   lines.forEach((line) => {
+    console.log(line);
     // If some values are empty, estimate them
     let estimatedLoad = undefined;
     let estimatedReps = undefined;
@@ -751,11 +752,11 @@ function getExerciseStressors(lines: ProgramLine[] | undefined): string[] {
     //let estimatedSets = undefined;
     //let maxRef = undefined;
 
+    // Estimate if something is missing
     if (
       line.loadBaseValue === "" ||
       line.repsBaseValue === "" ||
-      line.rpeBaseValue === "" ||
-      line.setsBaseValue === ""
+      line.rpeBaseValue === ""
     ) {
       if (line.loadReference instanceof MaxLift) {
         const estimatedLine = estimateMissingLineProps(
@@ -763,11 +764,59 @@ function getExerciseStressors(lines: ProgramLine[] | undefined): string[] {
           Number(line.loadReference.value),
         );
 
-        estimatedLoad = estimatedLine?.loadValue;
-        estimatedReps = estimatedLine?.repsValue;
-        estimatedRpe = estimatedLine?.rpeValue;
-        //estimatedSets = estimatedLine?.setsValue;
+        estimatedLoad =
+          estimatedLine?.loadValue ??
+          estimatedLine?.loadComputedValue ??
+          estimatedLine?.loadSupposedValue;
+        estimatedReps =
+          estimatedLine?.repsValue ??
+          estimatedLine?.loadComputedValue ??
+          estimatedLine?.loadSupposedValue;
+        estimatedRpe =
+          estimatedLine?.rpeValue ??
+          estimatedLine?.loadComputedValue ??
+          estimatedLine?.loadSupposedValue;
         //maxRef = `${line.loadReference?.type}: ${line.loadReference.value} kg`;
+      } else if (
+        line.loadReference instanceof ProgramLine &&
+        getMaxliftValue(line.programExercise?.exercise?.name)
+      ) {
+        // Estimate first the referenced line
+        const maxliftValue = getMaxliftValue(
+          line.programExercise?.exercise?.name,
+        );
+
+        if (maxliftValue) {
+          let estimatedLineReference = estimateMissingLineProps(
+            line.loadReference,
+            maxliftValue,
+          );
+
+          // TODO: Add maxlift to estimated line
+
+          // Assign estimated values to reference line
+          line.loadReference = estimatedLineReference;
+
+          // Assign missing reference to maxlift
+          console.log("base line", line);
+          console.log("estimated reference", estimatedLineReference);
+          console.log("line load ref", line.loadReference);
+          // Recompute actual line values
+          const estimatedLine = estimateMissingLineProps(line, maxliftValue);
+
+          estimatedLoad =
+            estimatedLine?.loadValue ??
+            estimatedLine?.loadComputedValue ??
+            estimatedLine?.loadSupposedValue;
+          estimatedReps =
+            estimatedLine?.repsValue ??
+            estimatedLine?.loadComputedValue ??
+            estimatedLine?.loadSupposedValue;
+          estimatedRpe =
+            estimatedLine?.rpeValue ??
+            estimatedLine?.loadComputedValue ??
+            estimatedLine?.loadSupposedValue;
+        }
       } else if (
         !line.loadReference &&
         getMaxliftValue(line.programExercise?.exercise?.name)
@@ -779,43 +828,56 @@ function getExerciseStressors(lines: ProgramLine[] | undefined): string[] {
         if (maxliftValue) {
           const estimatedLine = estimateMissingLineProps(line, maxliftValue);
 
-          estimatedLoad =
-            maxliftValue *
-            parseFloat(estimatedLine?.loadOperation.split("*")[1]);
-          estimatedReps = estimatedLine?.repsValue;
-          estimatedRpe = estimatedLine?.rpeValue;
+          estimatedLoad = estimatedLine?.loadOperation
+            ? maxliftValue *
+              parseFloat(estimatedLine?.loadOperation.split("*")[1])
+            : estimatedLine?.loadValue ??
+              estimatedLine?.loadComputedValue ??
+              estimatedLine?.loadSupposedValue ??
+              estimatedLine?.loadBaseValue;
+          estimatedReps =
+            estimatedLine?.repsValue ??
+            estimatedLine?.repsComputedValue ??
+            estimatedLine?.repsSupposedValue;
+          estimatedRpe =
+            estimatedLine?.rpeValue ??
+            estimatedLine?.rpeComputedValue ??
+            estimatedLine?.rpeSupposedValue;
         }
       }
-
-      const load = line.loadValue
-        ? `${line.loadValue} kg`
-        : estimatedLoad
-        ? `(${estimatedLoad} kg)`
-        : undefined;
-
-      const reps = line.repsValue
-        ? `${line.repsValue}`
-        : estimatedReps
-        ? `(${estimatedReps})`
-        : undefined;
-
-      const sets = line.setsValue ? `x${line.setsValue}s` : undefined;
-      const rpe = line.rpeValue
-        ? `@${line.rpeValue}`
-        : estimatedRpe
-        ? `(@${estimatedRpe})`
-        : "";
-
-      /*   stressors.push(
-        `${load} ${reps}x${sets}s @${rpe} ${maxRef ? maxRef : ""}`,
-      ); */
-
-      stressors.push(
-        `${load ? load : ""} ${reps ? reps : ""}${sets ? sets : ""} ${
-          rpe ? rpe : ""
-        }`,
-      );
+    } else {
+      estimatedLoad =
+        line.loadComputedValue ?? line.loadSupposedValue ?? line.loadBaseValue;
+      estimatedReps =
+        line.repsComputedValue ?? line.repsSupposedValue ?? line.repsBaseValue;
+      estimatedRpe =
+        line.rpeComputedValue ?? line.rpeSupposedValue ?? line.rpeBaseValue;
     }
+
+    const load = line.loadValue
+      ? `${line.loadValue} kg`
+      : estimatedLoad
+      ? `(${estimatedLoad} kg)`
+      : line.loadBaseValue;
+
+    const reps = line.repsValue
+      ? `${line.repsValue}`
+      : estimatedReps
+      ? `(${estimatedReps})`
+      : line.repsBaseValue;
+
+    const sets = line.setsValue ? `x${line.setsValue}s` : line.setsBaseValue;
+    const rpe = line.rpeValue
+      ? `@${line.rpeValue}`
+      : estimatedRpe
+      ? `(@${estimatedRpe})`
+      : line.rpeBaseValue;
+
+    stressors.push(
+      `${load ? load : ""} ${reps ? reps : ""}${sets ? sets : ""} ${
+        rpe ? rpe : ""
+      }`,
+    );
   });
   computedLineStressors.value = [...stressors];
   return stressors;
