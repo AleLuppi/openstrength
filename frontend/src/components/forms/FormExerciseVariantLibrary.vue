@@ -20,7 +20,7 @@
       >
         <template v-slot:before>
           <span class="text-bold text-h6" style="font-size: medium">
-            {{ props.variant.exercise?.name + " - " }}
+            {{ props.variant.exercise?.name + ' - ' }}
           </span>
         </template>
       </os-input>
@@ -82,16 +82,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, PropType } from "vue";
-import { useI18n } from "vue-i18n";
-import type { QForm } from "quasar";
+import { ref, computed, watch, PropType } from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { QForm } from 'quasar';
 import {
   ExerciseVariant,
   ExerciseLoadType,
   ExerciseMuscleGroups,
   ExerciseEquipment,
-} from "@/helpers/exercises/exercise";
-import { arrayUniqueValues } from "@/helpers/array";
+} from 'src/helpers/exercises/exercise';
+import { arrayUniqueValues } from 'src/helpers/array';
 
 // Init plugin
 const i18n = useI18n();
@@ -130,7 +130,7 @@ defineExpose({
 // Set ref
 const formElement = ref<QForm>();
 const variantName = ref<string>();
-const variantMuscleGroups = ref<string[]>();
+const variantMuscleGroups = ref<ExerciseMuscleGroups[]>();
 const variantLoadType = ref<string>();
 const variantEquipment = ref<string[]>();
 const variantVideo = ref<string>();
@@ -141,7 +141,7 @@ watch(
   props.variant,
   (variant: ExerciseVariant) => {
     variantName.value = variant.isDefault
-      ? i18n.t("coach.exercise_management.default_variant")
+      ? i18n.t('coach.exercise_management.default_variant')
       : variant.name;
     variantMuscleGroups.value = variant.muscleGroups;
     variantLoadType.value = variant.loadType;
@@ -149,45 +149,45 @@ watch(
     variantVideo.value = variant.videoUrl;
     variantDescription.value = variant.description;
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 // Get options for select fields
 const variantMuscleGroupsOptions = computed(() =>
   arrayUniqueValues(
     Object.keys(ExerciseMuscleGroups).concat(
-      props.optionsMuscleGroups ?? props.variant.muscleGroups ?? [],
-    ),
+      props.optionsMuscleGroups ?? props.variant.muscleGroups ?? []
+    )
   ).map((val) => ({
     label: Object.values(ExerciseMuscleGroups).includes(
-      val as ExerciseMuscleGroups,
+      val as ExerciseMuscleGroups
     )
-      ? i18n.t("coach.exercise_management.fields.musclegroups_available." + val)
+      ? i18n.t('coach.exercise_management.fields.musclegroups_available.' + val)
       : val,
     value: val,
-  })),
+  }))
 );
 const variantLoadTypeOptions = computed(() =>
   Object.keys(ExerciseLoadType)
     .sort()
     .map((val) => ({
       label: i18n.t(
-        "coach.exercise_management.fields.loadtype_available." + val,
+        'coach.exercise_management.fields.loadtype_available.' + val
       ),
       value: val,
-    })),
+    }))
 );
 const variantEquipmentOptions = computed(() =>
   arrayUniqueValues(
     Object.keys(ExerciseEquipment).concat(
-      props.optionsEquipment ?? props.variant.equipment ?? [],
-    ),
+      props.optionsEquipment ?? props.variant.equipment ?? []
+    )
   ).map((val) => ({
     label: Object.values(ExerciseEquipment).includes(val as ExerciseEquipment)
-      ? i18n.t("coach.exercise_management.fields.equipment_available." + val)
+      ? i18n.t('coach.exercise_management.fields.equipment_available.' + val)
       : val,
     value: val,
-  })),
+  }))
 );
 
 /**
@@ -202,7 +202,7 @@ function onSubmit() {
   variant.videoUrl = variantVideo.value;
   variant.description = variantDescription.value;
 
-  emit("submit", variant);
+  emit('submit', variant);
 }
 
 /**

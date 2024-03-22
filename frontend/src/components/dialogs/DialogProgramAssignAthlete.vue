@@ -35,9 +35,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType } from "vue";
-import { AthleteUser } from "@/helpers/users/user";
-import TableManagedAthletes from "../tables/TableManagedAthletes.vue";
+import { ref, PropType } from 'vue';
+import { AthleteUser } from 'src/helpers/users/user';
+import TableManagedAthletes from '../tables/TableManagedAthletes.vue';
 
 // Define props
 defineProps({
@@ -57,18 +57,18 @@ defineProps({
 
 // Define emits
 const emit = defineEmits<{
-  "update:modelValue": [value: Boolean];
-  selection: [evt: Event, row: Object, index: Number];
-  "update:selected": [value?: AthleteUser];
+  'update:modelValue': [value: boolean];
+  selection: [evt: Event, row: object, index: number];
+  'update:selected': [value?: AthleteUser];
 }>();
 
 // Set ref
 const searchAthlete = ref<string>();
 
 // Set what to do on athlete selection
-function onAthleteSelection(...params: [Event, Object, Number]) {
-  searchAthlete.value = "";
-  emit("update:modelValue", false);
-  emit("selection", ...params);
+function onAthleteSelection(...params: [Event, object, number]) {
+  searchAthlete.value = '';
+  emit('update:modelValue', false);
+  emit('selection', ...params);
 }
 </script>

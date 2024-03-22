@@ -12,9 +12,9 @@
     <div class="row items-center q-col-gutter-lg">
       <h4 class="q-my-none">
         {{
-          `${$t("coach.program_management.builder.week_name", {
+          `${$t('coach.program_management.builder.week_name', {
             week: props.programDay.weekName,
-          })} - ${$t("coach.program_management.builder.day_name", {
+          })} - ${$t('coach.program_management.builder.day_name', {
             day: props.programDay.dayName,
           })}`
         }}
@@ -82,17 +82,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import { ProgramFrozenView } from "@/helpers/programs/program";
-import WorkoutExerciseForm from "./WorkoutExerciseForm.vue";
-import { ProgramDayFeedback } from "@/helpers/programs/models";
-import mixpanel from "mixpanel-browser";
+import { computed, defineAsyncComponent, ref, watch } from 'vue';
+import mixpanel from 'mixpanel-browser';
+import { ProgramFrozenView } from 'src/helpers/programs/program';
+import { ProgramDayFeedback } from 'src/helpers/programs/models';
+
+// Import components
+const WorkoutExerciseForm = defineAsyncComponent(
+  () => import('components/feedback/WorkoutExerciseForm.vue')
+);
 
 // Define props
 const props = withDefaults(
   defineProps<{
     // single frozen program day
-    programDay: ProgramFrozenView["weekdays"][number];
+    programDay: ProgramFrozenView['weekdays'][number];
 
     // current feedback on the day
     modelValue: ProgramDayFeedback | undefined;
@@ -103,18 +107,18 @@ const props = withDefaults(
     // whether to show component for reading only and not update
     readonly?: boolean;
   }>(),
-  { isNext: false, readonly: false },
+  { isNext: false, readonly: false }
 );
 
 // Define emit
 const emit = defineEmits<{
-  "update:modelValue": [value: ProgramDayFeedback];
+  'update:modelValue': [value: ProgramDayFeedback];
   complete: [];
 }>();
 
 // Set ref
 const workoutDate = ref<Date>(new Date()); // day on which exercises have been performed
-const workoutNote = ref<string>(""); // optional feedback text on the day
+const workoutNote = ref<string>(''); // optional feedback text on the day
 const dayShowCollapsed = ref<boolean>(false); // whether to show collapsed day
 const dayFeedback = ref<ProgramDayFeedback>({
   weekName: props.programDay.weekName,
@@ -127,14 +131,14 @@ const dayFeedback = ref<ProgramDayFeedback>({
 const nextExerciseIdx = computed(() =>
   dayFeedback.value.exercisesFeedback.findIndex((exercise) => {
     return !exercise.completed && exercise.willComplete != false;
-  }),
+  })
 );
 
 // Show day expanded or collapsed following requests from parent
 watch(
   () => props.modelValue?.completed,
   (isCompleted) => (dayShowCollapsed.value = isCompleted ?? false),
-  { immediate: true },
+  { immediate: true }
 );
 
 // Update internal model to input model value
@@ -148,9 +152,9 @@ watch(
       exercisesFeedback: [],
     };
     workoutDate.value = value?.completedOn ?? new Date();
-    workoutNote.value = value?.textFeedback ?? "";
+    workoutNote.value = value?.textFeedback ?? '';
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 /**
@@ -158,7 +162,7 @@ watch(
  *
  * @param [completed=true] whether day can be considered completed by athlete.
  */
-function completeDay(completed: boolean = true) {
+function completeDay(completed = true) {
   dayShowCollapsed.value = completed;
   if (!props.readonly) {
     // Update feedback if not in read only mode
@@ -166,14 +170,14 @@ function completeDay(completed: boolean = true) {
     dayFeedback.value.completedOn = completed ? workoutDate.value : undefined;
     dayFeedback.value.textFeedback = workoutNote.value;
     if (completed) {
-      emit("complete");
+      emit('complete');
 
       // Mixpanel tracking
-      mixpanel.track("Athlete Feedback: Day completed", {
+      mixpanel.track('Athlete Feedback: Day completed', {
         Feedback: workoutNote.value,
       });
     }
-    emit("update:modelValue", dayFeedback.value);
+    emit('update:modelValue', dayFeedback.value);
   }
 }
 </script>
@@ -186,7 +190,7 @@ function completeDay(completed: boolean = true) {
   margin-top: 2em;
 
   &::after {
-    content: "Prossimo esercizio!";
+    content: 'Prossimo esercizio!';
     color: white;
     font-weight: bold;
     position: absolute;

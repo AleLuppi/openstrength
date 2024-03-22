@@ -1,5 +1,12 @@
-export const logoFullImage = require("@/assets/logo.svg");
-export const logo404Image = require("@/assets/logo404.svg");
-export const logoFullImageDark = require("@/assets/logo_dark.svg");
-export const logo404ImageDark = require("@/assets/logo404_dark.svg");
-export const logoTextOnly = require("@/assets/logo_text.svg");
+export const logoFullImage = new URL("./logo.svg", import.meta.url).href;
+export const logo404Image = new URL("./logo/logo404.svg", import.meta.url);
+export const logoFullImageDark = new URL(
+  "./logo/logo_dark.svg",
+  import.meta.url
+);
+export const logo404ImageDark = new URL(
+  "./logo/logo404_dark.svg",
+  import.meta.url
+);
+export const logoTextOnly = new URL("./logo/logo_text.svg", import.meta.url)
+  .href;

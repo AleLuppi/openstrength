@@ -31,17 +31,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import osInput, { type osInputProps } from "@/components/basic/osInput.vue";
+import { computed, ref, watch } from 'vue';
+import osInput, { type osInputProps } from 'components/basic/osInput.vue';
 import {
   dateFromStringLocale,
   dateGetLocaleFormat,
   dateGetLocaleMask,
   dateToStringLocale,
-} from "@/helpers/scalar";
+} from 'src/helpers/scalar';
 
 // Define props (from child)
-export interface osInputDateProps extends Omit<osInputProps, "modelValue"> {
+export interface osInputDateProps extends Omit<osInputProps, 'modelValue'> {
   // model value is a date
   modelValue: Date | undefined;
 
@@ -65,7 +65,7 @@ defineExpose({
 
 // Define emits
 const emit = defineEmits<{
-  "update:modelValue": [value: Date | undefined];
+  'update:modelValue': [value: Date | undefined];
 }>();
 
 // Set props
@@ -74,7 +74,7 @@ const showDatePopup = ref(false); // whether date popup is visible
 
 // Get parsed props (allow override of update:modelValue)
 const cleanProps = computed(() => {
-  const { "onUpdate:modelValue": _, rules: __, ...obj } = props;
+  const { 'onUpdate:modelValue': _, rules: __, ...obj } = props;
   return obj;
 });
 
@@ -88,11 +88,11 @@ const outModelValue = computed<string | number | null | undefined>({
     if (val)
       try {
         const date = dateFromStringLocale(val.toString());
-        if (date) emit("update:modelValue", date);
+        if (date) emit('update:modelValue', date);
       } catch {
         // no need to set value if parsing date returns exceptions
       }
-    else emit("update:modelValue", undefined);
+    else emit('update:modelValue', undefined);
   },
 });
 watch(outModelValue, (val) => (inputModelValue.value = val), {
@@ -115,7 +115,7 @@ const modelValueMask = dateGetLocaleMask();
   }
 
   /* Firefox */
-  &:deep(input[type="number"]) {
+  &:deep(input[type='number']) {
     appearance: textfield;
     -moz-appearance: textfield;
   }

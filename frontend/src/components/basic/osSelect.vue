@@ -51,7 +51,7 @@
             }}
           </q-item-section>
           <q-item-section v-else>
-            {{ $t("common.no_results") }}
+            {{ $t('common.no_results') }}
           </q-item-section>
         </q-item>
       </template>
@@ -63,7 +63,7 @@
             inputValue &&
             !options
               ?.map((opt) =>
-                String(opt instanceof Object ? opt.label : opt).toLowerCase(),
+                String(opt instanceof Object ? opt.label : opt).toLowerCase()
               )
               .includes(inputValue.toLowerCase())
           "
@@ -87,9 +87,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { QSelect } from "quasar";
-import type { QSelectProps, QSelectSlots } from "quasar";
+import { ref, computed } from 'vue';
+import { QSelect } from 'quasar';
+import type { QSelectProps, QSelectSlots } from 'quasar';
 
 // Define props (from child)
 interface extendedInputProps extends QSelectProps {
@@ -116,7 +116,7 @@ interface extendedInputProps extends QSelectProps {
 }
 const props = defineProps<extendedInputProps>();
 const emit = defineEmits<{
-  "update:modelValue": [modelValue: typeof props.modelValue];
+  'update:modelValue': [modelValue: typeof props.modelValue];
   inputValue: [value: string];
 }>();
 
@@ -155,11 +155,11 @@ defineExpose({
 
 // Set ref
 const options = ref<any[]>();
-const inputValue = ref<string>("");
+const inputValue = ref<string>('');
 const updateFromNewValue = ref<boolean>(false);
 
 const placeholder = computed(() =>
-  props.modelValue ? undefined : props.placeholder,
+  props.modelValue ? undefined : props.placeholder
 );
 
 /**
@@ -168,9 +168,9 @@ const placeholder = computed(() =>
  * @param val input text.
  * @param doneFn register callback to update options.
  */
-function filter(val: string, doneFn: Function) {
+function filter(val: string, doneFn: (func: () => void) => void) {
   // No input, display all options
-  if (val === "") {
+  if (val === '') {
     doneFn(() => {
       options.value = props.options?.slice();
     });
@@ -191,7 +191,7 @@ function filter(val: string, doneFn: Function) {
           optVal.toLowerCase().includes(inTxt) &&
           !optVal.toLowerCase().startsWith(inTxt)
         );
-      }),
+      })
     );
   });
 }
@@ -203,13 +203,13 @@ function filter(val: string, doneFn: Function) {
  */
 function onNewValueRequest(value: string) {
   if (props.multiple) {
-    props.newValueMode == "toggle"
+    props.newValueMode == 'toggle'
       ? selectElement.value?.toggleOption(value)
-      : selectElement.value?.add(value, props.newValueMode == "add-unique");
+      : selectElement.value?.add(value, props.newValueMode == 'add-unique');
   } else {
-    emit("update:modelValue", value);
+    emit('update:modelValue', value);
   }
-  selectElement.value?.updateInputValue("");
+  selectElement.value?.updateInputValue('');
 }
 
 /**
@@ -220,11 +220,11 @@ function onNewValueRequest(value: string) {
 function onInputValue(value: string) {
   // Set input value
   inputValue.value = value;
-  emit("inputValue", value);
+  emit('inputValue', value);
 
   // Reset model value
   if (!props.multiple && props.modelValue && value)
-    emit("update:modelValue", "");
+    emit('update:modelValue', '');
 }
 </script>
 

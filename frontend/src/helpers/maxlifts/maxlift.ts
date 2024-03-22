@@ -1,21 +1,21 @@
-import { DocumentReference } from "firebase/firestore";
-import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
-import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
-import { dbCollections } from "@/helpers/database/collections";
-import { AthleteUser } from "@/helpers/users/user";
+import { DocumentReference } from 'firebase/firestore';
+import { doAddDoc, doUpdateDoc } from 'src/helpers/database/readwrite';
+import { Exercise, ExerciseVariant } from 'src/helpers/exercises/exercise';
+import { dbCollections } from 'src/helpers/database/collections';
+import { AthleteUser } from 'src/helpers/users/user';
 
 /**
  * Define available max lift types.
  */
 export enum MaxLiftType {
-  _1RM = "1RM",
-  _3RM = "3RM",
-  _5RM = "5RM",
-  _6RM = "6RM",
-  _8RM = "8RM",
-  _10RM = "10RM",
-  _maxrep = "Max Reps",
-  _maxtime = "Max Time",
+  _1RM = '1RM',
+  _3RM = '3RM',
+  _5RM = '5RM',
+  _6RM = '6RM',
+  _8RM = '8RM',
+  _10RM = '10RM',
+  _maxrep = 'Max Reps',
+  _maxtime = 'Max Time',
 }
 
 /**
@@ -125,8 +125,8 @@ export class MaxLift {
     onError,
   }: {
     maxlift?: MaxLift;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     const maxliftToUpdate = maxlift || this;
     maxliftToUpdate.createdOn = new Date();
@@ -147,8 +147,8 @@ export class MaxLift {
     onError,
   }: {
     maxlift?: MaxLift;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     const maxliftToUpdate = maxlift || this;
     maxliftToUpdate.lastUpdated = new Date();
@@ -171,8 +171,8 @@ export class MaxLift {
     onError,
   }: {
     maxlift?: MaxLift;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     const maxliftToSave = maxlift || this;
     if (maxliftToSave.uid)
@@ -186,7 +186,7 @@ export class MaxLift {
    * @param shallow avoid copying identifying fields such as uid and parent instance.
    * @returns a new maxlift with duplicate fields.
    */
-  duplicate(shallow: boolean = false) {
+  duplicate(shallow = false) {
     return new MaxLift({
       ...this,
       ...(shallow && {
@@ -205,7 +205,10 @@ export class MaxLift {
  */
 export function addDocMaxLift(
   maxlift: MaxLift,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {}
 ) {
   const { uid: _, athlete: athlete, ...maxliftObj } = maxlift;
   const flatMaxliftObj = {
@@ -231,7 +234,10 @@ export function addDocMaxLift(
  */
 export function updateDocMaxLift(
   maxlift: MaxLift,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {}
 ) {
   const { uid: docId, athlete: athlete, ...maxliftObj } = maxlift;
   const flatMaxliftObj = {

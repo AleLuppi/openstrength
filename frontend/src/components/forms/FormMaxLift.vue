@@ -43,32 +43,32 @@
         readonly
       >
         <template v-slot:after>
-          <q-icon name="sym_o_help" class="cursor-pointer">
+          <q-icon :name="symOutlinedHelp" class="cursor-pointer">
             <q-tooltip>
               {{
                 maxliftSelectedExercise?.defaultVariant?.loadType &&
                 [ExerciseLoadType.loaded, ExerciseLoadType.bodyweight].includes(
-                  maxliftSelectedExercise?.defaultVariant?.loadType,
+                  maxliftSelectedExercise?.defaultVariant?.loadType
                 )
                   ? athlete?.weight
                     ? $t(
-                        "coach.maxlift_management.computation.estimated1rm_with_weight",
+                        'coach.maxlift_management.computation.estimated1rm_with_weight',
                         {
                           athlete: athlete?.name,
                           weight: athlete?.weight,
-                        },
+                        }
                       )
                     : $t(
-                        "coach.maxlift_management.computation.estimated1rm_with_default_weight",
+                        'coach.maxlift_management.computation.estimated1rm_with_default_weight',
                         {
                           athlete: athlete?.name,
-                        },
+                        }
                       )
                   : $t(
-                      "coach.maxlift_management.computation.estimated1rm_no_weight",
+                      'coach.maxlift_management.computation.estimated1rm_no_weight',
                       {
                         athlete: props.athlete?.name,
-                      },
+                      }
                     )
               }}
             </q-tooltip>
@@ -96,14 +96,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, PropType } from "vue";
-import { QForm } from "quasar";
-import { dateGetLocaleFormat, dateGetWithoutTimezone } from "@/helpers/scalar";
-import { Exercise, ExerciseLoadType } from "@/helpers/exercises/exercise";
-import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
-import { estimate1RMfromNRM } from "@/helpers/charts/chartDatasetComputations";
-import { AthleteUser } from "@/helpers/users/user";
-import { getMaxliftUnit } from "@/helpers/maxlifts/utils";
+import { ref, computed, watch, PropType } from 'vue';
+import { QForm } from 'quasar';
+import {
+  dateGetLocaleFormat,
+  dateGetWithoutTimezone,
+} from 'src/helpers/scalar';
+import { Exercise, ExerciseLoadType } from 'src/helpers/exercises/exercise';
+import { MaxLift, MaxLiftType } from 'src/helpers/maxlifts/maxlift';
+import { estimate1RMfromNRM } from 'src/helpers/charts/chartDatasetComputations';
+import { AthleteUser } from 'src/helpers/users/user';
+import { getMaxliftUnit } from 'src/helpers/maxlifts/utils';
+import { symOutlinedHelp } from '@quasar/extras/material-symbols-outlined';
 
 // Set props
 const props = defineProps({
@@ -149,13 +153,13 @@ const maxliftEstimated1RMValue = computed(() =>
   computeE1RM(
     maxliftValue.value,
     maxliftType.value,
-    maxliftSelectedExercise.value,
-  ),
+    maxliftSelectedExercise.value
+  )
 );
 const showEstimated1RM = computed(
   () =>
     (props.maxlift?.athlete || props.athlete) &&
-    maxliftEstimated1RMValue.value != undefined,
+    maxliftEstimated1RMValue.value != undefined
 );
 
 // Setup variables according to selected maxlift
@@ -167,12 +171,12 @@ watch(
     maxliftValue.value = props.maxlift?.value;
     maxliftDate.value = props.maxlift?.performedOn ?? new Date();
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 // Retrieve selected exercise
 const maxliftSelectedExercise = computed(() =>
-  props.exercises.find((exercise) => exercise.name == maxliftExercise.value),
+  props.exercises.find((exercise) => exercise.name == maxliftExercise.value)
 );
 
 // Gather correct suffix for current selection
@@ -206,7 +210,7 @@ function onSubmit() {
   maxlift.performedOn = dateGetWithoutTimezone(maxliftDate.value);
   if (props.athlete) maxlift.athlete = props.athlete;
 
-  emit("submit", maxlift);
+  emit('submit', maxlift);
 }
 
 /**
@@ -218,6 +222,6 @@ function onReset() {
   maxliftValue.value = undefined;
   maxliftDate.value = undefined;
 
-  emit("reset");
+  emit('reset');
 }
 </script>

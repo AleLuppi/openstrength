@@ -7,7 +7,7 @@
   >
     <q-card-section class="q-gutter-x-xs">
       <div
-        v-for="(maxlift, index) in maxlifts"
+        v-for="(maxlift, index) in maxliftsUnderUpdate"
         :key="index"
         class="row justify-between items-center"
       >
@@ -42,10 +42,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import type { QForm } from "quasar";
-import type { MaxLift } from "@/helpers/maxlifts/maxlift";
-import { getMaxliftUnit } from "@/helpers/maxlifts/utils";
+import { ref, watch } from 'vue';
+import type { QForm } from 'quasar';
+import type { MaxLift } from 'src/helpers/maxlifts/maxlift';
+import { getMaxliftUnit } from 'src/helpers/maxlifts/utils';
 
 // Set props
 const props = defineProps<{ maxlifts: MaxLift[]; clone?: boolean }>();
@@ -67,31 +67,31 @@ defineExpose({
 });
 
 // Set ref
-const maxlifts = ref<MaxLift[]>([]); // maxlifts that shall be updated
+const maxliftsUnderUpdate = ref<MaxLift[]>([]); // maxlifts that shall be updated
 const formElement = ref<QForm>(); // form element
 
 // Update maxlifts to input ones
 watch(
   props.maxlifts,
   (inMaxlifts) => {
-    maxlifts.value = props.clone
+    maxliftsUnderUpdate.value = props.clone
       ? inMaxlifts.map((maxlift) => maxlift.duplicate(true))
       : inMaxlifts;
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 /**
  * Perform operations on form submit.
  */
 function onSubmit() {
-  emit("submit", maxlifts.value);
+  emit('submit', maxliftsUnderUpdate.value);
 }
 
 /**
  * Perform operations on form reset.
  */
 function onReset() {
-  emit("reset");
+  emit('reset');
 }
 </script>

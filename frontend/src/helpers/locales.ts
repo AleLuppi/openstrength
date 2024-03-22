@@ -1,5 +1,5 @@
-import { useI18n } from "vue-i18n";
-import supportedLocales from "@/locales/supportedLocales";
+import { useI18n } from 'vue-i18n';
+import supportedLocales from 'src/i18n/supportedLocales';
 
 /**
  * Set project locale.
@@ -45,11 +45,7 @@ export function isLocalesSupported(locale: string) {
  * @param countryCodeOnly if true, only country code is returned, otherwise full locale name.
  * @returns code of preferred locale from browser.
  */
-export function getBrowserLocale({
-  countryCodeOnly = false,
-}: {
-  countryCodeOnly?: boolean;
-}) {
+export function getBrowserLocale(countryCodeOnly = false) {
   const navigatorLocale =
     navigator.languages !== undefined
       ? navigator.languages[0]
@@ -70,7 +66,7 @@ export function getBrowserLocale({
  * @returns preferred browser locale if supported, undefined otherwise.
  */
 export function getPreferredLocale() {
-  const browserLocale = getBrowserLocale({ countryCodeOnly: true });
+  const browserLocale = getBrowserLocale();
 
   if (browserLocale && isLocalesSupported(browserLocale)) return browserLocale;
 

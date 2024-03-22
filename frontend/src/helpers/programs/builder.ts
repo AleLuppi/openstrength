@@ -1,11 +1,11 @@
-import { uid } from "quasar";
+import { uid } from 'quasar';
 import {
   Program,
   ProgramExercise,
   ProgramLine,
-} from "@/helpers/programs/program";
-import { MaxLift } from "@/helpers/maxlifts/maxlift";
-import { numberClamp } from "@/helpers/scalar";
+} from 'src/helpers/programs/program';
+import { MaxLift } from 'src/helpers/maxlifts/maxlift';
+import { numberClamp } from 'src/helpers/scalar';
 
 /**
  * Define methods used in builder.
@@ -17,7 +17,7 @@ import { numberClamp } from "@/helpers/scalar";
  * @returns a random uid.
  */
 function getRandomUid() {
-  return "OS-" + uid();
+  return 'OS-' + uid();
 }
 
 /**
@@ -55,7 +55,7 @@ export function programLinesToTable(lines: ProgramLine[]) {
  */
 export function tableToProgramLines(
   data: ReturnType<typeof programLinesToTable>,
-  programExercise?: ProgramExercise,
+  programExercise?: ProgramExercise
 ) {
   return data.map(
     (lineInfo, idx) =>
@@ -74,7 +74,7 @@ export function tableToProgramLines(
         note: lineInfo.note,
         requestFeedbackText: lineInfo.requestText,
         requestFeedbackVideo: lineInfo.requestVideo,
-      }),
+      })
   );
 }
 
@@ -100,7 +100,7 @@ export function moveProgramExercise(
   program: Program,
   programExercise?: ProgramExercise | number,
   destination?: [string, string, string | number | undefined],
-  duplicate: boolean = false,
+  duplicate = false,
   {
     sourceFallback = false,
     sourceOffset = 0,
@@ -109,13 +109,13 @@ export function moveProgramExercise(
     sourceFallback?: boolean;
     sourceOffset?: number;
     looseOrder?: boolean;
-  } = {},
+  } = {}
 ): Program {
   // Nothing to do if both program exercise and destination are unknown
   if (programExercise == undefined && destination == undefined) return program;
 
   // Get program exercise
-  if (typeof programExercise == "number")
+  if (typeof programExercise == 'number')
     if (program.programExercises)
       programExercise = program.programExercises[programExercise];
     else return program;
@@ -124,8 +124,8 @@ export function moveProgramExercise(
   const source: [string, string, string | number | undefined] | undefined =
     programExercise != undefined
       ? [
-          programExercise.scheduleWeek?.toString() ?? "",
-          programExercise.scheduleDay?.toString() ?? "",
+          programExercise.scheduleWeek?.toString() ?? '',
+          programExercise.scheduleDay?.toString() ?? '',
           programExercise.scheduleOrder
             ? Number(programExercise.scheduleOrder)
             : undefined,
@@ -142,7 +142,7 @@ export function moveProgramExercise(
     looseOrder &&
     destination?.[2] &&
     program.programExercises?.some(
-      (oneExercise) => oneExercise.scheduleOrder == destination![2],
+      (oneExercise) => oneExercise.scheduleOrder == destination![2]
     )
   )
     destination[2] = undefined;
@@ -151,7 +151,7 @@ export function moveProgramExercise(
       destination?.[2] ? Number(destination[2]) : Infinity,
       1,
       (getLargestOrderInDay(program.programExercises ?? [], destination) ?? 0) +
-        1,
+        1
     );
 
   // Move any exercise between source and destination
@@ -179,7 +179,7 @@ export function moveProgramExercise(
   if (destination == undefined) {
     // If destination is unknown, the exercise is being destroyed
     program.programExercises = program.programExercises?.filter(
-      (value) => value != programExercise,
+      (value) => value != programExercise
     );
   } else if (programExercise == undefined) {
     // If exercise is unknown, a new exercise is being creted
@@ -188,7 +188,7 @@ export function moveProgramExercise(
         scheduleWeek: destination[0],
         scheduleDay: destination[1],
         scheduleOrder: destination[2],
-      }),
+      })
     );
   } else {
     // If both exercise and destination are known, exercise is being moved or cloned
@@ -200,7 +200,7 @@ export function moveProgramExercise(
     storingExercise.scheduleDay = destination[1];
     storingExercise.scheduleOrder = destination[2];
     (program.programExercises = (program.programExercises || []).filter(
-      (value) => value != storingExercise,
+      (value) => value != storingExercise
     )).push(storingExercise);
   }
 
@@ -215,7 +215,7 @@ export function moveProgramExercise(
  */
 export function getLargestOrderInDay(
   programExercises: ProgramExercise[],
-  scheduleInfo: [string, string, string | number | undefined] | ProgramExercise,
+  scheduleInfo: [string, string, string | number | undefined] | ProgramExercise
 ): number | undefined {
   if (programExercises.length == 0) return undefined;
   const [week, day] =
@@ -233,7 +233,7 @@ export function getLargestOrderInDay(
       )
         return Number(value.scheduleOrder);
       else return -1;
-    }),
+    })
   );
   if (max >= 0) return max;
   else return undefined;
@@ -250,23 +250,23 @@ export function assignReference(
   line: ProgramLine,
   reference: ProgramLine | MaxLift | undefined,
   field:
-    | "sets"
-    | "reps"
-    | "load"
-    | "rpe"
-    | "setsReference"
-    | "repsReference"
-    | "loadReference"
-    | "rpeReference",
+    | 'sets'
+    | 'reps'
+    | 'load'
+    | 'rpe'
+    | 'setsReference'
+    | 'repsReference'
+    | 'loadReference'
+    | 'rpeReference'
 ) {
   // TODO do not allow reference of some lines
 
   // Update line reference
-  const refField = field.endsWith("Reference") ? field : field + "Reference";
-  if (refField === "loadReference" || refField === "repsReference")
+  const refField = field.endsWith('Reference') ? field : field + 'Reference';
+  if (refField === 'loadReference' || refField === 'repsReference')
     line[refField] = reference;
   if (
-    (refField === "setsReference" || refField === "rpeReference") &&
+    (refField === 'setsReference' || refField === 'rpeReference') &&
     !(reference instanceof MaxLift)
   )
     line[refField] = reference;

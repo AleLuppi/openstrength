@@ -1,48 +1,41 @@
-# Frontend
+# OpenStrength (openstrength)
 
-Frontend part of the project.
+Smarter and Better Workout Planning
 
-
-## How to use
-
-Run the following commands *from inside `frontend` folder*.
-
-### Project setup
-Install all the dependencies.
-```
+## Install the dependencies
+```bash
+yarn
+# or
 npm install
 ```
 
-### Compile and hot-reload for development
-Start a local server with hot-reload enabled.
-```
-npm run serve
-```
-
-### Compile and minify for production
-Prepare a compiled folder, ready for production release.
-```
-npm run build
+### Start the app in development mode (hot-code reloading, error reporting, etc.)
+```bash
+quasar dev
 ```
 
-### Lint and fix files
-Run linter to clean code. Run it before commit (or enable auto-lint on update).
-```
+
+### Lint the files
+```bash
+yarn lint
+# or
 npm run lint
 ```
 
-### Deploy on Firebase
-> **Note:** login to Firebase is required via `firebase login`
 
-Test web app in a dedicated channel. Deploy it and get the temporary link (`CHANNEL_ID` can be any valid name).
+### Format the files
+```bash
+yarn format
+# or
+npm run format
 ```
-npm run release -- CHANNEL_ID
-```
-Deploy the web app on Firebase's hosting domains.
-```
-npm run deploy
-```
-Optionally, it is possible to deploy other services too (database, storage, firestore, functions), separated by commas. See documentation for more details: [https://firebase.google.com/docs/cli#partial_deploys](https://firebase.google.com/docs/cli#partial_deploys).
 
-## Customize configuration
-To update Vue CLI configuration, see [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+### Build the app for production
+```bash
+quasar build
+```
+
+### Customize the configuration
+See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).

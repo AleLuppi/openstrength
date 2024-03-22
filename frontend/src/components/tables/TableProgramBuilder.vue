@@ -70,7 +70,7 @@
                   :offset="[-10, 0]"
                 >
                   {{
-                    $t("coach.program_management.builder.exercise_name_tooltip")
+                    $t('coach.program_management.builder.exercise_name_tooltip')
                   }}
                 </q-tooltip>
               </os-select>
@@ -113,7 +113,7 @@
                   :offset="[-10, 0]"
                 >
                   {{
-                    $t("coach.program_management.builder.variant_name_tooltip")
+                    $t('coach.program_management.builder.variant_name_tooltip')
                   }}
                 </q-tooltip>
               </os-select>
@@ -151,7 +151,7 @@
                 style="max-width: 50vw"
               >
                 {{ exerciseName }}
-                {{ variantName ? " - " + variantName : "" }}
+                {{ variantName ? ' - ' + variantName : '' }}
               </p>
               <p
                 class="text-xs text-italic text-ellipsis"
@@ -200,7 +200,7 @@
               @save="(val) => emit('duplicate', val[0], val[1])"
               :title="
                 $t(
-                  'coach.program_management.builder.line_duplicate_in_day_form',
+                  'coach.program_management.builder.line_duplicate_in_day_form'
                 )
               "
               :force-save="true"
@@ -345,7 +345,7 @@
                     assignReference(
                       programExercise.lines!.at(itemProps.rowIndex)!,
                       maxlift,
-                      itemProps.col.field,
+                      itemProps.col.field
                     );
                     emitProgramExercise();
                   "
@@ -363,14 +363,14 @@
                     emit(
                       'requireReference',
                       programExercise.lines!.at(itemProps.row.id)!,
-                      itemProps.col.field,
+                      itemProps.col.field
                     )
                   "
                   v-close-popup
                   dense
                 >
                   <q-item-section>{{
-                    $t("coach.program_management.builder.reference_select_line")
+                    $t('coach.program_management.builder.reference_select_line')
                   }}</q-item-section>
                 </q-item>
                 <q-separator />
@@ -389,7 +389,7 @@
                     assignReference(
                       programExercise.lines!.at(itemProps.rowIndex)!,
                       undefined,
-                      itemProps.col.field,
+                      itemProps.col.field
                     );
                     emitProgramExercise();
                   "
@@ -397,7 +397,7 @@
                   dense
                 >
                   <q-item-section>{{
-                    $t("coach.program_management.builder.reference_remove")
+                    $t('coach.program_management.builder.reference_remove')
                   }}</q-item-section>
                 </q-item>
               </q-list>
@@ -410,28 +410,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineAsyncComponent, computed } from "vue";
-import { ProgramExercise, ProgramLine } from "@/helpers/programs/program";
+import { ref, defineAsyncComponent, computed } from 'vue';
+import { ProgramExercise, ProgramLine } from 'src/helpers/programs/program';
 import {
   type MaxLift,
   type MaxLiftType,
   MaxLiftTypesPerValue,
-} from "@/helpers/maxlifts/maxlift";
+} from 'src/helpers/maxlifts/maxlift';
 import {
   assignReference,
   programLinesToTable,
   tableToProgramLines,
-} from "@/helpers/programs/builder";
-import { Exercise } from "@/helpers/exercises/exercise";
+} from 'src/helpers/programs/builder';
+import { Exercise } from 'src/helpers/exercises/exercise';
 import {
   getExerciseByName,
   getExerciseVariantByName,
-} from "@/helpers/exercises/listManagement";
-import { arrayPushToNullable } from "@/helpers/array";
+} from 'src/helpers/exercises/listManagement';
+import { arrayPushToNullable } from 'src/helpers/array';
 
 // Import components
 const FormProgramNewWeekDay = defineAsyncComponent(
-  () => import("@/components/forms/FormProgramNewWeekDay.vue"),
+  () => import('components/forms/FormProgramNewWeekDay.vue')
 );
 
 // Define props
@@ -472,13 +472,13 @@ const props = withDefaults(
     expanded: false,
     dense: false,
     debounce: 200,
-  },
+  }
 );
 
 // Define emits
 const emit = defineEmits<{
-  "update:modelValue": [programExercise: ProgramExercise];
-  "update:expanded": [expanded: boolean];
+  'update:modelValue': [programExercise: ProgramExercise];
+  'update:expanded': [expanded: boolean];
   duplicate: [week: string, day: string];
   delete: [];
   move: [down: boolean];
@@ -494,7 +494,7 @@ const editWeekDayName = ref<string[]>(); // week and/or day name that is being m
 // Retrieve and supply current program exercise
 const programExercise = computed(() => props.modelValue);
 function emitProgramExercise() {
-  emit("update:modelValue", programExercise.value);
+  emit('update:modelValue', programExercise.value);
 }
 
 // Program exercise lines in tabular format
@@ -511,7 +511,7 @@ const exerciseData = computed({
       else
         programExercise.value.lines = arrayPushToNullable(
           programExercise.value.lines,
-          line,
+          line
         );
     });
     if (programExercise.value.lines)
@@ -537,7 +537,7 @@ const exerciseName = computed({
 
       // Check if exercise is new
       if (name && programExercise.value.exercise == undefined)
-        emit("newExercise", name);
+        emit('newExercise', name);
 
       emitProgramExercise();
     }
@@ -555,13 +555,13 @@ const variantName = computed({
         name && programExercise.value.exercise?.variants
           ? getExerciseVariantByName(
               programExercise.value.exercise?.variants,
-              name,
+              name
             )
           : undefined;
 
       // Check if exercise is new
       if (name && programExercise.value.exerciseVariant == undefined)
-        emit("newVariant", name);
+        emit('newVariant', name);
 
       emitProgramExercise();
     }
@@ -572,7 +572,7 @@ const variantName = computed({
 const showExpanded = computed({
   get: () => props.expanded || !programExercise.value.exercise,
   set: (val) => {
-    emit("update:expanded", val);
+    emit('update:expanded', val);
   },
 });
 
@@ -586,14 +586,14 @@ function showReferenceButton(field: string, value: string) {
   // Show reference add button if "operation" value is not null
   return Boolean(
     new ProgramLine({
-      [field + "BaseValue"]: value,
+      [field + 'BaseValue']: value,
     })[
-      (field + "Operation") as
-        | "loadOperation"
-        | "repsOperation"
-        | "setsOperation"
-        | "rpeOperation"
-    ],
+      (field + 'Operation') as
+        | 'loadOperation'
+        | 'repsOperation'
+        | 'setsOperation'
+        | 'rpeOperation'
+    ]
   );
 }
 
@@ -609,17 +609,17 @@ function getReferenceDisplayName(reference: ProgramLine | MaxLift | undefined) {
   // Handle program line or max lift
   if (reference instanceof ProgramLine)
     return (
-      "W" +
+      'W' +
       (reference.programExercise?.scheduleWeek
         ?.toString()
-        .slice(undefined, 2) ?? "-") +
-      "D" +
+        .slice(undefined, 2) ?? '-') +
+      'D' +
       (reference.programExercise?.scheduleDay?.toString().slice(undefined, 2) ??
-        "-") +
-      "L" +
-      (reference.lineOrder != undefined ? reference.lineOrder + 1 : "-")
+        '-') +
+      'L' +
+      (reference.lineOrder != undefined ? reference.lineOrder + 1 : '-')
     );
-  else return reference.type ?? ""; // TODO i18n
+  else return reference.type ?? ''; // TODO i18n
 }
 </script>
 

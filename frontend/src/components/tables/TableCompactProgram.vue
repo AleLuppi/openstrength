@@ -21,14 +21,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import type { QTableProps } from "quasar";
-import type { Program, ProgramCompactView } from "@/helpers/programs/program";
-import { convertProgramToCompactView } from "@/helpers/programs/converters";
+import { computed } from 'vue';
+import type { QTableProps } from 'quasar';
+import type { Program, ProgramCompactView } from 'src/helpers/programs/program';
+import { convertProgramToCompactView } from 'src/helpers/programs/converters';
 import {
   getProgramUniqueDays,
   getProgramUniqueWeeks,
-} from "@/helpers/programs/linesManagement";
+} from 'src/helpers/programs/linesManagement';
 
 // Define props
 const props = withDefaults(
@@ -40,19 +40,19 @@ const props = withDefaults(
       exercise: string[];
     };
   }>(),
-  { filter: () => ({ week: [], day: [], exercise: [] }) },
+  { filter: () => ({ week: [], day: [], exercise: [] }) }
 );
 
 // Get compact version of program
 const compactProgram = computed(() =>
-  convertProgramToCompactView(props.program),
+  convertProgramToCompactView(props.program)
 );
 
 // Get sorted week names
 const weekNames = computed<string[]>(() => {
   const weeks = getProgramUniqueWeeks(props.program);
   return weeks.filter(
-    (week) => props.filter.week.length == 0 || props.filter.week.includes(week),
+    (week) => props.filter.week.length == 0 || props.filter.week.includes(week)
   );
 });
 
@@ -60,25 +60,25 @@ const weekNames = computed<string[]>(() => {
 const dayNames = computed<string[]>(() => {
   const days = getProgramUniqueDays(props.program);
   return days.filter(
-    (day) => props.filter.day.length == 0 || props.filter.day.includes(day),
+    (day) => props.filter.day.length == 0 || props.filter.day.includes(day)
   );
 });
 
 // Build table columns dynamically
-const columns = computed<QTableProps["columns"]>(() => [
+const columns = computed<QTableProps['columns']>(() => [
   // TODO i18n, fix widths
   {
-    name: "exercise",
-    label: "Exercise",
-    align: "left",
-    field: "exercise",
-    style: "width: 20%",
+    name: 'exercise',
+    label: 'Exercise',
+    align: 'left',
+    field: 'exercise',
+    style: 'width: 20%',
   },
   ...weekNames.value.map((weekName) => ({
     name: `week${weekName}`,
-    label: "Week " + weekName,
-    align: "left" as const,
-    style: "width: 15%",
+    label: 'Week ' + weekName,
+    align: 'left' as const,
+    style: 'width: 15%',
     field: `week${weekName}`,
   })),
 ]);
@@ -98,12 +98,12 @@ const rows = computed<{
         ? dayRows
         : dayRows.filter((row) =>
             props.filter.exercise.some(
-              (filter) => row.exercise.startsWith(filter), // TODO make more robust
-            ),
+              (filter) => row.exercise.startsWith(filter) // TODO make more robust
+            )
           );
     out[day] = filteredExercises;
     return out;
-  }, {}),
+  }, {})
 );
 
 /**
@@ -124,13 +124,13 @@ function compactProgramToRows(compactProgram: ProgramCompactView): {
           [week: string]: string;
         }[];
       },
-      dayInfo,
+      dayInfo
     ) => {
       // Add info to correct row/column pair
       if (!(dayInfo.day in rows)) rows[dayInfo.day] = [];
       dayInfo.exercises.forEach((compactExercise) => {
         let exerciseRow = rows[dayInfo.day].find(
-          (row) => row.order == compactExercise.order,
+          (row) => row.order == compactExercise.order
         );
         if (!exerciseRow) {
           exerciseRow = {
@@ -139,12 +139,12 @@ function compactProgramToRows(compactProgram: ProgramCompactView): {
           };
           rows[dayInfo.day].push(exerciseRow);
         }
-        exerciseRow[`week${dayInfo.week}`] = compactExercise.schemas.join(", ");
+        exerciseRow[`week${dayInfo.week}`] = compactExercise.schemas.join(', ');
       });
 
       return rows;
     },
-    {},
+    {}
   );
 }
 </script>

@@ -1,8 +1,8 @@
-import { Program } from "@/helpers/programs/program";
-import type { ProgramFilter } from "@/helpers/programs/models";
-import { AthleteUser } from "@/helpers/users/user";
-import { MaxLift } from "@/helpers/maxlifts/maxlift";
-import { arrayUniqueValues } from "../array";
+import { Program } from 'src/helpers/programs/program';
+import type { ProgramFilter } from 'src/helpers/programs/models';
+import { AthleteUser } from 'src/helpers/users/user';
+import { MaxLift } from 'src/helpers/maxlifts/maxlift';
+import { arrayUniqueValues } from '../array';
 
 /**
  * Create a dummy athlete.
@@ -12,8 +12,8 @@ import { arrayUniqueValues } from "../array";
  */
 function createDefaultAthleteInstance(coachId?: string): AthleteUser {
   const defaultAthlete = new AthleteUser({
-    name: "dummy",
-    surname: "dummy",
+    name: 'dummy',
+    surname: 'dummy',
     isDummy: true,
     coachId: coachId,
   });
@@ -30,7 +30,7 @@ function createDefaultAthleteInstance(coachId?: string): AthleteUser {
 function initializeProgramTemplateInstance(program?: Program): Program {
   const programTemplate = program?.duplicate() ?? new Program();
   programTemplate.athlete = createDefaultAthleteInstance(
-    programTemplate.coachId,
+    programTemplate.coachId
   );
   programTemplate.uid = undefined;
   programTemplate.lastUpdated = new Date();
@@ -48,8 +48,8 @@ function initializeProgramTemplateInstance(program?: Program): Program {
 export function filterProgram(
   program: Program,
   filter: ProgramFilter,
-  includeUndefined: boolean = false,
-  inplace: boolean = false,
+  includeUndefined = false,
+  inplace = false
 ): Program {
   const outProgram = inplace ? program : program.duplicate();
   outProgram.programExercises = outProgram.programExercises?.filter(
@@ -77,7 +77,7 @@ export function filterProgram(
         return false;
       }
       return true;
-    },
+    }
   );
   return outProgram;
 }
@@ -91,7 +91,7 @@ export function filterProgram(
  */
 export function programToProgramTemplate(
   program: Program,
-  programFilter?: ProgramFilter,
+  programFilter?: ProgramFilter
 ): Program {
   const programTemplate = initializeProgramTemplateInstance(program);
   programTemplate.athlete = createDefaultAthleteInstance(program.coachId);
@@ -120,7 +120,7 @@ export function extractUniqueMaxliftFromProgram(program: Program): MaxLift[] {
         if (line.repsReference instanceof MaxLift)
           maxifts.push(line.repsReference);
         return maxifts;
-      }),
+      })
   );
 
   // Return only the unique list of maxlifts

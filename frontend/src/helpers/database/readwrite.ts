@@ -14,10 +14,10 @@ import {
   serverTimestamp,
   DocumentData,
   Timestamp,
-} from "firebase/firestore";
-import { db } from "@/firebase";
-import { useUserStore } from "@/stores/user";
-import { objectDeepValueToValue } from "@/helpers/object";
+} from 'firebase/firestore';
+import { db } from 'src/firebase';
+import { useUserStore } from 'stores/user';
+import { objectDeepValueToValue } from 'src/helpers/object';
 
 /**
  * Add a document to firestore db.
@@ -42,16 +42,16 @@ export async function doAddDoc(
     addUserId?: boolean | string;
     addCurrentTimestamp?: boolean | string;
     undefinedToNull?: boolean;
-    onSuccess?: Function;
-    onError?: Function;
-  } = {},
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
+  } = {}
 ) {
   // Add user ID if required
   if (addUserId) {
     const user = useUserStore();
     data = {
       ...data,
-      [addUserId === true ? "userId" : addUserId]: user.uid ?? undefined,
+      [addUserId === true ? 'userId' : addUserId]: user.uid ?? undefined,
     };
   }
 
@@ -62,7 +62,7 @@ export async function doAddDoc(
   if (addCurrentTimestamp)
     data = {
       ...data,
-      [addCurrentTimestamp === true ? "datetime" : addCurrentTimestamp]:
+      [addCurrentTimestamp === true ? 'datetime' : addCurrentTimestamp]:
         serverTimestamp(),
     };
 
@@ -101,16 +101,16 @@ export async function doAddDocWithId(
     addUserId?: boolean | string;
     addCurrentTimestamp?: boolean | string;
     undefinedToNull?: boolean;
-    onSuccess?: Function;
-    onError?: Function;
-  } = {},
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
+  } = {}
 ) {
   // Add user ID if required
   if (addUserId) {
     const user = useUserStore();
     data = {
       ...data,
-      [addUserId === true ? "userId" : addUserId]: user.uid ?? undefined,
+      [addUserId === true ? 'userId' : addUserId]: user.uid ?? undefined,
     };
   }
 
@@ -121,7 +121,7 @@ export async function doAddDocWithId(
   if (addCurrentTimestamp)
     data = {
       ...data,
-      [addCurrentTimestamp === true ? "datetime" : addCurrentTimestamp]:
+      [addCurrentTimestamp === true ? 'datetime' : addCurrentTimestamp]:
         serverTimestamp(),
     };
 
@@ -161,16 +161,16 @@ export async function doUpdateDoc(
     addUserId?: boolean | string;
     addCurrentTimestamp?: boolean | string;
     undefinedToNull?: boolean;
-    onSuccess?: Function;
-    onError?: Function;
-  } = {},
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
+  } = {}
 ) {
   // Add user ID if required
   if (addUserId) {
     const user = useUserStore();
     data = {
       ...data,
-      [addUserId === true ? "userId" : addUserId]: user.uid ?? undefined,
+      [addUserId === true ? 'userId' : addUserId]: user.uid ?? undefined,
     };
   }
 
@@ -181,7 +181,7 @@ export async function doUpdateDoc(
   if (addCurrentTimestamp)
     data = {
       ...data,
-      [addCurrentTimestamp === true ? "datetime" : addCurrentTimestamp]:
+      [addCurrentTimestamp === true ? 'datetime' : addCurrentTimestamp]:
         serverTimestamp(),
     };
 
@@ -212,9 +212,9 @@ export async function doGetDocWithID(
     onError,
   }: {
     nullToUndefined?: boolean;
-    onSuccess?: Function;
-    onError?: Function;
-  } = {},
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
+  } = {}
 ) {
   // Obtain document
   const docRef = doc(db, collectionName, docId);
@@ -256,22 +256,22 @@ export async function doGetDocs(
     ordering?: string[];
     numDocs?: number;
     nullToUndefined?: boolean;
-    onSuccess?: Function;
-    onError?: Function;
-  } = {},
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
+  } = {}
 ) {
   // Prepare query
   const filteredConditions = conditions?.filter((val) => val.length >= 3) ?? [];
   const wheres = filteredConditions.map((val) => where(val[0], val[1], val[2]));
   const orderBys = (ordering ?? []).map((val) =>
-    val.startsWith("-") ? orderBy(val.slice(1), "desc") : orderBy(val),
+    val.startsWith('-') ? orderBy(val.slice(1), 'desc') : orderBy(val)
   );
   const limits = numDocs ? [limit(numDocs)] : [];
   const q = query(
     collection(db, collectionName),
     ...wheres,
     ...orderBys,
-    ...limits,
+    ...limits
   );
 
   // Obtain documents
@@ -285,7 +285,7 @@ export async function doGetDocs(
           convertedData = objectDeepValueToValue(
             convertedData,
             null,
-            undefined,
+            undefined
           );
         return { ...obj, [val.id]: convertedData };
       }, {});
@@ -312,9 +312,9 @@ export async function doDeleteDoc(
     onSuccess,
     onError,
   }: {
-    onSuccess?: Function;
-    onError?: Function;
-  } = {},
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
+  } = {}
 ) {
   // Remove document
   deleteDoc(doc(db, collectionName, docId))
@@ -342,9 +342,9 @@ export async function checkDocExists(
     onSuccess,
     onError,
   }: {
-    onSuccess?: Function;
-    onError?: Function;
-  } = {},
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
+  } = {}
 ) {
   // Check if document exists
   const docRef = doc(db, collectionName, docId);
@@ -376,9 +376,9 @@ export async function changeDocId(
     onSuccess,
     onError,
   }: {
-    onSuccess?: Function;
-    onError?: Function;
-  } = {},
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
+  } = {}
 ) {
   // TODO need to move subcollections as well
 
@@ -414,7 +414,7 @@ export async function changeDocId(
  * @returns data with converted timestamps to date.
  */
 function deepConvertTimestampToDate<T extends DocumentData | undefined>(
-  data: T,
+  data: T
 ): T {
   if (data instanceof Object)
     Object.entries(data).forEach(([key, value]) => {

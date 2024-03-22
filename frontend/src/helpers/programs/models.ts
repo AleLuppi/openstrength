@@ -1,4 +1,4 @@
-import { Program, ProgramExercise } from "@/helpers/programs/program";
+import { Program, ProgramExercise } from 'src/helpers/programs/program';
 
 /**
  * Interface for program filter in builder.

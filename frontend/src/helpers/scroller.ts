@@ -1,4 +1,4 @@
-import { scroll } from "quasar";
+import { scroll } from 'quasar';
 const { getScrollTarget, setVerticalScrollPosition } = scroll;
 
 /**
@@ -13,7 +13,7 @@ function getScrollParent(element: HTMLElement | ParentNode | null): any {
     element instanceof HTMLElement &&
     window.getComputedStyle(element).overflowY;
   const isScrollable =
-    overflowY && overflowY !== "visible" && overflowY !== "hidden";
+    overflowY && overflowY !== 'visible' && overflowY !== 'hidden';
 
   // Return proper scrollable parent
   if (!element) {
@@ -34,10 +34,7 @@ function getScrollParent(element: HTMLElement | ParentNode | null): any {
  * @param element html element to scroll to.
  * @param durationMs scroll duration in ms.
  */
-export function scrollToElement(
-  element: HTMLElement | null,
-  durationMs: number = 500,
-) {
+export function scrollToElement(element: HTMLElement | null, durationMs = 500) {
   if (!(element && element.offsetTop)) return;
   const target = getScrollTarget(element);
   const offset = element.offsetTop;
@@ -54,8 +51,8 @@ export function scrollToElement(
  */
 export function scrollToElementInParent(
   element: HTMLElement | null,
-  offset: number = 0,
-  durationMs: number = 500,
+  offset = 0,
+  durationMs = 500
 ) {
   if (!(element && element.offsetTop)) return;
   const target = getScrollParent(element);

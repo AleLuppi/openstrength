@@ -17,16 +17,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType } from "vue";
-import { useI18n } from "vue-i18n";
-import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+import { ref, computed, PropType } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { Exercise, ExerciseVariant } from 'src/helpers/exercises/exercise';
 
 // Init plugin
 const i18n = useI18n();
 
 // Allow row selection from parent
 const selected = ref<{ [key: string]: any }[]>();
-function selectRowByName(name: string, clearOnFail: boolean = false) {
+function selectRowByName(name: string, clearOnFail = false) {
   const row = rows.value.find((row) => Boolean(name) && row.name == name);
   if (row) selected.value = [row];
   else if (clearOnFail) selected.value = [];
@@ -72,32 +72,32 @@ const columns = computed(() =>
     ? [
         // Variant case
         {
-          name: "variant",
-          align: "left",
-          label: i18n.t("coach.exercise_management.fields.variant"),
-          field: "displayName",
+          name: 'variant',
+          align: 'left',
+          label: i18n.t('coach.exercise_management.fields.variant'),
+          field: 'displayName',
           sortable: true,
         },
-        { name: "delete", align: "center", label: "", field: "delete" },
+        { name: 'delete', align: 'center', label: '', field: 'delete' },
       ]
     : [
         // Exercise case
         {
-          name: "exercise",
+          name: 'exercise',
           required: true,
-          label: i18n.t("coach.exercise_management.fields.exercise"),
-          field: "displayName",
-          align: "left",
+          label: i18n.t('coach.exercise_management.fields.exercise'),
+          field: 'displayName',
+          align: 'left',
           sortable: true,
         },
         {
-          name: "variants",
-          align: "left",
-          label: i18n.t("coach.exercise_management.fields.variants"),
-          field: "variants",
+          name: 'variants',
+          align: 'left',
+          label: i18n.t('coach.exercise_management.fields.variants'),
+          field: 'variants',
         },
-        { name: "delete", align: "center", label: "", field: "delete" },
-      ],
+        { name: 'delete', align: 'center', label: '', field: 'delete' },
+      ]
 );
 
 // Set table rows
@@ -115,17 +115,17 @@ const rows = computed(() => {
 
   // Move from list to row object
   return listToMap.map((item) => ({
-    uid: item.uid ?? "",
+    uid: item.uid ?? '',
     name: item.name,
     displayName: isVariant.value
       ? [
           (item as ExerciseVariant).exercise?.name,
           (item as ExerciseVariant).isDefault
-            ? i18n.t("coach.exercise_management.default_variant")
+            ? i18n.t('coach.exercise_management.default_variant')
             : item.name,
-        ].join("  ")
+        ].join('  ')
       : item.name ?? {
-          element: "input",
+          element: 'input',
           hideBottomSpace: true,
           autofocus: true,
           clearOnBlur: true,
@@ -136,25 +136,25 @@ const rows = computed(() => {
     variants:
       item.name && item instanceof Exercise
         ? (item.variants?.length ?? 0).toString() +
-          " " +
+          ' ' +
           i18n
-            .t("coach.exercise_management.fields.variants")
+            .t('coach.exercise_management.fields.variants')
             .toLocaleLowerCase()
-        : "",
+        : '',
     update: {
-      element: "button",
+      element: 'button',
       on: { click: () => props.onUpdate?.(item) },
-      icon: "edit",
+      icon: 'edit',
       flat: true,
       round: true,
     },
     delete: {
-      element: "button",
+      element: 'button',
       on: { click: () => props.onDelete?.(item) },
-      icon: "delete",
+      icon: 'delete',
       flat: true,
       round: true,
-      color: "button-negative",
+      color: 'button-negative',
     },
   }));
 });

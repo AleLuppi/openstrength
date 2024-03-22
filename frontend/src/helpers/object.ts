@@ -1,4 +1,4 @@
-import { inspect } from "util";
+import { inspect } from 'util';
 
 /**
  * Check if an object has no key-value pairs.
@@ -6,7 +6,7 @@ import { inspect } from "util";
  * @param obj object whose emptiness should be checked.
  * @returns true if object is empty, false otherwise.
  */
-export function objectIsEmpty(obj: Object) {
+export function objectIsEmpty(obj: object) {
   return Object.keys(obj).length === 0;
 }
 
@@ -35,7 +35,7 @@ export function objectFilterOutUndefined(obj: { [key: string]: any }) {
 export function objectSortKeysByList(
   obj: { [key: string]: any },
   list: string[],
-  ignoreUndefined: boolean = false,
+  ignoreUndefined = false
 ) {
   const out: typeof obj = {};
   list.forEach((key) => {
@@ -52,7 +52,7 @@ export function objectSortKeysByList(
  */
 export function objectAssignNotUndefined(
   objA: { [key: string]: any },
-  objB: { [key: string]: any },
+  objB: { [key: string]: any }
 ) {
   Object.assign(objA, objectFilterOutUndefined(objB));
 }
@@ -66,10 +66,10 @@ export function objectAssignNotUndefined(
  */
 export function objectMapKeys<T extends object>(
   obj: T,
-  updateFunc: (key: keyof T, index: number) => keyof T,
+  updateFunc: (key: keyof T, index: number) => keyof T
 ) {
   return Object.fromEntries(
-    Object.entries(obj).map(([k, v], i) => [updateFunc(k as keyof T, i), v]),
+    Object.entries(obj).map(([k, v], i) => [updateFunc(k as keyof T, i), v])
   );
 }
 
@@ -85,11 +85,11 @@ export function objectMapValues<T extends object, R>(
   updateFunc: (
     value: T[keyof T] extends infer V ? V : never,
     key: keyof T,
-    index: number,
-  ) => R,
+    index: number
+  ) => R
 ) {
   return Object.fromEntries(
-    Object.entries(obj).map(([k, v], i) => [k, updateFunc(v, k as keyof T, i)]),
+    Object.entries(obj).map(([k, v], i) => [k, updateFunc(v, k as keyof T, i)])
   );
 }
 
@@ -139,7 +139,7 @@ export function objectDeepCopy<T extends object>(obj: T): T {
 export function objectDeepValueToValue<T extends object>(
   obj: T,
   from: any,
-  to: any,
+  to: any
 ): T {
   return JSON.parse(JSON.stringify(obj, (k, v) => (v === from ? to : v)));
 }

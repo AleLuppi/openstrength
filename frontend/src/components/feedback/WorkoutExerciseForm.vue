@@ -19,7 +19,7 @@
           <div class="row items-center justify-between">
             <p class="text-bold">
               {{
-                props.exercise.exerciseName + " " + props.exercise.variantName
+                props.exercise.exerciseName + ' ' + props.exercise.variantName
               }}
             </p>
 
@@ -119,8 +119,8 @@
                 >
                   {{
                     exercise.videoFeedback[indexLine]
-                      ? "Il tuo coach ha richiesto un feedback su questa serie"
-                      : "Non è necessario dare un feedback su questa serie"
+                      ? 'Il tuo coach ha richiesto un feedback su questa serie'
+                      : 'Non è necessario dare un feedback su questa serie'
                   }}
                 </q-tooltip>
                 <q-popup-edit
@@ -171,8 +171,8 @@
                 >
                   {{
                     exercise.videoFeedback[indexLine]
-                      ? "Il tuo coach ha richiesto un video per questa serie"
-                      : "Non è stato richiesto un video per questa serie"
+                      ? 'Il tuo coach ha richiesto un video per questa serie'
+                      : 'Non è stato richiesto un video per questa serie'
                   }}
                 </q-tooltip>
               </q-btn>
@@ -185,11 +185,11 @@
 </template>
 
 <script setup lang="ts">
-import { ProgramExerciseFeedback } from "@/helpers/programs/models";
-import { ProgramFrozenView } from "@/helpers/programs/program";
-import { stringCapitalize } from "@/helpers/scalar";
-import { ref, watch, onMounted, onUnmounted } from "vue";
-import mixpanel from "mixpanel-browser";
+import { ref, watch, onMounted, onUnmounted } from 'vue';
+import mixpanel from 'mixpanel-browser';
+import { ProgramExerciseFeedback } from 'src/helpers/programs/models';
+import { ProgramFrozenView } from 'src/helpers/programs/program';
+import { stringCapitalize } from 'src/helpers/scalar';
 
 // Define props
 const props = withDefaults(
@@ -198,17 +198,17 @@ const props = withDefaults(
     modelValue: ProgramExerciseFeedback | undefined;
 
     // frozen program exercise info
-    exercise: ProgramFrozenView["weekdays"][number]["exercises"][number];
+    exercise: ProgramFrozenView['weekdays'][number]['exercises'][number];
 
     //
     readonly: boolean;
   }>(),
-  { readonly: false },
+  { readonly: false }
 );
 
 // Define emit
 const emit = defineEmits<{
-  "update:modelValue": [value: ProgramExerciseFeedback];
+  'update:modelValue': [value: ProgramExerciseFeedback];
 }>();
 
 // Set ref
@@ -217,14 +217,14 @@ const lineTextFeedbacks = ref<string[]>([]); // store text feedbacks
 const showInfoTooltip = ref<boolean[]>([]); // whether to show info tooltip for each line
 
 // Set constant values
-const lineValueTypes: ("load" | "reps" | "sets" | "rpe")[] = [
-  "load",
-  "reps",
-  "sets",
-  "rpe",
+const lineValueTypes: ('load' | 'reps' | 'sets' | 'rpe')[] = [
+  'load',
+  'reps',
+  'sets',
+  'rpe',
 ];
 const lineValueLabels = Object.fromEntries(
-  lineValueTypes.map((val) => [val, stringCapitalize(val)]),
+  lineValueTypes.map((val) => [val, stringCapitalize(val)])
 );
 
 // Initialize exercise completed
@@ -234,12 +234,12 @@ watch(
     exerciseDone.value = val?.completed ?? false;
     lineTextFeedbacks.value =
       val?.linesFeedback.map(
-        (lineFeedback) => lineFeedback.textFeedback ?? "",
+        (lineFeedback) => lineFeedback.textFeedback ?? ''
       ) ?? [];
   },
   {
     immediate: true,
-  },
+  }
 );
 
 /**
@@ -276,10 +276,10 @@ function saveExerciseFeedback() {
         };
       }) || [],
   };
-  emit("update:modelValue", exerciseFeedback);
+  emit('update:modelValue', exerciseFeedback);
 
   // Mixpanel tracking
-  mixpanel.track("Athlete Feedback on exercise", {
+  mixpanel.track('Athlete Feedback on exercise', {
     Feedback: exerciseFeedback.linesFeedback,
   });
 }
@@ -292,11 +292,11 @@ function resetTooltips() {
 }
 
 onMounted(() => {
-  window.addEventListener("scroll", resetTooltips);
+  window.addEventListener('scroll', resetTooltips);
 });
 
 onUnmounted(() => {
-  window.addEventListener("scroll", resetTooltips);
+  window.addEventListener('scroll', resetTooltips);
 });
 </script>
 
@@ -323,13 +323,13 @@ onUnmounted(() => {
 }
 
 .os-completed::after {
-  content: "Completato";
+  content: 'Completato';
   background: $positive;
   animation: os-completed-animation 2s ease-in-out 1;
 }
 
 .os-wontdo::after {
-  content: "Non lo svolgerò";
+  content: 'Non lo svolgerò';
   background: $negative;
   animation: os-wontdo-animation 2s ease-in-out 1;
 }

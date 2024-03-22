@@ -1,83 +1,84 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from 'vitest';
 import {
   Program,
   ProgramCompactView,
   ProgramExercise,
   ProgramLine,
-} from "@/helpers/programs/program";
+} from 'src/helpers/programs/program';
+import {
+  convertLineToSchema,
+  convertProgramToCompactView,
+} from '../converters';
+import { MaxLift, MaxLiftType } from 'src/helpers/maxlifts/maxlift';
+import { Exercise, ExerciseVariant } from 'src/helpers/exercises/exercise';
 
-import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
-import { convertLineToSchema } from "../converters";
-import { convertProgramToCompactView } from "../converters";
-import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
-
-describe("Test @/helpers/programs/converters", () => {
+describe('Test helpers/programs/converters', () => {
   // Data to test functions
   const program: Program = new Program({
-    uid: "rand-uid",
-    name: "test program",
+    uid: 'rand-uid',
+    name: 'test program',
     isTemplate: false,
     programExercises: [
       new ProgramExercise({
-        scheduleWeek: "1",
-        scheduleDay: "1",
+        scheduleWeek: '1',
+        scheduleDay: '1',
         scheduleOrder: 1,
         exercise: new Exercise({
-          name: "sqaut",
+          name: 'sqaut',
         }),
         exerciseVariant: new ExerciseVariant({
-          name: "fermo in buca",
+          name: 'fermo in buca',
         }),
         lines: [
           new ProgramLine({
-            setsBaseValue: "3",
-            repsBaseValue: "5/8",
-            loadBaseValue: "50kg/70kg",
-            rpeBaseValue: "5",
+            setsBaseValue: '3',
+            repsBaseValue: '5/8',
+            loadBaseValue: '50kg/70kg',
+            rpeBaseValue: '5',
             requestFeedbackText: true,
           }),
           new ProgramLine({
-            uid: "uidline2",
-            loadBaseValue: "100kg",
+            uid: 'uidline2',
+            loadBaseValue: '100kg',
           }),
         ],
       }),
       new ProgramExercise({
-        scheduleWeek: "2",
-        scheduleDay: "1",
+        scheduleWeek: '2',
+        scheduleDay: '1',
         scheduleOrder: 1,
         exercise: new Exercise({
-          name: "panca",
+          name: 'panca',
         }),
         exerciseVariant: new ExerciseVariant({
-          name: "deloading",
+          name: 'deloading',
         }),
         lines: [
           new ProgramLine({
-            setsBaseValue: "3",
-            repsBaseValue: "5",
-            loadBaseValue: "50kg",
-            rpeBaseValue: "5",
+            setsBaseValue: '3',
+            repsBaseValue: '5',
+            loadBaseValue: '50kg',
+            rpeBaseValue: '5',
             requestFeedbackText: true,
           }),
         ],
       }),
       new ProgramExercise({
-        scheduleWeek: "3",
-        scheduleDay: "1",
+        scheduleWeek: '3',
+        scheduleDay: '1',
         scheduleOrder: 1,
         exercise: new Exercise({
-          name: "panca",
+          name: 'panca',
         }),
         exerciseVariant: new ExerciseVariant({
-          name: "deloading",
+          name: 'deloading',
         }),
         lines: [
           new ProgramLine({
-            setsBaseValue: "4",
-            repsBaseValue: "6",
-            loadBaseValue: "60kg",
-            rpeBaseValue: "5",
+            setsBaseValue: '4',
+            repsBaseValue: '6',
+            loadBaseValue: '60kg',
+            rpeBaseValue: '5',
             requestFeedbackText: true,
           }),
         ],
@@ -85,31 +86,31 @@ describe("Test @/helpers/programs/converters", () => {
     ],
   });
 
-  test("convertProgramToCompactView", () => {
+  test('convertProgramToCompactView', () => {
     const expectedResult = {
       days: [
         {
-          dayName: "1",
+          dayName: '1',
           exercises: [
             {
-              exerciseFullName: "sqaut - fermo in buca",
+              exerciseFullName: 'sqaut - fermo in buca',
               weekSchemas: [
                 {
-                  weekName: "1",
-                  schemas: ["50kg/70kg 5/8x3s @5", "100kg 1x1s"],
+                  weekName: '1',
+                  schemas: ['50kg/70kg 5/8x3s @5', '100kg 1x1s'],
                 },
               ],
             },
             {
-              exerciseFullName: "panca - deloading",
+              exerciseFullName: 'panca - deloading',
               weekSchemas: [
                 {
-                  weekName: "2",
-                  schemas: ["50kg 5x3s @5"],
+                  weekName: '2',
+                  schemas: ['50kg 5x3s @5'],
                 },
                 {
-                  weekName: "3",
-                  schemas: ["60kg 6x4s @5"],
+                  weekName: '3',
+                  schemas: ['60kg 6x4s @5'],
                 },
               ],
             },
@@ -123,96 +124,96 @@ describe("Test @/helpers/programs/converters", () => {
   });
 });
 
-describe("Test @/helpers/programs/converters", () => {
-  describe("Test convertLineToSchema", () => {
-    describe("NO REFERENCE", () => {
+describe('Test helpers/programs/converters', () => {
+  describe('Test convertLineToSchema', () => {
+    describe('NO REFERENCE', () => {
       // Reference data
       const lineTest = new ProgramLine({
-        loadBaseValue: "70kg",
-        setsBaseValue: "5",
-        repsBaseValue: "5",
-        rpeBaseValue: "6.5",
+        loadBaseValue: '70kg',
+        setsBaseValue: '5',
+        repsBaseValue: '5',
+        rpeBaseValue: '6.5',
       });
 
-      test("Test 1: 70kg 5x5s @6.5", () => {
+      test('Test 1: 70kg 5x5s @6.5', () => {
         const lineUnderTest = lineTest.duplicate();
-        const expected = "70kg 5x5s @6.5";
+        const expected = '70kg 5x5s @6.5';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
 
-      test("Test 2: 70kg 5 @6.5", () => {
+      test('Test 2: 70kg 5 @6.5', () => {
         const lineUnderTest = lineTest.duplicate();
-        lineUnderTest.setsBaseValue = "";
-        const expected = "70kg 5 @6.5";
+        lineUnderTest.setsBaseValue = '';
+        const expected = '70kg 5 @6.5';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
 
-      test("Test 3: 5 @6.5", () => {
+      test('Test 3: 5 @6.5', () => {
         const lineUnderTest = lineTest.duplicate();
-        lineUnderTest.loadBaseValue = "";
-        lineUnderTest.setsBaseValue = "";
-        const expected = "5 @6.5";
+        lineUnderTest.loadBaseValue = '';
+        lineUnderTest.setsBaseValue = '';
+        const expected = '5 @6.5';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
     });
 
-    describe("REFERENCE ON LOAD", () => {
+    describe('REFERENCE ON LOAD', () => {
       // Reference data
       const lineTest = new ProgramLine({
-        loadBaseValue: "70%",
-        setsBaseValue: "5",
-        repsBaseValue: "5",
-        rpeBaseValue: "6.5",
+        loadBaseValue: '70%',
+        setsBaseValue: '5',
+        repsBaseValue: '5',
+        rpeBaseValue: '6.5',
         loadReference: new MaxLift({
           type: MaxLiftType._5RM,
-          value: "100",
+          value: '100',
         }),
       });
 
-      test("Test 1: 70% (5RM) 5x5s @6.5", () => {
+      test('Test 1: 70% (5RM) 5x5s @6.5', () => {
         const lineUnderTest = lineTest.duplicate();
-        const expected = "70% (5RM) 5x5s @6.5";
+        const expected = '70% (5RM) 5x5s @6.5';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
 
-      test("Test 2: 70% (5RM) 5x1s @6.5", () => {
+      test('Test 2: 70% (5RM) 5x1s @6.5', () => {
         const lineUnderTest = lineTest.duplicate();
-        lineUnderTest.setsBaseValue = "1";
-        const expected = "70% (5RM) 5x1s @6.5";
+        lineUnderTest.setsBaseValue = '1';
+        const expected = '70% (5RM) 5x1s @6.5';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
 
-      test("Test 3: 70% (5RM) 5 @6.5", () => {
+      test('Test 3: 70% (5RM) 5 @6.5', () => {
         const lineUnderTest = lineTest.duplicate();
-        lineUnderTest.setsBaseValue = "";
-        const expected = "70% (5RM) 5 @6.5";
+        lineUnderTest.setsBaseValue = '';
+        const expected = '70% (5RM) 5 @6.5';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
 
-      test("Test 4: 70% 5x5 @6.5", () => {
+      test('Test 4: 70% 5x5 @6.5', () => {
         const lineUnderTest = lineTest.duplicate();
         lineUnderTest.loadReference = new MaxLift({
           type: MaxLiftType._1RM,
-          value: "100",
+          value: '100',
         });
-        const expected = "70% 5x5s @6.5";
+        const expected = '70% 5x5s @6.5';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
 
-      test("Test 5: 70% 5x5", () => {
+      test('Test 5: 70% 5x5', () => {
         const lineUnderTest = lineTest.duplicate();
         lineUnderTest.loadReference = new MaxLift({
           type: MaxLiftType._1RM,
-          value: "100",
+          value: '100',
         });
-        lineUnderTest.rpeBaseValue = "";
-        const expected = "70% 5x5s";
+        lineUnderTest.rpeBaseValue = '';
+        const expected = '70% 5x5s';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
 
-      test("Test 6: W1D1L1 -5% 5x5s", () => {
+      test('Test 6: W1D1L1 -5% 5x5s', () => {
         const lineUnderTest = lineTest.duplicate();
-        lineUnderTest.loadBaseValue = "-5%";
+        lineUnderTest.loadBaseValue = '-5%';
         lineUnderTest.loadReference = new ProgramLine({
           lineOrder: 0,
           programExercise: new ProgramExercise({
@@ -221,14 +222,14 @@ describe("Test @/helpers/programs/converters", () => {
           }),
         });
 
-        lineUnderTest.rpeBaseValue = "";
-        const expected = "W1D1L1 -5% 5x5s";
+        lineUnderTest.rpeBaseValue = '';
+        const expected = 'W1D1L1 -5% 5x5s';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
 
-      test("Test 7: W1D1L1 -5kg 5x5s", () => {
+      test('Test 7: W1D1L1 -5kg 5x5s', () => {
         const lineUnderTest = lineTest.duplicate();
-        lineUnderTest.loadBaseValue = "-5kg";
+        lineUnderTest.loadBaseValue = '-5kg';
         lineUnderTest.loadReference = new ProgramLine({
           lineOrder: 0,
           programExercise: new ProgramExercise({
@@ -237,42 +238,42 @@ describe("Test @/helpers/programs/converters", () => {
           }),
         });
 
-        lineUnderTest.rpeBaseValue = "";
-        const expected = "W1D1L1 -5kg 5x5s";
+        lineUnderTest.rpeBaseValue = '';
+        const expected = 'W1D1L1 -5kg 5x5s';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
     });
 
-    describe("REFERENCE ON REPS", () => {
+    describe('REFERENCE ON REPS', () => {
       // Reference data
       const lineTest = new ProgramLine({
-        loadBaseValue: "70%",
-        setsBaseValue: "5",
-        repsBaseValue: "-3",
+        loadBaseValue: '70%',
+        setsBaseValue: '5',
+        repsBaseValue: '-3',
         repsReference: new MaxLift({
           type: MaxLiftType._maxrep,
-          value: "100",
+          value: '100',
         }),
       });
 
-      test("Test 1: 70% Max Reps-3x5s", () => {
+      test('Test 1: 70% Max Reps-3x5s', () => {
         const lineUnderTest = lineTest.duplicate();
-        const expected = "70% Max Reps-3x5s";
+        const expected = '70% Max Reps-3x5s';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
 
-      test("Test 2: 70% Max Time-3x5s", () => {
+      test('Test 2: 70% Max Time-3x5s', () => {
         const lineUnderTest = lineTest.duplicate();
         lineUnderTest.repsReference = new MaxLift({
           type: MaxLiftType._maxtime,
-          value: "100",
+          value: '100',
         });
 
-        const expected = "70% Max Time-3x5s";
+        const expected = '70% Max Time-3x5s';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
 
-      test("Test 3: 70% W1D1L1-3x5s", () => {
+      test('Test 3: 70% W1D1L1-3x5s', () => {
         const lineUnderTest = lineTest.duplicate();
         lineUnderTest.repsReference = new ProgramLine({
           lineOrder: 0,
@@ -281,20 +282,20 @@ describe("Test @/helpers/programs/converters", () => {
             scheduleWeek: 1,
           }),
         });
-        const expected = "70% W1D1L1-3x5s";
+        const expected = '70% W1D1L1-3x5s';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
     });
 
-    describe("REFERENCE ON SETS", () => {
+    describe('REFERENCE ON SETS', () => {
       // Reference data
       const lineTest = new ProgramLine({
-        loadBaseValue: "70%",
-        setsBaseValue: "-2",
-        repsBaseValue: "12",
+        loadBaseValue: '70%',
+        setsBaseValue: '-2',
+        repsBaseValue: '12',
       });
 
-      test("Test 1: 70% 12xW1D1L1-2s", () => {
+      test('Test 1: 70% 12xW1D1L1-2s', () => {
         const lineUnderTest = lineTest.duplicate();
         lineUnderTest.setsReference = new ProgramLine({
           lineOrder: 0,
@@ -303,21 +304,21 @@ describe("Test @/helpers/programs/converters", () => {
             scheduleWeek: 1,
           }),
         });
-        const expected = "70% 12xW1D1L1-2s";
+        const expected = '70% 12xW1D1L1-2s';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
     });
 
-    describe("REFERENCE ON RPE", () => {
+    describe('REFERENCE ON RPE', () => {
       // Reference data
       const lineTest = new ProgramLine({
-        loadBaseValue: "70%",
-        setsBaseValue: "3",
-        repsBaseValue: "12",
-        rpeBaseValue: "-0.5",
+        loadBaseValue: '70%',
+        setsBaseValue: '3',
+        repsBaseValue: '12',
+        rpeBaseValue: '-0.5',
       });
 
-      test("Test 1: 70% 12x3s @W1D1L1-0.5 ", () => {
+      test('Test 1: 70% 12x3s @W1D1L1-0.5 ', () => {
         const lineUnderTest = lineTest.duplicate();
         lineUnderTest.rpeReference = new ProgramLine({
           lineOrder: 0,
@@ -326,21 +327,21 @@ describe("Test @/helpers/programs/converters", () => {
             scheduleWeek: 1,
           }),
         });
-        const expected = "70% 12x3s @W1D1L1-0.5";
+        const expected = '70% 12x3s @W1D1L1-0.5';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
     });
 
-    describe("MIXED REFERENCES", () => {
+    describe('MIXED REFERENCES', () => {
       // Reference data
       const lineTest = new ProgramLine({
-        loadBaseValue: "70%",
-        setsBaseValue: "-2",
-        repsBaseValue: "-1",
-        rpeBaseValue: "-0.5",
+        loadBaseValue: '70%',
+        setsBaseValue: '-2',
+        repsBaseValue: '-1',
+        rpeBaseValue: '-0.5',
       });
 
-      test("Test 1: 70% (5RM) W1D1L1-1xW2D2L2-2s @W3D3L3-0.5", () => {
+      test('Test 1: 70% (5RM) W1D1L1-1xW2D2L2-2s @W3D3L3-0.5', () => {
         const lineUnderTest = lineTest.duplicate();
         lineUnderTest.loadReference = new MaxLift({
           type: MaxLiftType._5RM,
@@ -370,7 +371,7 @@ describe("Test @/helpers/programs/converters", () => {
           }),
         });
 
-        const expected = "70% (5RM) W1D1L1-1xW2D2L2-2s @W3D3L3-0.5";
+        const expected = '70% (5RM) W1D1L1-1xW2D2L2-2s @W3D3L3-0.5';
         expect(convertLineToSchema(lineUnderTest)).toMatch(expected);
       });
     });

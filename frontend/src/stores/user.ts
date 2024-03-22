@@ -1,13 +1,13 @@
-import { ref, computed } from "vue";
-import { defineStore } from "pinia";
-import type { User as FirebaseUser } from "firebase/auth";
-import { User, CoachUser, AthleteUser } from "@/helpers/users/user";
+import { ref, computed } from 'vue';
+import { defineStore } from 'pinia';
+import type { User as FirebaseUser } from 'firebase/auth';
+import { User, CoachUser, AthleteUser } from 'src/helpers/users/user';
 import {
   loadDocUser,
   getDocUserByField,
   changeDocUserId,
-} from "@/helpers/users/api";
-import { objectAssignNotUndefined } from "@/helpers/object";
+} from 'src/helpers/users/api';
+import { objectAssignNotUndefined } from 'src/helpers/object';
 
 /**
  * Store current (logged) user information.
@@ -15,7 +15,7 @@ import { objectAssignNotUndefined } from "@/helpers/object";
  * Available params are those defined in User (and User-based) class interface.
  * Additionally, "baseUser" object is available as a proxy to actual user instance.
  */
-export const useUserStore = defineStore("user", () => {
+export const useUserStore = defineStore('user', () => {
   // Store user instance (private attribute)
   const user = ref<User | CoachUser | AthleteUser>();
   const baseUser = computed({
@@ -67,7 +67,7 @@ export const useUserStore = defineStore("user", () => {
         } else {
           // Document not found: check if it can be retrieved by email
           if (user.value?.email)
-            getDocUserByField("email", user.value.email, {
+            getDocUserByField('email', user.value.email, {
               onSuccess: (userDoc: { [key: string]: any } | undefined) => {
                 if (userDoc) {
                   // Document found: need to clone it to a new ID, deleting this document

@@ -109,8 +109,9 @@
 </template>
 
 <script setup lang="ts">
-import { objectMapValues } from "@/helpers/object";
-import { ref, computed } from "vue";
+import { ref, computed } from 'vue';
+import { objectMapValues } from 'src/helpers/object';
+import type { QTableColumn } from 'quasar';
 
 // Define props
 const props = withDefaults(
@@ -132,12 +133,12 @@ const props = withDefaults(
     showNewLine: false,
     deleteEmptyLine: false,
     dense: false,
-  },
+  }
 );
 
 // Update model values to parent
 const emit = defineEmits<{
-  "update:modelValue": [value: typeof props.modelValue];
+  'update:modelValue': [value: typeof props.modelValue];
 }>();
 
 // Set ref
@@ -152,13 +153,13 @@ const isSelecting = ref(false);
 
 // Set constants
 const typesAvailable = {
-  input: "input",
-  checkbox: "checkbox",
+  input: 'input',
+  checkbox: 'checkbox',
 };
 
 // Set when to show headers
 const hideHeaders = computed(
-  () => !props.headers || props.headers instanceof Array,
+  () => !props.headers || props.headers instanceof Array
 );
 
 // Get headers map
@@ -167,7 +168,7 @@ const headers = computed(() => {
     if (props.headers instanceof Array)
       return props.headers.reduce(
         (obj: { [key: string]: string }, val) => ({ ...obj, [val]: val }),
-        {},
+        {}
       );
     else return props.headers;
   }
@@ -178,7 +179,7 @@ const headers = computed(() => {
       }),
       outHeaders
     ),
-    {},
+    {}
   );
 });
 
@@ -196,8 +197,8 @@ const types = computed(() => {
             out[key] = typesAvailable.input;
           return out;
         },
-        {},
-      ),
+        {}
+      )
     );
   } else {
     // Handle case with unknown type
@@ -205,10 +206,10 @@ const types = computed(() => {
       Object.entries(row).reduce(
         (out: { [key: string]: string }, [key, value]) => {
           switch (typeof value) {
-            case "boolean":
+            case 'boolean':
               out[key] = typesAvailable.checkbox;
               break;
-            case "string":
+            case 'string':
               out[key] = typesAvailable.input;
               break;
             default:
@@ -216,8 +217,8 @@ const types = computed(() => {
           }
           return out;
         },
-        {},
-      ),
+        {}
+      )
     );
   }
 });
@@ -228,7 +229,7 @@ const childProps = computed(() => {
     // Handle case of provided props
     const propsChild = props.childProps;
     return objectMapValues(headers.value, (_, key, idx) =>
-      propsChild instanceof Array ? propsChild[idx] : propsChild[key],
+      propsChild instanceof Array ? propsChild[idx] : propsChild[key]
     );
   } else {
     // Handle case with unknown type
@@ -242,11 +243,11 @@ const widths = computed(() => {
     // Handle case of fixed widths
     const propsWidths = props.widths;
     return objectMapValues(headers.value, (_, key, idx) =>
-      propsWidths instanceof Array ? propsWidths[idx] : propsWidths[key],
+      propsWidths instanceof Array ? propsWidths[idx] : propsWidths[key]
     );
   } else {
     // Handle case with unknown type
-    return objectMapValues(headers.value, () => "0%");
+    return objectMapValues(headers.value, () => '0%');
   }
 });
 
@@ -256,28 +257,28 @@ const placeholders = computed(() => {
   return objectMapValues(headers.value, (_, key, idx) =>
     propsPlaceholders instanceof Array
       ? propsPlaceholders[idx]
-      : propsPlaceholders?.[key],
+      : propsPlaceholders?.[key]
   );
 });
 
 // Set rows and columns
-const columns = computed(() =>
+const columns = computed<QTableColumn[]>(() =>
   Object.entries(headers.value).map(([key, val], index) => ({
     id: getCellName(undefined, index),
     name: key,
     field: key,
     label: val,
-    align: "center" as "center",
-    style: widths.value[key] ? "width: " + widths.value[key] : "",
-  })),
+    align: 'center',
+    style: widths.value[key] ? 'width: ' + widths.value[key] : '',
+  }))
 );
 const rows = computed(() =>
   [...props.modelValue, ...(props.showNewLine ? [newRow.value] : [])].map(
     (row, rowIndex) => ({
       id: getCellName(rowIndex),
       ...row,
-    }),
-  ),
+    })
+  )
 );
 
 // Set an empty new line
@@ -292,8 +293,8 @@ const newRow = computed(() =>
           ? props.showNewLine[col.name]
           : undefined,
     }),
-    {},
-  ),
+    {}
+  )
 );
 
 /**
@@ -306,7 +307,7 @@ const newRow = computed(() =>
 function onModelValueUpdate(
   rowId: number,
   colId: string,
-  newValue: string | number | boolean | null,
+  newValue: string | number | boolean | null
 ) {
   // Get a copy of current data
   const outValue = props.modelValue;
@@ -331,7 +332,7 @@ function onModelValueUpdate(
         outValue.pop();
       else checkLastLine = false;
     }
-    emit("update:modelValue", outValue);
+    emit('update:modelValue', outValue);
   }
 }
 
@@ -346,7 +347,7 @@ function getCellName(rowNum?: string | number, colNum?: string | number) {
   const nameList = [];
   if (rowNum !== undefined) nameList.push(rowNum);
   if (colNum !== undefined) nameList.push(colNum);
-  return nameList.join(".");
+  return nameList.join('.');
 }
 
 /**
@@ -425,7 +426,7 @@ function onSelectionDelete() {
   // Clear values in cells
   for (let row = rowStart; row <= rowEnd; row++) {
     for (let col = colStart; col <= colEnd; col++) {
-      onModelValueUpdate(row, getHeaderName(col), "");
+      onModelValueUpdate(row, getHeaderName(col), '');
     }
   }
 }
@@ -473,11 +474,11 @@ function onCopy(clipboardEvent: ClipboardEvent) {
       if (row < props.modelValue.length)
         colData.push(props.modelValue[row][getHeaderName(col)]);
     }
-    rowData.push(colData.join("\t"));
+    rowData.push(colData.join('\t'));
   }
 
   // Copy text
-  clipboardEvent.clipboardData?.setData("text/plain", rowData.join("\n"));
+  clipboardEvent.clipboardData?.setData('text/plain', rowData.join('\n'));
 }
 
 /**
@@ -495,16 +496,16 @@ function onPaste(clipboardEvent: ClipboardEvent) {
 
   // Replace data in table with input
   clipboardEvent.clipboardData
-    ?.getData("text/plain")
+    ?.getData('text/plain')
     .split(/\r?\n/)
     .forEach((rowData, rowIndex) =>
       rowData.split(/\t/).forEach((colData, colIndex) => {
         onModelValueUpdate(
           rowStart + rowIndex,
           getHeaderName(colStart + colIndex),
-          colData,
+          colData
         );
-      }),
+      })
     );
 }
 </script>

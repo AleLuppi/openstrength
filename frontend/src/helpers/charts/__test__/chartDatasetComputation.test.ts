@@ -1,19 +1,19 @@
-import { expect, test, describe } from "vitest";
+import { expect, test, describe } from 'vitest';
 import {
   calculatePercentage1RM,
   calculateRepsFromTable,
   calculateRpeFromTable,
   estimateMissingLineProps,
-} from "@/helpers/charts/chartDatasetComputations";
-import { ProgramLine } from "@/helpers/programs/program";
-import { MaxLift } from "@/helpers/maxlifts/maxlift";
+} from 'src/helpers/charts/chartDatasetComputations';
+import { ProgramLine } from 'src/helpers/programs/program';
+import { MaxLift } from 'src/helpers/maxlifts/maxlift';
 
 /****************************/
 /***** Line computation *****/
 /****************************/
 
-describe("Test '@/helpers/charts/chartDatasetComputations'", () => {
-  describe("Test on calculations from rpeTable", () => {
+describe("Test 'helpers/charts/chartDatasetComputations'", () => {
+  describe('Test on calculations from rpeTable', () => {
     test("'calculatePercentage1RM' test line 2 of excel sheet", () => {
       expect(calculatePercentage1RM(3, 9)).toBe(89);
     });
@@ -58,34 +58,34 @@ describe("Test '@/helpers/charts/chartDatasetComputations'", () => {
     });
   });
 
-  describe("Test on calculations for line estimation", () => {
-    test("TEST LINE 2 ", () => {
+  describe('Test on calculations for line estimation', () => {
+    test('TEST LINE 2 ', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        repsBaseValue: "3",
-        rpeBaseValue: "9",
+        setsBaseValue: '3',
+        repsBaseValue: '3',
+        rpeBaseValue: '9',
         loadReference: maxlift,
       });
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
 
-      expect(lineResult?.loadBaseValue).toBe("89%");
+      expect(lineResult?.loadBaseValue).toBe('89%');
       expect(lineResult?.loadValue).toBe(133.5);
     });
 
-    test("TEST LINE 3 ", () => {
+    test('TEST LINE 3 ', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        repsBaseValue: "7/10",
-        rpeBaseValue: "8.5",
+        setsBaseValue: '3',
+        repsBaseValue: '7/10',
+        rpeBaseValue: '8.5',
         loadReference: maxlift,
       });
 
@@ -94,60 +94,60 @@ describe("Test '@/helpers/charts/chartDatasetComputations'", () => {
       expect(lineToTest?.loadComputedValue).toBe(undefined);
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
 
-      expect(lineResult?.loadBaseValue).toBe("73.5%");
+      expect(lineResult?.loadBaseValue).toBe('73.5%');
       expect(lineResult?.loadValue).toBe(110.25);
     });
 
-    test("TEST LINE 4 ", () => {
+    test('TEST LINE 4 ', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        repsBaseValue: "5",
+        setsBaseValue: '3',
+        repsBaseValue: '5',
         loadReference: maxlift,
       });
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
       expect(lineResult?.loadBaseValue).toBe(undefined);
     });
 
-    test("TEST LINE 5 ", () => {
+    test('TEST LINE 5 ', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        rpeBaseValue: "8",
+        setsBaseValue: '3',
+        rpeBaseValue: '8',
         loadReference: maxlift,
       });
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
       expect(lineResult?.loadBaseValue).toBe(undefined);
     });
 
-    test("TEST LINE 6 ", () => {
+    test('TEST LINE 6 ', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        rpeBaseValue: "8",
-        loadBaseValue: "123kg",
+        setsBaseValue: '3',
+        rpeBaseValue: '8',
+        loadBaseValue: '123kg',
         loadReference: maxlift,
       });
 
       expect(lineToTest?.loadValue).toBe(123);
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
 
       if (lineResult?.loadValue) {
@@ -156,21 +156,21 @@ describe("Test '@/helpers/charts/chartDatasetComputations'", () => {
       expect(lineResult?.repsValue).toBe(5);
     });
 
-    test("TEST LINE 7 ", () => {
+    test('TEST LINE 7 ', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        rpeBaseValue: "9",
-        loadBaseValue: "120kg/125kg",
+        setsBaseValue: '3',
+        rpeBaseValue: '9',
+        loadBaseValue: '120kg/125kg',
         loadReference: maxlift,
       });
 
       expect(lineToTest?.loadSupposedValue).toBe(122.5);
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
 
       if (lineResult?.loadSupposedValue) {
@@ -178,216 +178,216 @@ describe("Test '@/helpers/charts/chartDatasetComputations'", () => {
           (
             (100 * lineResult?.loadSupposedValue) /
             Number(maxlift.value)
-          ).toFixed(2),
-        ).toBe("81.67");
+          ).toFixed(2)
+        ).toBe('81.67');
       }
       expect(lineResult?.repsValue).toBe(6);
     });
-    test("TEST LINE 8 ", () => {
+    test('TEST LINE 8 ', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        rpeBaseValue: "8.5",
+        setsBaseValue: '3',
+        rpeBaseValue: '8.5',
         loadReference: maxlift,
       });
 
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
 
       expect(lineResult?.repsValue).toBe(undefined);
       expect(lineResult?.loadValue).toBe(undefined);
     });
 
-    test("TEST LINE 9 ", () => {
+    test('TEST LINE 9 ', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        loadBaseValue: "125kg",
+        setsBaseValue: '3',
+        loadBaseValue: '125kg',
         loadReference: maxlift,
       });
 
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
 
       expect(lineResult?.repsValue).toBe(undefined);
       if (lineResult?.loadValue) {
         expect(
-          ((100 * lineResult?.loadValue) / Number(maxlift.value)).toFixed(2),
-        ).toBe("83.33");
+          ((100 * lineResult?.loadValue) / Number(maxlift.value)).toFixed(2)
+        ).toBe('83.33');
       }
     });
 
-    test("TEST LINE 10 ", () => {
+    test('TEST LINE 10 ', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        rpeBaseValue: "8.5",
-        repsBaseValue: "5",
-        loadBaseValue: "83%",
+        setsBaseValue: '3',
+        rpeBaseValue: '8.5',
+        repsBaseValue: '5',
+        loadBaseValue: '83%',
         loadReference: maxlift,
       });
 
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
       expect(lineResult?.loadComputedValue).toBe(124.5);
     });
 
-    test("TEST LINE 11 ", () => {
+    test('TEST LINE 11 ', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        rpeBaseValue: "8",
-        repsBaseValue: "4",
-        loadBaseValue: "84%/86%",
+        setsBaseValue: '3',
+        rpeBaseValue: '8',
+        repsBaseValue: '4',
+        loadBaseValue: '84%/86%',
         loadReference: maxlift,
       });
 
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
       expect(lineResult?.loadSupposedValue).toBe(127.5);
     });
 
-    test("TEST LINE 12 ", () => {
+    test('TEST LINE 12 ', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        rpeBaseValue: "7",
+        setsBaseValue: '3',
+        rpeBaseValue: '7',
 
         loadReference: maxlift,
       });
 
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
       expect(lineResult?.loadValue).toBe(undefined);
       expect(lineResult?.repsValue).toBe(undefined);
     });
 
-    test("TEST LINE 13 ", () => {
+    test('TEST LINE 13 ', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        loadBaseValue: "88%",
+        setsBaseValue: '3',
+        loadBaseValue: '88%',
 
         loadReference: maxlift,
       });
 
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
       expect(lineResult?.loadValue).toBe(132);
     });
 
-    test("TEST LINE 14 ", () => {
+    test('TEST LINE 14 ', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        repsBaseValue: "3",
-        rpeBaseValue: "9/10",
+        setsBaseValue: '3',
+        repsBaseValue: '3',
+        rpeBaseValue: '9/10',
         loadReference: maxlift,
       });
 
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
       expect(lineResult?.loadValue).toBe(136.5);
     });
 
-    test("TEST LINE 15", () => {
+    test('TEST LINE 15', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        repsBaseValue: "3",
-        rpeBaseValue: "9.5/10", //TODO: 9/10
+        setsBaseValue: '3',
+        repsBaseValue: '3',
+        rpeBaseValue: '9.5/10', //TODO: 9/10
         loadReference: maxlift,
       });
 
       expect(lineToTest?.rpeSupposedValue).toBe(9.75);
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
       expect(lineResult?.loadComputedValue).toBe(138);
     });
 
-    test("TEST LINE 16", () => {
+    test('TEST LINE 16', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        repsBaseValue: "3/4",
-        rpeBaseValue: "7.5",
+        setsBaseValue: '3',
+        repsBaseValue: '3/4',
+        rpeBaseValue: '7.5',
         loadReference: maxlift,
       });
 
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
       expect(lineResult?.loadComputedValue).toBe(125.25);
     });
 
-    test("TEST LINE 17", () => {
+    test('TEST LINE 17', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        repsBaseValue: "5",
-        loadBaseValue: "83%",
+        setsBaseValue: '3',
+        repsBaseValue: '5',
+        loadBaseValue: '83%',
         loadReference: maxlift,
       });
 
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
       expect(lineResult?.rpeValue).toBe(9);
       expect(lineResult?.loadValue).toBe(124.5);
     });
 
-    test("TEST LINE 18", () => {
+    test('TEST LINE 18', () => {
       const maxlift = new MaxLift({
-        value: "150",
+        value: '150',
       });
       const lineToTest = new ProgramLine({
-        setsBaseValue: "3",
-        repsBaseValue: "3",
-        loadBaseValue: "87%",
+        setsBaseValue: '3',
+        repsBaseValue: '3',
+        loadBaseValue: '87%',
         loadReference: maxlift,
       });
 
       const lineResult = estimateMissingLineProps(
         lineToTest,
-        Number(maxlift.value),
+        Number(maxlift.value)
       );
       expect(lineResult?.rpeValue).toBe(8.5);
       expect(lineResult?.loadValue).toBe(130.5);

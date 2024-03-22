@@ -7,7 +7,7 @@
         style="
           font-size: 16px;
           text-align: left;
-          font-family: &quot;Helvetica&quot;, sans-serif;
+          font-family: 'Helvetica', sans-serif;
           color: #661d1d;
           background-color: #ffeded;
           border-radius: 3px;
@@ -39,7 +39,7 @@
           style="
             font-size: 16px;
             text-align: left;
-            font-family: &quot;Helvetica&quot;, sans-serif;
+            font-family: 'Helvetica', sans-serif;
             color: #085229;
             background-color: #e7faf0;
             border-radius: 3px;
@@ -92,7 +92,7 @@
                 font-size: 32px;
                 text-align: left;
                 font-weight: 700;
-                font-family: &quot;Helvetica&quot;, sans-serif;
+                font-family: 'Helvetica', sans-serif;
                 color: #3c4858;
                 background-color: transparent;
                 text-align: left;
@@ -107,7 +107,7 @@
               style="
                 font-size: 16px;
                 text-align: left;
-                font-family: &quot;Helvetica&quot;, sans-serif;
+                font-family: 'Helvetica', sans-serif;
                 color: #3c4858;
                 background-color: transparent;
                 text-align: left;
@@ -146,7 +146,7 @@
                   style="
                     font-size: 16px;
                     text-align: left;
-                    font-family: &quot;Helvetica&quot;, sans-serif;
+                    font-family: 'Helvetica', sans-serif;
                     color: #661d1d;
                     background-color: #ffeded;
                     border-radius: 3px;
@@ -173,13 +173,13 @@
                       />
                       <span
                         class="checkbox checkbox_tick_positive"
-                        style="margin-left:"
+                        style="margin-left: "
                       ></span
                       ><span
                         style="
                           font-size: 14px;
                           text-align: left;
-                          font-family: &quot;Helvetica&quot;, sans-serif;
+                          font-family: 'Helvetica', sans-serif;
                           color: #3c4858;
                           background-color: transparent;
                         "
@@ -201,7 +201,7 @@
                   style="
                     font-size: 16px;
                     text-align: left;
-                    font-family: &quot;Helvetica&quot;, sans-serif;
+                    font-family: 'Helvetica', sans-serif;
                     color: #661d1d;
                     background-color: #ffeded;
                     border-radius: 3px;
@@ -214,7 +214,7 @@
                   style="
                     font-size: 12px;
                     text-align: left;
-                    font-family: &quot;Helvetica&quot;, sans-serif;
+                    font-family: 'Helvetica', sans-serif;
                     color: #8390a4;
                     text-align: left;
                   "
@@ -233,7 +233,7 @@
                   font-size: 16px;
                   text-align: right;
                   font-weight: 700;
-                  font-family: &quot;Helvetica&quot;, sans-serif;
+                  font-family: 'Helvetica', sans-serif;
                   color: #ffffff;
                   background-color: #3e4857;
                   border-radius: 5px;
@@ -269,15 +269,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted } from 'vue';
 
 withDefaults(
   defineProps<{
     initialEmail?: string;
   }>(),
   {
-    initialEmail: "",
-  },
+    initialEmail: '',
+  }
 );
 
 declare global {
@@ -289,85 +289,82 @@ declare global {
     REQUIRED_ERROR_MESSAGE: string;
     GENERIC_INVALID_MESSAGE: string;
     translation: object;
-    AUTOHIDE: Boolean;
+    AUTOHIDE: boolean;
   }
 }
-window.REQUIRED_CODE_ERROR_MESSAGE = "Scegli un prefisso paese";
-window.LOCALE = "it";
+window.REQUIRED_CODE_ERROR_MESSAGE = 'Scegli un prefisso paese';
+window.LOCALE = 'it';
 window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE =
-  "Le informazioni fornite non sono valide. Controlla il formato del campo e riprova.";
-window.REQUIRED_ERROR_MESSAGE = "Questo campo non può essere lasciato vuoto. ";
+  'Le informazioni fornite non sono valide. Controlla il formato del campo e riprova.';
+window.REQUIRED_ERROR_MESSAGE = 'Questo campo non può essere lasciato vuoto. ';
 window.GENERIC_INVALID_MESSAGE =
-  "Le informazioni fornite non sono valide. Controlla il formato del campo e riprova.";
+  'Le informazioni fornite non sono valide. Controlla il formato del campo e riprova.';
 window.translation = {
   common: {
-    selectedList: "{quantity} lista selezionata",
-    selectedLists: "{quantity} liste selezionate",
+    selectedList: '{quantity} lista selezionata',
+    selectedLists: '{quantity} liste selezionate',
   },
 };
 window.AUTOHIDE = Boolean(0);
 
 // Load brevo js
 onMounted(() => {
-  const recaptchaScript = document.createElement("script");
+  const recaptchaScript = document.createElement('script');
   recaptchaScript.setAttribute(
-    "src",
-    "https://sibforms.com/forms/end-form/build/main.js",
+    'src',
+    'https://sibforms.com/forms/end-form/build/main.js'
   );
   document.head.appendChild(recaptchaScript);
 });
 </script>
 
 <style scoped>
-@import "https://sibforms.com/forms/end-form/build/sib-styles.css";
+@import 'https://sibforms.com/forms/end-form/build/sib-styles.css';
 
 @font-face {
   font-display: block;
   font-family: Roboto;
-  src:
-    url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/7529907e9eaf8ebb5220c5f9850e3811.woff2)
-      format("woff2"),
+  src: url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/7529907e9eaf8ebb5220c5f9850e3811.woff2)
+      format('woff2'),
     url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/25c678feafdc175a70922a116c9be3e7.woff)
-      format("woff");
+      format('woff');
 }
 
 @font-face {
   font-display: fallback;
   font-family: Roboto;
   font-weight: 600;
-  src:
-    url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/6e9caeeafb1f3491be3e32744bc30440.woff2)
-      format("woff2"),
+  src: url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/6e9caeeafb1f3491be3e32744bc30440.woff2)
+      format('woff2'),
     url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/71501f0d8d5aa95960f6475d5487d4c2.woff)
-      format("woff");
+      format('woff');
 }
 
 @font-face {
   font-display: fallback;
   font-family: Roboto;
   font-weight: 700;
-  src:
-    url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/3ef7cf158f310cf752d5ad08cd0e7e60.woff2)
-      format("woff2"),
+  src: url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/3ef7cf158f310cf752d5ad08cd0e7e60.woff2)
+      format('woff2'),
     url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/ece3a1d82f18b60bcce0211725c476aa.woff)
-      format("woff");
+      format('woff');
 }
 
 #sib-container input:-ms-input-placeholder {
   text-align: left;
-  font-family: "Helvetica", sans-serif;
+  font-family: 'Helvetica', sans-serif;
   color: #c0ccda;
 }
 
 #sib-container input::placeholder {
   text-align: left;
-  font-family: "Helvetica", sans-serif;
+  font-family: 'Helvetica', sans-serif;
   color: #c0ccda;
 }
 
 #sib-container textarea::placeholder {
   text-align: left;
-  font-family: "Helvetica", sans-serif;
+  font-family: 'Helvetica', sans-serif;
   color: #c0ccda;
 }
 

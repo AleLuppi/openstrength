@@ -1,12 +1,16 @@
-import { ProgramFeedback } from "@/helpers/programs/models";
-import { Program } from "@/helpers/programs/program";
-import { doAddDoc, doGetDocs, doUpdateDoc } from "@/helpers/database/readwrite";
+import { ProgramFeedback } from 'src/helpers/programs/models';
+import { Program } from 'src/helpers/programs/program';
+import {
+  doAddDoc,
+  doGetDocs,
+  doUpdateDoc,
+} from 'src/helpers/database/readwrite';
 import {
   dbCollections,
   dbSubcollections,
-} from "@/helpers/database/collections";
-import type { DocumentReference } from "firebase/firestore";
-import { arrayPushToNullable } from "../array";
+} from 'src/helpers/database/collections';
+import type { DocumentReference } from 'firebase/firestore';
+import { arrayPushToNullable } from '../array';
 
 /**
  * Save the feedback of a program in database.
@@ -24,9 +28,9 @@ export function saveFeedback(
     onSuccess,
     onError,
   }: {
-    onSuccess?: Function;
-    onError?: Function;
-  } = {},
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
+  } = {}
 ): boolean {
   if (!feedback.program && program instanceof Program)
     feedback.program = program;
@@ -45,7 +49,7 @@ export function saveFeedback(
   if (uid) {
     feedbackToStore.updatedOn = arrayPushToNullable(
       feedbackToStore.updatedOn,
-      new Date(),
+      new Date()
     );
     doUpdateDoc(storageLocation, uid, feedbackToStore, {
       onSuccess: onSuccess,
@@ -53,7 +57,7 @@ export function saveFeedback(
     });
   } else {
     doAddDoc(storageLocation, feedbackToStore, {
-      addCurrentTimestamp: "createdOn",
+      addCurrentTimestamp: 'createdOn',
       onSuccess: (docRef: DocumentReference) => {
         feedback.uid = docRef.id;
         onSuccess?.(docRef);
@@ -79,8 +83,8 @@ export async function loadLatestFeedback(
     onError,
   }: {
     onSuccess?: (feedback: ProgramFeedback) => void;
-    onError?: Function;
-  } = {},
+    onError?: (...x: any) => void;
+  } = {}
 ): Promise<ProgramFeedback | undefined> {
   const programId = program instanceof Program ? program.uid : program;
   if (!programId) return;
@@ -89,7 +93,7 @@ export async function loadLatestFeedback(
     `${dbCollections.programs}/${programId}/${dbSubcollections.programFeedbacks}`,
     undefined,
     {
-      ordering: ["-createdOn"],
+      ordering: ['-createdOn'],
       numDocs: 1,
       onSuccess: (docVal: { [key: string]: ProgramFeedback }) => {
         feedback = Object.values(docVal)[0];
@@ -97,7 +101,7 @@ export async function loadLatestFeedback(
         onSuccess?.(feedback);
       },
       onError: onError,
-    },
+    }
   );
   return feedback;
 }

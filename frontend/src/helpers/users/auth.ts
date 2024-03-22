@@ -6,8 +6,8 @@ import {
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
-} from "firebase/auth";
-import { auth } from "@/firebase";
+} from 'firebase/auth';
+import { auth } from 'src/firebase';
 
 export enum AuthError {
   emailError,
@@ -19,9 +19,9 @@ export enum AuthError {
 export function doCreateUserWithEmailAndPassword(
   email: string,
   password: string,
-  requireEmailVerification: boolean = false,
-  onSuccess?: Function,
-  onError?: Function,
+  requireEmailVerification = false,
+  onSuccess?: (...x: any) => void,
+  onError?: (...x: any) => void
 ) {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -40,16 +40,16 @@ export function doCreateUserWithEmailAndPassword(
       // Failed sign-up
       let authError;
       switch (error.code) {
-        case "auth/email-already-in-use":
+        case 'auth/email-already-in-use':
           authError = AuthError.userError;
           break;
-        case "auth/invalid-email":
+        case 'auth/invalid-email':
           authError = AuthError.emailError;
           break;
-        case "auth/operation-not-allowed":
+        case 'auth/operation-not-allowed':
           authError = AuthError.genericError;
           break;
-        case "auth/weak-password":
+        case 'auth/weak-password':
           authError = AuthError.passwordError;
           break;
         default:
@@ -64,8 +64,8 @@ export function doCreateUserWithEmailAndPassword(
 export function doSignInWithEmailAndPassword(
   email: string,
   password: string,
-  onSuccess?: Function,
-  onError?: Function,
+  onSuccess?: (...x: any) => void,
+  onError?: (...x: any) => void
 ) {
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -78,16 +78,16 @@ export function doSignInWithEmailAndPassword(
       // Failed sign-in
       let authError;
       switch (error.code) {
-        case "auth/wrong-password":
+        case 'auth/wrong-password':
           authError = AuthError.passwordError;
           break;
-        case "auth/invalid-email":
+        case 'auth/invalid-email':
           authError = AuthError.emailError;
           break;
-        case "auth/user-disabled":
+        case 'auth/user-disabled':
           authError = AuthError.userError;
           break;
-        case "auth/user-not-found":
+        case 'auth/user-not-found':
           authError = AuthError.userError;
           break;
         default:
@@ -109,8 +109,8 @@ export function doSignInWithGoogle({
   onSuccess,
   onError,
 }: {
-  onSuccess?: Function;
-  onError?: Function;
+  onSuccess?: (...x: any) => void;
+  onError?: (...x: any) => void;
 } = {}) {
   const provider = new GoogleAuthProvider();
   signInWithPopup(auth, provider)
@@ -122,8 +122,8 @@ export function doSignOut({
   onSuccess,
   onError,
 }: {
-  onSuccess?: Function;
-  onError?: Function;
+  onSuccess?: (...x: any) => void;
+  onError?: (...x: any) => void;
 } = {}) {
   signOut(auth)
     .then(() => {
@@ -148,9 +148,9 @@ export function addCallbackOnAuthStateChanged({
   onUserOut,
   onUserChange,
 }: {
-  onUserIn?: Function;
-  onUserOut?: Function;
-  onUserChange?: Function;
+  onUserIn?: (...x: any) => void;
+  onUserOut?: (...x: any) => void;
+  onUserChange?: (...x: any) => void;
 } = {}) {
   onAuthStateChanged(auth, (user) => {
     if (user) {

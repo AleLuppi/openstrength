@@ -1,22 +1,22 @@
-import { UserConfig } from "@/helpers/users/model";
-import { addDocUser, updateDocUser } from "./api";
+import { UserConfig } from 'src/helpers/users/model';
+import { addDocUser, updateDocUser } from './api';
 
 /**
  * Define available user roles.
  */
 export enum UserRole {
-  admin = "admin",
-  coach = "coach",
-  athlete = "athlete",
-  unknown = "unknown",
+  admin = 'admin',
+  coach = 'coach',
+  athlete = 'athlete',
+  unknown = 'unknown',
 }
 
 /**
  * Define available user gender.
  */
 export enum UserGender {
-  male = "male",
-  female = "female",
+  male = 'male',
+  female = 'female',
 }
 
 /**
@@ -140,7 +140,7 @@ export class User {
 
   // Get user displayable name
   public get referenceName() {
-    return this.displayName ?? [this.name, this.surname].join(" ");
+    return this.displayName ?? [this.name, this.surname].join(' ');
   }
 
   // Check if user is signed in
@@ -200,8 +200,8 @@ export class User {
     onError,
   }: {
     user?: User | CoachUser | AthleteUser;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void; // TODO
+    onError?: (...x: any) => void; // TODO
   } = {}) {
     addDocUser(user || this, { onSuccess: onSuccess, onError: onError });
   }
@@ -212,8 +212,8 @@ export class User {
     onError,
   }: {
     user?: User | CoachUser | AthleteUser;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void; // TODO
+    onError?: (...x: any) => void; // TODO
   } = {}) {
     updateDocUser(user || this, { onSuccess: onSuccess, onError: onError });
   }

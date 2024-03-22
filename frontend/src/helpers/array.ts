@@ -9,18 +9,18 @@
 export function arrayUniqueValues<T, R>(
   array: T[],
   sorted: boolean | ((val: T, arr: T[]) => R) = true,
-  deep: boolean = false,
+  deep = false
 ): T[] {
   const newArray = deep
     ? Object.values(
-        Object.fromEntries(array.map((v) => [JSON.stringify(v), v])),
+        Object.fromEntries(array.map((v) => [JSON.stringify(v), v]))
       )
     : [...new Set(array)];
   if (sorted)
     return arraySort(
       newArray,
       true,
-      typeof sorted == "function" ? sorted : undefined,
+      typeof sorted == 'function' ? sorted : undefined
     );
   return newArray;
 }
@@ -35,8 +35,8 @@ export function arrayUniqueValues<T, R>(
  */
 export function arraySort<T, R>(
   array: T[],
-  inplace: boolean = false,
-  sortBy: (val: T, arr: T[]) => T | R = (val) => val,
+  inplace = false,
+  sortBy: (val: T, arr: T[]) => T | R = (val) => val
 ): T[] {
   return (inplace ? array : [...array]).sort((elA, elB) => {
     if (sortBy(elA, array) < sortBy(elB, array)) return -1;
@@ -78,8 +78,8 @@ export function arrayCompare(arrayA: any[], arrayB: any[]) {
 export function arraySortObjectsByField<T extends object, R>(
   array: T[],
   field: keyof T,
-  inplace: boolean = false,
-  sortBy: (val: T[keyof T], arr: T[]) => R = (val) => val as R,
+  inplace = false,
+  sortBy: (val: T[keyof T], arr: T[]) => R = (val) => val as R
 ) {
   return arraySort(array, inplace, (val, arr) => sortBy(val[field], arr));
 }
@@ -93,16 +93,13 @@ export function arraySortObjectsByField<T extends object, R>(
  */
 export function arrayOfPairsToObject<K extends string | number | symbol, V>(
   array: [K, V][],
-  unique: boolean = false,
+  unique = false
 ): { [key in K]: V[] } {
-  return array.reduce(
-    (out, [key, value]) => {
-      if (unique) out[key] = arrayUniqueValues([...(out[key] ?? []), value]);
-      else out[key] = (out[key] ?? []).concat([value]);
-      return out;
-    },
-    {} as { [key in K]: V[] },
-  );
+  return array.reduce((out, [key, value]) => {
+    if (unique) out[key] = arrayUniqueValues([...(out[key] ?? []), value]);
+    else out[key] = (out[key] ?? []).concat([value]);
+    return out;
+  }, {} as { [key in K]: V[] });
 }
 
 /**
@@ -112,8 +109,8 @@ export function arrayOfPairsToObject<K extends string | number | symbol, V>(
  * @param arrays any number of arrays to zip.
  * @returns an array containing list of values from each input arrays in order.
  */
-export function arrayZip<T>(arrays: T[][], pad: boolean = false): T[][] {
-  const length = Math[pad ? "max" : "min"](...arrays.map((arr) => arr.length));
+export function arrayZip<T>(arrays: T[][], pad = false): T[][] {
+  const length = Math[pad ? 'max' : 'min'](...arrays.map((arr) => arr.length));
 
   return Array(length)
     .fill(undefined)

@@ -47,22 +47,18 @@
       </q-item-section>
       <q-item-section v-if="!props.mini">
         <q-item-label>
-          {{ $t("layout.views." + (user.isSignedIn ? "profile" : "signin")) }}
+          {{ $t('layout.views.' + (user.isSignedIn ? 'profile' : 'signin')) }}
         </q-item-label>
       </q-item-section>
 
       <!-- Icon over text on mini drawer -->
       <q-card v-else flat class="q-py-sm bg-inherit width-90">
         <q-avatar
-          :icon="
-            user.isSignedIn
-              ? 'fa-solid fa-circle-user'
-              : 'fa-solid fa-right-to-bracket'
-          "
+          :icon="user.isSignedIn ? fasCircleUser : fasRightToBracket"
           size="lg"
         />
         <p>
-          {{ $t("layout.views." + (user.isSignedIn ? "profile" : "signin")) }}
+          {{ $t('layout.views.' + (user.isSignedIn ? 'profile' : 'signin')) }}
         </p>
       </q-card>
     </q-item>
@@ -70,10 +66,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import router, { NamedRoutes } from "@/router";
-import { useUserStore } from "@/stores/user";
-import { routeAccessibleByUser } from "@/router/routeAccessManagement";
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+import {
+  fasBook,
+  fasCircleUser,
+  fasDumbbell,
+  fasHouseChimney,
+  fasRightToBracket,
+  fasSheetPlastic,
+  fasUsers,
+} from '@quasar/extras/fontawesome-v6';
+import { NamedRoutes } from 'src/router';
+import { useUserStore } from 'stores/user';
+import { routeAccessibleByUser } from 'src/router/routeAccessManagement';
+
+// Init plugin
+const router = useRouter();
 
 // Set props
 const props = defineProps({
@@ -90,28 +99,28 @@ const user = useUserStore();
 const allDrawerPages = [
   {
     route: NamedRoutes.home,
-    caption: "layout.views.home",
-    icon: "fa-solid fa-house-chimney",
+    caption: 'layout.views.home',
+    icon: fasHouseChimney,
   },
   {
     route: NamedRoutes.athletes,
-    caption: "layout.views.athletes",
-    icon: "fa-solid fa-users",
+    caption: 'layout.views.athletes',
+    icon: fasUsers,
   },
   {
     route: NamedRoutes.program,
-    caption: "layout.views.program",
-    icon: "fa-solid fa-dumbbell",
+    caption: 'layout.views.program',
+    icon: fasDumbbell,
   },
   {
     route: NamedRoutes.exerciseLibrary,
-    caption: "layout.views.library",
-    icon: "fa-solid fa-book",
+    caption: 'layout.views.library',
+    icon: fasBook,
   },
   {
     route: NamedRoutes.programLibrary,
-    caption: "layout.views.programlibrary",
-    icon: "fa-solid fa-sheet-plastic",
+    caption: 'layout.views.programlibrary',
+    icon: fasSheetPlastic,
   },
 ];
 
@@ -125,7 +134,7 @@ const drawerPages = computed(() =>
       route &&
       (routeAccessibleByUser(user, route) || route.name == NamedRoutes.home)
     );
-  }),
+  })
 );
 </script>
 
@@ -146,7 +155,7 @@ const drawerPages = computed(() =>
 }
 
 .beta-feature::after {
-  content: "beta";
+  content: 'beta';
   display: inline-block;
   position: absolute;
   top: 5px;

@@ -11,10 +11,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType } from "vue";
-import { useQuasar } from "quasar";
-import { useI18n } from "vue-i18n";
-import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import { computed, PropType } from 'vue';
+import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
+import { MaxLift } from 'src/helpers/maxlifts/maxlift';
 
 // Init plugin
 const $q = useQuasar();
@@ -36,58 +36,58 @@ const emit = defineEmits<{
 // Set table columns
 const columns = [
   {
-    name: "exercise",
+    name: 'exercise',
     required: true,
-    label: i18n.t("coach.maxlift_management.fields.exercise"),
-    align: "left",
-    field: "exercise",
+    label: i18n.t('coach.maxlift_management.fields.exercise'),
+    align: 'left',
+    field: 'exercise',
     sortable: true,
   },
   {
-    name: "type",
-    align: "left",
-    label: i18n.t("coach.maxlift_management.fields.type"),
-    field: "type",
+    name: 'type',
+    align: 'left',
+    label: i18n.t('coach.maxlift_management.fields.type'),
+    field: 'type',
   },
   ...(!$q.screen.lt.sm
     ? [
         {
-          name: "value",
-          align: "left",
-          label: i18n.t("coach.maxlift_management.fields.value"),
-          field: "value",
+          name: 'value',
+          align: 'left',
+          label: i18n.t('coach.maxlift_management.fields.value'),
+          field: 'value',
         },
         {
-          name: "date",
-          align: "left",
-          label: i18n.t("coach.maxlift_management.fields.date"),
-          field: "date",
+          name: 'date',
+          align: 'left',
+          label: i18n.t('coach.maxlift_management.fields.date'),
+          field: 'date',
         },
       ]
     : []),
   {
-    name: "update",
-    align: "center",
-    label: "",
-    field: "update",
+    name: 'update',
+    align: 'center',
+    label: '',
+    field: 'update',
   },
 ];
 
 // Set table rows
 const rows = computed(() => {
   return props.maxlifts.map((maxlift) => ({
-    exercise: maxlift.exercise?.name ?? "",
-    type: maxlift.type ?? "",
-    value: maxlift.value ?? "",
-    date: maxlift.performedOn ? i18n.d(maxlift.performedOn) : "",
+    exercise: maxlift.exercise?.name ?? '',
+    type: maxlift.type ?? '',
+    value: maxlift.value ?? '',
+    date: maxlift.performedOn ? i18n.d(maxlift.performedOn) : '',
     update: {
-      element: "button",
-      on: { click: () => emit("update", maxlift) },
-      label: "",
-      icon: "update",
+      element: 'button',
+      on: { click: () => emit('update', maxlift) },
+      label: '',
+      icon: 'update',
       rounded: true,
       outline: true,
-      color: "button-primary",
+      color: 'button-primary',
     },
     rowId: maxlift.uid,
   }));

@@ -41,19 +41,19 @@ import {
   computeChartData,
   createChartOptions,
   formatChartData,
-} from "@/helpers/charts/chartDataFormatter";
+} from "src/helpers/charts/chartDataFormatter";
 import {
   OSAvailableXType,
   OSChartDataRequest,
   OSChartDescriptor,
   OSChartType,
   OSChartVersion,
-} from "@/helpers/charts/chartTypes";
-import { Program } from "@/helpers/programs/program";
+} from "src/helpers/charts/chartTypes";
+import { Program } from "src/helpers/programs/program";
 
 // Import components
 const ChartComponent = defineAsyncComponent(
-  () => import("@/components/charts/ChartComponent.vue"),
+  () => import("components/charts/ChartComponent.vue"),
 );
 
 // Init plugin
