@@ -41,20 +41,5 @@ yarn-error.log*
 
 ##### CUSTOM #####
 
-# Asset images
-src/assets/**/*.jpg
-src/assets/**/*.png
-src/assets/**/*.webp
-
-# Asset videos
-src/assets/**/*.mp4
-src/assets/**/*.ogg
-src/assets/**/*.webm
-
-# Icons
-public/**/*.ico
-public/**/*.png
-public/**/*.svg
-
 # Backend-related build files
 .firebase/
