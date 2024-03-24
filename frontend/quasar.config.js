@@ -81,6 +81,7 @@ module.exports = configure(function (/* ctx */) {
       // viteVuePluginOptions: {},
 
       vitePlugins: [
+        ["vite-tsconfig-paths"],
         [
           "@intlify/vite-plugin-vue-i18n",
           {
