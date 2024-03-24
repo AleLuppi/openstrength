@@ -1,17 +1,17 @@
-import { boot } from 'quasar/wrappers';
-import { createI18n } from 'vue-i18n';
-import { getPreferredLocale } from 'src/helpers/locales';
+import { boot } from "quasar/wrappers";
+import { createI18n } from "vue-i18n";
+import { getPreferredLocale } from "src/helpers/locales";
 
-import messages from 'src/i18n';
-import datetimeFormats from 'src/i18n/datetimeFormats';
+import messages from "src/i18n";
+import datetimeFormats from "src/i18n/datetimeFormats";
 
 export type MessageLanguages = keyof typeof messages;
 // Type-define 'en-US' as the master schema for the resource
-export type MessageSchema = (typeof messages)['en-US'];
+export type MessageSchema = (typeof messages)["en-US"];
 
 // See https://vue-i18n.intlify.dev/guide/advanced/typescript.html#global-resource-schema-type-definition
 /* eslint-disable @typescript-eslint/no-empty-interface */
-declare module 'vue-i18n' {
+declare module "vue-i18n" {
   // define the locale messages schema
   export interface DefineLocaleMessage extends MessageSchema {}
 
@@ -25,8 +25,8 @@ declare module 'vue-i18n' {
 
 const i18n = createI18n({
   legacy: false,
-  locale: getPreferredLocale() || process.env.VUE_APP_I18N_LOCALE || 'en-US',
-  fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || 'en-US',
+  locale: getPreferredLocale() || process.env.VITE_I18N_LOCALE || "en-US",
+  fallbackLocale: process.env.VITE_I18N_FALLBACK_LOCALE || "en-US",
   messages: messages,
   datetimeFormats: datetimeFormats,
 });

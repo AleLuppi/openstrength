@@ -73,7 +73,7 @@ export default route(function (/* { store, ssrContext } */) {
   /* Set the page title */
   Router.afterEach((to) => {
     document.title =
-      (to.meta.title ? to.meta.title + " - " : "") + process.env.VUE_APP_NAME;
+      (to.meta.title ? to.meta.title + " - " : "") + process.env.VITE_APP_NAME;
   });
 
   return Router;
