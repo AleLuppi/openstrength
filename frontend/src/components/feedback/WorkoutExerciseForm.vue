@@ -4,183 +4,194 @@
       'os-completed': exerciseDone,
     }"
     class="q-mb-sm"
+    style="border-radius: 8px"
   >
-    <!-- TODO: i18n for all the component-->
-    <q-expansion-item
-      :model-value="readonly || !exerciseDone"
-      @update:model-value="toggleDone"
-      hide-expand-icon
-      :header-class="{
-        'bg-green-3 ': exerciseDone,
-      }"
-    >
-      <template #header>
-        <div class="q-py-sm full-width">
-          <div class="row items-center justify-between">
-            <p class="text-bold">
-              {{
-                props.exercise.exerciseName + " " + props.exercise.variantName
-              }}
-            </p>
-
-            <q-btn
-              size="xs"
-              icon="check"
-              :color="exerciseDone ? 'positive' : 'primary'"
-              round
-              :outline="!exerciseDone"
-            ></q-btn>
-          </div>
-
-          <p class="text-italic">
-            {{ props.exercise.note }}
-          </p>
+    <div class="q-py-sm q-px-none">
+      <div class="row justify-between items-center q-px-sm">
+        <div class="row justify-start items-center">
+          <q-btn
+            icon="sym_o_more_vert"
+            flat
+            outline
+            color="dark-light"
+            class="q-pa-none"
+          ></q-btn>
+          <h6>
+            {{ props.exercise.exerciseName + " " + props.exercise.variantName }}
+          </h6>
         </div>
-      </template>
+        <q-btn
+          size="xs"
+          icon="check"
+          :color="exerciseDone ? 'positive' : 'primary'"
+          round
+          :outline="!exerciseDone"
+        ></q-btn>
+        <p class="text-xs text-italic q-ml-sm">
+          {{ props.exercise.note }}
+        </p>
+      </div>
 
-      <template #default>
-        <q-card-section>
-          <!-- Show schema or line data -->
-          <div
-            v-for="(line, indexLine) in props.exercise.lines"
-            :key="indexLine"
-            class="row justify-between items-center q-pa-none"
-          >
-            <!-- Show line values -->
-            <q-input
-              v-for="kind in lineValueTypes"
-              :key="kind"
-              v-model="line[kind]"
-              :label="indexLine === 0 ? lineValueLabels[kind] : ''"
-              readonly
-              dense
-              stack-label
-              hide-bottom-space
-              :style="{ width: kind == 'load' ? '15%' : '10%' }"
-              class="q-pa-none q-ma-none"
-            />
+      <div v-for="(line, indexLine) in props.exercise.lines" :key="indexLine">
+        <q-expansion-item
+          :model-value="readonly"
+          @update:model-value="toggleOpen"
+          hide-expand-icon
+          :header-class="{
+            'bg-green-3 ': exerciseDone,
+          }"
+          class="q-ma-sm shadow-1 overflow-hidden bg-lighter"
+          style="border-radius: 8px"
+        >
+          <template #header>
+            <div class="q-py-sm full-width">
+              <div class="row items-center justify-between">
+                <div
+                  class="row items-center justify-start"
+                  style="max-width: 70%"
+                >
+                  <div class="column">
+                    <p class="text-italic">
+                      {{ props.exercise.schemaNote[indexLine] }}
+                    </p>
+                    <p class="text-bold">
+                      {{ props.exercise.schema[indexLine] }}
+                    </p>
+                  </div>
+                </div>
 
-            <div class="row items-center q-pa-none q-ma-none">
-              <!-- Show line note from coach -->
-              <q-btn
-                flat
-                color="info"
-                icon="sym_o_info"
-                class="q-mx-xs q-px-xs"
-                :style="{
-                  visibility: exercise.schemaNote[indexLine]
-                    ? 'visible'
-                    : 'hidden',
-                }"
-                @click="
-                  showInfoTooltip[indexLine] = !showInfoTooltip[indexLine]
-                "
-                @touchend.prevent="
-                  showInfoTooltip[indexLine] = !showInfoTooltip[indexLine]
-                "
-                @mouseenter="showInfoTooltip[indexLine] = true"
-                @mouseleave="showInfoTooltip[indexLine] = false"
-              >
-                <q-tooltip
-                  v-model="showInfoTooltip[indexLine]"
-                  anchor="top middle"
-                  self="bottom middle"
-                  :offset="[10, 10]"
-                  class="bg-lighter bordered text-xs"
-                  no-parent-event
+                <div
+                  class="row items-center justify-end"
+                  style="max-width: 30%"
                 >
-                  {{ exercise.schemaNote[indexLine] }}
-                </q-tooltip>
-              </q-btn>
+                  <!-- Show required text feedback -->
+                  <q-btn
+                    icon="sym_o_message"
+                    :color="lineTextFeedbacks[indexLine] ? 'primary' : 'light'"
+                    flat
+                    class="q-mx-xs q-px-xs"
+                  >
+                    <q-badge
+                      v-if="
+                        exercise.textFeedback[indexLine] &&
+                        !lineTextFeedbacks[indexLine]
+                      "
+                      floating
+                      rounded
+                      color="red"
+                      style="top: 2px; right: 0"
+                    >
+                    </q-badge>
+                    <q-tooltip
+                      anchor="top middle"
+                      self="bottom middle"
+                      :offset="[10, 10]"
+                      :delay="500"
+                    >
+                      {{
+                        exercise.videoFeedback[indexLine]
+                          ? "Il tuo coach ha richiesto un feedback su questa serie"
+                          : "Non è necessario dare un feedback su questa serie"
+                      }}
+                    </q-tooltip>
+                    <q-popup-edit
+                      style="width: 70%"
+                      :model-value="lineTextFeedbacks[indexLine]"
+                      v-slot="scope"
+                      @save="
+                        (val) => {
+                          lineTextFeedbacks[indexLine] = val;
+                          saveExerciseFeedback();
+                        }
+                      "
+                    >
+                      <os-input
+                        autofocus
+                        type="textarea"
+                        v-model="scope.value"
+                        :readonly="readonly"
+                      />
+                      <q-btn
+                        class="full-width"
+                        @click.stop.prevent="scope.set"
+                        :label="readonly ? 'Chiudi' : 'Salva commento'"
+                      />
+                    </q-popup-edit>
+                  </q-btn>
 
-              <!-- Show required text feedback -->
-              <q-btn
-                icon="sym_o_message"
-                :color="lineTextFeedbacks[indexLine] ? 'primary' : 'light'"
-                flat
-                class="q-mx-xs q-px-xs"
-              >
-                <q-badge
-                  v-if="
-                    exercise.textFeedback[indexLine] &&
-                    !lineTextFeedbacks[indexLine]
-                  "
-                  floating
-                  rounded
-                  color="red"
-                  style="top: 2px; right: 0"
-                >
-                </q-badge>
-                <q-tooltip
-                  anchor="top middle"
-                  self="bottom middle"
-                  :offset="[10, 10]"
-                  :delay="500"
-                >
-                  {{
-                    exercise.videoFeedback[indexLine]
-                      ? "Il tuo coach ha richiesto un feedback su questa serie"
-                      : "Non è necessario dare un feedback su questa serie"
-                  }}
-                </q-tooltip>
-                <q-popup-edit
-                  style="width: 70%"
-                  :model-value="lineTextFeedbacks[indexLine]"
-                  v-slot="scope"
-                  @save="
-                    (val) => {
-                      lineTextFeedbacks[indexLine] = val;
-                      saveExerciseFeedback();
-                    }
-                  "
-                >
-                  <os-input
-                    autofocus
-                    type="textarea"
-                    v-model="scope.value"
-                    :readonly="readonly"
+                  <!-- Show required video feedback -->
+                  <q-btn
+                    icon="sym_o_videocam"
+                    color="light"
+                    flat
+                    class="q-mx-xs q-px-xs"
+                  >
+                    <q-badge
+                      v-if="exercise.videoFeedback[indexLine]"
+                      floating
+                      rounded
+                      color="red"
+                      style="top: 2px; right: 0"
+                    >
+                    </q-badge>
+                    <q-tooltip
+                      anchor="top middle"
+                      self="bottom middle"
+                      :offset="[10, 10]"
+                      :delay="500"
+                    >
+                      {{
+                        exercise.videoFeedback[indexLine]
+                          ? "Il tuo coach ha richiesto un video per questa serie"
+                          : "Non è stato richiesto un video per questa serie"
+                      }}
+                    </q-tooltip>
+                  </q-btn>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <q-card>
+            <q-card-section>
+              <div class="column justify-center">
+                <!-- Show schema or line data -->
+                <div class="row justify-evenly items-center q-pa-none">
+                  <!-- Show line values -->
+
+                  <p class="text-bold">Set</p>
+                  <q-input
+                    v-for="kind in lineValueTypes"
+                    :key="kind"
+                    v-model="line[kind]"
+                    :label="indexLine === 0 ? lineValueLabels[kind] : ''"
+                    dense
+                    stack-label
+                    hide-bottom-space
+                    :style="{ width: kind == 'load' ? '15%' : '10%' }"
+                    class="q-pa-none q-ma-none"
                   />
                   <q-btn
-                    class="full-width"
-                    @click.stop.prevent="scope.set"
-                    :label="readonly ? 'Chiudi' : 'Salva commento'"
-                  />
-                </q-popup-edit>
-              </q-btn>
-
-              <!-- Show required video feedback -->
-              <q-btn
-                icon="sym_o_videocam"
-                color="light"
-                flat
-                class="q-mx-xs q-px-xs"
-              >
-                <q-badge
-                  v-if="exercise.videoFeedback[indexLine]"
-                  floating
-                  rounded
-                  color="red"
-                  style="top: 2px; right: 0"
-                >
-                </q-badge>
-                <q-tooltip
-                  anchor="top middle"
-                  self="bottom middle"
-                  :offset="[10, 10]"
-                  :delay="500"
-                >
-                  {{
-                    exercise.videoFeedback[indexLine]
-                      ? "Il tuo coach ha richiesto un video per questa serie"
-                      : "Non è stato richiesto un video per questa serie"
-                  }}
-                </q-tooltip>
-              </q-btn>
-            </div>
-          </div>
-        </q-card-section>
-      </template>
-    </q-expansion-item>
+                    icon="remove"
+                    round
+                    outline
+                    size="xs"
+                    color="negative"
+                  ></q-btn>
+                </div>
+                <q-btn
+                  icon="add"
+                  flat
+                  ouline
+                  label="Set"
+                  class="q-mt-sm"
+                ></q-btn>
+              </div>
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
+      </div>
+    </div>
   </q-card>
 </template>
 
@@ -217,12 +228,7 @@ const lineTextFeedbacks = ref<string[]>([]); // store text feedbacks
 const showInfoTooltip = ref<boolean[]>([]); // whether to show info tooltip for each line
 
 // Set constant values
-const lineValueTypes: ("load" | "reps" | "sets" | "rpe")[] = [
-  "load",
-  "reps",
-  "sets",
-  "rpe",
-];
+const lineValueTypes: ("load" | "reps" | "rpe")[] = ["load", "reps", "rpe"];
 const lineValueLabels = Object.fromEntries(
   lineValueTypes.map((val) => [val, stringCapitalize(val)]),
 );
@@ -249,11 +255,13 @@ watch(
  *  - done -> value "true"
  *  - not done -> value "false"
  */
+/*
 function toggleDone() {
   if (props.readonly) return;
   exerciseDone.value = !exerciseDone.value;
   saveExerciseFeedback();
 }
+*/
 
 /**
  * Inform parent on update of exercise feedback.
