@@ -1,58 +1,58 @@
-import { DocumentReference } from 'firebase/firestore';
+import { DocumentReference } from "firebase/firestore";
 import {
   doAddDoc,
   doUpdateDoc,
   doDeleteDoc,
-} from 'src/helpers/database/readwrite';
-import { dbCollections } from 'src/helpers/database/collections';
+} from "@/helpers/database/readwrite";
+import { dbCollections } from "@/helpers/database/collections";
 
 /**
  * Define available load types.
  */
 export enum ExerciseLoadType {
-  bodyweight = 'bodyweight',
-  loaded = 'loaded',
-  loadonly = 'loadonly',
+  bodyweight = "bodyweight",
+  loaded = "loaded",
+  loadonly = "loadonly",
 }
 
 /**
  * Define available muscle groups.
  */
 export enum ExerciseMuscleGroups {
-  shoulders = 'shoulders',
-  chest = 'chest',
-  core = 'core',
-  upperback = 'upperback',
-  lowerback = 'lowerback',
-  biceps = 'biceps',
-  triceps = 'triceps',
-  forearms = 'forearms',
-  glutes = 'glutes',
-  quads = 'quads',
-  harmstrings = 'harmstrings',
-  calves = 'calves',
+  shoulders = "shoulders",
+  chest = "chest",
+  core = "core",
+  upperback = "upperback",
+  lowerback = "lowerback",
+  biceps = "biceps",
+  triceps = "triceps",
+  forearms = "forearms",
+  glutes = "glutes",
+  quads = "quads",
+  harmstrings = "harmstrings",
+  calves = "calves",
 }
 
 /**
  * Define available equipment.
  */
 export enum ExerciseEquipment {
-  rings = 'rings',
-  barbell = 'barbell',
-  plates = 'plates',
-  dumbell = 'dumbell',
-  rack = 'rack',
-  deadliftplatform = 'deadliftplatform',
-  bench = 'bench',
-  bands = 'bands',
-  steps = 'steps',
-  dipbelt = 'dipbelt',
-  machine = 'machine',
-  cablemachine = 'cablemachine',
-  isotonicmachine = 'isotonicmachine',
-  bar = 'bar',
-  parallettes = 'parallettes',
-  box = 'box',
+  rings = "rings",
+  barbell = "barbell",
+  plates = "plates",
+  dumbell = "dumbell",
+  rack = "rack",
+  deadliftplatform = "deadliftplatform",
+  bench = "bench",
+  bands = "bands",
+  steps = "steps",
+  dipbelt = "dipbelt",
+  machine = "machine",
+  cablemachine = "cablemachine",
+  isotonicmachine = "isotonicmachine",
+  bar = "bar",
+  parallettes = "parallettes",
+  box = "box",
 }
 
 /**
@@ -119,8 +119,8 @@ export class Exercise {
       ...new Set(
         this.variants?.reduce(
           (outList, variant) => outList.concat(variant.muscleGroups ?? []),
-          [] as ExerciseMuscleGroups[]
-        )
+          [] as ExerciseMuscleGroups[],
+        ),
       ),
     ];
   }
@@ -131,8 +131,8 @@ export class Exercise {
       ...new Set(
         this.variants?.reduce(
           (outList, variant) => outList.concat(variant.equipment ?? []),
-          [] as ExerciseEquipment[]
-        )
+          [] as ExerciseEquipment[],
+        ),
       ),
     ];
   }
@@ -159,7 +159,7 @@ export class Exercise {
           uid: this.uid,
           name: undefined,
           exercise: this,
-        })
+        }),
       );
   }
 
@@ -239,7 +239,7 @@ export class Exercise {
   } = {}) {
     // Remove each variant, thus remove the exercise
     (exercise || this).variants?.forEach((variant) =>
-      variant.remove({ onSuccess: onSuccess, onError: onError })
+      variant.remove({ onSuccess: onSuccess, onError: onError }),
     );
   }
 }
@@ -391,13 +391,13 @@ export function addDocExercise(
   {
     onSuccess,
     onError,
-  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {}
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   exercise.variants?.forEach((variant) =>
     addDocExerciseVariant(variant, exercise, {
       onSuccess: onSuccess,
       onError: onError,
-    })
+    }),
   );
 }
 
@@ -415,11 +415,11 @@ export function addDocExerciseVariant(
   {
     onSuccess,
     onError,
-  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {}
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   const extendedVariantObj = extractExerciseVariantInfo(
     exerciseVariant,
-    exercise
+    exercise,
   );
   doAddDoc(dbCollections.exercises, extendedVariantObj, {
     addUserId: true,
@@ -443,7 +443,7 @@ export function updateDocExercise(
   {
     onSuccess,
     onError,
-  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {}
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   // Update existing variants, or create a new document for new variants
   exercise.variants?.forEach((variant) => {
@@ -474,11 +474,11 @@ export function updateDocExerciseVariant(
   {
     onSuccess,
     onError,
-  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {}
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   const extendedVariantObj = extractExerciseVariantInfo(
     exerciseVariant,
-    exercise
+    exercise,
   );
   const docId = exerciseVariant.uid;
   if (docId)
@@ -501,7 +501,7 @@ export function updateDocExerciseVariant(
  */
 function extractExerciseVariantInfo(
   exerciseVariant: ExerciseVariant,
-  exercise?: Exercise
+  exercise?: Exercise,
 ) {
   const { uid: _0, name: _1, exercise: _2, ...variantObj } = exerciseVariant;
   const variantExercise =
@@ -527,7 +527,7 @@ function extractExerciseVariantInfo(
 export function packExerciseVariantInfo(
   fullVariantObj: ExerciseProps &
     ExerciseVariantProps & { variant?: string; exercise?: string },
-  uid?: string
+  uid?: string,
 ) {
   return new Exercise({
     name: fullVariantObj.exercise,

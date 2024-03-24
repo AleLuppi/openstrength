@@ -99,8 +99,8 @@ import {
   AuthError,
   doSignInWithEmailAndPassword,
   doSignInWithGoogle,
-} from "src/helpers/users/auth";
-import { logoFullImage } from "assets/sources";
+} from "@/helpers/users/auth";
+import { logoFullImage } from "@/assets/sources";
 
 // Init plugin
 const $q = useQuasar();
@@ -148,7 +148,7 @@ function onSubmit() {
     email.value ?? "",
     password.value ?? "",
     onSubmitSuccess,
-    onSubmitFailure
+    onSubmitFailure,
   );
 }
 

@@ -44,15 +44,15 @@
 </template>
 
 <script setup lang="ts">
-import { objectDeepCompare } from 'src/helpers/object';
-import type { QPopupEditProps } from 'quasar';
+import { objectDeepCompare } from "@/helpers/object";
+import type { QPopupEditProps } from "quasar";
 
 // Define props and emits
 const props = withDefaults(
   defineProps<
-    QPopupEditProps & { forceSave?: boolean; single?: false | 'week' | 'day' }
+    QPopupEditProps & { forceSave?: boolean; single?: false | "week" | "day" }
   >(),
-  { single: false }
+  { single: false },
 );
 const emit = defineEmits<{
   save: [value: any, initialValue: any];
@@ -71,6 +71,6 @@ function doSet(set: (...x: any) => void, value: any, initialValue: any) {
 
   // Optionally force value emit
   if (props.forceSave && objectDeepCompare(value, initialValue))
-    emit('save', value, initialValue);
+    emit("save", value, initialValue);
 }
 </script>

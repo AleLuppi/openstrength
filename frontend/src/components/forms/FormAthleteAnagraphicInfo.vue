@@ -6,7 +6,6 @@
         <os-input
           v-model="athleteName"
           :label="$t('coach.athlete_management.fields.name')"
-          :readonly="readonly"
           class="col-md-auto col-sm-6 col-12"
         />
 
@@ -14,7 +13,6 @@
         <os-input
           v-model="athleteSurname"
           :label="$t('coach.athlete_management.fields.surname')"
-          :readonly="readonly"
           class="col-md-auto col-sm-6 col-12"
         />
 
@@ -22,7 +20,6 @@
         <os-input-date
           v-model="athleteBirthday"
           :label="$t('coach.athlete_management.fields.birthday')"
-          :readonly="readonly"
           class="col-md-auto col-sm-6 col-12"
         ></os-input-date>
 
@@ -67,13 +64,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, readonly } from 'vue';
-import { useI18n } from 'vue-i18n';
-import type { QForm } from 'quasar';
-import { useQuasar } from 'quasar';
-import { AthleteUser, UserGender } from 'src/helpers/users/user';
-import { event } from 'vue-gtag';
-import mixpanel from 'mixpanel-browser';
+import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import type { QForm } from "quasar";
+import { useQuasar } from "quasar";
+import { AthleteUser, UserGender } from "@/helpers/users/user";
+import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
 
 // Init plugin
 const $q = useQuasar();
@@ -109,8 +106,8 @@ const athleteGender = ref<UserGender>();
 const athleteHeight = ref<string>();
 const athleteWeight = ref<string>();
 const athleteNote = ref<string>();
-const heightSuffix = 'cm'; //TODO assign based on metric/imperial selected in profile or locale
-const weightSuffix = 'kg';
+const heightSuffix = "cm"; //TODO assign based on metric/imperial selected in profile or locale
+const weightSuffix = "kg";
 
 // Update shown info according to selected variant
 watch(
@@ -126,7 +123,7 @@ watch(
       athleteNote.value = athlete.coachNote;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Get options for select fields
@@ -134,9 +131,9 @@ const athleteGenderOptions = computed(() =>
   Object.keys(UserGender)
     .sort()
     .map((val) => ({
-      label: i18n.t('coach.athlete_management.fields.gender_available.' + val),
+      label: i18n.t("coach.athlete_management.fields.gender_available." + val),
       value: val,
-    }))
+    })),
 );
 
 /**
@@ -153,41 +150,41 @@ function onSubmit() {
   athlete.weight = athleteWeight.value;
   athlete.coachNote = athleteNote.value;
 
-  emit('submit', athlete);
+  emit("submit", athlete);
 
   // TODO move outside
   athlete.saveUpdate({
     onSuccess: () => {
       $q.notify({
-        type: 'positive',
-        message: i18n.t('coach.athlete_management.list.add_succeed'),
-        position: 'bottom',
+        type: "positive",
+        message: i18n.t("coach.athlete_management.list.add_succeed"),
+        position: "bottom",
       });
 
       // Register GA4 event
-      event('athleteview_anagraphic_update', {
-        event_category: 'documentation',
-        event_label: 'Update athlete anagraphic info from AthleteView',
+      event("athleteview_anagraphic_update", {
+        event_category: "documentation",
+        event_label: "Update athlete anagraphic info from AthleteView",
         value: 1,
       });
 
       // Mixpanel tracking
-      mixpanel.track('Update Athlete', {
-        Type: 'Anagraphic Info',
+      mixpanel.track("Update Athlete", {
+        Type: "Anagraphic Info",
         IsWeightSet: Boolean(athlete.weight),
         IsNoteSet: Boolean(athlete.coachNote),
       });
     },
     onError: () => {
       $q.notify({
-        type: 'negative',
-        message: i18n.t('coach.athlete_management.list.add_error'),
-        position: 'bottom',
+        type: "negative",
+        message: i18n.t("coach.athlete_management.list.add_error"),
+        position: "bottom",
       });
 
       // Mixpanel tracking
-      mixpanel.track('ERROR Update Athlete', {
-        Type: 'Anagraphic Info',
+      mixpanel.track("ERROR Update Athlete", {
+        Type: "Anagraphic Info",
       });
     },
   });

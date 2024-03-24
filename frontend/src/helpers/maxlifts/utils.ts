@@ -1,4 +1,4 @@
-import { MaxLiftType } from 'src/helpers/maxlifts/maxlift';
+import { MaxLiftType } from "@/helpers/maxlifts/maxlift";
 
 /**
  * Get MaxLift measurement unit.
@@ -14,12 +14,12 @@ export function getMaxliftUnit(type: MaxLiftType | any) {
     case MaxLiftType._6RM:
     case MaxLiftType._8RM:
     case MaxLiftType._10RM:
-      return 'kg';
+      return "kg";
     case MaxLiftType._maxrep:
-      return 'reps';
+      return "reps";
     case MaxLiftType._maxtime:
-      return 's';
+      return "s";
     default:
-      return '';
+      return "";
   }
 }

@@ -1,6 +1,6 @@
-import { ref } from 'vue';
-import { defineStore } from 'pinia';
-import { Program } from 'src/helpers/programs/program';
+import { ref } from "vue";
+import { defineStore } from "pinia";
+import { Program } from "@/helpers/programs/program";
 
 /**
  * Store any unsaved changes that a coach user may have throughout the app.
@@ -9,7 +9,7 @@ import { Program } from 'src/helpers/programs/program';
  *  - program : program being created / updated from the builder.
  */
 export const useCoachActiveChangesStore = defineStore(
-  'coachActiveChanges',
+  "coachActiveChanges",
   () => {
     // Current program under update
     const program = ref<Program>();
@@ -28,5 +28,5 @@ export const useCoachActiveChangesStore = defineStore(
       programChangeHistory,
       $reset,
     };
-  }
+  },
 );

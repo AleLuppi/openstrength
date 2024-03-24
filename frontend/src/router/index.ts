@@ -6,24 +6,23 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from "vue-router";
-import { useUserStore } from "src/stores/user";
+import { useUserStore } from "@/stores/user";
 import {
   routeAccessibleByRole,
   routeAccessibleByLevel,
   routeAccessibleByAuthenticated,
   routeAccessibleByNotAuthenticated,
-} from "src/router/routeAccessManagement";
+} from "@/router/routeAccessManagement";
 
 import routes, { NamedRoutes } from "./routes";
 export { NamedRoutes };
 
 /*
- * If not building with SSR mode, you can
- * directly export the Router instantiation;
+ * If not building with SSR mode, it is possible
+ * to directly export the Router instantiation;
  *
- * The function below can be async too; either use
- * async/await or return a Promise which resolves
- * with the Router instance.
+ * The function below can be async too (use async
+ * or return a Promise).
  */
 
 export default route(function (/* { store, ssrContext } */) {
@@ -37,9 +36,7 @@ export default route(function (/* { store, ssrContext } */) {
     scrollBehavior: () => ({ left: 0, top: 0 }),
     routes,
 
-    // Leave this as is and make changes in quasar.conf.js instead!
-    // quasar.conf.js -> build -> vueRouterMode
-    // quasar.conf.js -> build -> publicPath
+    // Do not change this, modify quasar config if needed
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 

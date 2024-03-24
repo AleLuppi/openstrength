@@ -1,21 +1,21 @@
-import { DocumentReference } from 'firebase/firestore';
-import { doAddDoc, doUpdateDoc } from 'src/helpers/database/readwrite';
-import { Exercise, ExerciseVariant } from 'src/helpers/exercises/exercise';
-import { dbCollections } from 'src/helpers/database/collections';
-import { AthleteUser } from 'src/helpers/users/user';
+import { DocumentReference } from "firebase/firestore";
+import { doAddDoc, doUpdateDoc } from "@/helpers/database/readwrite";
+import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+import { dbCollections } from "@/helpers/database/collections";
+import { AthleteUser } from "@/helpers/users/user";
 
 /**
  * Define available max lift types.
  */
 export enum MaxLiftType {
-  _1RM = '1RM',
-  _3RM = '3RM',
-  _5RM = '5RM',
-  _6RM = '6RM',
-  _8RM = '8RM',
-  _10RM = '10RM',
-  _maxrep = 'Max Reps',
-  _maxtime = 'Max Time',
+  _1RM = "1RM",
+  _3RM = "3RM",
+  _5RM = "5RM",
+  _6RM = "6RM",
+  _8RM = "8RM",
+  _10RM = "10RM",
+  _maxrep = "Max Reps",
+  _maxtime = "Max Time",
 }
 
 /**
@@ -208,7 +208,7 @@ export function addDocMaxLift(
   {
     onSuccess,
     onError,
-  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {}
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   const { uid: _, athlete: athlete, ...maxliftObj } = maxlift;
   const flatMaxliftObj = {
@@ -237,7 +237,7 @@ export function updateDocMaxLift(
   {
     onSuccess,
     onError,
-  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {}
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   const { uid: docId, athlete: athlete, ...maxliftObj } = maxlift;
   const flatMaxliftObj = {

@@ -33,11 +33,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import type { QForm } from 'quasar';
-import { Program } from 'src/helpers/programs/program';
-import type { ProgramFilter } from 'src/helpers/programs/models';
-import { programToProgramTemplate } from 'src/helpers/programs/programTemplate';
+import { ref, watch } from "vue";
+import type { QForm } from "quasar";
+import { Program } from "@/helpers/programs/program";
+import type { ProgramFilter } from "@/helpers/programs/models";
+import { programToProgramTemplate } from "@/helpers/programs/programTemplate";
 
 // Set props
 const props = withDefaults(
@@ -49,7 +49,7 @@ const props = withDefaults(
   {
     programFilter: () => ({ week: [], day: [], exercise: [] }),
     updateInfo: false,
-  }
+  },
 );
 
 // Set emits
@@ -80,7 +80,7 @@ watch(
     programTemplateName.value = program.name;
     programTemplateDescription.value = program.description;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 /**
@@ -95,16 +95,16 @@ function onSubmit() {
     programTemplateName.value = undefined;
     programTemplateDescription.value = undefined;
 
-    emit('submit', programToUpdate);
+    emit("submit", programToUpdate);
   } else {
     const programTemplate = programToProgramTemplate(
       props.program,
-      props.programFilter
+      props.programFilter,
     );
     programTemplate.name = programTemplateName.value;
     programTemplate.description = programTemplateDescription.value;
 
-    emit('submit', programTemplate);
+    emit("submit", programTemplate);
   }
 }
 
@@ -115,6 +115,6 @@ function onReset() {
   programTemplateName.value = undefined;
   programTemplateDescription.value = undefined;
 
-  emit('reset');
+  emit("reset");
 }
 </script>

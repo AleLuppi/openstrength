@@ -1,6 +1,6 @@
-import type { Program } from 'src/helpers/programs/program';
-import type { AthleteUser } from 'src/helpers/users/user';
-import { arrayPushToNullable, arrayUniqueSubsequentValues } from '../array';
+import type { Program } from "@/helpers/programs/program";
+import type { AthleteUser } from "@/helpers/users/user";
+import { arrayPushToNullable, arrayUniqueSubsequentValues } from "../array";
 
 /**
  * Assign a program to an athlete and save it.
@@ -16,13 +16,13 @@ export function assignProgramToAthlete(
   {
     onSuccess,
     onError,
-  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {}
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   // Update athlete info
   athlete.assignedProgramId = program.uid;
   if (program.uid)
     athlete.assignedPrograms = arrayUniqueSubsequentValues(
-      arrayPushToNullable(athlete.assignedPrograms, program.uid)
+      arrayPushToNullable(athlete.assignedPrograms, program.uid),
     );
 
   // Store changes

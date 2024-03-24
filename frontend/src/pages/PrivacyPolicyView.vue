@@ -1111,5 +1111,5 @@
 </template>
 
 <script setup lang="ts">
-import { NamedRoutes } from "src/router";
+import { NamedRoutes } from "@/router";
 </script>

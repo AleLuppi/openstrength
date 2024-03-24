@@ -27,7 +27,7 @@
     <q-card-section>
       <!-- Check if data is defined and not empty -->
       <div v-if="dataIsInvalid" class="text-h6 text-center">
-        {{ $t('coach.charts_management.list.chart_data_refresh') }}
+        {{ $t("coach.charts_management.list.chart_data_refresh") }}
       </div>
 
       <!-- Render chart canvas only if data is valid -->
@@ -37,8 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, shallowRef } from 'vue';
-import { colors } from 'quasar';
+import { ref, computed, watch, onMounted, shallowRef } from "vue";
+import { colors } from "quasar";
 import {
   Chart,
   LinearScale,
@@ -52,8 +52,8 @@ import {
   Legend,
   ChartData,
   ChartTypeRegistry,
-} from 'chart.js';
-import { ExerciseChartData } from 'src/helpers/charts/chartDataFormatter';
+} from "chart.js";
+import { ExerciseChartData } from "@/helpers/charts/chartDataFormatter";
 
 // Init plugins
 Chart.register(
@@ -65,7 +65,7 @@ Chart.register(
   BarElement,
   BarController,
   Tooltip,
-  Legend
+  Legend,
 );
 const { getPaletteColor, lighten } = colors;
 
@@ -74,20 +74,20 @@ const props = withDefaults(
   defineProps<{
     title: string;
     description: string;
-    data?: ChartData<'line', ExerciseChartData[]>;
+    data?: ChartData<"line", ExerciseChartData[]>;
     options?: object;
-    type?: 'line' | 'bar' | 'pie';
+    type?: "line" | "bar" | "pie";
     autoUpdate?: boolean;
     width?: number | string;
     height?: number | string;
   }>(),
   {
     options: () => ({}),
-    type: 'line',
+    type: "line",
     autoUpdate: true,
     width: 400,
     height: 200,
-  }
+  },
 );
 
 // Define expose
@@ -116,14 +116,14 @@ function renderChart() {
   // Check if data is valid
   if (dataIsInvalid.value) {
     // TODO display error to user
-    console.error('Invalid data.');
+    console.error("Invalid data.");
     return;
   }
 
   // Ensure canvas reference exists
   if (!chartCanvas.value) {
     // TODO display error to user
-    console.error('Missing reference to canvas element.');
+    console.error("Missing reference to canvas element.");
     return;
   }
 
@@ -136,13 +136,13 @@ function renderChart() {
     } else {
       // Add background color to datasets
       props.data!.datasets.forEach((el, idx) => {
-        let currColor = getPaletteColor('chart-color' + (idx + 1));
+        let currColor = getPaletteColor("chart-color" + (idx + 1));
         el.borderColor = currColor;
         el.backgroundColor = lighten(currColor, 25);
       });
 
       // Fill canvas
-      const ctx = chartCanvas.value.getContext('2d');
+      const ctx = chartCanvas.value.getContext("2d");
       chart.value = new Chart(ctx!, {
         type: props.type as keyof ChartTypeRegistry,
         data: props.data!,
@@ -150,7 +150,7 @@ function renderChart() {
       });
     }
   } catch (error) {
-    console.error('Error rendering chart:', error);
+    console.error("Error rendering chart:", error);
   }
 }
 
@@ -160,7 +160,7 @@ watch(
   () => {
     if (props.autoUpdate) renderChart();
   },
-  { deep: true }
+  { deep: true },
 );
 
 // Render the chart on component mount

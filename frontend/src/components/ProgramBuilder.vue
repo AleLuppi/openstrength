@@ -10,7 +10,7 @@
     >
       <slot name="empty-program">
         <h6>
-          {{ $t('coach.program_management.builder.empty') }}
+          {{ $t("coach.program_management.builder.empty") }}
         </h6>
       </slot>
       <q-btn
@@ -64,7 +64,7 @@
               @click.stop="editWeekDayName = ['', '']"
             >
               <q-tooltip anchor="top middle" :offset="[0, 40]">
-                {{ $t('coach.program_management.builder.week_duplicate') }}
+                {{ $t("coach.program_management.builder.week_duplicate") }}
               </q-tooltip>
 
               <FormProgramNewWeekDay
@@ -96,7 +96,7 @@
               @click.stop="deleteWeek(week)"
             >
               <q-tooltip anchor="top middle" :offset="[0, 40]">
-                {{ $t('coach.program_management.builder.week_delete') }}
+                {{ $t("coach.program_management.builder.week_delete") }}
               </q-tooltip>
             </q-btn>
           </div>
@@ -140,7 +140,7 @@
                 {{ getDayDisplayName(day) }}
 
                 <q-tooltip anchor="top middle" :offset="[0, 40]">
-                  {{ $t('coach.program_management.builder.day_rename') }}
+                  {{ $t("coach.program_management.builder.day_rename") }}
                 </q-tooltip>
 
                 <FormProgramNewWeekDay
@@ -171,7 +171,7 @@
                 @click.stop="editWeekDayName = ['', '']"
               >
                 <q-tooltip anchor="top middle" :offset="[0, 40]">
-                  {{ $t('coach.program_management.builder.day_duplicate') }}
+                  {{ $t("coach.program_management.builder.day_duplicate") }}
                 </q-tooltip>
 
                 <FormProgramNewWeekDay
@@ -202,7 +202,7 @@
                 @click.stop="deleteDay([week, day])"
               >
                 <q-tooltip anchor="top middle" :offset="[0, 40]">
-                  {{ $t('coach.program_management.builder.day_delete') }}
+                  {{ $t("coach.program_management.builder.day_delete") }}
                 </q-tooltip>
               </q-btn>
             </div>
@@ -263,7 +263,7 @@
                     emit(
                       'newExercise',
                       name,
-                      selectedProgram?.programExercises?.[exerciseIdx]
+                      selectedProgram?.programExercises?.[exerciseIdx],
                     )
                 "
                 @new-variant="
@@ -273,7 +273,7 @@
                       selectedProgram?.programExercises?.[exerciseIdx].exercise
                         ?.name ?? '',
                       name,
-                      selectedProgram?.programExercises?.[exerciseIdx]
+                      selectedProgram?.programExercises?.[exerciseIdx],
                     )
                 "
                 @require-reference="
@@ -296,12 +296,13 @@
               >
                 <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
                   {{
-                    $t('coach.program_management.builder.new_exercise_tooltip')
+                    $t("coach.program_management.builder.new_exercise_tooltip")
                   }}
                 </q-tooltip>
               </q-btn>
 
               <!-- New free text (TEST) -->
+              <!-- TODO i18n -->
               <q-btn
                 icon="add"
                 label="Testo libero"
@@ -323,7 +324,7 @@
                 @click="addDay([week, day])"
               >
                 <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-                  {{ $t('coach.program_management.builder.new_day_tooltip') }}
+                  {{ $t("coach.program_management.builder.new_day_tooltip") }}
                 </q-tooltip>
               </q-btn>
 
@@ -336,7 +337,7 @@
                 @click="addWeek(week)"
               >
                 <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-                  {{ $t('coach.program_management.builder.new_week_tooltip') }}
+                  {{ $t("coach.program_management.builder.new_week_tooltip") }}
                 </q-tooltip></q-btn
               >
             </div>
@@ -356,7 +357,7 @@
         <q-card-section class="row items-center no-wrap">
           <p class="text-bold">
             {{
-              $t('coach.program_management.builder.reference_select_line_help')
+              $t("coach.program_management.builder.reference_select_line_help")
             }}
           </p>
 
@@ -370,45 +371,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, defineAsyncComponent } from 'vue';
+import { ref, computed, watch, nextTick, defineAsyncComponent } from "vue";
 import {
   IntersectionValue,
   QVirtualScroll,
   debounce as debounceFunction,
   throttle as throttleFunction,
-} from 'quasar';
-import {
-  arrayCompare,
-  arrayOfPairsToObject,
-  arraySort,
-} from 'src/helpers/array';
+} from "quasar";
+import { arrayCompare, arrayOfPairsToObject, arraySort } from "@/helpers/array";
 import {
   Program,
   ProgramExercise,
   ProgramLine,
-} from 'src/helpers/programs/program';
-import { Exercise } from 'src/helpers/exercises/exercise';
-import { MaxLift } from 'src/helpers/maxlifts/maxlift';
-import { separateMaxliftPerExerciseAndType } from 'src/helpers/maxlifts/listManagement';
-import { stringGetNextFromList } from 'src/helpers/scalar';
-import mixpanel from 'mixpanel-browser';
+} from "@/helpers/programs/program";
+import { Exercise } from "@/helpers/exercises/exercise";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import { separateMaxliftPerExerciseAndType } from "@/helpers/maxlifts/listManagement";
+import { stringGetNextFromList } from "@/helpers/scalar";
+import mixpanel from "mixpanel-browser";
 import {
   moveProgramExercise,
   assignReference,
-} from 'src/helpers/programs/builder';
-import { useI18n } from 'vue-i18n';
+} from "@/helpers/programs/builder";
+import { useI18n } from "vue-i18n";
 import {
   getProgramUniqueWeekDayPairs,
   mergePrograms,
   sortProgramExercises,
-} from 'src/helpers/programs/linesManagement';
+} from "@/helpers/programs/linesManagement";
 
 // Import components
 const TableProgramBuilder = defineAsyncComponent(
-  () => import('components/tables/TableProgramBuilder.vue')
+  () => import("@/components/tables/TableProgramBuilder.vue"),
 );
 const FormProgramNewWeekDay = defineAsyncComponent(
-  () => import('components/forms/FormProgramNewWeekDay.vue')
+  () => import("@/components/forms/FormProgramNewWeekDay.vue"),
 );
 
 // Init plugin
@@ -438,19 +435,19 @@ const props = withDefaults(
     dense: false,
     historyMaxLength: 50,
     debounce: 250,
-    defaultWeekName: '1',
-    defaultDayName: '1',
-  }
+    defaultWeekName: "1",
+    defaultDayName: "1",
+  },
 );
 
 // Define emits
 const emit = defineEmits<{
-  'update:modelValue': [program: Program | undefined];
+  "update:modelValue": [program: Program | undefined];
   newExercise: [exerciseName: string, programExercise?: ProgramExercise];
   newVariant: [
     exerciseName: string,
     variantName: string,
-    programExercise?: ProgramExercise
+    programExercise?: ProgramExercise,
   ];
   undo: [canUndo: boolean, canRedo: boolean];
   redo: [canRedo: boolean, canUndo: boolean];
@@ -501,7 +498,7 @@ watch(
       selectedProgram.value = program;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Get all program exercises indexes sorted and separated by week/day
@@ -517,16 +514,16 @@ const programExercises = computed<{
         [week: string]: { [day: string]: number[] };
       },
       programExercise,
-      idx
+      idx,
     ) => {
-      const week = programExercise.scheduleWeek?.toString() ?? '';
-      const day = programExercise.scheduleDay?.toString() ?? '';
+      const week = programExercise.scheduleWeek?.toString() ?? "";
+      const day = programExercise.scheduleDay?.toString() ?? "";
       if (!(week in out)) out[week] = {};
       if (!(day in out[week])) out[week][day] = [];
       out[week][day].push(idx);
       return out;
     },
-    {}
+    {},
   );
 
   // Sort indexes by program order
@@ -535,10 +532,10 @@ const programExercises = computed<{
       arraySort(idxs, true, (idx) =>
         Number(
           selectedProgram.value!.programExercises![idx].scheduleOrder ??
-            Infinity
-        )
+            Infinity,
+        ),
       );
-    })
+    }),
   );
 
   return outExercises;
@@ -546,15 +543,15 @@ const programExercises = computed<{
 
 // Get maxlifts separated per exercise name and type
 const maxliftsPerExercise = computed(() =>
-  separateMaxliftPerExerciseAndType(props.maxlifts)
+  separateMaxliftPerExerciseAndType(props.maxlifts),
 );
 
 // Get a reference to all weeks and days available
 const allWeekDayPairs = computed(() =>
-  getProgramUniqueWeekDayPairs(selectedProgram.value)
+  getProgramUniqueWeekDayPairs(selectedProgram.value),
 );
 const allWeekDay = computed(() =>
-  arrayOfPairsToObject(allWeekDayPairs.value, true)
+  arrayOfPairsToObject(allWeekDayPairs.value, true),
 );
 
 // Get a reference to weeks and days that can be displayed
@@ -563,20 +560,20 @@ const filteredWeekDay = computed(() =>
     allWeekDayPairs.value.filter(
       ([week, day]) =>
         (props.filter.week.length == 0 || props.filter.week.includes(week)) &&
-        (props.filter.day.length == 0 || props.filter.day.includes(day))
+        (props.filter.day.length == 0 || props.filter.day.includes(day)),
     ),
-    true
-  )
+    true,
+  ),
 );
 
 // Get day visibility status
 const dayCanBeExpanded = computed(() =>
   allWeekDayPairs.value.map(([week, day]) =>
-    filteredWeekDay.value[week]?.includes(day)
-  )
+    filteredWeekDay.value[week]?.includes(day),
+  ),
 );
 const dayShowExpanded = computed(() =>
-  dayCanBeExpanded.value.map((val, idx) => !dayInfoCollapsed.value[idx] && val)
+  dayCanBeExpanded.value.map((val, idx) => !dayInfoCollapsed.value[idx] && val),
 );
 
 // Expand all days on filter change
@@ -584,7 +581,7 @@ watch(
   () => props.filter,
   () => {
     dayInfoCollapsed.value = [];
-  }
+  },
 );
 
 /**
@@ -598,14 +595,14 @@ function onReferenceSelection(reference: ProgramLine) {
   assignReference(
     selectingReference.value.line,
     reference,
-    selectingReference.value.field as 'sets' | 'reps' | 'load' | 'rpe'
+    selectingReference.value.field as "sets" | "reps" | "load" | "rpe",
   );
 
   // Mixpanel tracking
-  mixpanel.track('Reference Added in Program', {
-    Page: 'ProgramView',
+  mixpanel.track("Reference Added in Program", {
+    Page: "ProgramView",
     Type:
-      selectingReference.value.line instanceof ProgramLine ? 'line' : 'maxlift',
+      selectingReference.value.line instanceof ProgramLine ? "line" : "maxlift",
     Variable: selectingReference.value.field,
   });
 
@@ -638,7 +635,7 @@ function moveExerciseAndUpdate(
     sourceFallback?: boolean;
     sourceOffset?: number;
     looseOrder?: boolean;
-  } = {}
+  } = {},
 ) {
   // No sense if program in unknown
   if (!selectedProgram.value) return;
@@ -653,7 +650,7 @@ function moveExerciseAndUpdate(
       sourceFallback: sourceFallback,
       sourceOffset: sourceOffset,
       looseOrder: looseOrder,
-    }
+    },
   );
 
   // Update program with new structure
@@ -668,7 +665,7 @@ function moveExerciseAndUpdate(
  */
 function moveOrderExercise(
   programExercise: ProgramExercise | number,
-  moveBy: number
+  moveBy: number,
 ) {
   moveExerciseAndUpdate(programExercise, undefined, false, {
     sourceFallback: true,
@@ -687,7 +684,7 @@ function deleteExercise(programExercise: ProgramExercise | number) {
   moveExerciseAndUpdate(programExercise, undefined);
 
   // Mixpanel tracking
-  mixpanel.track('Delete Exercise from Program');
+  mixpanel.track("Delete Exercise from Program");
 }
 
 /**
@@ -698,14 +695,14 @@ function deleteExercise(programExercise: ProgramExercise | number) {
  */
 function addExercise(
   destination?: [string, string, string?],
-  programExercise?: ProgramExercise | number
+  programExercise?: ProgramExercise | number,
 ) {
   // Add table in selected position
   moveExerciseAndUpdate(
     programExercise,
     destination as [string, string, string],
     true,
-    { sourceFallback: true, sourceOffset: 0, looseOrder: true }
+    { sourceFallback: true, sourceOffset: 0, looseOrder: true },
   );
 }
 
@@ -717,12 +714,12 @@ function addExercise(
  */
 function duplicateExercise(
   programExercise: ProgramExercise | number,
-  destination?: [string, string, string?]
+  destination?: [string, string, string?],
 ) {
   addExercise(destination, programExercise);
 
   // Mixpanel tracking
-  mixpanel.track('Duplicate Exercise in Program');
+  mixpanel.track("Duplicate Exercise in Program");
 }
 
 /**
@@ -742,7 +739,7 @@ function deleteDay(scheduleInfo: [string, string, string?]) {
   });
 
   // Mixpanel tracking
-  mixpanel.track('Delete Whole Day in Program');
+  mixpanel.track("Delete Whole Day in Program");
 }
 
 /**
@@ -761,7 +758,7 @@ function moveDay(
   nextFreeDestination = false,
   createIfEmpty = true,
   duplicate = false,
-  doScroll = true
+  doScroll = true,
 ) {
   // Get source and destination day
   const [fromWeek, fromDay] = scheduleInfo;
@@ -782,8 +779,8 @@ function moveDay(
     selectedProgram.value.programExercises.filter(
       (programExercise) =>
         programExercise.scheduleWeek == fromWeek &&
-        programExercise.scheduleDay == fromDay
-    )
+        programExercise.scheduleDay == fromDay,
+    ),
   ).forEach((programExercise) => {
     if (duplicate) duplicateExercise(programExercise, [toWeek, toDay]);
     else
@@ -791,7 +788,7 @@ function moveDay(
         programExercise,
         [toWeek, toDay, undefined],
         false,
-        { looseOrder: true }
+        { looseOrder: true },
       );
     isSourceEmpty = false;
   });
@@ -801,10 +798,10 @@ function moveDay(
     addExercise([toWeek, toDay]);
 
     // Mixpanel tracking
-    mixpanel.track('New Day Created in Program');
+    mixpanel.track("New Day Created in Program");
   } else {
     // Mixpanel tracking
-    mixpanel.track('Day Week Renamed', { Page: 'ProgramView' });
+    mixpanel.track("Day Week Renamed", { Page: "ProgramView" });
   }
 
   // Scroll to destination day
@@ -821,7 +818,7 @@ function moveDay(
  * @param [doScroll=true] if true, scroll to the newly created element.
  */
 function addDay(destination: [string, string, string?], doScroll = true) {
-  moveDay(['', ''], destination, true, true, doScroll);
+  moveDay(["", ""], destination, true, true, doScroll);
 }
 
 /**
@@ -834,13 +831,13 @@ function addDay(destination: [string, string, string?], doScroll = true) {
 function duplicateDay(
   scheduleInfo: [string, string, string?],
   destination: [string, string, string?],
-  doScroll = true
+  doScroll = true,
 ) {
   // Duplicate all data tables
   moveDay(scheduleInfo, destination, false, undefined, true, doScroll);
 
   // Mixpanel tracking
-  mixpanel.track('Duplicate Program Day');
+  mixpanel.track("Duplicate Program Day");
 }
 
 /**
@@ -854,7 +851,7 @@ function deleteWeek(scheduleInfo: string | [string, string?, string?]) {
   allWeekDay.value[week].forEach((day) => deleteDay([week, day]));
 
   // Mixpanel tracking
-  mixpanel.track('Delete Whole Week in Program');
+  mixpanel.track("Delete Whole Week in Program");
 }
 
 /**
@@ -865,7 +862,7 @@ function deleteWeek(scheduleInfo: string | [string, string?, string?]) {
  */
 function addWeek(
   destination: string | [string, string?, string?],
-  doScroll = true
+  doScroll = true,
 ) {
   // Get destination week and day
   let [week, day] = destination instanceof Array ? destination : [destination];
@@ -887,7 +884,7 @@ function addWeek(
 function duplicateWeek(
   scheduleInfo: string | [string, string, string?],
   destination: string | [string, string, string?],
-  doScroll = true
+  doScroll = true,
 ) {
   // Get destination week
   let dstWeek = destination instanceof Array ? destination[0] : destination;
@@ -901,7 +898,7 @@ function duplicateWeek(
   });
 
   // Mixpanel tracking
-  mixpanel.track('Duplicate Program Week');
+  mixpanel.track("Duplicate Program Week");
 }
 
 /**
@@ -910,7 +907,7 @@ function duplicateWeek(
  * @param weekId base week name.
  */
 function getWeekDisplayName(weekId: string) {
-  return i18n.t('coach.program_management.builder.week_name', {
+  return i18n.t("coach.program_management.builder.week_name", {
     week: weekId,
   });
 }
@@ -921,7 +918,7 @@ function getWeekDisplayName(weekId: string) {
  * @param dayId base day name.
  */
 function getDayDisplayName(dayId: string) {
-  return i18n.t('coach.program_management.builder.day_name', {
+  return i18n.t("coach.program_management.builder.day_name", {
     day: dayId,
   });
 }
@@ -942,7 +939,7 @@ function storeChanges(program?: Program) {
   programHistory.value.push(program.duplicate());
   if (programHistory.value.length > props.historyMaxLength)
     programHistory.value = programHistory.value.slice(
-      programHistory.value.length - props.historyMaxLength
+      programHistory.value.length - props.historyMaxLength,
     );
 
   // Update pointer position
@@ -957,14 +954,14 @@ function storeChanges(program?: Program) {
  */
 function mergeWithProgram(
   program: Program,
-  mapMaxlifts?: [MaxLift, MaxLift][]
+  mapMaxlifts?: [MaxLift, MaxLift][],
 ) {
   // Merge current program with provided one
   if (!selectedProgram.value) return;
   mergePrograms(
     selectedProgram.value,
     program,
-    mapMaxlifts ?? program.uid != selectedProgram.value.uid
+    mapMaxlifts ?? program.uid != selectedProgram.value.uid,
   );
 
   // Inform parent of update
@@ -988,9 +985,9 @@ function undo(): boolean {
 
   // Inform about undo operation
   emit(
-    'undo',
+    "undo",
     programHistoryPointer.value > 0,
-    programHistoryPointer.value + 1 < programHistory.value.length
+    programHistoryPointer.value + 1 < programHistory.value.length,
   );
 
   // Inform parent of update
@@ -1016,9 +1013,9 @@ function redo(): boolean {
 
   // Inform about redo operation
   emit(
-    'redo',
+    "redo",
     programHistoryPointer.value + 1 < programHistory.value.length,
-    programHistoryPointer.value > 0
+    programHistoryPointer.value > 0,
   );
 
   // Inform parent of update
@@ -1047,7 +1044,7 @@ const updateProgram = debounceFunction(doUpdateProgram, props.debounce);
 function doUpdateProgram(saveChange = true) {
   // Store changes and inform parent of update
   if (saveChange) storeChanges(selectedProgram.value);
-  emit('update:modelValue', selectedProgram.value);
+  emit("update:modelValue", selectedProgram.value);
 }
 
 /**
@@ -1058,7 +1055,7 @@ function doUpdateProgram(saveChange = true) {
  */
 function scrollTo(week: string, day?: string) {
   let idx = allWeekDayPairs.value.findIndex((val) =>
-    arrayCompare(val, [week, day])
+    arrayCompare(val, [week, day]),
   );
   if (idx < 0) idx = allWeekDayPairs.value.findIndex((val) => val[0] == week);
   if (idx < 0) return;
@@ -1074,11 +1071,11 @@ const dayTitleInteresctionHandler: IntersectionValue = {
       (entry?.boundingClientRect?.top ?? 0) <
         (entry?.intersectionRect?.top ?? 0)
     ) {
-      entry?.target?.classList.add('shadow-1');
-      entry?.target?.classList.add('os-day-sticky');
+      entry?.target?.classList.add("shadow-1");
+      entry?.target?.classList.add("os-day-sticky");
     } else {
-      entry?.target?.classList.remove('shadow-1');
-      entry?.target?.classList.remove('os-day-sticky');
+      entry?.target?.classList.remove("shadow-1");
+      entry?.target?.classList.remove("os-day-sticky");
     }
     return true;
   },
@@ -1092,7 +1089,7 @@ const dayTitleInteresctionHandler: IntersectionValue = {
  * TODO: Remove after TEST
  */
 function registerFreeTextEvent() {
-  mixpanel.track('T1: free text click');
+  mixpanel.track("T1: free text click");
 }
 </script>
 

@@ -2,7 +2,7 @@
   <q-page class="q-pa-md">
     <!-- Profile info card-->
     <q-card class="q-mb-lg q-pb-sm">
-      <h6 class="q-mx-md q-py-sm">{{ $t('user.profile.info_title') }}</h6>
+      <h6 class="q-mx-md q-py-sm">{{ $t("user.profile.info_title") }}</h6>
 
       <div class="row justify-around">
         <!-- Profile Image-->
@@ -28,7 +28,7 @@
         <!-- Name and Surname -->
         <div class="column align-center q-mx-md">
           <p class="text-h6 text-left">
-            {{ $t('user.profile.name') }}
+            {{ $t("user.profile.name") }}
           </p>
           <p class="text-left">{{ user.displayName }}</p>
         </div>
@@ -36,7 +36,7 @@
         <!-- Email -->
         <div class="column align-center q-mx-md">
           <p class="text-h6 text-left">
-            {{ $t('user.profile.email') }}
+            {{ $t("user.profile.email") }}
           </p>
           <p class="text-left">{{ user.email }}</p>
         </div>
@@ -44,7 +44,7 @@
         <!-- Role: athlete or coach -->
         <div class="column align-center q-mx-md">
           <p class="text-h6 text-left">
-            {{ $t('user.profile.role') }}
+            {{ $t("user.profile.role") }}
           </p>
           <p class="text-left text-primary">{{ user.role }}</p>
         </div>
@@ -53,19 +53,19 @@
 
     <!-- Useful links card -->
     <q-card class="q-mb-lg q-pb-md">
-      <h6 class="q-mx-md q-py-sm">{{ $t('user.profile.link_title') }}</h6>
+      <h6 class="q-mx-md q-py-sm">{{ $t("user.profile.link_title") }}</h6>
 
       <div :class="$q.screen.lt.sm ? 'column q-ml-md' : 'row justify-around'">
         <router-link :to="{ name: NamedRoutes.privacyPolicy }">{{
-          $t('user.profile.privacy_link')
+          $t("user.profile.privacy_link")
         }}</router-link>
 
         <router-link :to="{ name: NamedRoutes.cookiePolicy }">{{
-          $t('user.profile.cookie_link')
+          $t("user.profile.cookie_link")
         }}</router-link>
 
         <router-link :to="{ name: NamedRoutes.termsConditions }">{{
-          $t('user.profile.terms_link')
+          $t("user.profile.terms_link")
         }}</router-link>
       </div>
     </q-card>
@@ -76,7 +76,6 @@
       @click="signOut"
     />
 
-    <!-- TODO: Update at each release with the version from package-json-->
     <q-badge
       color="secondary"
       outline
@@ -89,12 +88,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useQuasar } from 'quasar';
-import { useI18n } from 'vue-i18n';
-import { useUserStore } from 'stores/user';
-import { doSignOut } from 'src/helpers/users/auth';
-import { NamedRoutes } from 'src/router';
+import { computed } from "vue";
+import { useQuasar } from "quasar";
+import { useI18n } from "vue-i18n";
+import { useUserStore } from "@/stores/user";
+import { doSignOut } from "@/helpers/users/auth";
+import { NamedRoutes } from "@/router";
 
 // Init plugin
 const $q = useQuasar();
@@ -107,7 +106,7 @@ const user = useUserStore();
 const photoUrl = computed(() => user.photoUrl);
 
 // Get app version
-const appVersion = process.env.VUE_APP_VERSION
+const appVersion = process.env.VITE_APP_VERSION;
 
 /**
  * Sign out user.
@@ -116,9 +115,9 @@ function signOut() {
   doSignOut({
     onError: () => {
       $q.notify({
-        type: 'negative',
-        message: i18n.t('user.auth.signout_error'),
-        position: 'bottom',
+        type: "negative",
+        message: i18n.t("user.auth.signout_error"),
+        position: "bottom",
       });
     },
   });

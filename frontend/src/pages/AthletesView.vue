@@ -7,7 +7,7 @@
           <q-card-section class="q-pb-sm">
             <div class="row justify-between q-mb-sm">
               <h4 class="text-margin-xs">
-                {{ $t('coach.athlete_management.list.title') }}
+                {{ $t("coach.athlete_management.list.title") }}
               </h4>
 
               <!-- Add new athlete -->
@@ -66,8 +66,8 @@
               <h5>
                 {{
                   updatingAthlete
-                    ? $t('coach.athlete_management.list.update')
-                    : $t('coach.athlete_management.list.add')
+                    ? $t("coach.athlete_management.list.update")
+                    : $t("coach.athlete_management.list.add")
                 }}
               </h5>
               <q-space />
@@ -130,7 +130,7 @@
         <q-card>
           <q-card-section class="q-gutter-x-xs os-athleteinfo-max-height">
             <div class="row justify-between items-center">
-              <h6>{{ $t('coach.athlete_management.fields.athlete_info') }}</h6>
+              <h6>{{ $t("coach.athlete_management.fields.athlete_info") }}</h6>
               <q-btn
                 v-if="$q.screen.lt.sm"
                 icon="close"
@@ -217,14 +217,14 @@
                         />
                         <h6>
                           {{
-                            $t('coach.athlete_management.call_to_action.title')
+                            $t("coach.athlete_management.call_to_action.title")
                           }}
                           {{ selectedAthlete.referenceName }}
                         </h6>
                         <p class="q-px-md text-weight-light">
                           {{
                             $t(
-                              'coach.athlete_management.call_to_action.subtitle'
+                              "coach.athlete_management.call_to_action.subtitle",
                             )
                           }}
                         </p>
@@ -247,7 +247,7 @@
               <q-tab-panel name="personalbest">
                 <h6>
                   {{
-                    $t('coach.athlete_management.call_to_action.maxlift_title')
+                    $t("coach.athlete_management.call_to_action.maxlift_title")
                   }}
                 </h6>
                 <!-- MAX LIFT SECTION -->
@@ -298,8 +298,8 @@
                         <h5>
                           {{
                             updatingMaxLift
-                              ? $t('coach.maxlift_management.list.update')
-                              : $t('coach.maxlift_management.list.add')
+                              ? $t("coach.maxlift_management.list.update")
+                              : $t("coach.maxlift_management.list.add")
                           }}
                         </h5>
 
@@ -342,7 +342,7 @@
               class="q-px-md"
             ></q-icon>
             <p>
-              {{ $t('coach.athlete_management.no_selected_athlete') }}
+              {{ $t("coach.athlete_management.no_selected_athlete") }}
             </p>
           </div>
         </div>
@@ -357,7 +357,7 @@
       >
         <q-card class="q-pa-sm dialog-min-width">
           <q-card-section class="row justify-between q-pb-none">
-            <h6>{{ $t('coach.athlete_management.fields.program_info') }}</h6>
+            <h6>{{ $t("coach.athlete_management.fields.program_info") }}</h6>
             <q-btn
               icon="close"
               flat
@@ -388,7 +388,7 @@
           <q-card-section class="row items-center q-pb-none">
             <p>
               {{
-                $t('coach.program_management.list.delete_program_confirm', {
+                $t("coach.program_management.list.delete_program_confirm", {
                   program: deletingProgram?.name,
                 })
               }}
@@ -417,45 +417,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, watch, defineAsyncComponent } from 'vue';
-import { useQuasar, QDialog } from 'quasar';
+import { ref, computed, nextTick, watch, defineAsyncComponent } from "vue";
+import { useQuasar, QDialog } from "quasar";
 import {
   symOutlinedAssignmentAdd,
   symOutlinedPersonAdd,
-} from '@quasar/extras/material-symbols-outlined';
-import { useI18n } from 'vue-i18n';
-import { NamedRoutes } from 'src/router';
-import { event } from 'vue-gtag';
-import { useUserStore } from 'stores/user';
-import { useCoachInfoStore } from 'stores/coachInfo';
-import { AthleteUser } from 'src/helpers/users/user';
-import { Program } from 'src/helpers/programs/program';
-import { MaxLift } from 'src/helpers/maxlifts/maxlift';
+} from "@quasar/extras/material-symbols-outlined";
+import { useI18n } from "vue-i18n";
+import { NamedRoutes } from "@/router";
+import { event } from "vue-gtag";
+import { useUserStore } from "@/stores/user";
+import { useCoachInfoStore } from "@/stores/coachInfo";
+import { AthleteUser } from "@/helpers/users/user";
+import { Program } from "@/helpers/programs/program";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import {
   getAllAssignedPrograms,
   getAssignedProgram,
-} from 'src/helpers/programs/athleteAssignment';
-import mixpanel from 'mixpanel-browser';
-import { assignProgramToAthlete } from 'src/helpers/programs/programManager';
+} from "@/helpers/programs/athleteAssignment";
+import mixpanel from "mixpanel-browser";
+import { assignProgramToAthlete } from "@/helpers/programs/programManager";
 
 // Import components
 const TableExistingPrograms = defineAsyncComponent(
-  () => import('components/tables/TableExistingPrograms.vue')
+  () => import("@/components/tables/TableExistingPrograms.vue"),
 );
 const TableManagedAthletes = defineAsyncComponent(
-  () => import('components/tables/TableManagedAthletes.vue')
+  () => import("@/components/tables/TableManagedAthletes.vue"),
 );
 const TableMaxLifts = defineAsyncComponent(
-  () => import('components/tables/TableMaxLifts.vue')
+  () => import("@/components/tables/TableMaxLifts.vue"),
 );
 const FormAthleteAnagraphicInfo = defineAsyncComponent(
-  () => import('components/forms/FormAthleteAnagraphicInfo.vue')
+  () => import("@/components/forms/FormAthleteAnagraphicInfo.vue"),
 );
 const FormAthleteProgramInfo = defineAsyncComponent(
-  () => import('components/forms/FormAthleteProgramInfo.vue')
+  () => import("@/components/forms/FormAthleteProgramInfo.vue"),
 );
 const FormMaxLift = defineAsyncComponent(
-  () => import('components/forms/FormMaxLift.vue')
+  () => import("@/components/forms/FormMaxLift.vue"),
 );
 
 // Init plugin
@@ -469,28 +469,28 @@ const coachInfo = useCoachInfoStore();
 // Set tab navigation info
 const allTabs = [
   {
-    name: 'programs',
+    name: "programs",
     label:
       $q.screen.width < 840
-        ? ''
-        : i18n.t('coach.program_management.fields.programs'),
-    icon: 'fa-regular fa-file-lines',
+        ? ""
+        : i18n.t("coach.program_management.fields.programs"),
+    icon: "fa-regular fa-file-lines",
   },
   {
-    name: 'anagraphic',
+    name: "anagraphic",
     label:
       $q.screen.width < 840
-        ? ''
-        : i18n.t('coach.athlete_management.fields.anagraphic'),
-    icon: 'fa-regular fa-address-card',
+        ? ""
+        : i18n.t("coach.athlete_management.fields.anagraphic"),
+    icon: "fa-regular fa-address-card",
   },
   {
-    name: 'personalbest',
+    name: "personalbest",
     label:
       $q.screen.width < 840
-        ? ''
-        : i18n.t('coach.athlete_management.fields.personal_best'),
-    icon: 'fa-solid fa-ranking-star',
+        ? ""
+        : i18n.t("coach.athlete_management.fields.personal_best"),
+    icon: "fa-solid fa-ranking-star",
   },
 ];
 
@@ -502,14 +502,14 @@ const athleteTableElement = ref<typeof TableManagedAthletes>();
 const athleteFormElement = ref<typeof FormAthleteAnagraphicInfo>();
 
 // Set additional athlete info ref
-const selectedTab = ref('programs');
+const selectedTab = ref("programs");
 const maxliftFormElement = ref<typeof FormMaxLift>();
 const showAthleteDialog = ref(false); // whether to show dialog to add athlete
 
 // Set athlete data ref for new athlete dialog
-const athleteName = ref(''); // new athlete name
-const athleteSurname = ref(''); // new athlete surname
-const athleteNote = ref(''); // new athlete note
+const athleteName = ref(""); // new athlete name
+const athleteSurname = ref(""); // new athlete surname
+const athleteNote = ref(""); // new athlete note
 
 // Set ref for program info
 const infoProgram = ref<Program>();
@@ -532,28 +532,28 @@ const maxlifts = computed(() => coachInfo.maxlifts || []);
 watch(selectedAthlete, (athlete) =>
   nextTick(() => {
     athleteTableElement.value?.selectRowByName(athlete?.name, true);
-  })
+  }),
 );
 
 // Get all programs for the selected athlete
 const athletePrograms = computed(() =>
   selectedAthlete.value
     ? getAllAssignedPrograms(selectedAthlete.value, programs.value)
-    : []
+    : [],
 );
 
 // Get active current program for the selected athlete
 const athleteCurrentProgram = computed(() =>
   selectedAthlete.value
     ? getAssignedProgram(selectedAthlete.value, programs.value)
-    : undefined
+    : undefined,
 );
 
 // Get maxlifts for the selected athlete
 const athleteMaxlifts = computed(() =>
   maxlifts.value.filter(
-    (maxlift) => maxlift.athlete?.uid === selectedAthlete.value?.uid
-  )
+    (maxlift) => maxlift.athlete?.uid === selectedAthlete.value?.uid,
+  ),
 );
 
 /**
@@ -579,37 +579,37 @@ function saveMaxlift(newMaxLift: MaxLift) {
       maxliftFormElement.value?.reset();
 
       // Register GA4 event
-      event('athleteview_maxlift_created', {
-        event_category: 'documentation',
-        event_label: 'New MaxLift Created in AthleteView',
+      event("athleteview_maxlift_created", {
+        event_category: "documentation",
+        event_label: "New MaxLift Created in AthleteView",
         value: 1,
       });
 
       // Mixpanel tracking
-      mixpanel.track(isNew ? 'Maxlift Created' : 'Maxlift Updated', {
-        Page: 'AthleteView',
+      mixpanel.track(isNew ? "Maxlift Created" : "Maxlift Updated", {
+        Page: "AthleteView",
         Exercise: newMaxLift.exercise?.name,
         Type: newMaxLift.type?.toString(),
       });
     },
     onError: () => {
       $q.notify({
-        type: 'negative',
+        type: "negative",
         message: i18n.t(
-          'coach.maxlift_management.list.' +
-            (isNew ? 'add_error' : 'update_error')
+          "coach.maxlift_management.list." +
+            (isNew ? "add_error" : "update_error"),
         ),
-        position: 'bottom',
+        position: "bottom",
       });
 
       // Mixpanel tracking
       mixpanel.track(
-        'ERROR ' + (isNew ? 'Maxlift Created' : 'Maxlift Updated'),
+        "ERROR " + (isNew ? "Maxlift Created" : "Maxlift Updated"),
         {
-          Page: 'AthleteView',
+          Page: "AthleteView",
           Exercise: newMaxLift.exercise?.name,
           Type: newMaxLift.type?.toString(),
-        }
+        },
       );
     },
   });
@@ -657,27 +657,27 @@ function createAthlete() {
       clearAthlete();
 
       // Register GA4 event
-      event('new_athlete_created', {
-        event_category: 'documentation',
-        event_label: 'New Athlete added to Athlete library',
+      event("new_athlete_created", {
+        event_category: "documentation",
+        event_label: "New Athlete added to Athlete library",
         value: 1,
       });
 
       // Mixpanel tracking
-      mixpanel.track('New Athlete', {
-        Page: 'AthleteView',
+      mixpanel.track("New Athlete", {
+        Page: "AthleteView",
       });
     },
     onError: () => {
       $q.notify({
-        type: 'negative',
-        message: i18n.t('coach.athlete_management.list.add_error'),
-        position: 'bottom',
+        type: "negative",
+        message: i18n.t("coach.athlete_management.list.add_error"),
+        position: "bottom",
       });
 
       // Mixpanel tracking
-      mixpanel.track('ERROR New Athlete', {
-        Page: 'AthleteView',
+      mixpanel.track("ERROR New Athlete", {
+        Page: "AthleteView",
       });
     },
   });
@@ -688,9 +688,9 @@ function createAthlete() {
  * Clear values in athlete insertion form.
  */
 function clearAthlete() {
-  athleteName.value = '';
-  athleteSurname.value = '';
-  athleteNote.value = '';
+  athleteName.value = "";
+  athleteSurname.value = "";
+  athleteNote.value = "";
   showAthleteDialog.value = false;
 }
 
@@ -704,11 +704,11 @@ function assignProgram(program: Program) {
     assignProgramToAthlete(program, selectedAthlete.value, {
       onError: () => {
         $q.notify({
-          type: 'negative',
+          type: "negative",
           message: i18n.t(
-            'coach.program_management.builder.save_assignment_error'
+            "coach.program_management.builder.save_assignment_error",
           ),
-          position: 'bottom',
+          position: "bottom",
         });
       },
     });
@@ -733,32 +733,32 @@ function deleteProgram(program: Program) {
   program.remove({
     onAthleteUpdateSuccess: () => {
       // Mixpanel tracking
-      mixpanel.track('Update Athlete', {
-        Type: 'Removed program',
+      mixpanel.track("Update Athlete", {
+        Type: "Removed program",
       });
     },
     onAthleteUpdateError: () => {
       // Mixpanel tracking
-      mixpanel.track('ERROR Update Athlete', {
-        Type: 'Removing program',
+      mixpanel.track("ERROR Update Athlete", {
+        Type: "Removing program",
       });
     },
     onSuccess: () => {
       coachInfo.programs = coachInfo.programs?.filter(
-        (coachProgram) => coachProgram != program
+        (coachProgram) => coachProgram != program,
       );
       deletingProgram.value = undefined;
 
       // Register GA4 event
-      event('program_deleted', {
-        event_category: 'documentation',
-        event_label: 'Program Deleted',
+      event("program_deleted", {
+        event_category: "documentation",
+        event_label: "Program Deleted",
         value: 1,
       });
 
       // Mixpanel tracking
-      mixpanel.track('Program Deleted', {
-        Page: 'ProgramView',
+      mixpanel.track("Program Deleted", {
+        Page: "ProgramView",
       });
     },
   });

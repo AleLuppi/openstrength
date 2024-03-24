@@ -3,7 +3,7 @@
     <q-card>
       <q-card-section>
         <h6 class="q-my-none">
-          {{ $t('coach.programlibrary_management.list.template_import_title') }}
+          {{ $t("coach.programlibrary_management.list.template_import_title") }}
         </h6>
       </q-card-section>
 
@@ -48,13 +48,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineAsyncComponent } from 'vue';
-import type { QDialogProps } from 'quasar';
-import { Program } from 'src/helpers/programs/program';
+import { ref, computed, defineAsyncComponent } from "vue";
+import type { QDialogProps } from "quasar";
+import { Program } from "@/helpers/programs/program";
 
 // Import components
 const TableExistingPrograms = defineAsyncComponent(
-  () => import('components/tables/TableExistingPrograms.vue')
+  () => import("@/components/tables/TableExistingPrograms.vue"),
 );
 
 // Define props
@@ -67,9 +67,9 @@ const props = defineProps<
 
 // Define emits
 const emit = defineEmits<{
-  'update:modelValue': [value: boolean];
+  "update:modelValue": [value: boolean];
   selection: [evt: Event, row: object, index: number];
-  'update:selected': [value?: Program];
+  "update:selected": [value?: Program];
 }>();
 
 // Set ref
@@ -81,8 +81,8 @@ const templatePrograms = computed(() =>
     (program: Program) =>
       program.isTemplate === true &&
       program.programExercises &&
-      program.programExercises.length > 0
-  )
+      program.programExercises.length > 0,
+  ),
 );
 
 /**
@@ -91,8 +91,8 @@ const templatePrograms = computed(() =>
  * @param params selection parameters.
  */
 function onProgramSelection(...params: [Event, object, number]) {
-  searchProgram.value = '';
-  emit('selection', ...params);
+  searchProgram.value = "";
+  emit("selection", ...params);
 }
 
 /**
@@ -103,7 +103,7 @@ function onProgramSelection(...params: [Event, object, number]) {
  * @param program selected program.
  */
 function onProgramSelected(program?: Program) {
-  emit('update:selected', program);
-  if (program) emit('update:modelValue', false);
+  emit("update:selected", program);
+  if (program) emit("update:modelValue", false);
 }
 </script>

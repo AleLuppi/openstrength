@@ -1,16 +1,16 @@
-import { DocumentReference } from 'firebase/firestore';
+import { DocumentReference } from "firebase/firestore";
 import {
   doAddDoc,
   doUpdateDoc,
   doDeleteDoc,
-} from 'src/helpers/database/readwrite';
+} from "@/helpers/database/readwrite";
 import {
   dbCollections,
   dbSubcollections,
-} from 'src/helpers/database/collections';
-import { User, CoachUser, AthleteUser, UserRole } from 'src/helpers/users/user';
-import { Exercise, ExerciseVariant } from 'src/helpers/exercises/exercise';
-import { MaxLift } from 'src/helpers/maxlifts/maxlift';
+} from "@/helpers/database/collections";
+import { User, CoachUser, AthleteUser, UserRole } from "@/helpers/users/user";
+import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import {
   matchNumberFloatInBrackets,
   matchNumberFractionFloat,
@@ -24,8 +24,8 @@ import {
   matchNumberUnsignedFloat,
   matchNumberUnsignedFloatWithOptionalUnit,
   matchNumberUnsignedInteger,
-} from 'src/helpers/regex';
-import { convertProgramToDayBlocks } from 'src/helpers/programs/converters';
+} from "@/helpers/regex";
+import { convertProgramToDayBlocks } from "@/helpers/programs/converters";
 
 /**
  * Training program properties.
@@ -378,7 +378,7 @@ export class Program {
     const programClone = new Program({
       ...this,
       programExercises: this.programExercises?.map((programExercise) =>
-        programExercise.duplicate(shallow)
+        programExercise.duplicate(shallow),
       ),
       ...(shallow && {
         uid: undefined,
@@ -391,9 +391,9 @@ export class Program {
     const clonedLines = programClone.getLines() ?? [];
     clonedLines.forEach((clonedLine) => {
       (
-        ['loadReference', 'repsReference'] as (
-          | 'loadReference'
-          | 'repsReference'
+        ["loadReference", "repsReference"] as (
+          | "loadReference"
+          | "repsReference"
         )[]
       ).forEach((field) => {
         const idx = clonedLine[field]
@@ -447,7 +447,7 @@ export class Program {
     }
 
     // Hide program from coach
-    programToDelete.name = `${programToDelete.name ?? ''}__deleted__${
+    programToDelete.name = `${programToDelete.name ?? ""}__deleted__${
       programToDelete.coachId
     }/${programToDelete.athleteId}`;
     programToDelete.coach = undefined;
@@ -499,7 +499,7 @@ export class Program {
         programExercise.lines
           ? [...allLines, ...programExercise.lines]
           : allLines,
-      []
+      [],
     );
   }
 
@@ -518,8 +518,8 @@ export class Program {
   } = {}): ProgramFrozenView {
     const programToFreeze = program ?? this;
     const frozenView: ProgramFrozenView = {
-      athlete: programToFreeze.athlete?.referenceName ?? '',
-      name: programToFreeze.name ?? '',
+      athlete: programToFreeze.athlete?.referenceName ?? "",
+      name: programToFreeze.name ?? "",
       description: programToFreeze.description,
       startedOn: programToFreeze.startedOn,
       finishedOn: programToFreeze.finishedOn,
@@ -708,9 +708,9 @@ export class ProgramLine {
         this.loadBaseValue &&
         !matchNumberFractionPercentageFloat(this.loadBaseValue)
       ) {
-        if (this.loadOperation.trim().startsWith('*'))
+        if (this.loadOperation.trim().startsWith("*"))
           return (
-            this.refLoadValue * parseFloat(this.loadOperation.split('*')[1])
+            this.refLoadValue * parseFloat(this.loadOperation.split("*")[1])
           );
         else if (matchNumberSignedFloatWithOptionalUnit(this.loadOperation))
           return this.refLoadValue + parseFloat(this.loadOperation);
@@ -752,21 +752,21 @@ export class ProgramLine {
       const trailingOperationPattern = /^.*([+-]\d*\.?\d*%|[+-]\d*\.?\d*kg)$/;
 
       const kgMatch = matchNumberSignedFloatWithOptionalUnit(
-        this.loadBaseValue
+        this.loadBaseValue,
       );
       const percentageMatch = matchNumberOptionallySignedPercentageFloat(
-        this.loadBaseValue
+        this.loadBaseValue,
       );
       const percentageRangeMatch = matchNumberFractionPercentageFloat(
-        this.loadBaseValue
+        this.loadBaseValue,
       );
       const trailingOperationMatch = this.loadBaseValue.match(
-        trailingOperationPattern
+        trailingOperationPattern,
       );
 
       if (kgMatch) {
         // Case: Explicit kg value like "+10kg" or "-20kg"
-        return `${parseInt(kgMatch[1]) >= 0 ? '+' : ''}${kgMatch[1]}`;
+        return `${parseInt(kgMatch[1]) >= 0 ? "+" : ""}${kgMatch[1]}`;
       } else if (percentageRangeMatch) {
         // Case: Percentage range like "70%/73%"
         const average =
@@ -778,7 +778,7 @@ export class ProgramLine {
       } else if (percentageMatch) {
         // Case: Single percentage like "+20%" or "70%"
         const result: number = parseFloat(percentageMatch[1]) / 100;
-        if (this.loadBaseValue[0] === '-' || this.loadBaseValue[0] === '+') {
+        if (this.loadBaseValue[0] === "-" || this.loadBaseValue[0] === "+") {
           return `*${1.0 + result}`;
         } else {
           return `*${result}`;
@@ -786,13 +786,13 @@ export class ProgramLine {
       } else if (trailingOperationMatch) {
         // Case: Trailing operation like "W2-30%" or "W1+24%"
         const operationValue = trailingOperationMatch[1];
-        if (operationValue.endsWith('kg')) {
+        if (operationValue.endsWith("kg")) {
           const result: number = parseFloat(operationValue);
           return `${result}`;
-        } else if (operationValue.endsWith('%')) {
+        } else if (operationValue.endsWith("%")) {
           const result: number = parseFloat(operationValue) / 100;
 
-          if (operationValue[0] === '-' || operationValue[0] === '+') {
+          if (operationValue[0] === "-" || operationValue[0] === "+") {
             return `*${1.0 + result}`;
           }
         }
@@ -818,7 +818,7 @@ export class ProgramLine {
   get setsSupposedValue(): number | undefined {
     if (this.setsBaseValue && matchNumberFractionInteger(this.setsBaseValue)) {
       const [secondNumber, firstNumber] = matchNumberFractionInteger(
-        this.setsBaseValue
+        this.setsBaseValue,
       )!
         .slice(1, 3)
         .map(Number);
@@ -828,7 +828,7 @@ export class ProgramLine {
       matchNumberIntegerInBrackets(this.setsBaseValue)?.at(1)
     ) {
       return parseInt(
-        matchNumberIntegerInBrackets(this.setsBaseValue)?.at(1) ?? '0'
+        matchNumberIntegerInBrackets(this.setsBaseValue)?.at(1) ?? "0",
       );
     } else if (this.setsOperation) {
       const referenceValue =
@@ -847,7 +847,7 @@ export class ProgramLine {
   get repsSupposedValue(): number | undefined {
     if (this.repsBaseValue && matchNumberFractionInteger(this.repsBaseValue)) {
       const [secondNumber, firstNumber] = matchNumberFractionInteger(
-        this.repsBaseValue
+        this.repsBaseValue,
       )!
         .slice(1, 3)
         .map(Number);
@@ -857,7 +857,7 @@ export class ProgramLine {
       matchNumberIntegerInBrackets(this.repsBaseValue)?.at(1)
     ) {
       return parseInt(
-        matchNumberIntegerInBrackets(this.repsBaseValue)?.at(1) ?? '0'
+        matchNumberIntegerInBrackets(this.repsBaseValue)?.at(1) ?? "0",
       );
     } else if (this.repsOperation) {
       const referenceValue = this.refRepsValue;
@@ -880,13 +880,13 @@ export class ProgramLine {
     const matchKgSimple = this.loadBaseValue?.match(kgSimpleRegex);
     const matchPercentRange = this.loadBaseValue?.match(percentRangeRegex);
     const matchPercentValueSupposed = this.loadBaseValue?.match(
-      percentValueSupposedRegex
+      percentValueSupposedRegex,
     );
     const matchPercentageSimple = this.loadBaseValue?.match(
-      percentageSimpleRegex
+      percentageSimpleRegex,
     );
     const matchTrailingOperation = this.loadBaseValue?.match(
-      trailingOperationPattern
+      trailingOperationPattern,
     );
 
     if (matchKgRange) {
@@ -902,8 +902,8 @@ export class ProgramLine {
     if (matchKgSimple && this.refLoadValue !== undefined) {
       if (
         this.loadOperation !== undefined &&
-        (this.loadOperation.startsWith('+') ||
-          this.loadOperation.startsWith('-'))
+        (this.loadOperation.startsWith("+") ||
+          this.loadOperation.startsWith("-"))
       ) {
         return this.refLoadValue + parseFloat(this.loadOperation);
       } else {
@@ -914,9 +914,9 @@ export class ProgramLine {
     if (matchPercentageSimple && this.refLoadValue !== undefined) {
       if (
         this.loadOperation !== undefined &&
-        this.loadOperation.startsWith('*')
+        this.loadOperation.startsWith("*")
       ) {
-        return this.refLoadValue * parseFloat(this.loadOperation.split('*')[1]);
+        return this.refLoadValue * parseFloat(this.loadOperation.split("*")[1]);
       } else {
         return undefined;
       }
@@ -938,13 +938,13 @@ export class ProgramLine {
 
     if (matchTrailingOperation && this.refLoadValue !== undefined) {
       const operationValue = matchTrailingOperation[1];
-      if (operationValue.endsWith('kg')) {
+      if (operationValue.endsWith("kg")) {
         const result: number = parseFloat(operationValue);
         return this.refLoadValue + result;
-      } else if (operationValue.endsWith('%')) {
+      } else if (operationValue.endsWith("%")) {
         const result: number = parseFloat(operationValue) / 100;
 
-        if (operationValue[0] === '-' || operationValue[0] === '+') {
+        if (operationValue[0] === "-" || operationValue[0] === "+") {
           return (1 + result) * this.refLoadValue;
         }
       }
@@ -955,7 +955,7 @@ export class ProgramLine {
   get rpeSupposedValue(): number | undefined {
     if (this.rpeBaseValue && matchNumberFractionFloat(this.rpeBaseValue)) {
       const [secondNumber, firstNumber] = matchNumberFractionFloat(
-        this.rpeBaseValue
+        this.rpeBaseValue,
       )!
         .slice(1, 3)
         .map(Number);
@@ -965,7 +965,7 @@ export class ProgramLine {
       matchNumberFloatInBrackets(this.rpeBaseValue)?.at(1)
     ) {
       return parseFloat(
-        matchNumberFloatInBrackets(this.rpeBaseValue)?.at(1) ?? '0'
+        matchNumberFloatInBrackets(this.rpeBaseValue)?.at(1) ?? "0",
       );
     } else if (this.rpeOperation !== undefined) {
       const referenceValue =
@@ -1009,7 +1009,7 @@ export class ProgramLine {
     if (
       this.loadBaseValue !== undefined &&
       /^(?:\?|(?:\d+kg\/\d+kg)|(?:\d+%\/\d+%)|(?:\(\d+kg\))|(?:\(\d+%\)))$/.test(
-        this.loadBaseValue
+        this.loadBaseValue,
       )
     ) {
       return true;
@@ -1176,7 +1176,7 @@ export function addDocProgram(
   {
     onSuccess,
     onError,
-  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {}
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   const { uid, ...programObj } = flattenProgram(program);
   doAddDoc(dbCollections.programs, programObj, {
@@ -1202,7 +1202,7 @@ export function addDocProgramFrozen(
   {
     onSuccess,
     onError,
-  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {}
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   doAddDoc(
     `${dbCollections.programs}/${programId}/${dbSubcollections.programSnapshots}`,
@@ -1210,7 +1210,7 @@ export function addDocProgramFrozen(
     {
       onSuccess: onSuccess,
       onError: onError,
-    }
+    },
   );
 }
 
@@ -1226,7 +1226,7 @@ export function updateDocProgram(
   {
     onSuccess,
     onError,
-  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {}
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   const { uid, ...programObj } = flattenProgram(program);
   const docId = program.uid;
@@ -1272,15 +1272,15 @@ function flattenProgram(program: Program) {
               repsReference: lineToSpread.repsReference?.uid,
               repsReferenceType: (lineToSpread.repsReference
                 ? lineToSpread.repsReference instanceof MaxLift
-                  ? 'maxlift'
-                  : 'line'
-                : undefined) as 'maxlift' | 'line' | undefined,
+                  ? "maxlift"
+                  : "line"
+                : undefined) as "maxlift" | "line" | undefined,
               loadReference: lineToSpread.loadReference?.uid,
-              loadReferenceType: (lineToSpread['loadReference']
+              loadReferenceType: (lineToSpread["loadReference"]
                 ? lineToSpread.loadReference instanceof MaxLift
-                  ? 'maxlift'
-                  : 'line'
-                : undefined) as 'maxlift' | 'line' | undefined,
+                  ? "maxlift"
+                  : "line"
+                : undefined) as "maxlift" | "line" | undefined,
               rpeReference: lineToSpread.rpeReference?.uid,
             };
             return {
@@ -1291,7 +1291,7 @@ function flattenProgram(program: Program) {
           }),
         ];
       },
-      []
+      [],
     ),
   };
 
@@ -1335,9 +1335,9 @@ export function unflattenProgram(
       {
         loadReference?: string;
         repsReference?: string;
-      }
+      },
     ][];
-  }
+  },
 ): Program {
   // Get all program exercises and lines
   const programExercises: ProgramExercise[] = [];
@@ -1360,7 +1360,7 @@ export function unflattenProgram(
       (programExercise) =>
         programExercise.scheduleWeek == scheduleWeek &&
         programExercise.scheduleDay == scheduleDay &&
-        programExercise.scheduleOrder == scheduleOrder
+        programExercise.scheduleOrder == scheduleOrder,
     );
     const anyLines = Object.values(lineInfo).some((val) => val != undefined);
     if (currentExercise) {
@@ -1369,14 +1369,14 @@ export function unflattenProgram(
           new ProgramLine({
             programExercise: currentExercise,
             ...lineInfo,
-          })
+          }),
         );
     } else {
       const currentVariant = exercises
         ?.reduce(
           (out: ExerciseVariant[], oneExercise) =>
             out.concat(oneExercise.variants ?? []),
-          []
+          [],
         )
         .find((variant) => variant.uid == exercise);
       programExercises.push(
@@ -1388,7 +1388,7 @@ export function unflattenProgram(
           exercise: currentVariant?.exercise,
           exerciseVariant: currentVariant,
           lines: anyLines ? [new ProgramLine({ ...lineInfo })] : [],
-        })
+        }),
       );
       if (storeUnresolved && !currentVariant && exercise)
         (storeUnresolved.exercises = storeUnresolved.exercises || []).push([
@@ -1407,25 +1407,25 @@ export function unflattenProgram(
             if (line.uid) out[line.uid] = line;
             return out;
           },
-          {}
+          {},
         ) ?? {};
       return { ...out, ...currLines };
     },
-    {}
+    {},
   );
   flatProgram.lines?.forEach((fullLineInfo) => {
     const currLine = programLines[fullLineInfo.uid];
     if (!currLine) return;
     currLine.loadReference =
-      fullLineInfo.loadReferenceType === 'maxlift'
+      fullLineInfo.loadReferenceType === "maxlift"
         ? maxlifts?.find((maxlift) => maxlift.uid == fullLineInfo.loadReference)
-        : fullLineInfo.loadReferenceType === 'line'
+        : fullLineInfo.loadReferenceType === "line"
         ? programLines[fullLineInfo.loadReference]
         : undefined;
     currLine.repsReference =
-      fullLineInfo.repsReferenceType === 'maxlift'
+      fullLineInfo.repsReferenceType === "maxlift"
         ? maxlifts?.find((maxlift) => maxlift.uid == fullLineInfo.repsReference)
-        : fullLineInfo.repsReferenceType === 'line'
+        : fullLineInfo.repsReferenceType === "line"
         ? programLines[fullLineInfo.repsReference]
         : undefined;
     currLine.setsReference = programLines[fullLineInfo.setsReference];
@@ -1433,7 +1433,7 @@ export function unflattenProgram(
     if (
       storeUnresolved &&
       !currLine.loadReference &&
-      fullLineInfo.loadReferenceType === 'maxlift' &&
+      fullLineInfo.loadReferenceType === "maxlift" &&
       fullLineInfo.loadReference
     )
       (storeUnresolved.maxlifts = storeUnresolved.maxlifts || []).push([
@@ -1443,7 +1443,7 @@ export function unflattenProgram(
     if (
       storeUnresolved &&
       !currLine.repsReference &&
-      fullLineInfo.repsReferenceType === 'maxlift' &&
+      fullLineInfo.repsReferenceType === "maxlift" &&
       fullLineInfo.repsReference
     )
       (storeUnresolved.maxlifts = storeUnresolved.maxlifts || []).push([
@@ -1459,11 +1459,12 @@ export function unflattenProgram(
     description: flatProgram.description,
     labels: flatProgram.labels,
     coach: users?.find(
-      (user) => user.role === UserRole.coach && user.uid === flatProgram.coachId
+      (user) =>
+        user.role === UserRole.coach && user.uid === flatProgram.coachId,
     ) as CoachUser,
     athlete: users?.find(
       (user) =>
-        user.role === UserRole.athlete && user.uid === flatProgram.athleteId
+        user.role === UserRole.athlete && user.uid === flatProgram.athleteId,
     ) as AthleteUser,
     startedOn: flatProgram.startedOn,
     finishedOn: flatProgram.finishedOn,

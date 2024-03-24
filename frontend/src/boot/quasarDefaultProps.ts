@@ -48,7 +48,7 @@ function setQuasarComponentDefaultPropValues<T extends ComponentConstructor>(
   component: T,
   propDefaults: {
     [K in keyof Partial<ExtractComponentProps<T>>]: ExtractComponentProps<T>[K];
-  }
+  },
 ) {
   for (const key in propDefaults) {
     const prop = component.props[key];

@@ -8,7 +8,7 @@
           <q-card-section class="q-pb-sm">
             <div class="row justify-between q-mb-sm">
               <h4 class="text-margin-xs">
-                {{ $t('coach.exercise_management.list.title_exercise') }}
+                {{ $t("coach.exercise_management.list.title_exercise") }}
               </h4>
 
               <div class="column justify-center">
@@ -74,7 +74,7 @@
           <q-card-section class="q-pb-sm">
             <div class="row justify-between q-mb-sm">
               <h4 class="text-margin-xs">
-                {{ $t('coach.exercise_management.list.title_variant') }}
+                {{ $t("coach.exercise_management.list.title_variant") }}
               </h4>
 
               <!-- Add new variant -->
@@ -143,7 +143,7 @@
               class="q-px-md"
             ></q-icon>
             <p>
-              {{ $t('coach.exercise_management.no_selected_exercises') }}
+              {{ $t("coach.exercise_management.no_selected_exercises") }}
             </p>
           </div>
         </div>
@@ -157,8 +157,8 @@
           <h5>
             {{
               $t(
-                'coach.exercise_management.' +
-                  (addingNewVariant ? 'add' : 'update')
+                "coach.exercise_management." +
+                  (addingNewVariant ? "add" : "update"),
               )
             }}
           </h5>
@@ -200,17 +200,17 @@
           <p>
             {{
               deletingExercise
-                ? $t('coach.exercise_management.delete_exercise_confirm', {
+                ? $t("coach.exercise_management.delete_exercise_confirm", {
                     exercise: deletingExercise?.name,
                   })
                 : deletingVariant?.isDefault
                 ? $t(
-                    'coach.exercise_management.delete_variant_default_confirm',
+                    "coach.exercise_management.delete_variant_default_confirm",
                     {
                       exercise: deletingVariant?.exercise?.name,
-                    }
+                    },
                   )
-                : $t('coach.exercise_management.delete_variant_confirm', {
+                : $t("coach.exercise_management.delete_variant_confirm", {
                     variant: deletingVariant?.name,
                     exercise: deletingVariant?.exercise?.name,
                   })
@@ -242,23 +242,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue';
-import { useQuasar, QDialog } from 'quasar';
-import { useI18n } from 'vue-i18n';
-import { event } from 'vue-gtag';
-import mixpanel from 'mixpanel-browser';
-import { useCoachInfoStore } from 'stores/coachInfo';
-import TableExerciseLibrary from 'components/tables/TableExerciseLibrary.vue';
-import FormExerciseVariantLibrary from 'components/forms/FormExerciseVariantLibrary.vue';
+import { computed, nextTick, ref, watch } from "vue";
+import { useQuasar, QDialog } from "quasar";
+import { useI18n } from "vue-i18n";
+import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
+import { useCoachInfoStore } from "@/stores/coachInfo";
+import TableExerciseLibrary from "@/components/tables/TableExerciseLibrary.vue";
+import FormExerciseVariantLibrary from "@/components/forms/FormExerciseVariantLibrary.vue";
 import {
   Exercise,
   ExerciseEquipment,
   ExerciseMuscleGroups,
   ExerciseVariant,
-} from 'src/helpers/exercises/exercise';
-import { reduceExercises } from 'src/helpers/exercises/listManagement';
-import { arrayUniqueValues } from 'src/helpers/array';
-import { symOutlinedPlaylistAdd } from '@quasar/extras/material-symbols-outlined';
+} from "@/helpers/exercises/exercise";
+import { reduceExercises } from "@/helpers/exercises/listManagement";
+import { arrayUniqueValues } from "@/helpers/array";
+import { symOutlinedPlaylistAdd } from "@quasar/extras/material-symbols-outlined";
 
 // Use plugins
 const $q = useQuasar();
@@ -280,7 +280,7 @@ const showDialogDelete = ref(false);
 const selectedExercise = ref<Exercise>();
 const selectedVariant = ref<ExerciseVariant>();
 const showVariantForm = computed(() =>
-  Boolean(addingNewVariant.value || selectedVariant.value)
+  Boolean(addingNewVariant.value || selectedVariant.value),
 );
 const showDialogVariantForm = ref(false);
 
@@ -290,8 +290,8 @@ watch(showVariantForm, (val) => (showDialogVariantForm.value = val));
 // Update table selection
 watch(selectedExercise, (exercise) =>
   nextTick(() =>
-    exerciseTableElement.value?.selectRowByName(exercise?.name, true)
-  )
+    exerciseTableElement.value?.selectRowByName(exercise?.name, true),
+  ),
 );
 
 // Get exercises to display
@@ -302,16 +302,16 @@ const exerciseMuscleGroupsOptions = computed(() => {
   return arrayUniqueValues(
     exercises.value.reduce(
       (outList, exercise) => outList.concat(exercise.muscleGroups),
-      [] as ExerciseMuscleGroups[]
-    )
+      [] as ExerciseMuscleGroups[],
+    ),
   );
 });
 const exerciseEquipmentOptions = computed(() => {
   return arrayUniqueValues(
     exercises.value.reduce(
       (outList, exercise) => outList.concat(exercise.equipment),
-      [] as ExerciseEquipment[]
-    )
+      [] as ExerciseEquipment[],
+    ),
   );
 });
 
@@ -341,7 +341,7 @@ function onExerciseAdd(exerciseName: string) {
 
   // Check if exercise already exists
   const existentExercise = exercises.value.find(
-    (exercise) => exercise.name == exerciseName
+    (exercise) => exercise.name == exerciseName,
   );
   if (existentExercise) {
     selectedExercise.value = existentExercise;
@@ -355,45 +355,45 @@ function onExerciseAdd(exerciseName: string) {
   newExercise.saveNew({
     onSuccess: () => {
       coachInfo.exercises = reduceExercises(
-        [newExercise].concat(coachInfo.exercises || [])
+        [newExercise].concat(coachInfo.exercises || []),
       );
       selectedVariant.value = newExercise.defaultVariant;
       showDialogVariantForm.value = true;
 
       // Inform user about exercise successfully saved
       $q.notify({
-        type: 'positive',
-        message: i18n.t('coach.exercise_management.add_success', {
+        type: "positive",
+        message: i18n.t("coach.exercise_management.add_success", {
           exercise: newExercise?.name,
         }),
-        position: 'bottom',
+        position: "bottom",
       });
       selectedExercise.value = newExercise;
 
       // Register GA4 event
-      event('new_exercise_added', {
-        event_category: 'documentation',
-        event_label: 'New Exercise Added to Library',
+      event("new_exercise_added", {
+        event_category: "documentation",
+        event_label: "New Exercise Added to Library",
         value: 1,
       });
 
       // Mixpanel tracking
-      mixpanel.track('New Exercise to Library', {
-        Page: 'LibraryView',
+      mixpanel.track("New Exercise to Library", {
+        Page: "LibraryView",
         Name: newExercise.name,
       });
     },
     onError: () => {
       // Inform user about error while saving exercise
       $q.notify({
-        type: 'negative',
-        message: i18n.t('coach.exercise_management.add_error'),
-        position: 'bottom',
+        type: "negative",
+        message: i18n.t("coach.exercise_management.add_error"),
+        position: "bottom",
       });
 
       // Mixpanel tracking
-      mixpanel.track('ERROR New Exercise to Library', {
-        Page: 'LibraryView',
+      mixpanel.track("ERROR New Exercise to Library", {
+        Page: "LibraryView",
         Name: newExercise.name,
       });
     },
@@ -408,12 +408,12 @@ function onExerciseAdd(exerciseName: string) {
  */
 function onExerciseUpdate(
   exerciseOrAny: Exercise | any,
-  row?: { [key: string]: any; name?: string }
+  row?: { [key: string]: any; name?: string },
 ) {
   if (exerciseOrAny instanceof Exercise) selectedExercise.value = exerciseOrAny;
   else
     selectedExercise.value = exercises.value.find(
-      (exercise) => exercise.name && exercise.name == row?.name
+      (exercise) => exercise.name && exercise.name == row?.name,
     );
 }
 
@@ -433,7 +433,7 @@ function onNewVariant() {
   clearVariant();
   addingNewVariant.value = true;
   selectedVariant.value = new ExerciseVariant({
-    name: i18n.t('coach.exercise_management.fields.variant'),
+    name: i18n.t("coach.exercise_management.fields.variant"),
     exercise: selectedExercise.value,
     loadType: selectedExercise.value?.defaultVariant?.loadType,
     muscleGroups: selectedExercise.value?.defaultVariant?.muscleGroups,
@@ -453,29 +453,29 @@ function onVariantSubmit(variant: ExerciseVariant) {
         clearVariant();
         nextTick(() => onNewVariant());
         $q.notify({
-          type: 'positive',
-          message: i18n.t('coach.exercise_management.add_success', {
+          type: "positive",
+          message: i18n.t("coach.exercise_management.add_success", {
             exercise: variant.name,
           }),
-          position: 'bottom',
+          position: "bottom",
         });
 
         // Mixpanel tracking
-        mixpanel.track('New Variant to Library', {
-          Page: 'LibraryView',
+        mixpanel.track("New Variant to Library", {
+          Page: "LibraryView",
           Name: variant.name,
         });
       },
       onError: () => {
         $q.notify({
-          type: 'negative',
-          message: i18n.t('coach.exercise_management.add_error'),
-          position: 'bottom',
+          type: "negative",
+          message: i18n.t("coach.exercise_management.add_error"),
+          position: "bottom",
         });
 
         // Mixpanel tracking
-        mixpanel.track('ERROR New Variant to Library', {
-          Page: 'LibraryView',
+        mixpanel.track("ERROR New Variant to Library", {
+          Page: "LibraryView",
           Name: variant.name,
         });
       },
@@ -486,37 +486,37 @@ function onVariantSubmit(variant: ExerciseVariant) {
       onSuccess: () => {
         clearVariant();
         $q.notify({
-          type: 'positive',
-          message: i18n.t('coach.exercise_management.update_success', {
+          type: "positive",
+          message: i18n.t("coach.exercise_management.update_success", {
             exercise: exercise?.name,
             variant: variant.name,
           }),
-          position: 'bottom',
+          position: "bottom",
         });
 
         // Register GA4 event
-        event('variant_updated', {
-          event_category: 'documentation',
-          event_label: 'Variant Added or Updated in Library',
+        event("variant_updated", {
+          event_category: "documentation",
+          event_label: "Variant Added or Updated in Library",
           value: 1,
         });
 
         // Mixpanel tracking
-        mixpanel.track('Updated Variant to Library', {
-          Page: 'LibraryView',
+        mixpanel.track("Updated Variant to Library", {
+          Page: "LibraryView",
           Name: variant.name,
         });
       },
       onError: () => {
         $q.notify({
-          type: 'negative',
-          message: i18n.t('coach.exercise_management.update_error'),
-          position: 'bottom',
+          type: "negative",
+          message: i18n.t("coach.exercise_management.update_error"),
+          position: "bottom",
         });
 
         // Mixpanel tracking
-        mixpanel.track('ERROR Updated Variant to Library', {
-          Page: 'LibraryView',
+        mixpanel.track("ERROR Updated Variant to Library", {
+          Page: "LibraryView",
           Name: variant.name,
         });
       },
@@ -531,13 +531,13 @@ function onVariantSubmit(variant: ExerciseVariant) {
  */
 function onVariantUpdate(
   variantOrAny: ExerciseVariant | any,
-  row?: { [key: string]: any; name?: string }
+  row?: { [key: string]: any; name?: string },
 ) {
   if (variantOrAny instanceof ExerciseVariant)
     selectedVariant.value = variantOrAny;
   else
     selectedVariant.value = selectedExercise.value?.variants?.find(
-      (variant) => variant.name == row?.name
+      (variant) => variant.name == row?.name,
     );
 }
 
@@ -559,20 +559,20 @@ function deleteExercise(exercise: Exercise) {
   exercise.remove({
     onSuccess: () => {
       coachInfo.exercises = coachInfo.exercises?.filter(
-        (coachExercise) => coachExercise != exercise
+        (coachExercise) => coachExercise != exercise,
       );
       clearExercise();
 
       // Register GA4 event
-      event('exercise_deleted', {
-        event_category: 'documentation',
-        event_label: 'Exercise Deleted from Library',
+      event("exercise_deleted", {
+        event_category: "documentation",
+        event_label: "Exercise Deleted from Library",
         value: 1,
       });
 
       // Mixpanel tracking
-      mixpanel.track('Exercise Deleted from Library', {
-        Page: 'LibraryView',
+      mixpanel.track("Exercise Deleted from Library", {
+        Page: "LibraryView",
         Name: exercise.name,
       });
     },
@@ -596,24 +596,24 @@ function deleteVariant(variant: ExerciseVariant) {
     onSuccess: () => {
       if (variant.exercise)
         variant.exercise.variants = variant.exercise.variants?.filter(
-          (coachVariant) => coachVariant != variant
+          (coachVariant) => coachVariant != variant,
         );
       coachInfo.exercises = coachInfo.exercises?.filter(
         (coachExercise) =>
-          coachExercise.variants && coachExercise.variants.length > 0
+          coachExercise.variants && coachExercise.variants.length > 0,
       );
       clearVariant();
 
       // Register GA4 event
-      event('variant_deleted', {
-        event_category: 'documentation',
-        event_label: 'Variant Deleted from Library',
+      event("variant_deleted", {
+        event_category: "documentation",
+        event_label: "Variant Deleted from Library",
         value: 1,
       });
 
       // Mixpanel tracking
-      mixpanel.track('Variant Deleted from Library', {
-        Page: 'LibraryView',
+      mixpanel.track("Variant Deleted from Library", {
+        Page: "LibraryView",
         Name: variant.name,
       });
     },

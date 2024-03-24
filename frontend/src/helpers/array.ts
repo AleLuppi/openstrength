@@ -9,18 +9,18 @@
 export function arrayUniqueValues<T, R>(
   array: T[],
   sorted: boolean | ((val: T, arr: T[]) => R) = true,
-  deep = false
+  deep = false,
 ): T[] {
   const newArray = deep
     ? Object.values(
-        Object.fromEntries(array.map((v) => [JSON.stringify(v), v]))
+        Object.fromEntries(array.map((v) => [JSON.stringify(v), v])),
       )
     : [...new Set(array)];
   if (sorted)
     return arraySort(
       newArray,
       true,
-      typeof sorted == 'function' ? sorted : undefined
+      typeof sorted == "function" ? sorted : undefined,
     );
   return newArray;
 }
@@ -36,7 +36,7 @@ export function arrayUniqueValues<T, R>(
 export function arraySort<T, R>(
   array: T[],
   inplace = false,
-  sortBy: (val: T, arr: T[]) => T | R = (val) => val
+  sortBy: (val: T, arr: T[]) => T | R = (val) => val,
 ): T[] {
   return (inplace ? array : [...array]).sort((elA, elB) => {
     if (sortBy(elA, array) < sortBy(elB, array)) return -1;
@@ -79,7 +79,7 @@ export function arraySortObjectsByField<T extends object, R>(
   array: T[],
   field: keyof T,
   inplace = false,
-  sortBy: (val: T[keyof T], arr: T[]) => R = (val) => val as R
+  sortBy: (val: T[keyof T], arr: T[]) => R = (val) => val as R,
 ) {
   return arraySort(array, inplace, (val, arr) => sortBy(val[field], arr));
 }
@@ -93,7 +93,7 @@ export function arraySortObjectsByField<T extends object, R>(
  */
 export function arrayOfPairsToObject<K extends string | number | symbol, V>(
   array: [K, V][],
-  unique = false
+  unique = false,
 ): { [key in K]: V[] } {
   return array.reduce((out, [key, value]) => {
     if (unique) out[key] = arrayUniqueValues([...(out[key] ?? []), value]);
@@ -110,7 +110,7 @@ export function arrayOfPairsToObject<K extends string | number | symbol, V>(
  * @returns an array containing list of values from each input arrays in order.
  */
 export function arrayZip<T>(arrays: T[][], pad = false): T[][] {
-  const length = Math[pad ? 'max' : 'min'](...arrays.map((arr) => arr.length));
+  const length = Math[pad ? "max" : "min"](...arrays.map((arr) => arr.length));
 
   return Array(length)
     .fill(undefined)

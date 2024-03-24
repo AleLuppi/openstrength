@@ -11,9 +11,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { Program } from 'src/helpers/programs/program';
+import { computed, PropType } from "vue";
+import { useI18n } from "vue-i18n";
+import { Program } from "@/helpers/programs/program";
 
 // Init plugin
 const i18n = useI18n();
@@ -33,52 +33,52 @@ const props = defineProps({
 // Set table columns
 const columns = [
   {
-    name: 'name',
+    name: "name",
     required: true,
-    label: i18n.t('coach.program_management.fields.name'),
-    align: 'left',
-    field: 'name',
+    label: i18n.t("coach.program_management.fields.name"),
+    align: "left",
+    field: "name",
     sortable: true,
   },
   {
-    name: 'athlete',
-    align: 'left',
-    label: i18n.t('coach.ahlete_management.fields.program_assigned_to'),
-    field: 'athlete',
+    name: "athlete",
+    align: "left",
+    label: i18n.t("coach.ahlete_management.fields.program_assigned_to"),
+    field: "athlete",
   },
   {
-    name: 'note',
-    align: 'left',
-    label: i18n.t('coach.program_management.fields.note'),
-    field: 'note',
+    name: "note",
+    align: "left",
+    label: i18n.t("coach.program_management.fields.note"),
+    field: "note",
   },
   {
-    name: 'label',
-    align: 'left',
-    label: i18n.t('coach.program_management.fields.label'),
-    field: 'label',
+    name: "label",
+    align: "left",
+    label: i18n.t("coach.program_management.fields.label"),
+    field: "label",
   },
-  { name: 'update', align: 'center', label: '', field: 'update' },
+  { name: "update", align: "center", label: "", field: "update" },
 ];
 
 // Set table rows
 const rows = computed(() => {
   return props.programs.map((program) => ({
     name: program.name,
-    athlete: 'No one', // TODO program.ahtlete, and send to athlete page on click
-    note: '', // TODO program.note
+    athlete: "No one", // TODO program.ahtlete, and send to athlete page on click
+    note: "", // TODO program.note
     label: {
-      element: 'chip',
+      element: "chip",
       label: program.labels?.[0]?.toLocaleLowerCase(), // TODO handle all labels
-      color: 'primary',
+      color: "primary",
     },
     update: {
-      element: 'button',
+      element: "button",
       on: { click: () => props.onUpdate?.(program) },
-      label: i18n.t('common.update'),
+      label: i18n.t("common.update"),
       rounded: true,
       outline: true,
-      color: 'button-primary',
+      color: "button-primary",
     },
     rowId: program.uid,
   }));

@@ -2,13 +2,16 @@ import {
   Program,
   ProgramExercise,
   ProgramLine,
-} from 'src/helpers/programs/program';
-import { arrayFilterUndefined,
-  arraySort, arrayUniqueValues } from 'src/helpers/array';
-import { moveProgramExercise } from 'src/helpers/programs/builder';
-import { extractUniqueMaxliftFromProgram } from 'src/helpers/programs/programTemplate';
-import { compareMaxliftLists } from 'src/helpers/maxlifts/listManagement';
-import { MaxLift } from 'src/helpers/maxlifts/maxlift';
+} from "@/helpers/programs/program";
+import {
+  arrayFilterUndefined,
+  arraySort,
+  arrayUniqueValues,
+} from "@/helpers/array";
+import { moveProgramExercise } from "@/helpers/programs/builder";
+import { extractUniqueMaxliftFromProgram } from "@/helpers/programs/programTemplate";
+import { compareMaxliftLists } from "@/helpers/maxlifts/listManagement";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 
 /**
  * Sort program exercises according to week, day, order.
@@ -28,30 +31,30 @@ export function sortProgramExercises(
   return [...exercises].sort((exerciseA, exerciseB) => {
     // Prepare variables
     const weekA = String(
-      exerciseA.scheduleWeek ?? exerciseB.scheduleWeek ?? 'undefined'
+      exerciseA.scheduleWeek ?? exerciseB.scheduleWeek ?? "undefined",
     );
     const weekB = String(exerciseB.scheduleWeek ?? weekA);
     const dayA = String(
-      exerciseA.scheduleDay ?? exerciseB.scheduleDay ?? 'undefined'
+      exerciseA.scheduleDay ?? exerciseB.scheduleDay ?? "undefined",
     );
     const dayB = String(exerciseB.scheduleDay ?? dayA);
     const orderA = String(
-      exerciseA.scheduleOrder ?? exerciseB.scheduleOrder ?? 'undefined'
+      exerciseA.scheduleOrder ?? exerciseB.scheduleOrder ?? "undefined",
     );
     const orderB = String(exerciseB.scheduleOrder ?? orderA);
 
     // Sort exercises by week, day, order, with precedence
     let res = weekA
-      .padStart(weekB.length, '0')
-      .localeCompare(weekB.padStart(weekA.length, '0'));
+      .padStart(weekB.length, "0")
+      .localeCompare(weekB.padStart(weekA.length, "0"));
     if (res) return res;
     res = dayA
-      .padStart(dayB.length, '0')
-      .localeCompare(dayB.padStart(dayA.length, '0'));
+      .padStart(dayB.length, "0")
+      .localeCompare(dayB.padStart(dayA.length, "0"));
     if (res) return res;
     res = orderA
-      .padStart(orderB.length, '0')
-      .localeCompare(orderB.padStart(orderA.length, '0'));
+      .padStart(orderB.length, "0")
+      .localeCompare(orderB.padStart(orderA.length, "0"));
     return res;
   });
 }
@@ -83,10 +86,10 @@ export function orderProgramExercises(
   getName: (
     week: string | number,
     day: string | number,
-    order: string | number
+    order: string | number,
   ) => string = (week, day, order) => [week, day, order].join(sep),
-  sep = '.',
-  sortLines = true
+  sep = ".",
+  sortLines = true,
 ): {
   [key: string]: ProgramExercise;
 } {
@@ -99,14 +102,14 @@ export function orderProgramExercises(
       out: {
         [key: string]: ProgramExercise;
       },
-      exercise
+      exercise,
     ) => {
       const week = exercise.scheduleWeek ?? -1;
       const day = exercise.scheduleDay ?? -1;
       const order = exercise.scheduleOrder ?? -1;
       return { ...out, [getName(week, day, order)]: exercise };
     },
-    {}
+    {},
   );
 }
 
@@ -119,17 +122,18 @@ export function orderProgramExercises(
  */
 export function getProgramUniqueWeeks(
   program?: Program,
-  exerciseName?: string
+  exerciseName?: string,
 ) {
   return arrayUniqueValues(
     arrayFilterUndefined(
       program?.programExercises
         ?.filter(
-          (exercise) => !exerciseName || exercise.exercise?.name == exerciseName
+          (exercise) =>
+            !exerciseName || exercise.exercise?.name == exerciseName,
         )
-        .map((exercise) => exercise.scheduleWeek?.toString()) || []
+        .map((exercise) => exercise.scheduleWeek?.toString()) || [],
     ),
-    (week) => week.padStart(100, '0')
+    (week) => week.padStart(100, "0"),
   );
 }
 
@@ -145,11 +149,12 @@ export function getProgramUniqueDays(program?: Program, exerciseName?: string) {
     arrayFilterUndefined(
       program?.programExercises
         ?.filter(
-          (exercise) => !exerciseName || exercise.exercise?.name == exerciseName
+          (exercise) =>
+            !exerciseName || exercise.exercise?.name == exerciseName,
         )
-        .map((exercise) => exercise.scheduleDay?.toString()) || []
+        .map((exercise) => exercise.scheduleDay?.toString()) || [],
     ),
-    (week) => week.padStart(100, '0')
+    (week) => week.padStart(100, "0"),
   );
 }
 
@@ -162,13 +167,14 @@ export function getProgramUniqueDays(program?: Program, exerciseName?: string) {
  */
 export function getProgramUniqueWeekDayPairs(
   program?: Program,
-  exerciseName?: string
+  exerciseName?: string,
 ): [string, string][] {
   return arrayUniqueValues(
     arrayFilterUndefined(
       program?.programExercises
         ?.filter(
-          (exercise) => !exerciseName || exercise.exercise?.name == exerciseName
+          (exercise) =>
+            !exerciseName || exercise.exercise?.name == exerciseName,
         )
         .map((exercise) => {
           if (exercise.scheduleWeek && exercise.scheduleDay)
@@ -177,10 +183,10 @@ export function getProgramUniqueWeekDayPairs(
               exercise.scheduleDay.toString(),
             ];
           return undefined;
-        }) || []
+        }) || [],
     ),
-    ([week, day]) => week.padStart(100, '0') + day.padStart(100, '0'),
-    true
+    ([week, day]) => week.padStart(100, "0") + day.padStart(100, "0"),
+    true,
   );
 }
 
@@ -193,16 +199,17 @@ export function getProgramUniqueWeekDayPairs(
  */
 export function getProgramUniqueExercises(
   program?: Program,
-  exerciseName?: string
+  exerciseName?: string,
 ) {
   return arrayUniqueValues(
     arrayFilterUndefined(
       program?.programExercises
         ?.filter(
-          (exercise) => !exerciseName || exercise.exercise?.name == exerciseName
+          (exercise) =>
+            !exerciseName || exercise.exercise?.name == exerciseName,
         )
-        .map((exercise) => exercise.exercise?.name) || []
-    )
+        .map((exercise) => exercise.exercise?.name) || [],
+    ),
   );
 }
 
@@ -219,12 +226,12 @@ export function mergePrograms(
   firstProgram: Program,
   secondProgram: Program,
   mapMaxlifts: [MaxLift, MaxLift][] | boolean = true,
-  inplace = true
+  inplace = true,
 ): Program {
   // Get matching maxlifts in the two program
   let matchingMaxlifts: [MaxLift, MaxLift][] = [];
   const firstMaxlifts = extractUniqueMaxliftFromProgram(firstProgram);
-  if (mapMaxlifts && typeof mapMaxlifts == 'boolean') {
+  if (mapMaxlifts && typeof mapMaxlifts == "boolean") {
     const secondMaxlifts = extractUniqueMaxliftFromProgram(secondProgram);
     [, , matchingMaxlifts] = compareMaxliftLists(firstMaxlifts, secondMaxlifts);
   } else if (mapMaxlifts) matchingMaxlifts = mapMaxlifts;
@@ -246,18 +253,18 @@ export function mergePrograms(
 
   // Merge known maxlifts
   const searchingMaxlifts = matchingMaxlifts.map(
-    (maxliftPair) => maxliftPair[1]
+    (maxliftPair) => maxliftPair[1],
   );
   outProgram.getLines()?.forEach((line) => {
     (
-      ['loadReference', 'repsReference'] as (
-        | 'loadReference'
-        | 'repsReference'
+      ["loadReference", "repsReference"] as (
+        | "loadReference"
+        | "repsReference"
       )[]
     ).forEach((field) => {
       if (line[field] instanceof MaxLift) {
         const maxliftIdx = searchingMaxlifts.findIndex(
-          (maxlift) => maxlift == line[field]
+          (maxlift) => maxlift == line[field],
         );
 
         // Match found: translate

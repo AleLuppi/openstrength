@@ -127,10 +127,10 @@ import {
   AuthError,
   doCreateUserWithEmailAndPassword,
   doSignInWithGoogle,
-} from "src/helpers/users/auth";
-import { validateEmail, validatePassword } from "src/helpers/validate";
-import { logoFullImage } from "assets/sources";
-import { NamedRoutes } from "src/router";
+} from "@/helpers/users/auth";
+import { validateEmail, validatePassword } from "@/helpers/validate";
+import { logoFullImage } from "@/assets/sources";
+import { NamedRoutes } from "@/router";
 
 // Init plugin
 const $q = useQuasar();

@@ -1,6 +1,6 @@
-import { i18n } from 'boot/i18n';
-import { matchNumberUnsignedInteger } from 'src/helpers/regex';
-import { arrayUniqueValues } from 'src/helpers/array';
+import { i18n } from "boot/i18n";
+import { matchNumberUnsignedInteger } from "@/helpers/regex";
+import { arrayUniqueValues } from "@/helpers/array";
 
 // ----- Functions related to Number -----
 
@@ -39,12 +39,12 @@ export function numberRoundToDecimal(num: number, ndigits = 0) {
  * @returns date format as string.
  */
 export function dateGetLocaleFormat(
-  opt: 'short' | 'middle' | 'long' = 'short'
+  opt: "short" | "middle" | "long" = "short",
 ): string {
-  return dateToStringLocale('4567-10-23', opt)
-    .replace(/[4-7]/g, 'y')
-    .replace(/[01]/g, 'm')
-    .replace(/[23]/g, 'd');
+  return dateToStringLocale("4567-10-23", opt)
+    .replace(/[4-7]/g, "y")
+    .replace(/[01]/g, "m")
+    .replace(/[23]/g, "d");
 }
 
 /**
@@ -56,9 +56,9 @@ export function dateGetLocaleFormat(
  * @returns date format as string.
  */
 export function dateGetLocaleMask(
-  opt: 'short' | 'middle' | 'long' = 'short'
+  opt: "short" | "middle" | "long" = "short",
 ): string {
-  return dateGetLocaleFormat(opt).replace(/[ymd]/gi, '#');
+  return dateGetLocaleFormat(opt).replace(/[ymd]/gi, "#");
 }
 
 /**
@@ -70,7 +70,7 @@ export function dateGetLocaleMask(
  */
 export function dateToStringLocale(
   date: Date | string | number,
-  opt: 'short' | 'middle' | 'long' = 'short'
+  opt: "short" | "middle" | "long" = "short",
 ) {
   return i18n.global.d(date, opt);
 }
@@ -84,21 +84,21 @@ export function dateToStringLocale(
  */
 export function dateFromStringLocale(
   strDate: string,
-  opt: 'short' | 'middle' | 'long' = 'short'
+  opt: "short" | "middle" | "long" = "short",
 ): Date | null {
   const format = dateGetLocaleFormat(opt);
   const dateInfo = [...format.toLowerCase()].reduce(
     (out: { y: string; m: string; d: string }, char, idx) => {
-      if (['y', 'm', 'd'].includes(char))
-        out[char as 'y' | 'm' | 'd'] += strDate[idx];
+      if (["y", "m", "d"].includes(char))
+        out[char as "y" | "m" | "d"] += strDate[idx];
       return out;
     },
-    { y: '', m: '', d: '' }
+    { y: "", m: "", d: "" },
   );
   const date = new Date(
-    Number(dateInfo['y']),
-    Number(dateInfo['m']) - 1,
-    Number(dateInfo['d'])
+    Number(dateInfo["y"]),
+    Number(dateInfo["m"]) - 1,
+    Number(dateInfo["d"]),
   );
   return date.getFullYear() ? date : null;
 }
@@ -112,7 +112,7 @@ export function dateFromStringLocale(
 export function dateGetWithoutTimezone(date?: Date | string) {
   const dateToClean = date ? new Date(date) : new Date();
   return new Date(
-    dateToClean.getTime() - dateToClean.getTimezoneOffset() * 60000
+    dateToClean.getTime() - dateToClean.getTimezoneOffset() * 60000,
   );
 }
 
@@ -148,14 +148,14 @@ export function stringGetNext(text: string) {
 
   // Keep only interesting part
   const [, textBeginning, textEnding] = matchedText;
-  let replacedEnding = '';
+  let replacedEnding = "";
 
   // Handle differently text ending with number or text
   if (matchNumberUnsignedInteger(textEnding))
     replacedEnding = String(Number(textEnding) + 1);
   else {
     // Convert the string to an array of characters
-    const chars = textEnding.split('');
+    const chars = textEnding.split("");
     if (chars.length <= 0) return undefined;
 
     // Get the last character and increment it
@@ -163,16 +163,16 @@ export function stringGetNext(text: string) {
     const saveChars = [];
 
     // Check for special cases (like 'z' and 'Z')
-    while (lastChar == 'z' || lastChar == 'Z') {
-      saveChars.push(lastChar == 'Z' ? 'A' : 'a');
+    while (lastChar == "z" || lastChar == "Z") {
+      saveChars.push(lastChar == "Z" ? "A" : "a");
       lastChar = chars.pop();
     }
     if (lastChar)
       saveChars.push(String.fromCharCode(lastChar.charCodeAt(0) + 1));
-    else saveChars.push(saveChars.at(-1) == 'Z' ? 'A' : 'a');
+    else saveChars.push(saveChars.at(-1) == "Z" ? "A" : "a");
 
     // Convert the array back to a string
-    replacedEnding = chars.join('') + saveChars.reverse().join('');
+    replacedEnding = chars.join("") + saveChars.reverse().join("");
   }
 
   return textBeginning + replacedEnding;
@@ -189,11 +189,11 @@ export function stringGetNext(text: string) {
 export function stringGetNextFromList(
   names: string[],
   startName?: string,
-  fallback: (name: string) => string = (name) => `${name}1`
+  fallback: (name: string) => string = (name) => `${name}1`,
 ) {
   // Set starting position
   if (startName == undefined)
-    startName = arrayUniqueValues(names)[0] ?? fallback('');
+    startName = arrayUniqueValues(names)[0] ?? fallback("");
 
   // Get free name
   while (names.includes(startName)) {

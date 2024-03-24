@@ -1,21 +1,21 @@
 <template>
   <q-page class="q-mx-auto q-px-md q-py-lg limit-max-width text-center">
     <h2>
-      {{ $t('pagenotfound.title') }}
+      {{ $t("pagenotfound.title") }}
     </h2>
 
     <img :src="logo404Image" alt="Page not found" />
 
     <p>
-      {{ $t('pagenotfound.subtitle') }}
+      {{ $t("pagenotfound.subtitle") }}
     </p>
 
     <q-btn :to="{ name: 'home' }" class="q-my-md"
-      >{{ $t('pagenotfound.redirect') }}
+      >{{ $t("pagenotfound.redirect") }}
     </q-btn>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { logo404Image } from 'assets/sources';
+import { logo404Image } from "@/assets/sources";
 </script>

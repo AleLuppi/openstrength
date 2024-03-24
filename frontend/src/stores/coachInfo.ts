@@ -1,31 +1,27 @@
-import { ref, computed } from 'vue';
-import { defineStore } from 'pinia';
-import { doGetDocs } from 'src/helpers/database/readwrite';
-import { dbCollections } from 'src/helpers/database/collections';
-import {
-  UserRole,
-  AthleteUser,
-  AthleteUserProps,
-} from 'src/helpers/users/user';
+import { ref, computed } from "vue";
+import { defineStore } from "pinia";
+import { doGetDocs } from "@/helpers/database/readwrite";
+import { dbCollections } from "@/helpers/database/collections";
+import { UserRole, AthleteUser, AthleteUserProps } from "@/helpers/users/user";
 import {
   Exercise,
   ExerciseVariant,
   packExerciseVariantInfo,
-} from 'src/helpers/exercises/exercise';
+} from "@/helpers/exercises/exercise";
 import {
   Program,
   ProgramExercise,
   ProgramLine,
   unflattenProgram,
-} from 'src/helpers/programs/program';
-import { useUserStore } from 'stores/user';
+} from "@/helpers/programs/program";
+import { useUserStore } from "@/stores/user";
 import {
   reduceExercises,
   sortExercises,
-} from 'src/helpers/exercises/listManagement';
-import { MaxLift, MaxLiftProps } from 'src/helpers/maxlifts/maxlift';
-import { objectIsEmpty } from 'src/helpers/object';
-import { arrayFilterUndefined } from 'src/helpers/array';
+} from "@/helpers/exercises/listManagement";
+import { MaxLift, MaxLiftProps } from "@/helpers/maxlifts/maxlift";
+import { objectIsEmpty } from "@/helpers/object";
+import { arrayFilterUndefined } from "@/helpers/array";
 
 /**
  * Store all the info required for a coach to use the app.
@@ -36,7 +32,7 @@ import { arrayFilterUndefined } from 'src/helpers/array';
  *  - programs  : list of programs for any managed athlete.
  *  - maxlifts  : list of personal bests for any managed athlete.
  */
-export const useCoachInfoStore = defineStore('coachInfo', () => {
+export const useCoachInfoStore = defineStore("coachInfo", () => {
   // Coach ID
   const coachId = ref<string>();
 
@@ -75,7 +71,7 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
       {
         loadReference?: string;
         repsReference?: string;
-      }
+      },
     ][];
   }>({}); // private
   const programs = computed({
@@ -88,7 +84,7 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
         const user = useUserStore();
         if (user.role == UserRole.coach)
           _programsUnresolved.value.coach.forEach(
-            ([program]) => (program.coach = user.baseUser)
+            ([program]) => (program.coach = user.baseUser),
           );
         _programsUnresolved.value.coach = undefined;
       }
@@ -97,8 +93,8 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
         _programsUnresolved.value.athletes.forEach(
           ([program, athleteId]) =>
             (program.athlete = athletes.value?.find(
-              (athlete) => athlete.uid === athleteId
-            ))
+              (athlete) => athlete.uid === athleteId,
+            )),
         );
         _programsUnresolved.value.athletes = undefined;
       }
@@ -109,14 +105,14 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
             const allVariants = exercises.value?.reduce(
               (out: ExerciseVariant[], exercise) =>
                 out.concat(exercise.variants ?? []),
-              []
+              [],
             );
             programExercise.exerciseVariant = allVariants?.find(
-              (variant) => variant.uid === variantId
+              (variant) => variant.uid === variantId,
             );
             programExercise.exercise =
               programExercise.exerciseVariant?.exercise;
-          }
+          },
         );
         _programsUnresolved.value.exercises = undefined;
       }
@@ -126,13 +122,13 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
           ([programLine, maxliftId]) => {
             if (maxliftId.loadReference)
               programLine.loadReference = maxlifts.value?.find(
-                (maxlift) => maxlift.uid === maxliftId.loadReference
+                (maxlift) => maxlift.uid === maxliftId.loadReference,
               );
             if (maxliftId.repsReference)
               programLine.repsReference = maxlifts.value?.find(
-                (maxlift) => maxlift.uid === maxliftId.repsReference
+                (maxlift) => maxlift.uid === maxliftId.repsReference,
               );
-          }
+          },
         );
         _programsUnresolved.value.maxlifts = undefined;
       }
@@ -158,7 +154,7 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
         // Solve athletes references
         _maxliftsUnresolved.value.athletes.forEach(([maxlift, athleteId]) => {
           maxlift.athlete = athletes.value?.find(
-            (athlete) => athlete.uid == athleteId
+            (athlete) => athlete.uid == athleteId,
           );
         });
         _maxliftsUnresolved.value.athletes = undefined;
@@ -168,9 +164,9 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
         _maxliftsUnresolved.value.exercises.forEach(
           ([maxlift, exerciseName]) => {
             maxlift.exercise = exercises.value?.find(
-              (exercise) => exercise.name == exerciseName
+              (exercise) => exercise.name == exerciseName,
             );
-          }
+          },
         );
         _maxliftsUnresolved.value.exercises = undefined;
       }
@@ -182,16 +178,16 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
   });
 
   // Check if anything is loading
-  const whatLoading = computed<('program' | 'maxlift')[]>(() => {
+  const whatLoading = computed<("program" | "maxlift")[]>(() => {
     return arrayFilterUndefined([
       objectIsEmpty(_programsUnresolved.value) ||
       !Object.values(_programsUnresolved.value).some((val) => val != undefined)
         ? undefined
-        : 'program',
+        : "program",
       objectIsEmpty(_maxliftsUnresolved.value) ||
       !Object.values(_maxliftsUnresolved.value).some((val) => val != undefined)
         ? undefined
-        : 'maxlift',
+        : "maxlift",
     ]);
   });
   const isLoading = computed(() => whatLoading.value.length > 0);
@@ -211,7 +207,7 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
     }: {
       onSuccess?: (...x: any) => void;
       onError?: (...x: any) => void;
-    } = {}
+    } = {},
   ) {
     // Get user ID if needed
     if (!coachId) {
@@ -226,20 +222,20 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
     doGetDocs(
       dbCollections.users,
       [
-        ['coachId', '==', coachId],
-        ['role', '==', UserRole.athlete],
+        ["coachId", "==", coachId],
+        ["role", "==", UserRole.athlete],
       ],
       {
         onSuccess: (docs: { [key: string]: AthleteUserProps }) => {
           const athletesFromDoc: AthleteUser[] = [];
           Object.entries(docs).forEach(([uid, doc]) =>
-            athletesFromDoc.push(new AthleteUser({ ...doc, uid: uid }))
+            athletesFromDoc.push(new AthleteUser({ ...doc, uid: uid })),
           );
           _athletes.value = athletesFromDoc;
           onSuccess?.(athletesFromDoc);
         },
         onError: onError,
-      }
+      },
     );
   }
 
@@ -258,7 +254,7 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
     }: {
       onSuccess?: (...x: any) => void;
       onError?: (...x: any) => void;
-    } = {}
+    } = {},
   ) {
     // Get user ID if needed
     if (!coachId) {
@@ -270,11 +266,11 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
     if (!coachId || (quiet && _exercises.value)) return;
 
     // Get documents
-    doGetDocs(dbCollections.exercises, [['userId', '==', coachId]], {
+    doGetDocs(dbCollections.exercises, [["userId", "==", coachId]], {
       onSuccess: (docs: { [key: string]: any }) => {
         const exercisesFromDoc: Exercise[] = [];
         Object.entries(docs).forEach(([uid, doc]) =>
-          exercisesFromDoc.push(packExerciseVariantInfo(doc, uid))
+          exercisesFromDoc.push(packExerciseVariantInfo(doc, uid)),
         );
         _exercises.value = reduceExercises(exercisesFromDoc);
         sortExercises(_exercises.value, true);
@@ -299,7 +295,7 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
     }: {
       onSuccess?: (...x: any) => void;
       onError?: (...x: any) => void;
-    } = {}
+    } = {},
   ) {
     // Get user ID if needed
     if (!coachId) {
@@ -312,7 +308,7 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
 
     // Get documents
     const unresolved: typeof _programsUnresolved.value = {};
-    doGetDocs(dbCollections.programs, [['coachId', '==', coachId]], {
+    doGetDocs(dbCollections.programs, [["coachId", "==", coachId]], {
       onSuccess: (docs: { [key: string]: any }) => {
         const programsFromDoc: Program[] = [];
         const currUnresolved: {
@@ -324,7 +320,7 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
             {
               loadReference?: string;
               repsReference?: string;
-            }
+            },
           ][];
         } = {};
         Object.entries(docs).forEach(([uid, doc]) => {
@@ -333,24 +329,24 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
             athletes.value,
             exercises.value,
             maxlifts.value,
-            currUnresolved
+            currUnresolved,
           );
           currProgram.uid = uid;
           if (currUnresolved.coach)
             (unresolved.coach = unresolved.coach || []).push(
-              currUnresolved.coach
+              currUnresolved.coach,
             );
           if (currUnresolved.athlete)
             (unresolved.athletes = unresolved.athletes || []).push(
-              currUnresolved.athlete
+              currUnresolved.athlete,
             );
           if (currUnresolved.exercises)
             unresolved.exercises = (unresolved.exercises || []).concat(
-              currUnresolved.exercises
+              currUnresolved.exercises,
             );
           if (currUnresolved.maxlifts)
             unresolved.maxlifts = (unresolved.maxlifts || []).concat(
-              currUnresolved.maxlifts
+              currUnresolved.maxlifts,
             );
           programsFromDoc.push(currProgram);
         });
@@ -377,7 +373,7 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
     }: {
       onSuccess?: (...x: any) => void;
       onError?: (...x: any) => void;
-    } = {}
+    } = {},
   ) {
     // Get user ID if needed
     if (!coachId) {
@@ -390,9 +386,9 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
 
     // Get documents
     const unresolved: typeof _maxliftsUnresolved.value = {};
-    doGetDocs(dbCollections.maxlifts, [['coachId', '==', coachId]], {
+    doGetDocs(dbCollections.maxlifts, [["coachId", "==", coachId]], {
       onSuccess: (docs: {
-        [key: string]: Omit<MaxLiftProps, 'exercise' | 'athlete'> & {
+        [key: string]: Omit<MaxLiftProps, "exercise" | "athlete"> & {
           exercise: string;
           athleteId: string;
         };
@@ -401,10 +397,10 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
         Object.entries(docs).forEach(([uid, doc]) => {
           const { exercise, athleteId, ...docData } = doc;
           const exerciseInstance = exercises.value?.find(
-            (exerciseFromList) => exerciseFromList.name == exercise
+            (exerciseFromList) => exerciseFromList.name == exercise,
           );
           const athleteInstance = athletes.value?.find(
-            (athleteFromList) => athleteFromList.uid == athleteId
+            (athleteFromList) => athleteFromList.uid == athleteId,
           );
           maxliftsFromDoc.push(
             new MaxLift({
@@ -412,7 +408,7 @@ export const useCoachInfoStore = defineStore('coachInfo', () => {
               uid: uid,
               exercise: exerciseInstance,
               athlete: athleteInstance,
-            })
+            }),
           );
           if (!exerciseInstance)
             (unresolved.exercises = unresolved.exercises || []).push([

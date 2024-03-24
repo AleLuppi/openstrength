@@ -6,10 +6,10 @@
       <!-- Show coming soon in case of athlete -->
       <img :src="logoFullImage" :srcset="logoFullImage + ' 1.2x'" alt="Logo" />
       <h2 class="text-center">
-        {{ $t('comingsoon.title') }}
+        {{ $t("comingsoon.title") }}
       </h2>
       <p>
-        {{ $t('comingsoon.subtitle') }}
+        {{ $t("comingsoon.subtitle") }}
       </p>
     </div>
 
@@ -19,10 +19,10 @@
         <h2 class="text-center">
           {{
             user.displayName
-              ? $t('homepage.welcome_with_name', {
+              ? $t("homepage.welcome_with_name", {
                   name: user.displayName?.trim(),
                 })
-              : $t('homepage.welcome_without_name')
+              : $t("homepage.welcome_without_name")
           }}
         </h2>
       </div>
@@ -69,7 +69,7 @@
       <!-- Show call to action to unsigner user -->
       <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
         <h2 class="text-center">
-          {{ $t('homepage.welcome_unsigned_user') }}
+          {{ $t("homepage.welcome_unsigned_user") }}
         </h2>
       </div>
 
@@ -108,7 +108,7 @@
       <!-- Show something else in all other cases -->
       <div class="q-pa-md q-pb-lg q-mx-auto limit-max-width">
         <h2 class="text-center">
-          {{ $t('homepage.welcome_unknown_user') }}
+          {{ $t("homepage.welcome_unknown_user") }}
         </h2>
       </div>
 
@@ -134,10 +134,10 @@
               $q.screen.lt.md ? 'text-center text-h6' : 'text-center text-h4'
             "
           >
-            {{ $t('homepage.onboarding_title') }}
+            {{ $t("homepage.onboarding_title") }}
           </p>
           <p class="q-px-md text-weight-light">
-            {{ $t('homepage.onboarding_subtitle') }}
+            {{ $t("homepage.onboarding_subtitle") }}
           </p>
         </q-card>
       </div>
@@ -146,14 +146,14 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from 'stores/user';
-import { logoFullImage } from 'assets/sources';
-import { UserRole } from 'src/helpers/users/user';
-import { NamedRoutes } from 'src/router';
+import { useUserStore } from "@/stores/user";
+import { logoFullImage } from "@/assets/sources";
+import { UserRole } from "@/helpers/users/user";
+import { NamedRoutes } from "@/router";
 
 // Define emits
 defineEmits<{
-  'request-global-dialog': [which: string];
+  "request-global-dialog": [which: string];
 }>();
 
 // Get user state
@@ -163,31 +163,31 @@ const user = useUserStore();
 const buttonsCoachAction = [
   {
     to: NamedRoutes.athletes,
-    icon: 'person_add',
-    title: 'homepage.actions.to_athletes',
-    subtitle: 'homepage.actions.to_athletes_caption',
+    icon: "person_add",
+    title: "homepage.actions.to_athletes",
+    subtitle: "homepage.actions.to_athletes_caption",
   },
   {
     to: NamedRoutes.exerciseLibrary,
-    icon: 'edit_calendar',
-    title: 'homepage.actions.to_library',
-    subtitle: 'homepage.actions.to_library_caption',
+    icon: "edit_calendar",
+    title: "homepage.actions.to_library",
+    subtitle: "homepage.actions.to_library_caption",
   },
   {
     to: NamedRoutes.program,
-    icon: 'rocket_launch',
-    title: 'homepage.actions.to_program',
-    subtitle: 'homepage.actions.to_program_caption',
+    icon: "rocket_launch",
+    title: "homepage.actions.to_program",
+    subtitle: "homepage.actions.to_program_caption",
   },
 ];
 
 // Set unsigned user action buttons
 const buttonsUnsigedAction = [
   {
-    to: 'login',
-    icon: 'fa-solid fa-right-to-bracket',
-    title: 'homepage.actions.to_login',
-    subtitle: 'homepage.actions.to_login_caption',
+    to: "login",
+    icon: "fa-solid fa-right-to-bracket",
+    title: "homepage.actions.to_login",
+    subtitle: "homepage.actions.to_login_caption",
   },
 ];
 </script>

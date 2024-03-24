@@ -131,32 +131,32 @@ import {
   onBeforeMount,
   onMounted,
   ref,
-} from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { User as FirebaseUser } from 'firebase/auth';
-import { NamedRoutes } from 'src/router';
-import { auth } from 'src/firebase';
-import { useUserStore } from 'stores/user';
-import { useCoachInfoStore } from 'stores/coachInfo';
-import { addCallbackOnAuthStateChanged } from 'src/helpers/users/auth';
-import { User, UserRole } from 'src/helpers/users/user';
-import { ProgramExercise } from 'src/helpers/programs/program';
-import { sortExercises } from 'src/helpers/exercises/listManagement';
-import { setLocale } from 'src/helpers/locales';
-import { defaultExerciseCollection } from 'src/utils/defaultExerciseCollection';
-import { event } from 'vue-gtag';
-import mixpanel from 'mixpanel-browser';
-import { logoTextOnly } from 'assets/sources';
+} from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { User as FirebaseUser } from "firebase/auth";
+import { NamedRoutes } from "src/router";
+import { auth } from "src/firebase";
+import { useUserStore } from "stores/user";
+import { useCoachInfoStore } from "stores/coachInfo";
+import { addCallbackOnAuthStateChanged } from "src/helpers/users/auth";
+import { User, UserRole } from "src/helpers/users/user";
+import { ProgramExercise } from "src/helpers/programs/program";
+import { sortExercises } from "src/helpers/exercises/listManagement";
+import { setLocale } from "src/helpers/locales";
+import { defaultExerciseCollection } from "src/utils/defaultExerciseCollection";
+import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
+import { logoTextOnly } from "assets/sources";
 
 // Import async components
 const osSplashScreen = defineAsyncComponent(
-  () => import('components/layout/SplashScreen.vue')
+  () => import("components/layout/SplashScreen.vue"),
 );
 const LeftDrawerElements = defineAsyncComponent(
-  () => import('components/layout/LeftDrawerElements.vue')
+  () => import("components/layout/LeftDrawerElements.vue"),
 );
 const UserOnboarding = defineAsyncComponent(
-  () => import('components/forms/UserOnboarding.vue')
+  () => import("components/forms/UserOnboarding.vue"),
 );
 
 // Init plugin
@@ -174,10 +174,10 @@ const rightDrawerOpen = ref(false);
 const rightDrawerElement = computed(() => route.meta?.showRightDrawer);
 const rightDrawerActive = ref<number>(-1);
 const showHeaderSm = computed(
-  () => route.meta?.showHeaderSm ?? route.meta?.showHeader ?? true
+  () => route.meta?.showHeaderSm ?? route.meta?.showHeader ?? true,
 );
 const showHeaderLg = computed(
-  () => route.meta?.showHeaderLg ?? route.meta?.showHeader ?? false
+  () => route.meta?.showHeaderLg ?? route.meta?.showHeader ?? false,
 );
 const showFooter = computed(() => route.meta?.showFooter ?? true);
 const showLeftDrawer = computed(() => route.meta?.showLeftDrawer ?? true);
@@ -256,7 +256,7 @@ async function onOnboardingSubmit(data: { [key: string]: any }) {
       onSuccess: (exercises?: ProgramExercise[]) => {
         if (exercises == undefined || exercises.length <= 0) {
           defaultExerciseCollection.forEach((exercise) =>
-            exercise.variants?.forEach((variant) => variant.saveNew())
+            exercise.variants?.forEach((variant) => variant.saveNew()),
           );
           coachInfo.exercises = defaultExerciseCollection;
           sortExercises(coachInfo.exercises, true);
@@ -275,14 +275,14 @@ function onRightDrawerClick(clickParam: any) {
   viewComponent.value?.handleDrawerClick?.(clickParam);
 
   // Register GA4 event
-  event('programview_rightdrawer_click', {
-    event_category: 'documentation',
-    event_label: 'The right drawer has been clicked in ProgramView',
+  event("programview_rightdrawer_click", {
+    event_category: "documentation",
+    event_label: "The right drawer has been clicked in ProgramView",
     value: 1,
   });
 
   // Mixpanel tracking
-  mixpanel.track('Right drawer clicked', {
+  mixpanel.track("Right drawer clicked", {
     ClickParameters: String(clickParam),
   });
 }
@@ -297,7 +297,7 @@ function onRightDrawerClick(clickParam: any) {
  */
 function onShowGlobalDialog(which: string) {
   switch (which) {
-    case 'onboarding':
+    case "onboarding":
       showDialogOnboarding.value = true;
       break;
   }

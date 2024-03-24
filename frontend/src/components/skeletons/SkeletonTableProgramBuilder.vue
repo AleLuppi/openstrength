@@ -17,9 +17,9 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue';
+import { defineAsyncComponent } from "vue";
 
 const SkeletonTableSheet = defineAsyncComponent(
-  () => import('components/skeletons/SkeletonTableSheet.vue')
+  () => import("@/components/skeletons/SkeletonTableSheet.vue"),
 );
 </script>

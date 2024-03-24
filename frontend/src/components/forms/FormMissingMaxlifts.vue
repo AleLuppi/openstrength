@@ -42,10 +42,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import type { QForm } from 'quasar';
-import type { MaxLift } from 'src/helpers/maxlifts/maxlift';
-import { getMaxliftUnit } from 'src/helpers/maxlifts/utils';
+import { ref, watch } from "vue";
+import type { QForm } from "quasar";
+import type { MaxLift } from "@/helpers/maxlifts/maxlift";
+import { getMaxliftUnit } from "@/helpers/maxlifts/utils";
 
 // Set props
 const props = defineProps<{ maxlifts: MaxLift[]; clone?: boolean }>();
@@ -78,20 +78,20 @@ watch(
       ? inMaxlifts.map((maxlift) => maxlift.duplicate(true))
       : inMaxlifts;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 /**
  * Perform operations on form submit.
  */
 function onSubmit() {
-  emit('submit', maxliftsUnderUpdate.value);
+  emit("submit", maxliftsUnderUpdate.value);
 }
 
 /**
  * Perform operations on form reset.
  */
 function onReset() {
-  emit('reset');
+  emit("reset");
 }
 </script>

@@ -1,6 +1,6 @@
-import { MaxLift, MaxLiftType } from 'src/helpers/maxlifts/maxlift';
-import { arraySortObjectsByField, arrayUniqueValues } from 'src/helpers/array';
-import { objectSortKeysByList } from '../object';
+import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
+import { arraySortObjectsByField, arrayUniqueValues } from "@/helpers/array";
+import { objectSortKeysByList } from "../object";
 
 /**
  * Get a object having exercise name and max lift type as key, and MaxLift instance as value.
@@ -10,7 +10,7 @@ import { objectSortKeysByList } from '../object';
 export function separateMaxliftPerExerciseAndType(maxlifts: MaxLift[]) {
   const sortedMaxlifts = arraySortObjectsByField(
     maxlifts,
-    'performedOn'
+    "performedOn",
   ).reverse();
   return sortedMaxlifts.reduce(
     (out: { [key: string]: { [type in MaxLiftType]?: MaxLift } }, maxlift) => {
@@ -24,11 +24,11 @@ export function separateMaxliftPerExerciseAndType(maxlifts: MaxLift[]) {
       out[maxlift.exercise.name] = objectSortKeysByList(
         out[maxlift.exercise.name],
         Object.values(MaxLiftType),
-        true
+        true,
       );
       return out;
     },
-    {}
+    {},
   );
 }
 
@@ -44,7 +44,7 @@ export function separateMaxliftPerExerciseAndType(maxlifts: MaxLift[]) {
  */
 export function compareMaxliftLists(
   maxliftsOne: MaxLift[],
-  maxliftsTwo: MaxLift[]
+  maxliftsTwo: MaxLift[],
 ): [MaxLift[], MaxLift[], [MaxLift, MaxLift][]] {
   // Prepare outputs
   const maxliftsInOne: MaxLift[] = [];
@@ -57,7 +57,7 @@ export function compareMaxliftLists(
 
   // Compare maxlifts
   arrayUniqueValues(
-    Object.keys(separatedOne).concat(Object.keys(separatedTwo))
+    Object.keys(separatedOne).concat(Object.keys(separatedTwo)),
   ).forEach((exercise) => {
     const types1 = separatedOne[exercise];
     const types2 = separatedTwo[exercise];

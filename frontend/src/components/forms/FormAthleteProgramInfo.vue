@@ -16,7 +16,7 @@
           :label="
             $t(
               'coach.athlete_management.fields.' +
-                (props.isCurrent ? 'program_active' : 'program_ready')
+                (props.isCurrent ? 'program_active' : 'program_ready'),
             )
           "
           :color="props.isCurrent ? 'positive' : 'info'"
@@ -25,12 +25,12 @@
 
       <div v-if="!props.isCurrent" class="q-my-lg">
         <p>
-          {{ $t('coach.athlete_management.assign.another_program_assigned') }}
+          {{ $t("coach.athlete_management.assign.another_program_assigned") }}
           <a
             @click="emit('assign', program)"
             class="cursor-pointer text-primary"
           >
-            {{ $t('coach.athlete_management.assign.assign_this') }}
+            {{ $t("coach.athlete_management.assign.assign_this") }}
           </a>
         </p>
       </div>
@@ -74,14 +74,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-import type { QForm } from 'quasar';
-import { useQuasar } from 'quasar';
-import { Program } from 'src/helpers/programs/program';
-import { event } from 'vue-gtag';
-import mixpanel from 'mixpanel-browser';
-import { symOutlinedOpenInNew } from '@quasar/extras/material-symbols-outlined';
+import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import type { QForm } from "quasar";
+import { useQuasar } from "quasar";
+import { Program } from "@/helpers/programs/program";
+import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
+import { symOutlinedOpenInNew } from "@quasar/extras/material-symbols-outlined";
 
 // Init plugin
 const $q = useQuasar();
@@ -93,7 +93,7 @@ const props = withDefaults(
     program: Program;
     isCurrent: boolean;
   }>(),
-  { isCurrent: false }
+  { isCurrent: false },
 );
 
 // Define emits
@@ -130,7 +130,7 @@ watch(
       programDescription.value = program.description;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 /**
@@ -144,35 +144,35 @@ function onSubmit() {
   program.finishedOn = programFinishedOn.value;
   program.description = programDescription.value;
 
-  emit('submit', program);
+  emit("submit", program);
 
   program.saveUpdate({
     saveFrozenView: true,
     onSuccess: () => {
       $q.notify({
-        type: 'positive',
-        message: i18n.t('coach.athlete_management.list.add_succeed'),
-        position: 'bottom',
+        type: "positive",
+        message: i18n.t("coach.athlete_management.list.add_succeed"),
+        position: "bottom",
       });
 
       // Register GA4 event
-      event('athleteview_programinfo_updated', {
-        event_category: 'documentation',
-        event_label: 'Program info updated in AthleteView',
+      event("athleteview_programinfo_updated", {
+        event_category: "documentation",
+        event_label: "Program info updated in AthleteView",
         value: 1,
       });
 
       // Mixpanel tracking
-      mixpanel.track('Program Info Updated', {
-        Page: 'AthleteView',
+      mixpanel.track("Program Info Updated", {
+        Page: "AthleteView",
         IsProgramDescriptionSet: program.description ? true : false,
       });
     },
     onError: () => {
       $q.notify({
-        type: 'negative',
-        message: i18n.t('coach.athlete_management.list.add_error'),
-        position: 'bottom',
+        type: "negative",
+        message: i18n.t("coach.athlete_management.list.add_error"),
+        position: "bottom",
       });
     },
   });
@@ -183,15 +183,15 @@ function onSubmit() {
  */
 function registerProgramOpeningEvent() {
   // Register GA4 event
-  event('athleteview_program_open', {
-    event_category: 'documentation',
-    event_label: 'Program opened from AthleteView',
+  event("athleteview_program_open", {
+    event_category: "documentation",
+    event_label: "Program opened from AthleteView",
     value: 1,
   });
 
   // Mixpanel tracking
-  mixpanel.track('Program Opened', {
-    Page: 'AthleteView',
+  mixpanel.track("Program Opened", {
+    Page: "AthleteView",
   });
 }
 </script>

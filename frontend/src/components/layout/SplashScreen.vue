@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { logoFullImage } from 'assets/sources';
+import { logoFullImage } from "@/assets/sources";
 </script>
 
 <style scoped>

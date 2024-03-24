@@ -47,7 +47,7 @@
       </q-item-section>
       <q-item-section v-if="!props.mini">
         <q-item-label>
-          {{ $t('layout.views.' + (user.isSignedIn ? 'profile' : 'signin')) }}
+          {{ $t("layout.views." + (user.isSignedIn ? "profile" : "signin")) }}
         </q-item-label>
       </q-item-section>
 
@@ -58,7 +58,7 @@
           size="lg"
         />
         <p>
-          {{ $t('layout.views.' + (user.isSignedIn ? 'profile' : 'signin')) }}
+          {{ $t("layout.views." + (user.isSignedIn ? "profile" : "signin")) }}
         </p>
       </q-card>
     </q-item>
@@ -66,8 +66,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed } from "vue";
+import { useRouter } from "vue-router";
 import {
   fasBook,
   fasCircleUser,
@@ -76,10 +76,10 @@ import {
   fasRightToBracket,
   fasSheetPlastic,
   fasUsers,
-} from '@quasar/extras/fontawesome-v6';
-import { NamedRoutes } from 'src/router';
-import { useUserStore } from 'stores/user';
-import { routeAccessibleByUser } from 'src/router/routeAccessManagement';
+} from "@quasar/extras/fontawesome-v6";
+import { NamedRoutes } from "@/router";
+import { useUserStore } from "@/stores/user";
+import { routeAccessibleByUser } from "@//router/routeAccessManagement";
 
 // Init plugin
 const router = useRouter();
@@ -99,27 +99,27 @@ const user = useUserStore();
 const allDrawerPages = [
   {
     route: NamedRoutes.home,
-    caption: 'layout.views.home',
+    caption: "layout.views.home",
     icon: fasHouseChimney,
   },
   {
     route: NamedRoutes.athletes,
-    caption: 'layout.views.athletes',
+    caption: "layout.views.athletes",
     icon: fasUsers,
   },
   {
     route: NamedRoutes.program,
-    caption: 'layout.views.program',
+    caption: "layout.views.program",
     icon: fasDumbbell,
   },
   {
     route: NamedRoutes.exerciseLibrary,
-    caption: 'layout.views.library',
+    caption: "layout.views.library",
     icon: fasBook,
   },
   {
     route: NamedRoutes.programLibrary,
-    caption: 'layout.views.programlibrary',
+    caption: "layout.views.programlibrary",
     icon: fasSheetPlastic,
   },
 ];
@@ -134,7 +134,7 @@ const drawerPages = computed(() =>
       route &&
       (routeAccessibleByUser(user, route) || route.name == NamedRoutes.home)
     );
-  })
+  }),
 );
 </script>
 
@@ -155,7 +155,7 @@ const drawerPages = computed(() =>
 }
 
 .beta-feature::after {
-  content: 'beta';
+  content: "beta";
   display: inline-block;
   position: absolute;
   top: 5px;

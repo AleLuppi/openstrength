@@ -1,4 +1,4 @@
-import { UserProps, UserRole } from 'src/helpers/users/user';
+import { UserProps, UserRole } from "@/helpers/users/user";
 
 /**
  * Check if route can be accessed by user, according to user role.
@@ -9,7 +9,7 @@ import { UserProps, UserRole } from 'src/helpers/users/user';
  */
 export function routeAccessibleByRole(
   user: UserProps,
-  route: { [key: string]: any; meta: { [key: string]: any } }
+  route: { [key: string]: any; meta: { [key: string]: any } },
 ) {
   // Check whether access should be restricted
   const restrictIf =
@@ -30,7 +30,7 @@ export function routeAccessibleByRole(
  */
 export function routeAccessibleByLevel(
   user: UserProps,
-  route: { [key: string]: any; meta: { [key: string]: any } }
+  route: { [key: string]: any; meta: { [key: string]: any } },
 ) {
   // Check whether access should be restricted
   const restrictIf =
@@ -49,7 +49,7 @@ export function routeAccessibleByLevel(
  */
 export function routeAccessibleByAuthenticated(
   user: UserProps,
-  route: { [key: string]: any; meta: { [key: string]: any } }
+  route: { [key: string]: any; meta: { [key: string]: any } },
 ) {
   // Check whether access should be restricted
   const restrictIf =
@@ -68,7 +68,7 @@ export function routeAccessibleByAuthenticated(
  */
 export function routeAccessibleByNotAuthenticated(
   user: UserProps,
-  route: { [key: string]: any; meta: { [key: string]: any } }
+  route: { [key: string]: any; meta: { [key: string]: any } },
 ) {
   // Check whether access should be restricted
   const restrictIf =
@@ -87,7 +87,7 @@ export function routeAccessibleByNotAuthenticated(
  */
 export function routeAccessibleByUser(
   user: UserProps,
-  route: { [key: string]: any; meta: { [key: string]: any } }
+  route: { [key: string]: any; meta: { [key: string]: any } },
 ) {
   // Check if user can access, according to all restricting rules
   return (

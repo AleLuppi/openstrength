@@ -1,6 +1,6 @@
 <template>
   <q-form ref="formElement" @submit="onSubmit">
-    <h6>{{ $t('coach.program_management.builder.new_program_info') }}</h6>
+    <h6>{{ $t("coach.program_management.builder.new_program_info") }}</h6>
 
     <div class="row q-col-gutter-x-md">
       <!-- Program name -->
@@ -96,17 +96,17 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, ref, watch } from 'vue';
-import type { QForm } from 'quasar';
-import { useCoachInfoStore } from 'stores/coachInfo';
-import { Program } from 'src/helpers/programs/program';
-import { dateGetWithoutTimezone } from 'src/helpers/scalar';
-import { AthleteUser } from 'src/helpers/users/user';
-import mixpanel from 'mixpanel-browser';
+import { defineAsyncComponent, ref, watch } from "vue";
+import type { QForm } from "quasar";
+import { useCoachInfoStore } from "@/stores/coachInfo";
+import { Program } from "@/helpers/programs/program";
+import { dateGetWithoutTimezone } from "@/helpers/scalar";
+import { AthleteUser } from "@/helpers/users/user";
+import mixpanel from "mixpanel-browser";
 
 // Import components
 const DialogProgramAssignAthlete = defineAsyncComponent(
-  () => import('components/dialogs/DialogProgramAssignAthlete.vue')
+  () => import("components/dialogs/DialogProgramAssignAthlete.vue"),
 );
 
 // Define props
@@ -157,7 +157,7 @@ watch(
     programFinishedOn.value = program.finishedOn;
     programDescription.value = program.description;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Select proposed athlete
@@ -166,7 +166,7 @@ watch(
   (athlete) => {
     if (!programAthlete.value) programAthlete.value = athlete;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Show warning dialog when necessary
@@ -190,11 +190,11 @@ function onSubmit() {
   program.description = programDescription.value;
 
   // Mixpanel tracking
-  mixpanel.track('Program Info Updated', {
-    Page: 'ProgramView',
+  mixpanel.track("Program Info Updated", {
+    Page: "ProgramView",
     IsProgramDescriptionSet: program.description ? true : false,
   });
 
-  emit('submit', program, programAssignNow.value);
+  emit("submit", program, programAssignNow.value);
 }
 </script>

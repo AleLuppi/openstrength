@@ -40,8 +40,8 @@
                 {{
                   $t(
                     programSaved
-                      ? 'coach.program_management.builder.saved'
-                      : 'coach.program_management.builder.not_saved'
+                      ? "coach.program_management.builder.saved"
+                      : "coach.program_management.builder.not_saved",
                   )
                 }}
               </span>
@@ -161,7 +161,7 @@
                     denseView
                       ? undefined
                       : i18n.t(
-                          'coach.programlibrary_management.list.import_template'
+                          'coach.programlibrary_management.list.import_template',
                         )
                   "
                   :class="denseView ? 'q-pa-xs q-ma-none' : ''"
@@ -176,7 +176,7 @@
                     denseView
                       ? undefined
                       : i18n.t(
-                          'coach.programlibrary_management.list.export_template'
+                          'coach.programlibrary_management.list.export_template',
                         )
                   "
                   :class="denseView ? 'q-pa-xs q-ma-none' : ''"
@@ -192,7 +192,7 @@
                 ></q-btn>
               </div>
               <q-badge v-else>
-                {{ $t('coach.programlibrary_management.list.template') }}
+                {{ $t("coach.programlibrary_management.list.template") }}
               </q-badge>
 
               <!-- Get shareable link to program -->
@@ -223,7 +223,7 @@
                 class="row items-end justify-between q-col-gutter-sm q-pt-md"
               >
                 <h6 :class="denseView ? 'col-3' : 'col-2'">
-                  {{ $t('coach.program_management.filter.title') }}
+                  {{ $t("coach.program_management.filter.title") }}
                 </h6>
                 <os-select
                   v-model="filterWeek"
@@ -322,7 +322,7 @@
         <!-- Create a new program or open one already assigned to athlete -->
         <div v-else class="q-pa-lg column items-center">
           <h4 class="text-margin-xs">
-            {{ $t('coach.program_management.builder.initialize_program') }}
+            {{ $t("coach.program_management.builder.initialize_program") }}
           </h4>
 
           <q-btn
@@ -333,11 +333,11 @@
             @click="openNewProgram"
           />
 
-          <p class="q-ma-md">{{ $t('common.or_long') }}</p>
+          <p class="q-ma-md">{{ $t("common.or_long") }}</p>
 
           <!-- Show recently opened programs -->
           <h6 class="text-margin-xs">
-            {{ $t('coach.program_management.builder.open_recent') }}
+            {{ $t("coach.program_management.builder.open_recent") }}
           </h6>
           <TableExistingPrograms
             ref="recentProgramsTableElement"
@@ -377,9 +377,9 @@
               <h6 class="text-margin-xs">
                 {{
                   selectedProgram && !selectedProgram.isTemplate
-                    ? $t('coach.maxlift_management.list.maxlift_section')
+                    ? $t("coach.maxlift_management.list.maxlift_section")
                     : $t(
-                        'coach.maxlift_management.list.maxlift_section_template'
+                        "coach.maxlift_management.list.maxlift_section_template",
                       )
                 }}
               </h6>
@@ -434,8 +434,8 @@
                       <h5>
                         {{
                           updatingMaxlift
-                            ? $t('coach.maxlift_management.list.update')
-                            : $t('coach.maxlift_management.list.add')
+                            ? $t("coach.maxlift_management.list.update")
+                            : $t("coach.maxlift_management.list.add")
                         }}
                       </h5>
 
@@ -472,9 +472,9 @@
                 <h6>
                   {{
                     selectedProgram && !selectedProgram.isTemplate
-                      ? $t('coach.program_management.list.program_section')
+                      ? $t("coach.program_management.list.program_section")
                       : $t(
-                          'coach.program_management.list.programtemplate_section'
+                          "coach.program_management.list.programtemplate_section",
                         )
                   }}
                 </h6>
@@ -486,7 +486,7 @@
                 class="row items-center justify-start q-col-gutter-sm"
               >
                 <span class="text-black">
-                  {{ $t('coach.program_management.builder.assigned_athlete') }}
+                  {{ $t("coach.program_management.builder.assigned_athlete") }}
                 </span>
                 <div>
                   <q-btn
@@ -506,7 +506,7 @@
                         </q-avatar>
                       </q-item-section>
                       <q-item-section>{{
-                        selectedProgram.athlete?.referenceName ?? ''
+                        selectedProgram.athlete?.referenceName ?? ""
                       }}</q-item-section>
                     </q-item>
                   </q-btn>
@@ -521,15 +521,15 @@
                       <p>
                         {{
                           selectedProgram.name ??
-                          $t('coach.program_management.fields.program')
+                          $t("coach.program_management.fields.program")
                         }}
                       </p>
                       <p
                         v-if="selectedProgram.lastUpdated"
                         class="text-italic text-xs"
                       >
-                        {{ $t('coach.program_management.builder.last_update') }}
-                        {{ $d(selectedProgram.lastUpdated, 'middle') }}
+                        {{ $t("coach.program_management.builder.last_update") }}
+                        {{ $d(selectedProgram.lastUpdated, "middle") }}
                       </p>
                     </div>
 
@@ -558,18 +558,18 @@
                   @click="onUnsavedProgramRestore"
                 >
                   <p class="text-primary">
-                    {{ $t('coach.program_management.builder.open_temporary') }}
+                    {{ $t("coach.program_management.builder.open_temporary") }}
                   </p>
                   <p
                     v-if="coachActiveChanges.program.lastUpdated"
                     class="text-italic text-xs"
                   >
-                    {{ $t('coach.program_management.builder.last_update') }}
-                    {{ $d(coachActiveChanges.program.lastUpdated, 'middle') }}
+                    {{ $t("coach.program_management.builder.last_update") }}
+                    {{ $d(coachActiveChanges.program.lastUpdated, "middle") }}
                   </p>
                 </q-card-section>
                 <q-card-section v-else>{{
-                  $t('coach.program_management.builder.start_program')
+                  $t("coach.program_management.builder.start_program")
                 }}</q-card-section>
               </q-card>
 
@@ -591,7 +591,7 @@
               <div class="row justify-between items-center q-mb-sm">
                 <h6 class="text-margin-xs">
                   {{
-                    $t('coach.program_management.builder.feedback_from_athlete')
+                    $t("coach.program_management.builder.feedback_from_athlete")
                   }}
                 </h6>
                 <q-btn
@@ -604,7 +604,7 @@
                   <q-tooltip :offset="[10, 10]">
                     {{
                       $t(
-                        'coach.program_management.builder.feedback_from_athlete_refresh_tooltip'
+                        "coach.program_management.builder.feedback_from_athlete_refresh_tooltip",
                       )
                     }}
                   </q-tooltip>
@@ -702,7 +702,7 @@
             size="sm"
           />
           <span class="q-ml-sm">{{
-            $t('coach.program_management.builder.not_saved_prompt')
+            $t("coach.program_management.builder.not_saved_prompt")
           }}</span>
         </q-card-section>
 
@@ -733,7 +733,7 @@
             size="md"
           />
           <span class="q-ml-sm">{{
-            $t('coach.program_management.builder.not_assigned_prompt')
+            $t("coach.program_management.builder.not_assigned_prompt")
           }}</span>
         </q-card-section>
 
@@ -763,7 +763,7 @@
         <q-card-section class="row items-center q-pb-none">
           <p>
             {{
-              $t('coach.program_management.list.delete_program_confirm', {
+              $t("coach.program_management.list.delete_program_confirm", {
                 program: deletingProgram?.name,
               })
             }}
@@ -799,7 +799,7 @@
           />
           <span class="col q-ml-sm">
             {{
-              $t('coach.programlibrary_management.list.filter_active_warning')
+              $t("coach.programlibrary_management.list.filter_active_warning")
             }}
           </span>
         </q-card-section>
@@ -837,7 +837,7 @@
         <q-card-section class="row items-center">
           <h6>
             {{
-              $t('coach.programlibrary_management.list.template_saving_title')
+              $t("coach.programlibrary_management.list.template_saving_title")
             }}
           </h6>
         </q-card-section>
@@ -858,14 +858,14 @@
           <h6>
             {{
               $t(
-                'coach.programlibrary_management.import.missing_maxlifts_title'
+                "coach.programlibrary_management.import.missing_maxlifts_title",
               )
             }}
           </h6>
           <p>
             {{
               $t(
-                'coach.programlibrary_management.import.missing_maxlifts_description'
+                "coach.programlibrary_management.import.missing_maxlifts_description",
               )
             }}
           </p>
@@ -891,35 +891,35 @@ import {
   nextTick,
   onBeforeUnmount,
   defineAsyncComponent,
-} from 'vue';
-import { debounce, QDialog, QCard, useQuasar } from 'quasar';
-import { useI18n } from 'vue-i18n';
-import { useRoute, useRouter } from 'vue-router';
-import { useUserStore } from 'stores/user';
-import { useCoachInfoStore } from 'stores/coachInfo';
-import { useCoachActiveChangesStore } from 'stores/coachActiveChanges';
+} from "vue";
+import { debounce, QDialog, QCard, useQuasar } from "quasar";
+import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
+import { useCoachInfoStore } from "@/stores/coachInfo";
+import { useCoachActiveChangesStore } from "@/stores/coachActiveChanges";
 import {
   Program,
   ProgramExercise,
   ProgramFrozenView,
-} from 'src/helpers/programs/program';
-import { MaxLift } from 'src/helpers/maxlifts/maxlift';
+} from "@/helpers/programs/program";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import {
   getProgramUniqueWeeks,
   getProgramUniqueDays,
   getProgramUniqueExercises,
-} from 'src/helpers/programs/linesManagement';
-import { NamedRoutes } from 'src/router';
-import { Exercise, ExerciseVariant } from 'src/helpers/exercises/exercise';
-import { reduceExercises } from 'src/helpers/exercises/listManagement';
-import { event } from 'vue-gtag';
-import mixpanel from 'mixpanel-browser';
-import { extractUniqueMaxliftFromProgram } from 'src/helpers/programs/programTemplate';
-import { compareMaxliftLists } from 'src/helpers/maxlifts/listManagement';
-import { arrayFilterUndefined } from 'src/helpers/array';
-import { assignProgramToAthlete } from 'src/helpers/programs/programManager';
-import { loadLatestFeedback } from 'src/helpers/programs/programFeedback';
-import { ProgramFeedback } from 'src/helpers/programs/models';
+} from "@/helpers/programs/linesManagement";
+import { NamedRoutes } from "@/router";
+import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
+import { reduceExercises } from "@/helpers/exercises/listManagement";
+import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
+import { extractUniqueMaxliftFromProgram } from "@/helpers/programs/programTemplate";
+import { compareMaxliftLists } from "@/helpers/maxlifts/listManagement";
+import { arrayFilterUndefined } from "@/helpers/array";
+import { assignProgramToAthlete } from "@/helpers/programs/programManager";
+import { loadLatestFeedback } from "@/helpers/programs/programFeedback";
+import { ProgramFeedback } from "@/helpers/programs/models";
 import {
   symOutlinedAssignmentAdd,
   symOutlinedDownload,
@@ -927,50 +927,50 @@ import {
   symOutlinedRedo,
   symOutlinedShare,
   symOutlinedUndo,
-} from '@quasar/extras/material-symbols-outlined';
+} from "@quasar/extras/material-symbols-outlined";
 
 // Import components
 const ProgramBuilder = defineAsyncComponent(
-  () => import('components/ProgramBuilder.vue')
+  () => import("@/components/ProgramBuilder.vue"),
 );
 const TableCompactProgram = defineAsyncComponent(
-  () => import('components/tables/TableCompactProgram.vue')
+  () => import("@/components/tables/TableCompactProgram.vue"),
 );
 const SkeletonTableProgramBuilder = defineAsyncComponent(
-  () => import('components/skeletons/SkeletonTableProgramBuilder.vue')
+  () => import("@/components/skeletons/SkeletonTableProgramBuilder.vue"),
 );
 const ChartSelector = defineAsyncComponent(
-  () => import('components/charts/ChartSelector.vue')
+  () => import("@/components/charts/ChartSelector.vue"),
 );
 const DialogProgramImportTemplate = defineAsyncComponent(
-  () => import('components/dialogs/DialogProgramImportTemplate.vue')
+  () => import("@/components/dialogs/DialogProgramImportTemplate.vue"),
 );
 const FormProgramTemplateSaving = defineAsyncComponent(
-  () => import('components/forms/FormProgramTemplateSaving.vue')
+  () => import("@/components/forms/FormProgramTemplateSaving.vue"),
 );
 const FormMissingMaxlifts = defineAsyncComponent(
-  () => import('components/forms/FormMissingMaxlifts.vue')
+  () => import("@/components/forms/FormMissingMaxlifts.vue"),
 );
 const WorkoutDayForm = defineAsyncComponent(
-  () => import('components/feedback/WorkoutDayForm.vue')
-);
-const TableMaxLifts = defineAsyncComponent(
-  () => import('components/tables/TableMaxLifts.vue')
+  () => import("@/components/feedback/WorkoutDayForm.vue"),
 );
 const DialogProgramAssignAthlete = defineAsyncComponent(
-  () => import('components/dialogs/DialogProgramAssignAthlete.vue')
+  () => import("@/components/dialogs/DialogProgramAssignAthlete.vue"),
 );
 const DialogProgramShareWithAthlete = defineAsyncComponent(
-  () => import('components/dialogs/DialogProgramShareWithAthlete.vue')
+  () => import("@/components/dialogs/DialogProgramShareWithAthlete.vue"),
+);
+const TableMaxLifts = defineAsyncComponent(
+  () => import("@/components/tables/TableMaxLifts.vue"),
 );
 const FormMaxLift = defineAsyncComponent(
-  () => import('components/forms/FormMaxLift.vue')
-);
-const FormProgramInfo = defineAsyncComponent(
-  () => import('components/forms/FormProgramInfo.vue')
+  () => import("@/components/forms/FormMaxLift.vue"),
 );
 const TableExistingPrograms = defineAsyncComponent(
-  () => import('components/tables/TableExistingPrograms.vue')
+  () => import("@/components/tables/TableExistingPrograms.vue"),
+);
+const FormProgramInfo = defineAsyncComponent(
+  () => import("@/components/forms/FormProgramInfo.vue"),
 );
 
 // Define emits
@@ -994,10 +994,10 @@ const coachActiveChanges = useCoachActiveChangesStore();
 
 // Set constants
 const UtilsOptions = {
-  list: 'list',
-  charts: 'charts',
-  maxlifts: 'maxlifts',
-  feedbacks: 'feedbacks',
+  list: "list",
+  charts: "charts",
+  maxlifts: "maxlifts",
+  feedbacks: "feedbacks",
 };
 const splitterThresholdValue = 15;
 
@@ -1058,7 +1058,7 @@ const showUtilsDialog = ref(false);
 const requestedProgram = computed(() =>
   coachInfo.programs
     ?.find((program) => program.uid == route.params.programId)
-    ?.duplicate()
+    ?.duplicate(),
 );
 
 // Get all coach programs
@@ -1067,8 +1067,8 @@ const allAssignedPrograms = computed(
     coachInfo.programs?.filter(
       (program) =>
         program.uid === program.athlete?.assignedProgramId &&
-        !program.isTemplate
-    ) || []
+        !program.isTemplate,
+    ) || [],
 );
 
 // Get complete program filter
@@ -1080,7 +1080,7 @@ const programFilter = computed({
       (filterDay.value?.length ?? 0) > 0 ||
       (filterExercise.value?.length ?? 0) > 0
     ) {
-      mixpanel.track('Filter Used in Program', {
+      mixpanel.track("Filter Used in Program", {
         DaysSelected: filterWeek.value?.length ?? 0,
         WeeksSelected: filterDay.value?.length ?? 0,
         ExercisesSelected: filterExercise.value?.length ?? 0,
@@ -1103,19 +1103,19 @@ const programFilter = computed({
 // Get max lifts for selected athlete
 const athleteMaxlifts = computed(() =>
   coachInfo.maxlifts?.filter(
-    (maxlift) => maxlift.athlete?.uid == selectedProgram.value?.athleteId
-  )
+    (maxlift) => maxlift.athlete?.uid == selectedProgram.value?.athleteId,
+  ),
 );
 
 // For template program, only show maxlifts referenced in program
 const showingAthleteMaxlifts = computed(() => {
   if (selectedProgram.value?.isTemplate) {
     const programMaxliftsUid = extractUniqueMaxliftFromProgram(
-      selectedProgram.value
+      selectedProgram.value,
     ).map((maxlift) => maxlift.uid);
     return (
       athleteMaxlifts.value?.filter(
-        (maxlift) => maxlift.uid && programMaxliftsUid.includes(maxlift.uid)
+        (maxlift) => maxlift.uid && programMaxliftsUid.includes(maxlift.uid),
       ) ?? []
     );
   } else return athleteMaxlifts.value ?? [];
@@ -1132,7 +1132,7 @@ const showChangeProgramDialog = computed({
 });
 
 const proposedAthlete = computed(() =>
-  coachInfo.athletes?.find((athlete) => athlete.uid == route.query.athlete)
+  coachInfo.athletes?.find((athlete) => athlete.uid == route.query.athlete),
 );
 
 // Update selected program upon request from router
@@ -1148,16 +1148,16 @@ watch(
   },
   {
     immediate: true,
-  }
+  },
 );
 
 // Show new program dialog when requested
 watch(
   () => route.query.new,
   (val) => {
-    if (val == 'true') showNewProgramDialog.value = true;
+    if (val == "true") showNewProgramDialog.value = true;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Try (but not force) to open a new program when requested
@@ -1175,14 +1175,14 @@ watch(
   (newVal, oldVal) => {
     if ((oldVal === 0 || oldVal === undefined) && newVal > 0)
       emit(
-        'activateDrawerItem',
+        "activateDrawerItem",
         Object.values(UtilsOptions).findIndex(
-          (val) => val == showingUtils.value
-        )
+          (val) => val == showingUtils.value,
+        ),
       );
-    if (oldVal && oldVal > 0 && newVal === 0) emit('activateDrawerItem', -1);
+    if (oldVal && oldVal > 0 && newVal === 0) emit("activateDrawerItem", -1);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Show dialog deleting dialog when required
@@ -1194,7 +1194,7 @@ watch(deletingProgram, (programToDelete) => {
 watch(isBuilderCompact, () => {
   // Mixpanel tracking
   if (isBuilderCompact.value) {
-    mixpanel.track('Builder switched to compact');
+    mixpanel.track("Builder switched to compact");
   }
 });
 
@@ -1224,22 +1224,22 @@ function openProgram(programId?: string, force = false) {
     router.replace({
       ...route,
       params: { ...route.params, programId: programId },
-      query: { ...(programId ? {} : { new: 'true' }) },
+      query: { ...(programId ? {} : { new: "true" }) },
     });
 
     // Clear any possible pending request
     substituteProgramId.value = undefined;
 
     // Register GA4 event
-    event('programview_existingprogram_open', {
-      event_category: 'documentation',
-      event_label: 'Program opened in ProgramView for modification',
+    event("programview_existingprogram_open", {
+      event_category: "documentation",
+      event_label: "Program opened in ProgramView for modification",
       value: 1,
     });
 
     // Mixpanel tracking
-    mixpanel.track('Program Opened', {
-      Page: 'ProgramView',
+    mixpanel.track("Program Opened", {
+      Page: "ProgramView",
     });
   }
 }
@@ -1277,7 +1277,7 @@ function onProgramTableUpdate(program: Program) {
 function saveProgram(
   program?: Program,
   assignToAthlete = false,
-  checkUnsaved = false
+  checkUnsaved = false,
 ) {
   // Check if program is unsaved
   if (checkUnsaved && programSaved.value) return;
@@ -1293,7 +1293,7 @@ function saveProgram(
       setSavedValue();
       (coachInfo.programs =
         coachInfo.programs?.filter(
-          (program) => program.uid != currProgram.uid
+          (program) => program.uid != currProgram.uid,
         ) || []).push(currProgram);
 
       // Update athlete profile with new program
@@ -1301,11 +1301,11 @@ function saveProgram(
         assignProgramToAthlete(currProgram, currProgram.athlete, {
           onError: () => {
             $q.notify({
-              type: 'negative',
+              type: "negative",
               message: i18n.t(
-                'coach.program_management.builder.save_assignment_error'
+                "coach.program_management.builder.save_assignment_error",
               ),
-              position: 'bottom',
+              position: "bottom",
             });
           },
         });
@@ -1314,7 +1314,7 @@ function saveProgram(
       coachActiveChanges.program = undefined;
 
       // Mixpanel tracking
-      mixpanel.track('Program Saved', {
+      mixpanel.track("Program Saved", {
         ExerciseNumber: currProgram?.programExercises?.length,
       });
 
@@ -1323,14 +1323,14 @@ function saveProgram(
     },
     onError: () => {
       $q.notify({
-        type: 'negative',
-        message: i18n.t('coach.program_management.builder.save_error'),
-        position: 'bottom',
+        type: "negative",
+        message: i18n.t("coach.program_management.builder.save_error"),
+        position: "bottom",
       });
       programSaved.value = false;
 
       // Mixpanel tracking
-      mixpanel.track('ERROR Program Saved', {
+      mixpanel.track("ERROR Program Saved", {
         ExerciseNumber: currProgram?.programExercises?.length,
       });
     },
@@ -1360,19 +1360,19 @@ function saveProgramTemplate(programTemplate: Program) {
       // Inform user about saved program
       (coachInfo.programs =
         coachInfo.programs?.filter(
-          (program) => program.uid != currProgram.uid
+          (program) => program.uid != currProgram.uid,
         ) || []).push(currProgram);
 
       // Mixpanel tracking
-      mixpanel.track('Template Saved', {
+      mixpanel.track("Template Saved", {
         ExerciseNumber: currProgram?.programExercises?.length,
         TemplateUid: currProgram.uid,
       });
 
       $q.notify({
-        type: 'positive',
-        message: i18n.t('coach.programlibrary_management.list.save_success'),
-        position: 'bottom',
+        type: "positive",
+        message: i18n.t("coach.programlibrary_management.list.save_success"),
+        position: "bottom",
       });
 
       // Close the form
@@ -1380,13 +1380,13 @@ function saveProgramTemplate(programTemplate: Program) {
     },
     onError: () => {
       $q.notify({
-        type: 'negative',
-        message: i18n.t('coach.program_management.builder.save_error'),
-        position: 'bottom',
+        type: "negative",
+        message: i18n.t("coach.program_management.builder.save_error"),
+        position: "bottom",
       });
 
       // Mixpanel tracking
-      mixpanel.track('ERROR Program Template Saved', {
+      mixpanel.track("ERROR Program Template Saved", {
         ExerciseNumber: currProgram?.programExercises?.length,
         TemplateUid: currProgram.uid,
       });
@@ -1407,8 +1407,8 @@ function createMissingMaxlifts(maxlifts: MaxLift[]) {
     maxlifts.map((maxlift, idx) =>
       (missingMaxlifts.value ?? [])[idx]
         ? [maxlift, missingMaxlifts.value![idx]]
-        : undefined
-    )
+        : undefined,
+    ),
   );
   matchingMaxlifts.value = (matchingMaxlifts.value ?? []).concat(matches);
 
@@ -1445,7 +1445,7 @@ async function importProgramTemplate(programTemplate?: Program) {
   const templateMaxlifts = extractUniqueMaxliftFromProgram(programTemplate);
   [, missingMaxlifts.value, matchingMaxlifts.value] = compareMaxliftLists(
     destinationMaxlifts,
-    templateMaxlifts
+    templateMaxlifts,
   );
 
   // Optionally show dialog to fill missing maxlifts
@@ -1460,7 +1460,7 @@ function mergeProgramTemplate() {
   // Complete merge
   programBuilderElement.value?.merge(
     selectedTemplate.value,
-    matchingMaxlifts.value
+    matchingMaxlifts.value,
   );
 
   // Clear template values
@@ -1495,32 +1495,32 @@ function deleteProgram(program: Program) {
   program.remove({
     onAthleteUpdateSuccess: () => {
       // Mixpanel tracking
-      mixpanel.track('Update Athlete', {
-        Type: 'Removed program',
+      mixpanel.track("Update Athlete", {
+        Type: "Removed program",
       });
     },
     onAthleteUpdateError: () => {
       // Mixpanel tracking
-      mixpanel.track('ERROR Update Athlete', {
-        Type: 'Removing program',
+      mixpanel.track("ERROR Update Athlete", {
+        Type: "Removing program",
       });
     },
     onSuccess: () => {
       coachInfo.programs = coachInfo.programs?.filter(
-        (coachProgram) => coachProgram != program
+        (coachProgram) => coachProgram != program,
       );
       clearProgram();
 
       // Register GA4 event
-      event('program_deleted', {
-        event_category: 'documentation',
-        event_label: 'Program Deleted',
+      event("program_deleted", {
+        event_category: "documentation",
+        event_label: "Program Deleted",
         value: 1,
       });
 
       // Mixpanel tracking
-      mixpanel.track('Program Deleted', {
-        Page: 'ProgramView',
+      mixpanel.track("Program Deleted", {
+        Page: "ProgramView",
       });
     },
   });
@@ -1544,19 +1544,19 @@ function clearProgram() {
 function onNewExercise(
   exerciseName: string,
   variantName?: string,
-  programExercise?: ProgramExercise
+  programExercise?: ProgramExercise,
 ) {
   // Check exercise name
   if (!exerciseName) {
     $q.notify({
-      type: 'negative',
-      message: i18n.t('coach.exercise_management.add_error'),
-      position: 'bottom',
+      type: "negative",
+      message: i18n.t("coach.exercise_management.add_error"),
+      position: "bottom",
     });
     return;
   }
   const exercise = coachInfo.exercises?.find(
-    (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase()
+    (exercise) => exercise.name?.toLowerCase() == exerciseName.toLowerCase(),
   );
 
   // Check if creating new exercise of variant
@@ -1565,13 +1565,13 @@ function onNewExercise(
 
     // Check new variant
     const variant = exercise.variants?.find(
-      (variant) => variant.name?.toLowerCase() == variantName.toLowerCase()
+      (variant) => variant.name?.toLowerCase() == variantName.toLowerCase(),
     );
     if (variant) {
       $q.notify({
-        type: 'negative',
-        message: i18n.t('coach.exercise_management.add_error'),
-        position: 'bottom',
+        type: "negative",
+        message: i18n.t("coach.exercise_management.add_error"),
+        position: "bottom",
       });
       return;
     }
@@ -1598,29 +1598,29 @@ function onNewExercise(
 
         // Inform user
         $q.notify({
-          type: 'positive',
-          message: i18n.t('coach.exercise_management.add_success', {
+          type: "positive",
+          message: i18n.t("coach.exercise_management.add_success", {
             exercise: newVariant.name,
           }),
-          position: 'bottom',
+          position: "bottom",
         });
 
         // Mixpanel tracking
-        mixpanel.track('New Variant to Library', {
-          Page: 'ProgramView',
+        mixpanel.track("New Variant to Library", {
+          Page: "ProgramView",
           Name: newVariant.name,
         });
       },
       onError: () => {
         $q.notify({
-          type: 'negative',
-          message: i18n.t('coach.exercise_management.add_error'),
-          position: 'bottom',
+          type: "negative",
+          message: i18n.t("coach.exercise_management.add_error"),
+          position: "bottom",
         });
 
         // Mixpanel tracking
-        mixpanel.track('ERROR New Variant to Library', {
-          Page: 'ProgramView',
+        mixpanel.track("ERROR New Variant to Library", {
+          Page: "ProgramView",
           Name: newVariant.name,
         });
       },
@@ -1636,7 +1636,7 @@ function onNewExercise(
       onSuccess: () => {
         // Store exercise in local storage
         coachInfo.exercises = reduceExercises(
-          (coachInfo.exercises || []).concat([newExercise])
+          (coachInfo.exercises || []).concat([newExercise]),
         );
         if (programExercise) {
           programExercise.exercise = newExercise;
@@ -1651,46 +1651,46 @@ function onNewExercise(
 
         // Inform user about exercise successfully saved
         $q.notify({
-          type: 'positive',
-          message: i18n.t('coach.exercise_management.add_success', {
+          type: "positive",
+          message: i18n.t("coach.exercise_management.add_success", {
             exercise: newExercise?.name,
           }),
-          position: 'bottom',
+          position: "bottom",
         });
 
         // Register GA4 event
-        event('new_exercise_added', {
-          event_category: 'documentation',
-          event_label: 'New Exercise Added to Library',
+        event("new_exercise_added", {
+          event_category: "documentation",
+          event_label: "New Exercise Added to Library",
           value: 1,
         });
 
         // Mixpanel tracking
-        mixpanel.track('New Exercise to Library', {
-          Page: 'ProgramView',
+        mixpanel.track("New Exercise to Library", {
+          Page: "ProgramView",
           Name: newExercise.name,
         });
       },
       onError: () => {
         // Inform user about error while saving exercise
         $q.notify({
-          type: 'negative',
-          message: i18n.t('coach.exercise_management.add_error'),
-          position: 'bottom',
+          type: "negative",
+          message: i18n.t("coach.exercise_management.add_error"),
+          position: "bottom",
         });
 
         // Mixpanel tracking
-        mixpanel.track('ERROR New Exercise to Library', {
-          Page: 'ProgramView',
+        mixpanel.track("ERROR New Exercise to Library", {
+          Page: "ProgramView",
           Name: newExercise.name,
         });
       },
     });
   } else {
     $q.notify({
-      type: 'negative',
-      message: i18n.t('coach.exercise_management.add_error'),
-      position: 'bottom',
+      type: "negative",
+      message: i18n.t("coach.exercise_management.add_error"),
+      position: "bottom",
     });
     return;
   }
@@ -1729,30 +1729,30 @@ function saveMaxlift(newMaxLift: MaxLift) {
       maxliftFormElement.value?.reset();
 
       // Mixpanel tracking
-      mixpanel.track(isNew ? 'Maxlift Created' : 'Maxlift Updated', {
-        Page: 'ProgramView',
+      mixpanel.track(isNew ? "Maxlift Created" : "Maxlift Updated", {
+        Page: "ProgramView",
         Exercise: newMaxLift.exercise?.name,
         Type: newMaxLift.type?.toString(),
       });
     },
     onError: () => {
       $q.notify({
-        type: 'negative',
+        type: "negative",
         message: i18n.t(
-          'coach.maxlift_management.list.' +
-            (isNew ? 'add_error' : 'update_error')
+          "coach.maxlift_management.list." +
+            (isNew ? "add_error" : "update_error"),
         ),
-        position: 'bottom',
+        position: "bottom",
       });
 
       // Mixpanel tracking
       mixpanel.track(
-        'ERROR' + (isNew ? 'Maxlift Created' : 'Maxlift Updated'),
+        "ERROR" + (isNew ? "Maxlift Created" : "Maxlift Updated"),
         {
-          Page: 'ProgramView',
+          Page: "ProgramView",
           Exercise: newMaxLift.exercise?.name,
           Type: newMaxLift.type?.toString(),
-        }
+        },
       );
     },
   });
@@ -1763,19 +1763,19 @@ function saveMaxlift(newMaxLift: MaxLift) {
  * Propose a new program as selected program.
  */
 function openNewProgram() {
-  if (selectedProgram.value) substituteProgramId.value = '';
+  if (selectedProgram.value) substituteProgramId.value = "";
   else showNewProgramDialog.value = true;
 
   // Register GA4 event
-  event('programview_newprogram_click', {
-    event_category: 'documentation',
-    event_label: 'A new program is created',
+  event("programview_newprogram_click", {
+    event_category: "documentation",
+    event_label: "A new program is created",
     value: 1,
   });
 
   // Mixpanel tracking
-  mixpanel.track('New Program', {
-    Page: 'ProgramView',
+  mixpanel.track("New Program", {
+    Page: "ProgramView",
   });
 }
 
@@ -1805,14 +1805,14 @@ function onUnsavedProgramRestore() {
   substituteProgramId.value = coachActiveChanges.program?.uid;
 
   // Register GA4 event
-  event('programview_open_unsavedprog', {
-    event_category: 'documentation',
-    event_label: 'Unsaved program restore',
+  event("programview_open_unsavedprog", {
+    event_category: "documentation",
+    event_label: "Unsaved program restore",
     value: 1,
   });
 
   // Mixpanel tracking
-  mixpanel.track('Unsaved Program Restore');
+  mixpanel.track("Unsaved Program Restore");
 }
 
 /**
@@ -1840,14 +1840,14 @@ function handleDrawerClick(clickParam: number) {
     if (splitterModel.value < splitterThresholdValue) splitterModel.value = 30;
     else {
       splitterModel.value = 0;
-      emit('activateDrawerItem', -1);
+      emit("activateDrawerItem", -1);
       return;
     }
   } else {
     showingUtils.value = toShow;
     if (splitterModel.value < splitterThresholdValue) splitterModel.value = 30;
   }
-  emit('activateDrawerItem', clickParam);
+  emit("activateDrawerItem", clickParam);
 }
 
 /**
@@ -1857,7 +1857,7 @@ function handleDrawerClick(clickParam: number) {
  */
 function keydownHandler(event: KeyboardEvent) {
   // Save program on ctrl + s
-  if (event.ctrlKey && event.key.toLowerCase() === 's') {
+  if (event.ctrlKey && event.key.toLowerCase() === "s") {
     event.preventDefault();
     saveProgram(undefined, false, true);
   }
@@ -1866,15 +1866,15 @@ function keydownHandler(event: KeyboardEvent) {
   else if (
     event.ctrlKey &&
     !event.shiftKey &&
-    event.key.toLowerCase() === 'z'
+    event.key.toLowerCase() === "z"
   ) {
     programBuilderElement.value?.undo();
   }
 
   // Redo changes on ctrl + y or ctrl + shift + z
   else if (
-    (event.ctrlKey && event.key.toLowerCase() === 'y') ||
-    (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'z')
+    (event.ctrlKey && event.key.toLowerCase() === "y") ||
+    (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "z")
   ) {
     programBuilderElement.value?.redo();
   }
@@ -1886,7 +1886,7 @@ onMounted(() => {
   if ($q.screen.gt.sm) programManagerExpanded.value = true;
 
   // Detect key presses while on this page
-  document.addEventListener('keydown', keydownHandler);
+  document.addEventListener("keydown", keydownHandler);
 });
 
 // Define what to do before component unmount
@@ -1896,7 +1896,7 @@ onBeforeUnmount(() => {
   saveProgram(undefined, false, true);
 
   // Remove key press event listener
-  document.addEventListener('keydown', keydownHandler);
+  document.addEventListener("keydown", keydownHandler);
 });
 </script>
 

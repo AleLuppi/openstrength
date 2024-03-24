@@ -6,7 +6,7 @@
     <q-card>
       <q-card-section>
         <div class="column justify-center items-center">
-          <h6>{{ $t('coach.program_management.viewer.dialog_title') }}</h6>
+          <h6>{{ $t("coach.program_management.viewer.dialog_title") }}</h6>
           <os-text-copyable :text="urlFullPath"></os-text-copyable>
           <router-link
             :to="urlRelativePath"
@@ -14,7 +14,7 @@
             target="_blank"
             class="q-mt-sm"
           >
-            {{ $t('coach.program_management.viewer.preview') }}
+            {{ $t("coach.program_management.viewer.preview") }}
           </router-link>
         </div>
       </q-card-section>
@@ -36,10 +36,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-import mixpanel from 'mixpanel-browser';
-import { NamedRoutes } from 'src/router';
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+import mixpanel from "mixpanel-browser";
+import { NamedRoutes } from "src/router";
 
 // Init plugin
 const router = useRouter();
@@ -52,7 +52,7 @@ const props = defineProps<{
 
 // Define emits
 const emit = defineEmits<{
-  'update:modelValue': [value: boolean];
+  "update:modelValue": [value: boolean];
 }>();
 
 // Get relative path for preview
@@ -61,18 +61,18 @@ const urlRelativePath = computed(
     router.resolve({
       name: NamedRoutes.viewProgram,
       query: { id: props.programId },
-    }).fullPath
+    }).fullPath,
 );
 
 // Get full shareable path
 const urlFullPath = computed(
-  () => window.location.origin + urlRelativePath.value
+  () => window.location.origin + urlRelativePath.value,
 );
 
 /**
  * Register event of user opening program link.
  */
 function registerEvent() {
-  mixpanel.track('Program Preview Opened');
+  mixpanel.track("Program Preview Opened");
 }
 </script>

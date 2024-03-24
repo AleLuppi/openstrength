@@ -4,11 +4,11 @@ import {
   ExerciseLoadType,
   ExerciseMuscleGroups,
   ExerciseEquipment,
-} from 'src/helpers/exercises/exercise';
+} from "@/helpers/exercises/exercise";
 
 export const defaultExerciseCollection: Exercise[] = [
   new Exercise({
-    name: 'Squat',
+    name: "Squat",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loadonly,
@@ -20,7 +20,7 @@ export const defaultExerciseCollection: Exercise[] = [
         ],
       }),
       new ExerciseVariant({
-        name: 'Standard',
+        name: "Standard",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.glutes, ExerciseMuscleGroups.quads],
         equipment: [
@@ -30,7 +30,7 @@ export const defaultExerciseCollection: Exercise[] = [
         ],
       }),
       new ExerciseVariant({
-        name: 'LB',
+        name: "LB",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.glutes, ExerciseMuscleGroups.quads],
         equipment: [
@@ -40,7 +40,7 @@ export const defaultExerciseCollection: Exercise[] = [
         ],
       }),
       new ExerciseVariant({
-        name: 'HB',
+        name: "HB",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.glutes, ExerciseMuscleGroups.quads],
         equipment: [
@@ -60,7 +60,7 @@ export const defaultExerciseCollection: Exercise[] = [
         ],
       }),
       new ExerciseVariant({
-        name: 'Fermo in buca',
+        name: "Fermo in buca",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.glutes, ExerciseMuscleGroups.quads],
         equipment: [
@@ -70,7 +70,7 @@ export const defaultExerciseCollection: Exercise[] = [
         ],
       }),
       new ExerciseVariant({
-        name: 'Elastici in overload',
+        name: "Elastici in overload",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.glutes, ExerciseMuscleGroups.quads],
         equipment: [
@@ -83,7 +83,7 @@ export const defaultExerciseCollection: Exercise[] = [
     ],
   }),
   new Exercise({
-    name: 'Panca piana',
+    name: "Panca piana",
     variants: [
       new ExerciseVariant({
         name: undefined,
@@ -101,7 +101,7 @@ export const defaultExerciseCollection: Exercise[] = [
         ],
       }),
       new ExerciseVariant({
-        name: 'Standard',
+        name: "Standard",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.chest,
@@ -146,7 +146,7 @@ export const defaultExerciseCollection: Exercise[] = [
         ],
       }),
       new ExerciseVariant({
-        name: 'Elastici in overload',
+        name: "Elastici in overload",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.chest,
@@ -164,7 +164,7 @@ export const defaultExerciseCollection: Exercise[] = [
   }),
 
   new Exercise({
-    name: 'Stacco',
+    name: "Stacco",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loadonly,
@@ -182,7 +182,7 @@ export const defaultExerciseCollection: Exercise[] = [
         ],
       }),
       new ExerciseVariant({
-        name: 'Standard',
+        name: "Standard",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.harmstrings,
@@ -198,7 +198,7 @@ export const defaultExerciseCollection: Exercise[] = [
         ],
       }),
       new ExerciseVariant({
-        name: 'Regular',
+        name: "Regular",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.harmstrings,
@@ -214,7 +214,7 @@ export const defaultExerciseCollection: Exercise[] = [
         ],
       }),
       new ExerciseVariant({
-        name: 'Sumo',
+        name: "Sumo",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.harmstrings,
@@ -249,7 +249,7 @@ export const defaultExerciseCollection: Exercise[] = [
   }),
 
   new Exercise({
-    name: 'Pull Up',
+    name: "Pull Up",
     variants: [
       new ExerciseVariant({
         name: undefined,
@@ -261,7 +261,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.bar],
       }),
       new ExerciseVariant({
-        name: 'Presa prona',
+        name: "Presa prona",
         loadType: ExerciseLoadType.loaded,
         muscleGroups: [
           ExerciseMuscleGroups.upperback,
@@ -270,7 +270,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.bar],
       }),
       new ExerciseVariant({
-        name: 'Presa supina',
+        name: "Presa supina",
         loadType: ExerciseLoadType.loaded,
         muscleGroups: [
           ExerciseMuscleGroups.upperback,
@@ -279,7 +279,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.bar],
       }),
       new ExerciseVariant({
-        name: 'Fermo a metà salita',
+        name: "Fermo a metà salita",
         loadType: ExerciseLoadType.loaded,
         muscleGroups: [
           ExerciseMuscleGroups.upperback,
@@ -300,7 +300,7 @@ export const defaultExerciseCollection: Exercise[] = [
   }),
 
   new Exercise({
-    name: 'Dip',
+    name: "Dip",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loaded,
@@ -312,7 +312,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.parallettes],
       }),
       new ExerciseVariant({
-        name: 'Standard',
+        name: "Standard",
         loadType: ExerciseLoadType.loaded,
         muscleGroups: [
           ExerciseMuscleGroups.chest,
@@ -332,7 +332,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.parallettes],
       }),
       new ExerciseVariant({
-        name: 'Fermo in buca',
+        name: "Fermo in buca",
         loadType: ExerciseLoadType.loaded,
         muscleGroups: [
           ExerciseMuscleGroups.chest,
@@ -345,7 +345,7 @@ export const defaultExerciseCollection: Exercise[] = [
   }),
 
   new Exercise({
-    name: 'Muscle Up',
+    name: "Muscle Up",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loaded,
@@ -354,13 +354,13 @@ export const defaultExerciseCollection: Exercise[] = [
           ExerciseMuscleGroups.biceps,
         ],
         equipment: [ExerciseEquipment.bar],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Rematore',
+    name: "Rematore",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loadonly,
@@ -370,13 +370,13 @@ export const defaultExerciseCollection: Exercise[] = [
           ExerciseMuscleGroups.biceps,
         ],
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Australian Pull Up',
+    name: "Australian Pull Up",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loaded,
@@ -391,7 +391,7 @@ export const defaultExerciseCollection: Exercise[] = [
   }),
 
   new Exercise({
-    name: 'Pull Down',
+    name: "Pull Down",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loadonly,
@@ -402,7 +402,7 @@ export const defaultExerciseCollection: Exercise[] = [
   }),
 
   new Exercise({
-    name: 'Lat Machine',
+    name: "Lat Machine",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loadonly,
@@ -416,7 +416,7 @@ export const defaultExerciseCollection: Exercise[] = [
   }),
 
   new Exercise({
-    name: 'Pulley',
+    name: "Pulley",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loadonly,
@@ -431,7 +431,7 @@ export const defaultExerciseCollection: Exercise[] = [
   }),
 
   new Exercise({
-    name: 'Panca inclinata',
+    name: "Panca inclinata",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loadonly,
@@ -446,27 +446,27 @@ export const defaultExerciseCollection: Exercise[] = [
   }),
 
   new Exercise({
-    name: 'Croci',
+    name: "Croci",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.chest],
         equipment: [ExerciseEquipment.bench, ExerciseEquipment.barbell],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Chest Press',
+    name: "Chest Press",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.chest,
@@ -474,18 +474,18 @@ export const defaultExerciseCollection: Exercise[] = [
           ExerciseMuscleGroups.shoulders,
         ],
         equipment: [ExerciseEquipment.isotonicmachine],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Push Up',
+    name: "Push Up",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.bodyweight,
         muscleGroups: [
           ExerciseMuscleGroups.chest,
@@ -493,54 +493,54 @@ export const defaultExerciseCollection: Exercise[] = [
           ExerciseMuscleGroups.shoulders,
         ],
         equipment: [],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Plank',
+    name: "Plank",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.bodyweight,
         muscleGroups: [
           ExerciseMuscleGroups.core,
           ExerciseMuscleGroups.shoulders,
         ],
         equipment: [],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Verticale',
+    name: "Verticale",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.bodyweight,
         muscleGroups: [
           ExerciseMuscleGroups.shoulders,
           ExerciseMuscleGroups.core,
         ],
         equipment: [],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Military Press',
+    name: "Military Press",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.shoulders,
@@ -551,150 +551,150 @@ export const defaultExerciseCollection: Exercise[] = [
           ExerciseEquipment.barbell,
           ExerciseEquipment.plates,
         ],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Alzate laterali',
+    name: "Alzate laterali",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.shoulders],
         equipment: [ExerciseEquipment.dumbell],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Piegamenti in verticale',
+    name: "Piegamenti in verticale",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.bodyweight,
         muscleGroups: [
           ExerciseMuscleGroups.shoulders,
           ExerciseMuscleGroups.triceps,
         ],
         equipment: [],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Pike Push Up',
+    name: "Pike Push Up",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.bodyweight,
         muscleGroups: [
           ExerciseMuscleGroups.shoulders,
           ExerciseMuscleGroups.triceps,
         ],
         equipment: [],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Arnold Press',
+    name: "Arnold Press",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.shoulders,
           ExerciseMuscleGroups.triceps,
         ],
         equipment: [ExerciseEquipment.dumbell],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Stacco rumeno',
+    name: "Stacco rumeno",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.harmstrings,
           ExerciseMuscleGroups.glutes,
         ],
         equipment: [ExerciseEquipment.barbell],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Squat bulgaro',
+    name: "Squat bulgaro",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.quads, ExerciseMuscleGroups.glutes],
         equipment: [ExerciseEquipment.box, ExerciseEquipment.barbell],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Leg Press',
+    name: "Leg Press",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.quads],
         equipment: [ExerciseEquipment.isotonicmachine],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Hack Squat',
+    name: "Hack Squat",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.quads],
         equipment: [ExerciseEquipment.isotonicmachine],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Goodmorning',
+    name: "Goodmorning",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.harmstrings,
@@ -702,208 +702,208 @@ export const defaultExerciseCollection: Exercise[] = [
           ExerciseMuscleGroups.lowerback,
         ],
         equipment: [ExerciseEquipment.rack, ExerciseEquipment.barbell],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Leg Extension',
+    name: "Leg Extension",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.quads],
         equipment: [ExerciseEquipment.isotonicmachine],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Leg Curl',
+    name: "Leg Curl",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.harmstrings],
         equipment: [ExerciseEquipment.isotonicmachine],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Hip Thrust',
+    name: "Hip Thrust",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.glutes],
         equipment: [ExerciseEquipment.box, ExerciseEquipment.barbell],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Barchetta',
+    name: "Barchetta",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.bodyweight,
         muscleGroups: [ExerciseMuscleGroups.core],
         equipment: [],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Superman Hold',
+    name: "Superman Hold",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.bodyweight,
         muscleGroups: [ExerciseMuscleGroups.core],
         equipment: [],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Calf Raises',
+    name: "Calf Raises",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.calves],
         equipment: [ExerciseEquipment.box],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Skull Crusher',
+    name: "Skull Crusher",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.triceps],
         equipment: [ExerciseEquipment.bench, ExerciseEquipment.barbell],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Push Down',
+    name: "Push Down",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.triceps],
         equipment: [ExerciseEquipment.cablemachine],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Estensioni tricipiti',
+    name: "Estensioni tricipiti",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.triceps],
         equipment: [ExerciseEquipment.dumbell],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Bicep Curl',
+    name: "Bicep Curl",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.biceps],
         equipment: [ExerciseEquipment.dumbell],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Box Jump',
+    name: "Box Jump",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [ExerciseMuscleGroups.quads, ExerciseMuscleGroups.glutes],
         equipment: [ExerciseEquipment.box],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Hip Abductor',
+    name: "Hip Abductor",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [],
         equipment: [],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Hip Adductor',
+    name: "Hip Adductor",
     variants: [
       new ExerciseVariant({
         uid: undefined,
         name: undefined,
-        description: '',
+        description: "",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [],
         equipment: [],
-        videoUrl: '',
+        videoUrl: "",
       }),
     ],
   }),
 
   new Exercise({
-    name: 'Strappo',
+    name: "Strappo",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loadonly,
@@ -920,7 +920,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Standard',
+        name: "Standard",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -935,7 +935,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'In semiaccosciata',
+        name: "In semiaccosciata",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -950,7 +950,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Tirate presa strappo',
+        name: "Tirate presa strappo",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -965,7 +965,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Tirate allo sterno',
+        name: "Tirate allo sterno",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -980,7 +980,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Tirate dalla sospensione',
+        name: "Tirate dalla sospensione",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -995,7 +995,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Da alta in 1/2',
+        name: "Da alta in 1/2",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -1010,7 +1010,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Di forza da terra + overhead squat',
+        name: "Di forza da terra + overhead squat",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -1025,7 +1025,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Stacco da bassa fermo alta + tirata',
+        name: "Stacco da bassa fermo alta + tirata",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -1040,7 +1040,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Tirate dai blocchi',
+        name: "Tirate dai blocchi",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -1055,7 +1055,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Incastro in accosciata + overhead squat',
+        name: "Incastro in accosciata + overhead squat",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -1072,7 +1072,7 @@ export const defaultExerciseCollection: Exercise[] = [
     ],
   }),
   new Exercise({
-    name: 'Slancio',
+    name: "Slancio",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loadonly,
@@ -1089,7 +1089,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Standard',
+        name: "Standard",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -1104,7 +1104,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Girate in semiaccosciata',
+        name: "Girate in semiaccosciata",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -1119,7 +1119,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Tirate presa slancio',
+        name: "Tirate presa slancio",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -1134,7 +1134,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Tirate allo sterno dalle anche',
+        name: "Tirate allo sterno dalle anche",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -1149,7 +1149,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Spinte sopra alla testa',
+        name: "Spinte sopra alla testa",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -1164,7 +1164,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Caricamento + push press',
+        name: "Caricamento + push press",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -1179,7 +1179,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Stacco + tirata',
+        name: "Stacco + tirata",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -1194,7 +1194,7 @@ export const defaultExerciseCollection: Exercise[] = [
         equipment: [ExerciseEquipment.barbell, ExerciseEquipment.plates],
       }),
       new ExerciseVariant({
-        name: 'Girata da terra in 1/2 + caricamento + spinta',
+        name: "Girata da terra in 1/2 + caricamento + spinta",
         loadType: ExerciseLoadType.loadonly,
         muscleGroups: [
           ExerciseMuscleGroups.glutes,
@@ -1211,7 +1211,7 @@ export const defaultExerciseCollection: Exercise[] = [
     ],
   }),
   new Exercise({
-    name: 'Tirate al mento',
+    name: "Tirate al mento",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loadonly,
@@ -1220,7 +1220,7 @@ export const defaultExerciseCollection: Exercise[] = [
     ],
   }),
   new Exercise({
-    name: 'Sots press',
+    name: "Sots press",
     variants: [
       new ExerciseVariant({
         loadType: ExerciseLoadType.loadonly,

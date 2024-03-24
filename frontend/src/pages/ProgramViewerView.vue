@@ -10,7 +10,7 @@
           }"
         >
           <h5 class="text-margin-xs">
-            {{ $t('coach.program_management.viewer.title') }}
+            {{ $t("coach.program_management.viewer.title") }}
           </h5>
           <h3 class="text-margin-xs" :class="{ 'q-px-md': $q.screen.lt.sm }">
             {{ programSnapshot.athlete }}
@@ -19,24 +19,24 @@
 
         <div :class="{ 'col-12': $q.screen.lt.sm }">
           <p>
-            <b>{{ $t('coach.program_management.viewer.program_name') }} </b>
+            <b>{{ $t("coach.program_management.viewer.program_name") }} </b>
             {{ programSnapshot.name }}
           </p>
           <p v-if="programSnapshot.description">
-            <b>{{ $t('coach.program_management.viewer.description') }}</b>
+            <b>{{ $t("coach.program_management.viewer.description") }}</b>
             {{ programSnapshot.description }}
           </p>
           <p>
-            <b>{{ $t('coach.program_management.viewer.frozen_date') }} </b>
-            {{ $d(programSnapshot.frozenOn, 'short') }}
+            <b>{{ $t("coach.program_management.viewer.frozen_date") }} </b>
+            {{ $d(programSnapshot.frozenOn, "short") }}
           </p>
           <p v-if="programSnapshot.startedOn">
-            <b>{{ $t('coach.program_management.viewer.start_date') }}</b>
-            {{ $d(programSnapshot.startedOn, 'short') }}
+            <b>{{ $t("coach.program_management.viewer.start_date") }}</b>
+            {{ $d(programSnapshot.startedOn, "short") }}
           </p>
           <p v-if="programSnapshot.startedOn && programSnapshot.finishedOn">
-            <b>{{ $t('coach.program_management.viewer.end_date') }}</b>
-            {{ $d(programSnapshot.finishedOn, 'short') }}
+            <b>{{ $t("coach.program_management.viewer.end_date") }}</b>
+            {{ $d(programSnapshot.finishedOn, "short") }}
           </p>
         </div>
       </div>
@@ -141,10 +141,10 @@
     <!-- Show something else otherwise -->
     <div v-else class="q-pa-lg column items-center">
       <h6>
-        {{ $t('coach.program_management.viewer.no_program_title') }}
+        {{ $t("coach.program_management.viewer.no_program_title") }}
       </h6>
       <p>
-        {{ $t('coach.program_management.viewer.no_program_explanation') }}
+        {{ $t("coach.program_management.viewer.no_program_explanation") }}
       </p>
       <q-btn
         :to="{
@@ -160,29 +160,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, computed, defineAsyncComponent } from 'vue';
-import { useRoute } from 'vue-router';
-import { useI18n } from 'vue-i18n';
-import { NamedRoutes } from 'src/router';
-import { useQuasar } from 'quasar';
-import type { QTableProps } from 'quasar';
-import { useUserStore } from 'stores/user';
-import { doGetDocs } from 'src/helpers/database/readwrite';
+import { ref, watch, onMounted, computed, defineAsyncComponent } from "vue";
+import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { NamedRoutes } from "@/router";
+import { useQuasar } from "quasar";
+import type { QTableProps } from "quasar";
+import { useUserStore } from "@/stores/user";
+import { doGetDocs } from "@/helpers/database/readwrite";
 import {
   dbCollections,
   dbSubcollections,
-} from 'src/helpers/database/collections';
-import { ProgramFrozenView } from 'src/helpers/programs/program';
-import { ProgramFeedback } from 'src/helpers/programs/models';
+} from "@/helpers/database/collections";
+import { ProgramFrozenView } from "@/helpers/programs/program";
+import { ProgramFeedback } from "@/helpers/programs/models";
 import {
   loadLatestFeedback,
   saveFeedback,
-} from 'src/helpers/programs/programFeedback';
-import { UserRole } from 'src/helpers/users/user';
+} from "@/helpers/programs/programFeedback";
+import { UserRole } from "@/helpers/users/user";
 
 // Import components
 const WorkoutDayForm = defineAsyncComponent(
-  () => import('components/feedback/WorkoutDayForm.vue')
+  () => import("@/components/feedback/WorkoutDayForm.vue"),
 );
 
 // Init plugin
@@ -209,7 +209,7 @@ watch(
       `${dbCollections.programs}/${docId}/${dbSubcollections.programSnapshots}`,
       undefined,
       {
-        ordering: ['-frozenOn'],
+        ordering: ["-frozenOn"],
         numDocs: 1,
         onSuccess: (docVal: { [key: string]: ProgramFrozenView }) => {
           programSnapshot.value = Object.values(docVal)[0];
@@ -217,7 +217,7 @@ watch(
           // Hide loading spinner
           $q.loading.hide();
         },
-      }
+      },
     );
     loadLatestFeedback(docId, {
       onSuccess: (feedback) => {
@@ -225,60 +225,60 @@ watch(
       },
     });
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Find which is the next day athlete should check
 const nextDayIdx = computed(() => {
   const idx = programFeedbacks.value.feedbacks.findIndex(
-    (feedback) => !feedback.completed
+    (feedback) => !feedback.completed,
   );
   if (idx < 0) return programFeedbacks.value.feedbacks.length;
   return idx;
 });
 
 // Set table columns for compact visualization
-const columns: QTableProps['columns'] = [
+const columns: QTableProps["columns"] = [
   {
-    name: 'exerciseInfo',
-    label: i18n.t('coach.program_management.viewer.header_exercise_info'),
-    align: 'left',
+    name: "exerciseInfo",
+    label: i18n.t("coach.program_management.viewer.header_exercise_info"),
+    align: "left",
     field: (row) => [`${row.exerciseName} ${row.variantName}`, row.note],
-    style: 'width: 30%',
+    style: "width: 30%",
   },
   {
-    name: 'schema',
-    label: i18n.t('coach.program_management.viewer.header_schema'),
-    align: 'left',
-    field: 'schema',
-    style: 'width: 20%',
+    name: "schema",
+    label: i18n.t("coach.program_management.viewer.header_schema"),
+    align: "left",
+    field: "schema",
+    style: "width: 20%",
   },
   {
-    name: 'schemaNote',
-    label: i18n.t('coach.program_management.viewer.header_schema_note'),
-    align: 'left',
-    field: 'schemaNote',
-    style: 'width: 30%',
+    name: "schemaNote",
+    label: i18n.t("coach.program_management.viewer.header_schema_note"),
+    align: "left",
+    field: "schemaNote",
+    style: "width: 30%",
   },
   {
-    name: 'textFeedback',
-    label: i18n.t('coach.program_management.viewer.header_text_feedback'),
-    align: 'left',
+    name: "textFeedback",
+    label: i18n.t("coach.program_management.viewer.header_text_feedback"),
+    align: "left",
     field: (row) =>
       row.textFeedback.map((val: boolean) =>
-        val ? i18n.t('common.yes') : '-'
+        val ? i18n.t("common.yes") : "-",
       ),
-    style: 'width: 10%',
+    style: "width: 10%",
   },
   {
-    name: 'videoFeedback',
-    label: i18n.t('coach.program_management.viewer.header_video_feedback'),
-    align: 'left',
+    name: "videoFeedback",
+    label: i18n.t("coach.program_management.viewer.header_video_feedback"),
+    align: "left",
     field: (row) =>
       row.videoFeedback.map((val: boolean) =>
-        val ? i18n.t('common.yes') : '-'
+        val ? i18n.t("common.yes") : "-",
       ),
-    style: 'width: 10%',
+    style: "width: 10%",
   },
 ];
 

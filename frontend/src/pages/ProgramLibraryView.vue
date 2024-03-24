@@ -7,7 +7,7 @@
           <q-card-section class="q-pb-sm">
             <div class="row justify-between q-mb-sm">
               <h4 class="text-margin-xs">
-                {{ $t('coach.programlibrary_management.list.title') }}
+                {{ $t("coach.programlibrary_management.list.title") }}
               </h4>
             </div>
 
@@ -52,7 +52,7 @@
           <!-- Main title and buttons -->
           <q-card-section class="row justify-between items-center">
             <h6>
-              {{ $t('coach.programlibrary_management.fields.program_info') }}
+              {{ $t("coach.programlibrary_management.fields.program_info") }}
             </h6>
             <q-btn
               v-if="$q.screen.lt.sm"
@@ -84,15 +84,15 @@
                     <p>
                       {{
                         selectedProgram.name ??
-                        $t('coach.program_management.fields.program')
+                        $t("coach.program_management.fields.program")
                       }}
                     </p>
                     <p
                       class="text-italic text-xs"
                       v-if="selectedProgram.lastUpdated"
                     >
-                      {{ $t('coach.program_management.builder.last_update') }}
-                      {{ $d(selectedProgram.lastUpdated, 'middle') }}
+                      {{ $t("coach.program_management.builder.last_update") }}
+                      {{ $d(selectedProgram.lastUpdated, "middle") }}
                     </p>
                   </div>
 
@@ -150,9 +150,9 @@
               {{
                 programsTemplate.length
                   ? $t(
-                      'coach.programlibrary_management.list.no_selected_template'
+                      "coach.programlibrary_management.list.no_selected_template",
                     )
-                  : $t('coach.programlibrary_management.list.no_templates')
+                  : $t("coach.programlibrary_management.list.no_templates")
               }}
             </p>
           </div>
@@ -170,10 +170,10 @@
           <p>
             {{
               $t(
-                'coach.programlibrary_management.list.delete_template_confirm',
+                "coach.programlibrary_management.list.delete_template_confirm",
                 {
                   program: deletingProgramTemplate?.name,
-                }
+                },
               )
             }}
           </p>
@@ -209,7 +209,7 @@
         <q-card-section class="row items-center">
           <h6>
             {{
-              $t('coach.programlibrary_management.list.template_updating_title')
+              $t("coach.programlibrary_management.list.template_updating_title")
             }}
           </h6>
         </q-card-section>
@@ -226,24 +226,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, defineAsyncComponent } from 'vue';
-import { useQuasar, QDialog } from 'quasar';
-import { useI18n } from 'vue-i18n';
-import { event } from 'vue-gtag';
-import mixpanel from 'mixpanel-browser';
-import { useCoachInfoStore } from 'stores/coachInfo';
-import { Program } from 'src/helpers/programs/program';
-import { symOutlinedOpenInNew } from '@quasar/extras/material-symbols-outlined';
+import { ref, computed, watch, defineAsyncComponent } from "vue";
+import { useQuasar, QDialog } from "quasar";
+import { useI18n } from "vue-i18n";
+import { event } from "vue-gtag";
+import mixpanel from "mixpanel-browser";
+import { useCoachInfoStore } from "@/stores/coachInfo";
+import { Program } from "@/helpers/programs/program";
+import { symOutlinedOpenInNew } from "@quasar/extras/material-symbols-outlined";
 
 // Import components
 const FormProgramTemplateSaving = defineAsyncComponent(
-  () => import('components/forms/FormProgramTemplateSaving.vue')
+  () => import("@/components/forms/FormProgramTemplateSaving.vue"),
 );
 const TableExistingPrograms = defineAsyncComponent(
-  () => import('components/tables/TableExistingPrograms.vue')
+  () => import("@/components/tables/TableExistingPrograms.vue"),
 );
 const TableCompactProgram = defineAsyncComponent(
-  () => import('components/tables/TableCompactProgram.vue')
+  () => import("@/components/tables/TableCompactProgram.vue"),
 );
 
 // Init plugin
@@ -300,29 +300,29 @@ function onProgramTemplateUpdate(program: Program) {
   program.saveUpdate({
     onSuccess: () => {
       $q.notify({
-        type: 'positive',
-        message: i18n.t('coach.programlibrary_management.list.update_success'),
-        position: 'bottom',
+        type: "positive",
+        message: i18n.t("coach.programlibrary_management.list.update_success"),
+        position: "bottom",
       });
 
       // Register GA4 event
-      event('athleteview_programinfo_updated', {
-        event_category: 'documentation',
-        event_label: 'Program info updated in AthleteView',
+      event("athleteview_programinfo_updated", {
+        event_category: "documentation",
+        event_label: "Program info updated in AthleteView",
         value: 1,
       });
 
       // Mixpanel tracking
-      mixpanel.track('Program Info Updated', {
-        Page: 'AthleteView',
+      mixpanel.track("Program Info Updated", {
+        Page: "AthleteView",
         IsProgramDescriptionSet: program.description ? true : false,
       });
     },
     onError: () => {
       $q.notify({
-        type: 'negative',
-        message: i18n.t('coach.programlibrary_management.list.add_error'),
-        position: 'bottom',
+        type: "negative",
+        message: i18n.t("coach.programlibrary_management.list.add_error"),
+        position: "bottom",
       });
     },
   });
@@ -337,32 +337,32 @@ function deleteProgram(program: Program) {
   program.remove({
     onAthleteUpdateSuccess: () => {
       // Mixpanel tracking
-      mixpanel.track('Update Athlete', {
-        Type: 'Removed program',
+      mixpanel.track("Update Athlete", {
+        Type: "Removed program",
       });
     },
     onAthleteUpdateError: () => {
       // Mixpanel tracking
-      mixpanel.track('ERROR Update Athlete', {
-        Type: 'Removing program',
+      mixpanel.track("ERROR Update Athlete", {
+        Type: "Removing program",
       });
     },
     onSuccess: () => {
       coachInfo.programs = coachInfo.programs?.filter(
-        (coachPrograms) => coachPrograms != program
+        (coachPrograms) => coachPrograms != program,
       );
       clearProgramTemplate();
 
       // Register GA4 event
-      event('program_template_deleted', {
-        event_category: 'documentation',
-        event_label: 'Program Template Deleted from Library',
+      event("program_template_deleted", {
+        event_category: "documentation",
+        event_label: "Program Template Deleted from Library",
         value: 1,
       });
 
       // Mixpanel tracking
-      mixpanel.track('Program Template Deleted from Library', {
-        Page: 'ProgramLibrary',
+      mixpanel.track("Program Template Deleted from Library", {
+        Page: "ProgramLibrary",
       });
     },
   });

@@ -1,7 +1,7 @@
-import { ExerciseLoadType } from 'src/helpers/exercises/exercise';
-import { MaxLift, MaxLiftType } from 'src/helpers/maxlifts/maxlift';
-import { ProgramLine } from 'src/helpers/programs/program';
-import { numberRoundToDecimal } from 'src/helpers/scalar';
+import { ExerciseLoadType } from "@/helpers/exercises/exercise";
+import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
+import { ProgramLine } from "@/helpers/programs/program";
+import { numberRoundToDecimal } from "@/helpers/scalar";
 
 /**
  * Define RPE-reps table.
@@ -29,12 +29,12 @@ export const rpeRepsTable: number[][] = [
  */
 export function estimate1RMfromNRM(
   maxlift: MaxLift,
-  rpeTable: number[][] = rpeRepsTable
+  rpeTable: number[][] = rpeRepsTable,
 ): number | undefined {
   // Check inputs
   if (
     maxlift.value == undefined ||
-    typeof Number(maxlift.value) !== 'number' ||
+    typeof Number(maxlift.value) !== "number" ||
     !maxlift.type ||
     !rpeTable
   ) {
@@ -46,7 +46,7 @@ export function estimate1RMfromNRM(
   if (
     maxlift.exercise?.defaultVariant?.loadType &&
     [ExerciseLoadType.loaded, ExerciseLoadType.bodyweight].includes(
-      maxlift.exercise?.defaultVariant?.loadType
+      maxlift.exercise?.defaultVariant?.loadType,
     )
   ) {
     bodyweight = maxlift.athlete?.weight ? Number(maxlift.athlete?.weight) : 75;
@@ -78,7 +78,7 @@ export function estimate1RMfromNRM(
       (bodyweight + Number(maxlift.value)) / (0.01 * usefulRpeRepstableValue);
     return numberRoundToDecimal(
       numberRoundToDecimal(estimated1RMValue, 1) - bodyweight,
-      2
+      2,
     );
   }
   return undefined;
@@ -94,10 +94,10 @@ export function estimate1RMfromNRM(
 export function calculatePercentage1RM(
   reps: number,
   rpe: number,
-  rpeTable: number[][] = rpeRepsTable
+  rpeTable: number[][] = rpeRepsTable,
 ): number | undefined {
   if (reps < 1 || reps > 15 || rpe < 6.5 || rpe > 10 || !rpeTable) {
-    console.error('Invalid reps, RPE values, or RPE table.');
+    console.error("Invalid reps, RPE values, or RPE table.");
     return undefined;
   }
 
@@ -137,7 +137,7 @@ export function calculatePercentage1RM(
 export function calculateRepsFromTable(
   percentage: number,
   rpe: number,
-  rpeTable: number[][] = rpeRepsTable
+  rpeTable: number[][] = rpeRepsTable,
 ): number | undefined {
   if (
     percentage < 0 ||
@@ -146,7 +146,7 @@ export function calculateRepsFromTable(
     rpe > 10 ||
     !rpeTable
   ) {
-    console.error('Invalid percentage, RPE values, or RPE table.');
+    console.error("Invalid percentage, RPE values, or RPE table.");
     return undefined;
   }
 
@@ -195,7 +195,7 @@ export function calculateRepsFromTable(
 export function calculateRpeFromTable(
   percentage: number,
   reps: number,
-  rpeTable: number[][] = rpeRepsTable
+  rpeTable: number[][] = rpeRepsTable,
 ): number | undefined {
   if (
     percentage < 0 ||
@@ -204,7 +204,7 @@ export function calculateRpeFromTable(
     reps > 15 ||
     !rpeTable
   ) {
-    console.error('Invalid percentage, reps values, or RPE table.');
+    console.error("Invalid percentage, reps values, or RPE table.");
     return undefined;
   }
 
@@ -234,7 +234,7 @@ export function computeUndefined(): number | undefined {
  */
 export function estimateMissingLineProps(
   programLine: ProgramLine,
-  maxliftValue: number
+  maxliftValue: number,
 ): ProgramLine | undefined {
   const line = programLine.duplicate();
 
@@ -268,7 +268,7 @@ export function estimateMissingLineProps(
     //line.loadBaseValue = `${estimatedLoad}%`;
 
     line.loadBaseValue = estimatedLoad
-      ? (Math.round(estimatedLoad * 100) / 100).toString() + '%'
+      ? (Math.round(estimatedLoad * 100) / 100).toString() + "%"
       : undefined;
   } else if (loadPercentage && !reps && rpe) {
     const estimatedReps = calculateRepsFromTable(loadPercentage, rpe);
@@ -357,7 +357,7 @@ export function calculateMaxIntensityKg(programLines: ProgramLine[]): number {
  * @returns average intensity.
  */
 export function calculateAverageIntensityKg(
-  programLines: ProgramLine[]
+  programLines: ProgramLine[],
 ): number {
   if (programLines.length === 0) {
     return 0;
@@ -366,7 +366,7 @@ export function calculateAverageIntensityKg(
   const loadValues = programLines
     .map(
       (line) =>
-        line.loadValue ?? line.loadComputedValue ?? line.loadSupposedValue ?? 0
+        line.loadValue ?? line.loadComputedValue ?? line.loadSupposedValue ?? 0,
     )
     .filter((value) => value !== null && !isNaN(value) && value !== 0);
 

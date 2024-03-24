@@ -8,12 +8,12 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue';
-import { useUserStore } from 'stores/user';
+import { defineAsyncComponent } from "vue";
+import { useUserStore } from "@/stores/user";
 
 // Import components
 const BrevoFormNewsletterSubscription = defineAsyncComponent(
-  () => import('components/forms/BrevoFormNewsletterSubscription.vue')
+  () => import("@/components/forms/BrevoFormNewsletterSubscription.vue"),
 );
 
 // Get user

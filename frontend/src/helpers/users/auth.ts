@@ -6,8 +6,8 @@ import {
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
-} from 'firebase/auth';
-import { auth } from 'src/firebase';
+} from "firebase/auth";
+import { auth } from "@/firebase";
 
 export enum AuthError {
   emailError,
@@ -21,7 +21,7 @@ export function doCreateUserWithEmailAndPassword(
   password: string,
   requireEmailVerification = false,
   onSuccess?: (...x: any) => void,
-  onError?: (...x: any) => void
+  onError?: (...x: any) => void,
 ) {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -40,16 +40,16 @@ export function doCreateUserWithEmailAndPassword(
       // Failed sign-up
       let authError;
       switch (error.code) {
-        case 'auth/email-already-in-use':
+        case "auth/email-already-in-use":
           authError = AuthError.userError;
           break;
-        case 'auth/invalid-email':
+        case "auth/invalid-email":
           authError = AuthError.emailError;
           break;
-        case 'auth/operation-not-allowed':
+        case "auth/operation-not-allowed":
           authError = AuthError.genericError;
           break;
-        case 'auth/weak-password':
+        case "auth/weak-password":
           authError = AuthError.passwordError;
           break;
         default:
@@ -65,7 +65,7 @@ export function doSignInWithEmailAndPassword(
   email: string,
   password: string,
   onSuccess?: (...x: any) => void,
-  onError?: (...x: any) => void
+  onError?: (...x: any) => void,
 ) {
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -78,16 +78,16 @@ export function doSignInWithEmailAndPassword(
       // Failed sign-in
       let authError;
       switch (error.code) {
-        case 'auth/wrong-password':
+        case "auth/wrong-password":
           authError = AuthError.passwordError;
           break;
-        case 'auth/invalid-email':
+        case "auth/invalid-email":
           authError = AuthError.emailError;
           break;
-        case 'auth/user-disabled':
+        case "auth/user-disabled":
           authError = AuthError.userError;
           break;
-        case 'auth/user-not-found':
+        case "auth/user-not-found":
           authError = AuthError.userError;
           break;
         default:

@@ -1,6 +1,6 @@
-import { Program, ProgramLine } from 'src/helpers/programs/program';
-import { ChartData } from 'chart.js';
-import { colors } from 'quasar';
+import { Program, ProgramLine } from "@/helpers/programs/program";
+import { ChartData } from "chart.js";
+import { colors } from "quasar";
 import {
   calculateAverageIntensityKg,
   calculateMaxIntensityKg,
@@ -8,19 +8,19 @@ import {
   calculateTotalSets,
   calculateTotalVolume,
   computeUndefined,
-} from 'src/helpers/charts/chartDatasetComputations';
+} from "@/helpers/charts/chartDatasetComputations";
 import {
   OSAvailableXType,
   OSChartDataRequest,
   OSChartDescriptor,
   OSChartType,
   OSChartVersion,
-} from './chartTypes';
+} from "./chartTypes";
 import {
   getProgramUniqueDays,
   getProgramUniqueExercises,
   getProgramUniqueWeeks,
-} from 'src/helpers/programs/linesManagement';
+} from "@/helpers/programs/linesManagement";
 const { getPaletteColor, lighten } = colors;
 
 // TODO: find a way to compute all the charts, now only total reps is computed
@@ -55,7 +55,7 @@ export function getProgramLines(
   program: Program,
   exerciseFullNames?: string | string[],
   weeks?: string | string[],
-  days?: string | string[]
+  days?: string | string[],
 ): ProgramLine[] {
   const filteredLines: ProgramLine[] = [];
 
@@ -67,7 +67,7 @@ export function getProgramLines(
   const daysArray = Array.isArray(days) ? days : [days];
 
   program.programExercises?.forEach((exercise) => {
-    const exerciseName = exercise.exercise?.name || '';
+    const exerciseName = exercise.exercise?.name || "";
     const currentExerciseFullName = `${exerciseName}`.trim();
 
     if (
@@ -88,7 +88,7 @@ export function getProgramLines(
 }
 
 export function getCalculationFunction(
-  chartInfo: OSChartDescriptor
+  chartInfo: OSChartDescriptor,
 ): (lines: ProgramLine[]) => number | undefined {
   if (
     chartInfo.chartVersion === OSChartVersion.TotalReps &&
@@ -128,7 +128,7 @@ export function computeDataForExercise(
   currentExerciseFullName: string,
   weeks?: string[],
   days?: string[],
-  chartInfo?: OSChartDescriptor
+  chartInfo?: OSChartDescriptor,
 ): ExerciseChartData[] {
   if (!weeks || weeks.length == 0) {
     weeks = getProgramUniqueWeeks(program, currentExerciseFullName);
@@ -151,7 +151,7 @@ export function computeDataForExercise(
           program,
           currentExerciseFullName,
           String(week),
-          String(day)
+          String(day),
         );
 
         totalValueForWeek += calculationFunction(lines) ?? 0;
@@ -168,7 +168,7 @@ export function computeDataForExercise(
           program,
           currentExerciseFullName,
           String(week),
-          String(day)
+          String(day),
         );
 
         totalValueForDay += calculationFunction(lines) ?? 0;
@@ -183,7 +183,7 @@ export function computeDataForExercise(
 }
 
 export function computeChartData(
-  chartRequest: OSChartDataRequest
+  chartRequest: OSChartDataRequest,
 ): ExerciseChartDataset[] {
   const datasets: ExerciseChartDataset[] = [];
 
@@ -195,7 +195,7 @@ export function computeChartData(
     chartRequest.selectedExercises.length == 0
   ) {
     chartRequest.selectedExercises = getProgramUniqueExercises(
-      chartRequest.program
+      chartRequest.program,
     );
   }
 
@@ -205,16 +205,16 @@ export function computeChartData(
       exerciseName,
       chartRequest.selectedWeeks,
       chartRequest.selectedDays,
-      chartRequest.chartInfo
+      chartRequest.chartInfo,
     );
 
     datasets.push({
-      backgroundColor: '', //TODO: clean up, colors are overwritten later
-      borderColor: '',
+      backgroundColor: "", //TODO: clean up, colors are overwritten later
+      borderColor: "",
       data: data,
       parsing: {
-        xAxisKey: 'key',
-        yAxisKey: 'value',
+        xAxisKey: "key",
+        yAxisKey: "value",
       },
       label: exerciseName,
     });
@@ -229,25 +229,27 @@ export function computeChartData(
  * @returns
  */
 export function formatChartData(
-  datasets?: ExerciseChartDataset[]
-): ChartData<'line', ExerciseChartData[]> | undefined {
+  datasets?: ExerciseChartDataset[],
+): ChartData<"line", ExerciseChartData[]> | undefined {
   if (!datasets || datasets.length === 0) {
     // TODO inform user about the issue
-    console.error('Invalid datasets structure.');
+    console.error("Invalid datasets structure.");
     return undefined;
   }
 
   // Extract unique labels from datasets
   const uniqueLabels = Array.from(
-    new Set(datasets.flatMap((dataset) => dataset.data.map((item) => item.key)))
+    new Set(
+      datasets.flatMap((dataset) => dataset.data.map((item) => item.key)),
+    ),
   );
 
-  const chartData: ChartData<'line', ExerciseChartData[]> = {
+  const chartData: ChartData<"line", ExerciseChartData[]> = {
     labels: uniqueLabels,
     datasets: datasets.map((dataset, index) => {
-      const color = getPaletteColor('chart-color' + (index + 1));
+      const color = getPaletteColor("chart-color" + (index + 1));
       if (!color) {
-        throw new Error('Unable to generate color.'); // Enhance error handling
+        throw new Error("Unable to generate color."); // Enhance error handling
       }
 
       return {
@@ -281,9 +283,9 @@ export function createChartOptions(xAxisName?: string, yAxisName?: string) {
         },
       },
       y: {
-        type: 'linear',
+        type: "linear",
         display: true,
-        position: 'left',
+        position: "left",
         title: {
           display: yAxisName ? true : false,
           text: yAxisName,
