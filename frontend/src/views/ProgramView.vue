@@ -75,7 +75,7 @@
               ></q-btn>
             </div>
 
-            <!-- Maxlift and Charts -->
+            <!-- Mobile utility buttons -->
             <div v-if="denseView" class="row">
               <!-- Program info and open new -->
               <q-btn
@@ -125,6 +125,24 @@
                 "
                 @click="
                   showingUtils = UtilsOptions.maxlifts;
+                  showUtilsDialog = true;
+                "
+              >
+              </q-btn>
+
+              <!-- Show Feedbacks -->
+              <q-btn
+                icon="fa-regular fa-comment-dots"
+                class="q-pa-sm"
+                outline
+                flat
+                :color="
+                  showUtilsDialog && showingUtils == UtilsOptions.feedbacks
+                    ? 'primary'
+                    : 'light-dark'
+                "
+                @click="
+                  showingUtils = UtilsOptions.feedbacks;
                   showUtilsDialog = true;
                 "
               >
@@ -568,6 +586,41 @@
               ></q-btn>
             </div>
 
+            <!-- Feedbacks section -->
+            <div v-else-if="showingUtils == UtilsOptions.feedbacks">
+              <div class="row justify-between items-center q-mb-sm">
+                <h6 class="text-margin-xs">
+                  {{
+                    $t("coach.program_management.builder.feedback_from_athlete")
+                  }}
+                </h6>
+                <q-btn
+                  @click="updateFeedbackView"
+                  icon="fa-solid fa-refresh"
+                  :flat="!isFrozenViewOld"
+                  round
+                  color="secondary"
+                >
+                  <q-tooltip :offset="[10, 10]">
+                    {{
+                      $t(
+                        "coach.program_management.builder.feedback_from_athlete_refresh_tooltip",
+                      )
+                    }}
+                  </q-tooltip>
+                </q-btn>
+              </div>
+
+              <WorkoutDayForm
+                v-for="(block, indexDay) in programFrozenView?.weekdays"
+                :key="indexDay"
+                :programDay="block"
+                :modelValue="programFeedbacks?.feedbacks[indexDay]"
+                class="q-my-md"
+                readonly
+              ></WorkoutDayForm>
+            </div>
+
             <!-- Close button in dialog mode -->
             <q-btn
               v-if="denseView"
@@ -606,9 +659,10 @@
         <q-card-section>
           <FormProgramInfo
             :program="selectedProgram"
+            :athlete="proposedAthlete"
             @submit="
-              (program) => {
-                saveProgram(program);
+              (program, assignIt) => {
+                saveProgram(program, assignIt);
                 showNewProgramDialog = false;
               }
             "
@@ -839,7 +893,11 @@ import {
   defineAsyncComponent,
 } from "vue";
 import { debounce, QDialog, QCard } from "quasar";
-import { Program, ProgramExercise } from "@/helpers/programs/program";
+import {
+  Program,
+  ProgramExercise,
+  ProgramFrozenView,
+} from "@/helpers/programs/program";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { useCoachActiveChangesStore } from "@/stores/coachActiveChanges";
@@ -852,7 +910,6 @@ import DialogProgramAssignAthlete from "@/components/dialogs/DialogProgramAssign
 import DialogProgramShareWithAthlete from "@/components/dialogs/DialogProgramShareWithAthlete.vue";
 import FormMaxLift from "@/components/forms/FormMaxLift.vue";
 import TableExistingPrograms from "@/components/tables/TableExistingPrograms.vue";
-import { AthleteUser } from "@/helpers/users/user";
 import {
   getProgramUniqueWeeks,
   getProgramUniqueDays,
@@ -867,6 +924,9 @@ import mixpanel from "mixpanel-browser";
 import { extractUniqueMaxliftFromProgram } from "@/helpers/programs/programTemplate";
 import { compareMaxliftLists } from "@/helpers/maxlifts/listManagement";
 import { arrayFilterUndefined } from "@/helpers/array";
+import { assignProgramToAthlete } from "@/helpers/programs/programManager";
+import { loadLatestFeedback } from "@/helpers/programs/programFeedback";
+import { ProgramFeedback } from "@/helpers/programs/models";
 
 // Import components
 const ProgramBuilder = defineAsyncComponent(
@@ -889,6 +949,9 @@ const FormProgramTemplateSaving = defineAsyncComponent(
 );
 const FormMissingMaxlifts = defineAsyncComponent(
   () => import("@/components/forms/FormMissingMaxlifts.vue"),
+);
+const WorkoutDayForm = defineAsyncComponent(
+  () => import("@/components/feedback/WorkoutDayForm.vue"),
 );
 
 // Define emits
@@ -914,6 +977,7 @@ const UtilsOptions = {
   list: "list",
   charts: "charts",
   maxlifts: "maxlifts",
+  feedbacks: "feedbacks",
 };
 const splitterThresholdValue = 15;
 
@@ -921,28 +985,29 @@ const splitterThresholdValue = 15;
 const splitterModel = ref(0);
 const showingUtils = ref(UtilsOptions.list);
 
-// Set ref related to program
+// Set ref related to program management
 const programManagerElement = ref<HTMLElement>();
 const programBuilderElement = ref<typeof ProgramBuilder>();
 const selectedProgram = ref<Program>();
 const substituteProgramId = ref<string>();
-const oldAthleteAssigned = ref<AthleteUser>();
-const programSaved = ref(true);
-const filterWeek = ref<string[]>();
-const filterDay = ref<string[]>();
-const filterExercise = ref<string[]>();
 const showNewProgramDialog = ref(false);
 const showUnsavedProgramRestoreDialog = ref(false);
 const showAthleteAssigningDialog = ref(false);
 const showShareProgramDialog = ref(false);
 const programManagerExpanded = ref(false);
+const deletingProgram = ref<Program>();
+const showDialogDeleteProgram = ref(false);
+const recentProgramsTableElement = ref<typeof TableExistingPrograms>();
+
+// Set ref related to program builder
+const programSaved = ref(true);
+const filterWeek = ref<string[]>();
+const filterDay = ref<string[]>();
+const filterExercise = ref<string[]>();
 const programPageHeight = ref(0);
 const programManagerHeight = ref(0);
 const canUndo = ref(false);
 const canRedo = ref(false);
-const deletingProgram = ref<Program>();
-const showDialogDeleteProgram = ref(false);
-const recentProgramsTableElement = ref<typeof TableExistingPrograms>();
 const isBuilderCompact = ref(false);
 
 // Set ref related to program templates
@@ -959,6 +1024,11 @@ const updatingMaxlift = ref<MaxLift>();
 const searchMaxLift = ref<string>();
 const showMaxliftAddDialog = ref(false);
 const maxliftFormElement = ref<typeof FormMaxLift>();
+
+// Set ref related to feedbacks
+const programFrozenView = ref<ProgramFrozenView>();
+const programFeedbacks = ref<ProgramFeedback>();
+const isFrozenViewOld = ref<boolean>(true);
 
 // Set ref for responsiveness
 const denseView = computed(() => !$q.screen.gt.sm);
@@ -1043,6 +1113,11 @@ const showChangeProgramDialog = computed({
   },
 });
 
+const proposedAthlete = computed(
+  () =>
+    coachInfo.athletes?.find((athlete) => athlete.uid == route.query.athlete),
+);
+
 // Update selected program upon request from router
 watch(
   requestedProgram,
@@ -1071,18 +1146,6 @@ watch(
 // Try (but not force) to open a new program when requested
 watch(substituteProgramId, (programId?: string) => openProgram(programId));
 
-// Perform operations when program saved status change
-watch(
-  programSaved,
-  (isSaved) => {
-    if (isSaved) {
-      // Save info on athlete currently assigned to program
-      oldAthleteAssigned.value = selectedProgram.value?.athlete;
-    }
-  },
-  { immediate: true },
-);
-
 // Perform operations on program update
 watch(selectedProgram, (program) => {
   // Active changes on current program
@@ -1108,6 +1171,14 @@ watch(
 // Show dialog deleting dialog when required
 watch(deletingProgram, (programToDelete) => {
   if (programToDelete) showDialogDeleteProgram.value = true;
+});
+
+// Register mixpanel event when view is switched to compact
+watch(isBuilderCompact, () => {
+  // Mixpanel tracking
+  if (isBuilderCompact.value) {
+    mixpanel.track("Builder switched to compact");
+  }
 });
 
 /**
@@ -1174,15 +1245,23 @@ function onProgramTableUpdate(program: Program) {
 
   // Start autosave
   autosaveProgram();
+
+  // Inform of old frozen view
+  isFrozenViewOld.value = true;
 }
 
 /**
  * Save current program instance.
  *
  * @param program optional program instance that shall be save.
- * @param checkUnsaved if true, only save if program shows active changes.
+ * @param [assignToAthlete=false] if true, also assign program to athlete and save it.
+ * @param [checkUnsaved=false] if true, only save if program shows active changes.
  */
-function saveProgram(program?: Program, checkUnsaved: boolean = false) {
+function saveProgram(
+  program?: Program,
+  assignToAthlete: boolean = false,
+  checkUnsaved: boolean = false,
+) {
   // Check if program is unsaved
   if (checkUnsaved && programSaved.value) return;
 
@@ -1201,12 +1280,18 @@ function saveProgram(program?: Program, checkUnsaved: boolean = false) {
         ) || []).push(currProgram);
 
       // Update athlete profile with new program
-      if (!currProgram.isTemplate)
-        assignProgramToAthlete(
-          currProgram,
-          currProgram.athlete,
-          oldAthleteAssigned.value,
-        );
+      if (assignToAthlete && !currProgram.isTemplate && currProgram.athlete)
+        assignProgramToAthlete(currProgram, currProgram.athlete, {
+          onError: () => {
+            $q.notify({
+              type: "negative",
+              message: i18n.t(
+                "coach.program_management.builder.save_assignment_error",
+              ),
+              position: "bottom",
+            });
+          },
+        });
 
       // Clear active change on current program
       coachActiveChanges.program = undefined;
@@ -1371,60 +1456,8 @@ function mergeProgramTemplate() {
  * Autosave program with debounce.
  */
 const autosaveProgram = debounce(() => {
-  saveProgram(undefined, true);
+  saveProgram(undefined, false, true);
 }, 60 * 1000 /* debounce 60 seconds */);
-
-/**
- * Assign a program to an athlete and save the update.
- *
- * @param program program that shall be assigned to athlete.
- * @param athlete athlete to which program shall be assigned.
- * @param oldAthlete old athlete to which program was assigned and shall now be unassigned.
- */
-function assignProgramToAthlete(
-  program: Program,
-  athlete?: AthleteUser,
-  oldAthlete?: AthleteUser,
-) {
-  // Update athlete info
-  if (athlete) {
-    athlete.assignedProgramId = program.uid;
-    if (program.uid)
-      (athlete.assignedPrograms = athlete.assignedPrograms || []).push(
-        program.uid,
-      );
-
-    // Store changes
-    athlete.saveUpdate({
-      onError: () => {
-        $q.notify({
-          type: "negative",
-          message: i18n.t(
-            "coach.program_management.builder.save_assignment_error",
-          ),
-          position: "bottom",
-        });
-      },
-    });
-  }
-
-  // Optionally remove program from a previously assigned athlete
-  if (oldAthlete && oldAthlete != athlete) {
-    oldAthlete.assignedProgramId = undefined;
-    oldAthlete.saveUpdate({
-      onError: () => {
-        $q.notify({
-          type: "negative",
-          message: i18n.t(
-            "coach.program_management.builder.save_unassignment_error",
-            { name: oldAthlete.referenceName },
-          ),
-          position: "bottom",
-        });
-      },
-    });
-  }
-}
 
 /**
  * Delete one program from list, upon confirmation.
@@ -1442,33 +1475,19 @@ function onProgramDelete(program: Program) {
  * @param program element that shall be removed.
  */
 function deleteProgram(program: Program) {
-  // Unassign program from athlete
-  const currAthlete = program.athlete;
-  if (currAthlete) {
-    currAthlete.assignedProgramId = undefined;
-    currAthlete.saveUpdate({
-      onSuccess: () => {
-        // Mixpanel tracking
-        mixpanel.track("Update Athlete", {
-          Type: "Removed program",
-        });
-      },
-      onError: () => {
-        // Mixpanel tracking
-        mixpanel.track("ERROR Update Athlete", {
-          Type: "Removing program",
-        });
-      },
-    });
-  }
-
-  // Delete program
-  program.name = `${program.name ?? ""}__deleted__${program.coachId}/${
-    program.athleteId
-  }`;
-  program.coach = undefined;
-  program.athlete = undefined;
-  program.saveUpdate({
+  program.remove({
+    onAthleteUpdateSuccess: () => {
+      // Mixpanel tracking
+      mixpanel.track("Update Athlete", {
+        Type: "Removed program",
+      });
+    },
+    onAthleteUpdateError: () => {
+      // Mixpanel tracking
+      mixpanel.track("ERROR Update Athlete", {
+        Type: "Removing program",
+      });
+    },
     onSuccess: () => {
       coachInfo.programs = coachInfo.programs?.filter(
         (coachProgram) => coachProgram != program,
@@ -1744,6 +1763,25 @@ function openNewProgram() {
 }
 
 /**
+ * Get feedback to display to coach.
+ */
+function updateFeedbackView() {
+  isFrozenViewOld.value = false;
+  if (!selectedProgram.value?.uid) return;
+
+  // Update frozen view
+  programFrozenView.value = selectedProgram.value?.freeze();
+
+  // Load feedback
+  if (!programFeedbacks.value)
+    loadLatestFeedback(selectedProgram.value.uid, {
+      onSuccess: (feedback) => {
+        programFeedbacks.value = feedback;
+      },
+    });
+}
+
+/**
  * Open unsaved modified program in builder.
  */
 function onUnsavedProgramRestore() {
@@ -1772,6 +1810,7 @@ function handleDrawerClick(clickParam: number) {
     case 0:
     case 1:
     case 2:
+    case 3:
       toShow = Object.values(UtilsOptions)[clickParam];
       break;
     default:
@@ -1803,7 +1842,7 @@ function keydownHandler(event: KeyboardEvent) {
   // Save program on ctrl + s
   if (event.ctrlKey && event.key.toLowerCase() === "s") {
     event.preventDefault();
-    saveProgram(undefined, true);
+    saveProgram(undefined, false, true);
   }
 
   // Undo changes on ctrl + z
@@ -1837,7 +1876,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   // Clear autosave, and save program if required
   autosaveProgram.cancel();
-  saveProgram(undefined, true);
+  saveProgram(undefined, false, true);
 
   // Remove key press event listener
   document.addEventListener("keydown", keydownHandler);

@@ -189,6 +189,7 @@ import { ProgramExerciseFeedback } from "@/helpers/programs/models";
 import { ProgramFrozenView } from "@/helpers/programs/program";
 import { stringCapitalize } from "@/helpers/scalar";
 import { ref, watch, onMounted, onUnmounted } from "vue";
+import mixpanel from "mixpanel-browser";
 
 // Define props
 const props = withDefaults(
@@ -276,6 +277,11 @@ function saveExerciseFeedback() {
       }) || [],
   };
   emit("update:modelValue", exerciseFeedback);
+
+  // Mixpanel tracking
+  mixpanel.track("Athlete Feedback on exercise", {
+    Feedback: exerciseFeedback.linesFeedback,
+  });
 }
 
 /**

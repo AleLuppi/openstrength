@@ -86,6 +86,7 @@ import { computed, ref, watch } from "vue";
 import { ProgramFrozenView } from "@/helpers/programs/program";
 import WorkoutExerciseForm from "./WorkoutExerciseForm.vue";
 import { ProgramDayFeedback } from "@/helpers/programs/models";
+import mixpanel from "mixpanel-browser";
 
 // Define props
 const props = withDefaults(
@@ -97,10 +98,10 @@ const props = withDefaults(
     modelValue: ProgramDayFeedback | undefined;
 
     // set if day is next to be done in program
-    isNext: boolean;
+    isNext?: boolean;
 
     // whether to show component for reading only and not update
-    readonly: boolean;
+    readonly?: boolean;
   }>(),
   { isNext: false, readonly: false },
 );
@@ -146,6 +147,8 @@ watch(
       completed: false,
       exercisesFeedback: [],
     };
+    workoutDate.value = value?.completedOn ?? new Date();
+    workoutNote.value = value?.textFeedback ?? "";
   },
   { immediate: true },
 );
@@ -162,7 +165,14 @@ function completeDay(completed: boolean = true) {
     dayFeedback.value.completed = completed;
     dayFeedback.value.completedOn = completed ? workoutDate.value : undefined;
     dayFeedback.value.textFeedback = workoutNote.value;
-    if (completed) emit("complete");
+    if (completed) {
+      emit("complete");
+
+      // Mixpanel tracking
+      mixpanel.track("Athlete Feedback: Day completed", {
+        Feedback: workoutNote.value,
+      });
+    }
     emit("update:modelValue", dayFeedback.value);
   }
 }
