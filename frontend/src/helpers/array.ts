@@ -126,8 +126,7 @@ export function arrayZip<T>(arrays: T[][], pad = false): T[][] {
  */
 export function arrayPushToNullable<T>(array: T[] | undefined, value: T): T[] {
   const outArray = array || [];
-  outArray.push(value);
-  return outArray;
+  return outArray.concat([value]);
 }
 
 /**
@@ -142,8 +141,7 @@ export function arrayConcatToNullable<T>(
   values: T[],
 ): T[] {
   const outArray = array || [];
-  outArray.concat(values);
-  return outArray;
+  return outArray.concat(values);
 }
 
 /**
