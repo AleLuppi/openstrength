@@ -1,162 +1,86 @@
 <template>
-  <main>
-    <transition name="fade">
-      <osSplashScreen v-if="isLoading" />
-    </transition>
-    <q-layout
-      view="lHh LpR lFf"
-      @mousedown="interacted = true"
-      @scroll="interacted = true"
-      @touchstart="interacted = true"
+  <q-layout
+    view="lHh LpR lFf"
+    @mousedown="interacted = true"
+    @scroll="interacted = true"
+    @touchstart="interacted = true"
+  >
+    <!-- Header -->
+    <HeaderMain
+      v-if="$q.screen.lt.md"
+      :allow-left-drawer="!leftDrawerOpen || $q.screen.lt.md"
+      :is-user-signed-in="user.isSignedIn"
+      @open-left="leftDrawerOpen = !leftDrawerOpen"
+    />
+
+    <!-- Left drawer -->
+    <DrawerMainLeft v-model="leftDrawerOpen" />
+
+    <!-- Optional right drawer, customizible by route view -->
+    <q-drawer
+      v-if="rightDrawerElement && $q.screen.gt.sm"
+      v-model="rightDrawerOpen"
+      side="right"
+      show-if-above
+      bordered
+      :width="50"
+      class="bg-lightest"
     >
-      <!-- Header -->
-      <q-header
-        v-if="showHeaderSm || showHeaderLg"
-        bordered
-        class="bg-lightest text-light"
-      >
-        <q-toolbar
-          v-if="
-            (showHeaderSm && $q.screen.lt.md) ||
-            (showHeaderLg && !$q.screen.lt.md)
-          "
-        >
-          <q-btn
-            v-if="showLeftDrawer && (!leftDrawerOpen || $q.screen.lt.md)"
-            flat
-            dense
-            round
-            aria-label="Menu"
-            icon="menu"
-            @click="leftDrawerOpen = !leftDrawerOpen"
-          />
+      <component
+        :is="rightDrawerElement"
+        :active="rightDrawerActive"
+        @drawer-click="onRightDrawerClick"
+      ></component>
+    </q-drawer>
 
-          <q-btn
-            flat
-            dense
-            aria-label="To home"
-            :to="{
-              name: user.isSignedIn ? NamedRoutes.home : NamedRoutes.landing,
-            }"
-          >
-            <img
-              :src="logoTextOnly"
-              alt="Logo OpenStrength"
-              style="height: 20px"
-            />
-          </q-btn>
-
-          <q-space />
-
-          <!-- Action buttons -->
-          <q-btn
-            icon-right="person"
-            :label="
-              $q.screen.lt.md
-                ? undefined
-                : user.isSignedIn
-                ? $t('layout.header.to_profile')
-                : $t('layout.header.to_login')
-            "
-            :to="{ name: NamedRoutes.profile }"
-            color="primary"
-          />
-        </q-toolbar>
-      </q-header>
-
-      <!-- Left drawer -->
-      <q-drawer
-        v-if="showLeftDrawer"
-        v-model="leftDrawerOpen"
-        side="left"
-        show-if-above
-        bordered
-        mini
-        :mini-width="100"
-        class="bg-lightest"
-      >
-        <LeftDrawerElements />
-
-        <template #mini>
-          <LeftDrawerElements :mini="true" />
-        </template>
-      </q-drawer>
-
-      <!-- Optional right drawer, customizible by route view -->
-      <q-drawer
-        v-if="rightDrawerElement && $q.screen.gt.sm"
-        v-model="rightDrawerOpen"
-        side="right"
-        show-if-above
-        bordered
-        :width="50"
-        class="bg-lightest"
-      >
+    <!-- Actual page content -->
+    <q-page-container>
+      <RouterView v-slot="{ Component }">
         <component
-          :is="rightDrawerElement"
-          :active="rightDrawerActive"
-          @drawer-click="onRightDrawerClick"
-        ></component>
-      </q-drawer>
+          :is="Component"
+          ref="viewComponent"
+          @request-global-dialog="onShowGlobalDialog"
+          @activate-drawer-item="(item: number) => (rightDrawerActive = item)"
+        />
+      </RouterView>
+    </q-page-container>
 
-      <!-- Actual page content -->
-      <q-page-container>
-        <RouterView v-slot="{ Component }">
-          <component
-            :is="Component"
-            ref="viewComponent"
-            @request-global-dialog="onShowGlobalDialog"
-            @activate-drawer-item="(item: number) => (rightDrawerActive = item)"
-          />
-        </RouterView>
-      </q-page-container>
+    <!-- Footer -->
+    <q-footer v-if="showFooter">
+      <!-- TODO -->
+    </q-footer>
 
-      <!-- Footer -->
-      <q-footer v-if="showFooter">
-        <!-- TODO -->
-      </q-footer>
-
-      <!-- Show optional global dialogs -->
-      <q-dialog v-model="showDialogOnboarding">
-        <UserOnboarding @submit="onOnboardingSubmit"></UserOnboarding>
-      </q-dialog>
-    </q-layout>
-  </main>
+    <!-- Show optional global dialogs -->
+    <q-dialog v-model="showDialogOnboarding">
+      <UserOnboarding @submit="onOnboardingSubmit"></UserOnboarding>
+    </q-dialog>
+  </q-layout>
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  defineAsyncComponent,
-  onBeforeMount,
-  onMounted,
-  ref,
-} from "vue";
+import { computed, defineAsyncComponent, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { User as FirebaseUser } from "firebase/auth";
-import { NamedRoutes } from "src/router";
-import { auth } from "src/firebase";
-import { useUserStore } from "stores/user";
-import { useCoachInfoStore } from "stores/coachInfo";
-import { addCallbackOnAuthStateChanged } from "src/helpers/users/auth";
-import { User, UserRole } from "src/helpers/users/user";
-import { ProgramExercise } from "src/helpers/programs/program";
-import { sortExercises } from "src/helpers/exercises/listManagement";
-import { setLocale } from "src/helpers/locales";
-import { defaultExerciseCollection } from "src/utils/defaultExerciseCollection";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
-import { logoTextOnly } from "assets/sources";
+import { useUserStore } from "@/stores/user";
+import { useCoachInfoStore } from "@/stores/coachInfo";
+import { addCallbackOnAuthStateChanged } from "@/helpers/users/auth";
+import { User, UserRole } from "@/helpers/users/user";
+import { ProgramExercise } from "@/helpers/programs/program";
+import { sortExercises } from "@/helpers/exercises/listManagement";
+import { setLocale } from "@/helpers/locales";
+import { defaultExerciseCollection } from "@/utils/defaultExerciseCollection";
 
 // Import async components
-const osSplashScreen = defineAsyncComponent(
-  () => import("components/layout/SplashScreen.vue"),
+const HeaderMain = defineAsyncComponent(
+  () => import("@/components/layout/HeaderMain.vue"),
 );
-const LeftDrawerElements = defineAsyncComponent(
-  () => import("components/layout/LeftDrawerElements.vue"),
+const DrawerMainLeft = defineAsyncComponent(
+  () => import("@/components/layout/DrawerMainLeft.vue"),
 );
 const UserOnboarding = defineAsyncComponent(
-  () => import("components/forms/UserOnboarding.vue"),
+  () => import("@/components/forms/UserOnboarding.vue"),
 );
 
 // Init plugin
@@ -173,15 +97,7 @@ const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
 const rightDrawerElement = computed(() => route.meta?.showRightDrawer);
 const rightDrawerActive = ref<number>(-1);
-const showHeaderSm = computed(
-  () => route.meta?.showHeaderSm ?? route.meta?.showHeader ?? true,
-);
-const showHeaderLg = computed(
-  () => route.meta?.showHeaderLg ?? route.meta?.showHeader ?? false,
-);
 const showFooter = computed(() => route.meta?.showFooter ?? true);
-const showLeftDrawer = computed(() => route.meta?.showLeftDrawer ?? true);
-const isLoading = ref(true);
 
 // Global dialogs ref
 const showDialogOnboarding = ref(false);
@@ -189,54 +105,32 @@ const showDialogOnboarding = ref(false);
 // Check if any interaction with the app has ever occurred
 let interacted = false;
 
-// Run few useful things before app starts rendering
-onBeforeMount(() => {
-  // Set loading state for splashscreen
-  isLoading.value = true;
+// Ensure user storage is up to date with auth
+addCallbackOnAuthStateChanged({
+  onUserIn: async (firebaseUser: FirebaseUser) => {
+    user.loadFirebaseUser(firebaseUser, true);
+    await user.loadUser();
+    if (user.locale) setLocale(user.locale);
 
-  // React to auth state ready
-  auth.authStateReady().then(() => {
-    // Reduce delay to hide splash screen
-    setTimeout(() => {
-      isLoading.value = false;
-    }, 500);
-  });
+    // Try to move to original page if app has not been used yet, otherwise re-check current page
+    if (route.redirectedFrom && !interacted)
+      router.replace(route.redirectedFrom);
+    else router.replace({ ...route, force: true });
 
-  // Ensure user storage is up to date with auth
-  addCallbackOnAuthStateChanged({
-    onUserIn: async (firebaseUser: FirebaseUser) => {
-      user.loadFirebaseUser(firebaseUser, true);
-      await user.loadUser();
-      if (user.locale) setLocale(user.locale);
+    // Show onboarding dialog if required
+    if (!user.role || user.role == UserRole.unknown)
+      showDialogOnboarding.value = true;
 
-      // Try to move to original page if app has not been used yet, otherwise re-check current page
-      if (route.redirectedFrom && !interacted)
-        router.replace(route.redirectedFrom);
-      else router.replace({ ...route, force: true });
+    // Identify user for proper Mixpanel tracking
+    mixpanel.identify(user.uid);
+  },
+  onUserOut: () => {
+    user.$reset();
+    coachInfo.$reset();
 
-      // Show onboarding dialog if required
-      if (!user.role || user.role == UserRole.unknown)
-        showDialogOnboarding.value = true;
-
-      // Identify user for proper Mixpanel tracking
-      mixpanel.identify(user.uid);
-    },
-    onUserOut: () => {
-      user.$reset();
-      coachInfo.$reset();
-
-      // Refresh page to allow redirect if on unauthorized page
-      router.replace({ ...route, force: true });
-    },
-  });
-});
-
-// Run few useful things when app is ready to be displayed
-onMounted(() => {
-  // Set a maximum splash screen duration
-  setTimeout(() => {
-    isLoading.value = false;
-  }, 2000);
+    // Refresh page to allow redirect if on unauthorized page
+    router.replace({ ...route, force: true });
+  },
 });
 
 /**
@@ -303,17 +197,3 @@ function onShowGlobalDialog(which: string) {
   }
 }
 </script>
-
-<style scoped lang="scss">
-.fade-enter-active {
-  transition: opacity 0s;
-}
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>

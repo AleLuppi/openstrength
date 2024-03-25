@@ -1,5 +1,6 @@
 import { RouteRecordRaw } from "vue-router";
 import { UserRole } from "@/helpers/users/user";
+import ExternalLayout from "src/layouts/ExternalLayout.vue";
 
 /* Dinamically import the layouts */
 const MainLayout = () => import("layouts/MainLayout.vue");
@@ -64,11 +65,13 @@ export enum NamedRoutes {
  */
 
 const routes: RouteRecordRaw[] = [
+  // Home layout
   {
     path: "/",
     component: MainLayout,
     redirect: { name: NamedRoutes.home },
     children: [
+      // Home page
       {
         path: "",
         name: NamedRoutes.home,
@@ -83,10 +86,11 @@ const routes: RouteRecordRaw[] = [
     ],
   },
 
+  // Layout for external users
   {
-    path: "/_MainLayout",
-    component: MainLayout,
-    redirect: { name: NamedRoutes.notFound },
+    path: "/_ExternalLayout",
+    component: ExternalLayout,
+    redirect: { name: NamedRoutes.landing },
     children: [
       {
         path: "/welcome",
@@ -95,7 +99,6 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: "Welcome",
           showHeader: true,
-          showLeftDrawer: false,
         },
       },
       {
@@ -105,9 +108,17 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: "Welcome",
           showHeader: true,
-          showLeftDrawer: false,
         },
       },
+    ],
+  },
+
+  // Main app layout
+  {
+    path: "/_MainLayout",
+    component: MainLayout,
+    redirect: { name: NamedRoutes.notFound },
+    children: [
       {
         path: "/athletes",
         name: NamedRoutes.athletes,
@@ -227,8 +238,8 @@ const routes: RouteRecordRaw[] = [
     ],
   },
 
-  // Always leave this as last one,
-  // but you can also remove it
+  // Not Found Layout
+  // Always leave this as last one
   {
     path: "/_NotFoundLayout",
     component: MainLayout,
