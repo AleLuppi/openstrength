@@ -38,7 +38,7 @@
                 debounce="500"
                 class="col"
               >
-                <template v-slot:prepend>
+                <template #prepend>
                   <q-icon name="search" />
                 </template>
               </os-input>
@@ -51,8 +51,8 @@
             ref="athletesTableElement"
             :athletes="athletes"
             :programs="programs"
-            @update:selected="onAthleteSelection"
             :filter="searchAthlete"
+            @update:selected="onAthleteSelection"
           />
         </q-card>
 
@@ -72,19 +72,19 @@
               </h5>
               <q-space />
               <q-btn
+                v-close-popup
                 icon="close"
                 flat
                 round
                 dense
                 color="button-negative"
-                v-close-popup
               />
             </q-card-section>
 
             <q-form
+              class="q-my-md q-gutter-sm column"
               @submit="createAthlete()"
               @reset="clearAthlete"
-              class="q-my-md q-gutter-sm column"
             >
               <q-card-section class="q-gutter-x-xs">
                 <os-input
@@ -124,8 +124,8 @@
         :is="$q.screen.lt.sm ? QDialog : 'div'"
         v-if="selectedAthlete"
         :model-value="Boolean(selectedAthlete)"
-        @update:model-value="selectedAthlete = undefined"
         class="col-7"
+        @update:model-value="selectedAthlete = undefined"
       >
         <q-card>
           <q-card-section class="q-gutter-x-xs os-athleteinfo-max-height">
@@ -175,6 +175,7 @@
                     :class="{ 'full-width': denseView }"
                   ></q-btn>
                   <TableExistingPrograms
+                    v-model:selected="infoProgram"
                     :programs="athletePrograms"
                     :active-program="
                       denseView ? undefined : athleteCurrentProgram
@@ -185,7 +186,6 @@
                     sort-by="-startedOn"
                     allow-open
                     allow-delete
-                    v-model:selected="infoProgram"
                     @delete="onProgramDelete"
                   />
                 </div>
@@ -237,8 +237,8 @@
               <!-- Athlete Anagraphic and phisical data -->
               <q-tab-panel name="anagraphic">
                 <FormAthleteAnagraphicInfo
-                  ref="athleteFormElement"
                   v-if="selectedAthlete"
+                  ref="athleteFormElement"
                   :athlete="selectedAthlete"
                 />
               </q-tab-panel>
@@ -263,7 +263,7 @@
                         debounce="500"
                         class="col"
                       >
-                        <template v-slot:prepend>
+                        <template #prepend>
                           <q-icon name="search" />
                         </template>
                       </os-input>
@@ -284,8 +284,8 @@
 
                   <TableMaxLifts
                     :maxlifts="athleteMaxlifts"
-                    @update="onUpdateMaxLift"
                     :filter="searchMaxLift"
+                    @update="onUpdateMaxLift"
                   />
 
                   <!-- Dialog to add a new max lift -->
@@ -305,12 +305,12 @@
 
                         <q-space />
                         <q-btn
+                          v-close-popup
                           icon="close"
                           flat
                           round
                           dense
                           color="button-negative"
-                          v-close-popup
                         />
                       </q-card-section>
 
@@ -359,18 +359,18 @@
           <q-card-section class="row justify-between q-pb-none">
             <h6>{{ $t("coach.athlete_management.fields.program_info") }}</h6>
             <q-btn
+              v-close-popup
               icon="close"
               flat
               round
               dense
               color="button-negative"
-              v-close-popup
             />
           </q-card-section>
           <q-card-section>
             <FormAthleteProgramInfo
               :program="infoProgram!"
-              :isCurrent="
+              :is-current="
                 selectedAthlete?.assignedProgramId === infoProgram!.uid
               "
               @assign="assignProgram"
@@ -397,17 +397,17 @@
 
           <q-card-actions align="right">
             <q-btn
+              v-close-popup
               flat
               :label="$t('common.cancel')"
               type="reset"
               color="button-negative"
-              v-close-popup
             />
             <q-btn
-              :label="$t('coach.program_management.list.delete_proceed')"
-              @click="if (deletingProgram) deleteProgram(deletingProgram);"
-              color="button-negative"
               v-close-popup
+              :label="$t('coach.program_management.list.delete_proceed')"
+              color="button-negative"
+              @click="if (deletingProgram) deleteProgram(deletingProgram);"
             />
           </q-card-actions>
         </q-card>

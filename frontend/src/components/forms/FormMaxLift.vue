@@ -1,9 +1,9 @@
 <template>
   <q-form
     ref="formElement"
+    class="q-my-md q-gutter-sm column"
     @submit="onSubmit"
     @reset="onReset"
-    class="q-my-md q-gutter-sm column"
   >
     <q-card-section class="q-gutter-x-xs">
       <!-- Exercise name -->
@@ -42,7 +42,7 @@
         :label="$t('coach.maxlift_management.fields.estimated1rm')"
         readonly
       >
-        <template v-slot:after>
+        <template #after>
           <q-icon :name="symOutlinedHelp" class="cursor-pointer">
             <q-tooltip>
               {{

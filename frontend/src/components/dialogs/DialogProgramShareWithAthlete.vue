@@ -10,9 +10,9 @@
           <os-text-copyable :text="urlFullPath"></os-text-copyable>
           <router-link
             :to="urlRelativePath"
-            @click="registerEvent()"
             target="_blank"
             class="q-mt-sm"
+            @click="registerEvent()"
           >
             {{ $t("coach.program_management.viewer.preview") }}
           </router-link>

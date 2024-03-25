@@ -1,5 +1,6 @@
 <template>
   <os-table
+    v-model:selected="selected"
     :columns="columns"
     :rows="rows"
     virtual-scroll
@@ -9,10 +10,9 @@
         ? 'os-table-max-height-with-header'
         : 'os-table-max-height'
     "
-    @row-click="$props.onUpdate"
     :selection="isVariant ? 'none' : 'single'"
-    v-model:selected="selected"
     :sort-by="isVariant ? 'variant' : 'exercise'"
+    @row-click="$props.onUpdate"
   ></os-table>
 </template>
 

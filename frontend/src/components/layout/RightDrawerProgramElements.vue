@@ -5,9 +5,9 @@
       :key="drawerItem.id"
       clickable
       class="q-pa-sm link-child justify-center"
-      @click="emit('drawerClick', drawerIndex)"
       :active="active == drawerIndex"
       active-class="os-child-highlight-primary"
+      @click="emit('drawerClick', drawerIndex)"
     >
       <q-card flat class="bg-inherit">
         <q-tooltip anchor="center left" self="center right" :offset="[10, 10]">

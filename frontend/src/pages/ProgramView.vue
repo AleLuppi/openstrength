@@ -288,19 +288,19 @@
           :dense="denseView"
           class="shadow-2 q-my-sm"
           :class="denseView ? 'q-py-xs q-px-sm q-mx-xs' : 'q-pa-sm q-mx-md'"
+          style="border-radius: 24px"
+          :style="`height: ${
+            programPageHeight - programManagerHeight - 8 * 2
+          }px`"
           @update:model-value="
             (program) => {
               if (program) onProgramTableUpdate(program);
             }
           "
-          style="border-radius: 24px"
           @new-exercise="
             (exerciseName, programExercise) =>
               onNewExercise(exerciseName, undefined, programExercise)
           "
-          :style="`height: ${
-            programPageHeight - programManagerHeight - 8 * 2
-          }px`"
           @new-variant="onNewExercise"
           @undo="
             (undos, redos) => {

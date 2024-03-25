@@ -35,11 +35,11 @@
     <template #body="props">
       <q-tr
         :props="props"
+        class="os-tr-selected"
         @click="
           (event: Event) =>
             ($attrs.onRowClick as Function)?.(event, props.row, props.rowIndex)
         "
-        class="os-tr-selected"
       >
         <q-td
           v-for="col in props.cols"
@@ -65,11 +65,11 @@
               (el) => (childElements[getCellName(props.row.id, col.id)] = el)
             "
             :model-value="props.row[col.name]"
+            dense
             @update:model-value="
               (value) => onModelValueUpdate(props.rowIndex, col.name, value)
             "
             @focus="selectSingleCell(props.row.id, col.id)"
-            dense
           ></q-checkbox>
 
           <q-input
@@ -79,16 +79,16 @@
             "
             v-bind="childProps[col.name]"
             :model-value="props.row[col.name]"
-            @update:model-value="
-              (value) => onModelValueUpdate(props.rowIndex, col.name, value)
-            "
             :placeholder="placeholders[col.name]"
-            @focus="selectSingleCell(props.row.id, col.id)"
             borderless
             autogrow
             :debounce="debounce"
             :dense="dense"
             class="placeholder-light placeholder-hide-on-focus"
+            @update:model-value="
+              (value) => onModelValueUpdate(props.rowIndex, col.name, value)
+            "
+            @focus="selectSingleCell(props.row.id, col.id)"
           >
           </q-input>
 

@@ -27,8 +27,8 @@
         <p>
           {{ $t("coach.athlete_management.assign.another_program_assigned") }}
           <a
-            @click="emit('assign', program)"
             class="cursor-pointer text-primary"
+            @click="emit('assign', program)"
           >
             {{ $t("coach.athlete_management.assign.assign_this") }}
           </a>

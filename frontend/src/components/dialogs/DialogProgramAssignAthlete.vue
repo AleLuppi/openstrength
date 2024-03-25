@@ -13,7 +13,7 @@
             debounce="500"
             class="col"
           >
-            <template v-slot:prepend>
+            <template #prepend>
               <q-icon name="search" />
             </template>
           </os-input>
@@ -25,10 +25,10 @@
       <TableManagedAthletes
         ref="athletesTableElement"
         :athletes="athletes"
-        @selection="onAthleteSelection"
         :selected="selected"
-        @update:selected="(val) => emit('update:selected', val)"
         :filter="searchAthlete"
+        @selection="onAthleteSelection"
+        @update:selected="(val) => emit('update:selected', val)"
       />
     </q-card>
   </q-dialog>

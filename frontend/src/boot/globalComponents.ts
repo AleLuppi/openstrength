@@ -16,17 +16,17 @@ import osWrapWithLines from "@/components/basic/osWrapWithLines.vue";
 
 export default boot(async ({ app }) => {
   // Register components
-  app.component("osButtonSupport", osButtonSupport);
-  app.component("osField", osField);
-  app.component("osInput", osInput);
-  app.component("osInputDate", osInputDate);
-  app.component("osLazy", osLazy);
-  app.component("osSelect", osSelect);
-  app.component("osSocialSharingItems", osSocialSharingItems);
-  app.component("osTable", osTable);
-  app.component("osTableSheet", osTableSheet);
-  app.component("osTextCopyable", osTextCopyable);
-  app.component("osToggleButtons", osToggleButtons);
-  app.component("osVariableElement", osVariableElement);
-  app.component("osWrapWithLines", osWrapWithLines);
+  app.component("OsButtonSupport", osButtonSupport);
+  app.component("OsField", osField);
+  app.component("OsInput", osInput);
+  app.component("OsInputDate", osInputDate);
+  app.component("OsLazy", osLazy);
+  app.component("OsSelect", osSelect);
+  app.component("OsSocialSharingItems", osSocialSharingItems);
+  app.component("OsTable", osTable);
+  app.component("OsTableSheet", osTableSheet);
+  app.component("OsTextCopyable", osTextCopyable);
+  app.component("OsToggleButtons", osToggleButtons);
+  app.component("OsVariableElement", osVariableElement);
+  app.component("OsWrapWithLines", osWrapWithLines);
 });

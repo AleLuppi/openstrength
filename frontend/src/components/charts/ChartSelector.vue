@@ -5,11 +5,11 @@
         {{ $t("coach.charts_management.list.charts_section") }}
       </h6>
       <q-btn
-        @click="updateCharts()"
         icon="fa-solid fa-refresh"
         :flat="!oldData"
         round
         color="secondary"
+        @click="updateCharts()"
       >
         <q-tooltip :offset="[10, 10]">
           {{ $t("coach.charts_management.list.refresh_tooltip") }}

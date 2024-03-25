@@ -20,7 +20,7 @@
                 debounce="500"
                 class="col"
               >
-                <template v-slot:prepend>
+                <template #prepend>
                   <q-icon name="search" />
                 </template>
               </os-input>
@@ -31,11 +31,11 @@
 
           <TableExistingPrograms
             :programs="programsTemplate"
-            @update:selected="onProgramSelection"
             :filter="searchProgram"
-            @delete="onProgramTemplateDelete"
             :show-fields="['name', 'lastUpdated']"
             allow-delete
+            @update:selected="onProgramSelection"
+            @delete="onProgramTemplateDelete"
           ></TableExistingPrograms>
         </q-card>
       </div>
@@ -45,8 +45,8 @@
         :is="$q.screen.lt.sm ? QDialog : 'div'"
         v-if="selectedProgram"
         :model-value="Boolean(selectedProgram)"
-        @update:model-value="selectedProgram = undefined"
         class="col-7"
+        @update:model-value="selectedProgram = undefined"
       >
         <q-card class="os-templateinfo-max-height column">
           <!-- Main title and buttons -->
@@ -88,8 +88,8 @@
                       }}
                     </p>
                     <p
-                      class="text-italic text-xs"
                       v-if="selectedProgram.lastUpdated"
+                      class="text-italic text-xs"
                     >
                       {{ $t("coach.program_management.builder.last_update") }}
                       {{ $d(selectedProgram.lastUpdated, "middle") }}
@@ -110,8 +110,8 @@
                 </div>
 
                 <p
-                  class="q-mt-md text-italic"
                   v-if="selectedProgram.description"
+                  class="q-mt-md text-italic"
                 >
                   {{ selectedProgram.description }}
                 </p>
@@ -181,20 +181,20 @@
 
         <q-card-actions align="right">
           <q-btn
+            v-close-popup
             flat
             :label="$t('common.cancel')"
             type="reset"
             color="button-negative"
-            v-close-popup
           />
           <q-btn
+            v-close-popup
             :label="$t('coach.programlibrary_management.list.delete_proceed')"
+            color="button-negative"
             @click="
               if (deletingProgramTemplate)
                 deleteProgram(deletingProgramTemplate);
             "
-            color="button-negative"
-            v-close-popup
           />
         </q-card-actions>
       </q-card>

@@ -26,13 +26,13 @@
     </div>
 
     <!-- Access form -->
-    <q-form @submit="onSubmit" class="column">
+    <q-form class="column" @submit="onSubmit">
       <!-- Google Sign up -->
       <q-btn
         :label="$t('user.auth.signin_with_google')"
-        @click="googleSignIn"
         icon="fa-brands fa-google"
         class="q-my-md"
+        @click="googleSignIn"
       />
 
       <!-- Text separator-->
@@ -64,7 +64,7 @@
         :error="passwordError"
         :error-message="passwordErrorMessage"
       >
-        <template v-slot:append>
+        <template #append>
           <q-icon
             :name="passwordVisible ? 'visibility' : 'visibility_off'"
             class="cursor-pointer"

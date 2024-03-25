@@ -1,9 +1,9 @@
 <template>
   <q-form
     ref="formElement"
+    class="q-my-md q-gutter-sm"
     @submit="onSubmit"
     @reset="onReset"
-    class="q-my-md q-gutter-sm"
   >
     <q-card-section class="q-gutter-x-xs">
       <div

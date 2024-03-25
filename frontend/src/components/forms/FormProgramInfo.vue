@@ -20,7 +20,6 @@
         >
           <template #control>
             <q-btn
-              @click="showAthleteAssigningDialog = true"
               :label="
                 programAthlete
                   ? ''
@@ -30,11 +29,12 @@
               outline
               :dense="Boolean(programAthlete)"
               class="full-width"
+              @click="showAthleteAssigningDialog = true"
             >
               <q-item v-if="programAthlete" dense class="q-py-none q-px-md">
                 <q-item-section
-                  avatar
                   v-if="$q.screen.gt.xs && programAthlete.photoUrl"
+                  avatar
                 >
                   <q-avatar size="md">
                     <img :src="programAthlete.photoUrl" />
@@ -89,8 +89,8 @@
 
     <DialogProgramAssignAthlete
       v-model="showAthleteAssigningDialog"
-      :athletes="coachInfo.athletes ?? []"
       v-model:selected="programAthlete"
+      :athletes="coachInfo.athletes ?? []"
     ></DialogProgramAssignAthlete>
   </q-form>
 </template>

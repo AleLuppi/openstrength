@@ -18,7 +18,7 @@
         required
         class="col-12"
       >
-        <template v-slot:before>
+        <template #before>
           <span class="text-bold text-h6" style="font-size: medium">
             {{ props.variant.exercise?.name + " - " }}
           </span>

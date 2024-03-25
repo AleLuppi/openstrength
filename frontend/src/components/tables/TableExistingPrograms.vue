@@ -1,7 +1,7 @@
 <template>
   <os-table
-    :columns="columns"
     v-model:selected="selectedRows"
+    :columns="columns"
     :rows="rows"
     row-key="uid"
     virtual-scroll

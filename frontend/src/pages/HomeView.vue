@@ -115,9 +115,9 @@
       <!-- Action -->
       <div class="row q-gutter-lg justify-center items-center">
         <q-card
+          v-ripple
           class="q-pa-lg column items-center justify-center square-card q-hoverable text-center cursor-pointer"
           clickable
-          v-ripple
           @click="$emit('request-global-dialog', 'onboarding')"
         >
           <!-- Animate when on -->

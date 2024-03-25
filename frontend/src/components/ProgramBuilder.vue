@@ -240,11 +240,11 @@
                         .name!,
                     ))
                 "
+                v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
                 :model-value="selectedProgram.programExercises[exerciseIdx]"
                 :exercises="exercises"
                 :maxlifts="maxliftsPerExercise"
                 :can-move-up="currIdx > 0"
-                v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
                 :can-move-down="
                   currIdx < programExercises[week][day].length - 1
                 "

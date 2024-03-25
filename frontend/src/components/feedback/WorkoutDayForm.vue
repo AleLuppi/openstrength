@@ -57,7 +57,6 @@
         />
         <q-btn
           class="col-12"
-          @click.stop="completeDay()"
           :label="
             readonly
               ? 'Chiudi'
@@ -65,13 +64,14 @@
               ? 'Salva modifiche'
               : 'Salva allenamento'
           "
+          @click.stop="completeDay()"
         />
         <q-btn
           v-if="!readonly && modelValue?.completed"
           class="q-mt-md col-12"
-          @click.stop="completeDay(false)"
           flat
           label="Segna come non completato"
+          @click.stop="completeDay(false)"
         />
       </div>
     </div>

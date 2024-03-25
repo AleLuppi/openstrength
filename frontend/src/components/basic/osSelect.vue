@@ -18,9 +18,6 @@
       outlined
       dense
       :options="options"
-      @filter="filter"
-      @input-value="onInputValue"
-      @new-value="updateFromNewValue = Boolean(newOnExplicitRequest)"
       :label="undefined"
       :placeholder="placeholder"
       :use-chips="multiple"
@@ -35,6 +32,9 @@
       "
       lazy-rules
       :class="{ 'no-gap-input': !multiple }"
+      @filter="filter"
+      @input-value="onInputValue"
+      @new-value="updateFromNewValue = Boolean(newOnExplicitRequest)"
     >
       <template #no-option="slotProps">
         <q-item>

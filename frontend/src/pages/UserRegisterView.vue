@@ -26,14 +26,14 @@
     </div>
 
     <!-- Registration form -->
-    <q-form @submit="onSubmit" class="column">
+    <q-form class="column" @submit="onSubmit">
       <!-- Google Sign up -->
       <q-btn
         :label="$t('user.auth.register_with_google')"
-        @click="googleSignIn"
         type="button"
         icon="fa-brands fa-google"
         class="q-my-md"
+        @click="googleSignIn"
       />
 
       <!-- Text separator-->
@@ -70,7 +70,7 @@
         :error="passwordError"
         :error-message="passwordErrorMessage"
       >
-        <template v-slot:append>
+        <template #append>
           <q-icon
             :name="passwordVisible ? 'visibility' : 'visibility_off'"
             class="cursor-pointer"
@@ -88,7 +88,7 @@
           unchecked-icon="clear"
         />
 
-        <span @click="accept = !accept" class="col" style="min-width: 8em">
+        <span class="col" style="min-width: 8em" @click="accept = !accept">
           {{ $t("user.auth.acceptance_before") }}
 
           <router-link :to="{ name: NamedRoutes.privacyPolicy }" @click.stop=""

@@ -1,7 +1,7 @@
 <template>
   <q-stepper
-    v-model="step"
     ref="stepperElement"
+    v-model="step"
     color="primary"
     header-class="text-bold"
     animated
@@ -55,7 +55,7 @@
           v-model="selectedRole"
           :texts="buttonsRoles"
           :exclusive="true"
-          :useLocale="true"
+          :use-locale="true"
           :min-choices="1"
         />
       </div>
@@ -77,7 +77,7 @@
           ref="sportsToggleElement"
           v-model="selectedSports"
           :texts="buttonsSports"
-          :useLocale="true"
+          :use-locale="true"
         />
       </div>
 
@@ -96,13 +96,13 @@
     </q-step>
 
     <!-- Stepper navigation controls -->
-    <template v-slot:navigation>
+    <template #navigation>
       <q-stepper-navigation class="text-right">
         <q-btn
           v-if="step > 1"
           flat
-          @click="stepperElement?.previous()"
           class="q-mx-sm"
+          @click="stepperElement?.previous()"
         >
           {{ $t("common.back") }}
         </q-btn>

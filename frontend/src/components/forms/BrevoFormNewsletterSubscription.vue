@@ -128,9 +128,9 @@
                 <div class="form__label-row">
                   <div class="entry__field">
                     <input
+                      id="EMAIL"
                       class="input"
                       type="text"
-                      id="EMAIL"
                       name="EMAIL"
                       autocomplete="off"
                       placeholder="EMAIL"
@@ -164,10 +164,10 @@
                   <div class="entry__choice" style="">
                     <label>
                       <input
+                        id="OPT_IN"
                         type="checkbox"
                         class="input_replaced"
                         value="1"
-                        id="OPT_IN"
                         name="OPT_IN"
                         required
                       />

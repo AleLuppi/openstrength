@@ -7,16 +7,16 @@
       <q-btn
         v-for="(icon, idx) in icons"
         :key="icon"
-        @click="$emit('click', idx, icon)"
         :color="isHover[idx] ? hoverColors[idx] : colors[idx]"
         :label="labels?.[idx]"
         :icon="icon"
-        @mouseover="isHover[idx] = true"
-        @mouseleave="isHover[idx] = false"
         dense
         size="0.6em"
         class="support-btn q-pa-sm"
         :class="`support-btn-${direction}`"
+        @click="$emit('click', idx, icon)"
+        @mouseover="isHover[idx] = true"
+        @mouseleave="isHover[idx] = false"
       >
         <q-tooltip
           v-if="tooltips?.[idx]"

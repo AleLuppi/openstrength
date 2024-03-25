@@ -26,9 +26,9 @@
             flat
             dense
             round
-            @click="leftDrawerOpen = !leftDrawerOpen"
             aria-label="Menu"
             icon="menu"
+            @click="leftDrawerOpen = !leftDrawerOpen"
           />
 
           <q-btn
@@ -77,7 +77,7 @@
       >
         <LeftDrawerElements />
 
-        <template v-slot:mini>
+        <template #mini>
           <LeftDrawerElements :mini="true" />
         </template>
       </q-drawer>
@@ -94,8 +94,8 @@
       >
         <component
           :is="rightDrawerElement"
-          @drawerClick="onRightDrawerClick"
           :active="rightDrawerActive"
+          @drawer-click="onRightDrawerClick"
         ></component>
       </q-drawer>
 
@@ -103,10 +103,10 @@
       <q-page-container>
         <RouterView v-slot="{ Component }">
           <component
-            ref="viewComponent"
             :is="Component"
+            ref="viewComponent"
             @request-global-dialog="onShowGlobalDialog"
-            @activateDrawerItem="(item: number) => (rightDrawerActive = item)"
+            @activate-drawer-item="(item: number) => (rightDrawerActive = item)"
           />
         </RouterView>
       </q-page-container>

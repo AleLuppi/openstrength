@@ -16,7 +16,7 @@
             debounce="500"
             class="col"
           >
-            <template v-slot:prepend>
+            <template #prepend>
               <q-icon name="search" />
             </template>
           </os-input>
@@ -28,12 +28,12 @@
       <TableExistingPrograms
         ref="programTemplateTableElement"
         :programs="templatePrograms"
-        @selection="onProgramSelection"
         :selected="selected"
-        @update:selected="onProgramSelected"
         :filter="searchProgram"
         :show-fields="['name', 'lastUpdated']"
         style="max-height: 60vh"
+        @selection="onProgramSelection"
+        @update:selected="onProgramSelected"
       ></TableExistingPrograms>
 
       <q-card-actions align="right">

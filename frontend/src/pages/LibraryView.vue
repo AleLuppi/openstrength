@@ -35,7 +35,7 @@
                 debounce="500"
                 class="col"
               >
-                <template v-slot:prepend>
+                <template #prepend>
                   <q-icon name="search" />
                 </template>
               </os-input>
@@ -62,12 +62,12 @@
         :is="$q.screen.lt.sm ? QDialog : 'div'"
         v-if="Boolean(selectedExercise)"
         :model-value="Boolean(selectedExercise)"
+        class="col-6"
         @update:model-value="
           (val: boolean) => {
             if (!val) clearExercise();
           }
         "
-        class="col-6"
       >
         <!-- Show card when an exercise is selected -->
         <q-card>
@@ -114,7 +114,7 @@
                 debounce="500"
                 class="col"
               >
-                <template v-slot:prepend>
+                <template #prepend>
                   <q-icon name="search" />
                 </template>
               </os-input>
@@ -165,23 +165,23 @@
 
           <q-space />
           <q-btn
+            v-close-popup
             icon="close"
             flat
             round
             dense
             color="button-negative"
-            v-close-popup
           />
         </q-card-section>
 
         <q-card-section>
           <FormExerciseVariantLibrary
-            ref="variantFormElement"
             v-if="selectedVariant"
+            ref="variantFormElement"
             :variant="selectedVariant"
-            @submit="onVariantSubmit"
             :options-muscle-groups="exerciseMuscleGroupsOptions"
             :options-equipment="exerciseEquipmentOptions"
+            @submit="onVariantSubmit"
           />
         </q-card-section>
       </q-card>
@@ -220,20 +220,20 @@
 
         <q-card-actions align="right">
           <q-btn
+            v-close-popup
             flat
             :label="$t('common.cancel')"
             type="reset"
             color="button-negative"
-            v-close-popup
           />
           <q-btn
+            v-close-popup
             :label="$t('coach.exercise_management.delete_proceed')"
+            color="button-negative"
             @click="
               if (deletingExercise) deleteExercise(deletingExercise);
               if (deletingVariant) deleteVariant(deletingVariant);
             "
-            color="button-negative"
-            v-close-popup
           />
         </q-card-actions>
       </q-card>

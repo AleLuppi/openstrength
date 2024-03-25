@@ -47,8 +47,8 @@
         :class="$q.screen.lt.sm ? 'justify-start' : 'justify-center'"
       >
         <q-toggle
-          v-model="showCompactProgram"
           v-if="user.role == UserRole.coach"
+          v-model="showCompactProgram"
           :label="$t('coach.program_management.viewer.compact_view')"
         />
       </div>
@@ -58,18 +58,18 @@
         <WorkoutDayForm
           v-for="(block, indexDay) in programSnapshot?.weekdays"
           :key="indexDay"
-          :programDay="block"
-          :modelValue="programFeedbacks.feedbacks[indexDay]"
-          @update:modelValue="
+          :program-day="block"
+          :model-value="programFeedbacks.feedbacks[indexDay]"
+          :is-next="nextDayIdx == indexDay"
+          class="q-my-md"
+          :class="{ 'q-mx-xl': $q.screen.gt.sm }"
+          :readonly="user.role == UserRole.coach"
+          @update:model-value="
             (val) => {
               programFeedbacks.feedbacks[indexDay] = val;
               saveFeedback(programFeedbacks, programId ?? undefined);
             }
           "
-          :isNext="nextDayIdx == indexDay"
-          class="q-my-md"
-          :class="{ 'q-mx-xl': $q.screen.gt.sm }"
-          :readonly="user.role == UserRole.coach"
         >
         </WorkoutDayForm>
       </div>
@@ -77,9 +77,9 @@
       <!-- View compact program for athlete -->
       <div v-else>
         <q-table
-          class="q-ma-md q-mb-lg"
           v-for="(block, index) in programSnapshot?.weekdays"
           :key="index"
+          class="q-ma-md q-mb-lg"
           :title="`${$t('coach.program_management.builder.week_name', {
             week: block.weekName,
           })} - ${$t('coach.program_management.builder.day_name', {
@@ -97,7 +97,7 @@
           dense
         >
           <!-- Set header style -->
-          <template v-slot:header="props">
+          <template #header="props">
             <q-tr :props="props" class="bg-table-header">
               <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 {{ col.label }}
@@ -106,7 +106,7 @@
           </template>
 
           <!-- Custom slot to render values as HTML content -->
-          <template v-slot:body-cell="props">
+          <template #body-cell="props">
             <q-td :props="props">
               <div class="q-gutter-y-sm">
                 <div
@@ -120,7 +120,7 @@
           </template>
 
           <!-- Custom slot to render exercise title -->
-          <template v-slot:body-cell-exerciseInfo="props">
+          <template #body-cell-exerciseInfo="props">
             <q-td :props="props">
               <div class="text-bold">
                 {{ props.value[0] }}

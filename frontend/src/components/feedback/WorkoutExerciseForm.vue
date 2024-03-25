@@ -8,11 +8,11 @@
     <!-- TODO: i18n for all the component-->
     <q-expansion-item
       :model-value="readonly || !exerciseDone"
-      @update:model-value="toggleDone"
       hide-expand-icon
       :header-class="{
         'bg-green-3 ': exerciseDone,
       }"
+      @update:model-value="toggleDone"
     >
       <template #header>
         <div class="q-py-sm full-width">
@@ -124,9 +124,9 @@
                   }}
                 </q-tooltip>
                 <q-popup-edit
+                  v-slot="scope"
                   style="width: 70%"
                   :model-value="lineTextFeedbacks[indexLine]"
-                  v-slot="scope"
                   @save="
                     (val) => {
                       lineTextFeedbacks[indexLine] = val;
@@ -135,15 +135,15 @@
                   "
                 >
                   <os-input
+                    v-model="scope.value"
                     autofocus
                     type="textarea"
-                    v-model="scope.value"
                     :readonly="readonly"
                   />
                   <q-btn
                     class="full-width"
-                    @click.stop.prevent="scope.set"
                     :label="readonly ? 'Chiudi' : 'Salva commento'"
+                    @click.stop.prevent="scope.set"
                   />
                 </q-popup-edit>
               </q-btn>

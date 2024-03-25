@@ -1,5 +1,6 @@
 <template>
   <os-table
+    v-model:selected="selectedRows"
     :columns="columns"
     :rows="rows"
     row-key="uid"
@@ -14,7 +15,6 @@
     @row-click="
       (...params: [Event, object, number]) => emit('selection', ...params)
     "
-    v-model:selected="selectedRows"
   ></os-table>
 </template>
 
