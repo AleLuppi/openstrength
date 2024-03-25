@@ -66,10 +66,7 @@ export function sortProgramExercises(
  * @param inplace if true, sort lines in place, otherwise create a new array.
  * @returns sorted program lines.
  */
-export function sortProgramLines(
-  lines: ProgramLine[],
-  inplace: boolean = false,
-) {
+export function sortProgramLines(lines: ProgramLine[], inplace = false) {
   return arraySort(lines, inplace, (line) => line.lineOrder);
 }
 

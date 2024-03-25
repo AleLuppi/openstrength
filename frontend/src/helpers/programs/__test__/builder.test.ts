@@ -7,6 +7,8 @@ import {
 
 describe("Test helpers/programs/builder", () => {
   // Data to test functions
+  // TODO
+  // eslint-disable-next-line
   const program: Program = new Program({
     uid: "rand-uid",
     name: "test program",

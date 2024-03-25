@@ -10,16 +10,16 @@
         ? 'os-table-max-height-with-header'
         : 'os-table-max-height'
     "
+    selection="single"
     @row-click="
       (...params: [Event, object, number]) => emit('selection', ...params)
     "
-    selection="single"
     v-model:selected="selectedRows"
   ></os-table>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, PropType } from "vue";
+import { ref, computed, watch } from "vue";
 import { useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
 import { AthleteUser } from "@/helpers/users/user";
@@ -29,20 +29,11 @@ const $q = useQuasar();
 const i18n = useI18n();
 
 // Define props
-const props = defineProps({
-  athletes: {
-    type: Array as PropType<AthleteUser[]>,
-    required: true,
-  },
-  selected: {
-    type: AthleteUser,
-    required: false,
-  },
-  athletesOnly: {
-    type: Boolean,
-    default: false,
-  },
-});
+const props = defineProps<{
+  athletes: AthleteUser[];
+  selected?: AthleteUser;
+  athletesOnly?: boolean;
+}>();
 
 // Define emits
 const emit = defineEmits<{
