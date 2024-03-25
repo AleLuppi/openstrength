@@ -51,8 +51,8 @@ export function objectSortKeysByList<T>(
  * @param objB source object that provides values.
  */
 export function objectAssignNotUndefined<Ta, Tb>(
-  objA: { [key: string]: Ta },
-  objB: { [key: string]: Tb },
+  objA: { [K in keyof Ta]: Ta[K] },
+  objB: { [K in keyof Tb]: Tb[K] },
 ) {
   Object.assign(objA, objectFilterOutUndefined(objB));
 }
