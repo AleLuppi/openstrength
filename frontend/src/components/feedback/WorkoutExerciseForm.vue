@@ -95,7 +95,7 @@
 
               <!-- Show required text feedback -->
               <q-btn
-                icon="sym_o_message"
+                :icon="biChatLeftDots"
                 :color="lineTextFeedbacks[indexLine] ? 'primary' : 'light'"
                 flat
                 class="q-mx-xs q-px-xs"
@@ -150,7 +150,7 @@
 
               <!-- Show required video feedback -->
               <q-btn
-                icon="sym_o_videocam"
+                :icon="biCameraVideo"
                 color="light"
                 flat
                 class="q-mx-xs q-px-xs"
@@ -190,6 +190,7 @@ import mixpanel from "mixpanel-browser";
 import { ProgramExerciseFeedback } from "@/helpers/programs/models";
 import { ProgramFrozenView } from "@/helpers/programs/program";
 import { stringCapitalize } from "@/helpers/scalar";
+import { biCameraVideo, biChatLeftDots } from "@quasar/extras/bootstrap-icons";
 
 // Define props
 const props = withDefaults(
