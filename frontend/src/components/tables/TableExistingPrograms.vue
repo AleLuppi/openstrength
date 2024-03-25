@@ -64,7 +64,10 @@ const props = withDefaults(
     sortBy?: string;
   }>(),
   {
+    selected: undefined,
+    showFields: undefined,
     small: false,
+    activeProgram: undefined,
     allowInfo: false,
     allowOpen: false,
     allowDelete: false,
@@ -120,8 +123,8 @@ const columns = computed(() => {
           field: "startedOn",
           sortable: true,
           sort: (a: string, b: string) =>
-            (dateFromStringLocale(a, "short") as any) -
-            (dateFromStringLocale(b, "short") as any),
+            (dateFromStringLocale(a, "short")?.getTime() ?? 0) -
+            (dateFromStringLocale(b, "short")?.getTime() ?? 0),
         });
         break;
       case "finishedOn":
@@ -133,8 +136,8 @@ const columns = computed(() => {
           field: "finishedOn",
           sortable: true,
           sort: (a: string, b: string) =>
-            (dateFromStringLocale(a, "short") as any) -
-            (dateFromStringLocale(b, "short") as any),
+            (dateFromStringLocale(a, "short")?.getTime() ?? 0) -
+            (dateFromStringLocale(b, "short")?.getTime() ?? 0),
         });
         break;
       case "lastUpdated":
@@ -146,8 +149,8 @@ const columns = computed(() => {
           field: "lastUpdated",
           sortable: true,
           sort: (a: string, b: string) =>
-            (dateFromStringLocale(a, "short") as any) -
-            (dateFromStringLocale(b, "short") as any),
+            (dateFromStringLocale(a, "short")?.getTime() ?? 0) -
+            (dateFromStringLocale(b, "short")?.getTime() ?? 0),
         });
         break;
     }
