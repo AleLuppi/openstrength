@@ -26,6 +26,7 @@ import {
   matchNumberUnsignedInteger,
 } from "@/helpers/regex";
 import { convertProgramToDayBlocks } from "@/helpers/programs/converters";
+import { arrayConcatToNullable, arrayPushToNullable } from "../array";
 
 /**
  * Training program properties.
@@ -816,12 +817,10 @@ export class ProgramLine {
 
   // Supposed values
   get setsSupposedValue(): number | undefined {
-    if (this.setsBaseValue && matchNumberFractionInteger(this.setsBaseValue)) {
-      const [secondNumber, firstNumber] = matchNumberFractionInteger(
-        this.setsBaseValue,
-      )!
-        .slice(1, 3)
-        .map(Number);
+    const matchValue =
+      this.setsBaseValue && matchNumberFractionInteger(this.setsBaseValue);
+    if (matchValue) {
+      const [secondNumber, firstNumber] = matchValue.slice(1, 3).map(Number);
       return (secondNumber + firstNumber) / 2;
     } else if (
       this.setsBaseValue &&
@@ -845,12 +844,10 @@ export class ProgramLine {
     } else return undefined;
   }
   get repsSupposedValue(): number | undefined {
-    if (this.repsBaseValue && matchNumberFractionInteger(this.repsBaseValue)) {
-      const [secondNumber, firstNumber] = matchNumberFractionInteger(
-        this.repsBaseValue,
-      )!
-        .slice(1, 3)
-        .map(Number);
+    const matchValue =
+      this.repsBaseValue && matchNumberFractionInteger(this.repsBaseValue);
+    if (matchValue) {
+      const [secondNumber, firstNumber] = matchValue.slice(1, 3).map(Number);
       return (secondNumber + firstNumber) / 2;
     } else if (
       this.repsBaseValue &&
@@ -953,12 +950,10 @@ export class ProgramLine {
     return undefined;
   }
   get rpeSupposedValue(): number | undefined {
-    if (this.rpeBaseValue && matchNumberFractionFloat(this.rpeBaseValue)) {
-      const [secondNumber, firstNumber] = matchNumberFractionFloat(
-        this.rpeBaseValue,
-      )!
-        .slice(1, 3)
-        .map(Number);
+    const matchValue =
+      this.rpeBaseValue && matchNumberFractionFloat(this.rpeBaseValue);
+    if (matchValue) {
+      const [secondNumber, firstNumber] = matchValue.slice(1, 3).map(Number);
       return (secondNumber + firstNumber) / 2;
     } else if (
       this.rpeBaseValue &&
@@ -1248,51 +1243,51 @@ export function updateDocProgram(
  */
 function flattenProgram(program: Program) {
   const { programExercises, coach, athlete, ...programObj } = program;
+
+  // Prepare flatten lines
+  let flatLines = undefined;
+  for (const exerciseToSpread of program.programExercises ?? []) {
+    const { uid, program, exerciseVariant, lines, ...exerciseObj } =
+      exerciseToSpread;
+    const flatExercise = {
+      ...exerciseObj,
+      exercise: exerciseToSpread.exerciseVariant?.uid,
+    };
+    let linesToStore = lines;
+    if (!linesToStore || !linesToStore.length)
+      linesToStore = [new ProgramLine()];
+    const linesExercise = linesToStore.map((lineToSpread) => {
+      const { programExercise, ...lineObj } = lineToSpread;
+      const referenceAndType = {
+        setsReference: lineToSpread.setsReference?.uid,
+        repsReference: lineToSpread.repsReference?.uid,
+        repsReferenceType: (lineToSpread.repsReference
+          ? lineToSpread.repsReference instanceof MaxLift
+            ? "maxlift"
+            : "line"
+          : undefined) as "maxlift" | "line" | undefined,
+        loadReference: lineToSpread.loadReference?.uid,
+        loadReferenceType: (lineToSpread["loadReference"]
+          ? lineToSpread.loadReference instanceof MaxLift
+            ? "maxlift"
+            : "line"
+          : undefined) as "maxlift" | "line" | undefined,
+        rpeReference: lineToSpread.rpeReference?.uid,
+      };
+      return {
+        ...flatExercise,
+        ...lineObj,
+        ...referenceAndType,
+      };
+    });
+    flatLines = arrayConcatToNullable(flatLines, linesExercise);
+  }
+
   const flatProgram = {
     ...programObj,
     coachId: program.coach?.uid,
     athleteId: program.athlete?.uid,
-    lines: program.programExercises?.reduce(
-      (out: { [key: string]: any }[], exerciseToSpread) => {
-        const { uid, program, exerciseVariant, lines, ...exerciseObj } =
-          exerciseToSpread;
-        const flatExercise = {
-          ...exerciseObj,
-          exercise: exerciseToSpread.exerciseVariant?.uid,
-        };
-        let linesToStore = lines;
-        if (!linesToStore || !linesToStore.length)
-          linesToStore = [new ProgramLine()];
-        return [
-          ...out,
-          ...linesToStore.map((lineToSpread) => {
-            const { programExercise, ...lineObj } = lineToSpread;
-            const referenceAndType = {
-              setsReference: lineToSpread.setsReference?.uid,
-              repsReference: lineToSpread.repsReference?.uid,
-              repsReferenceType: (lineToSpread.repsReference
-                ? lineToSpread.repsReference instanceof MaxLift
-                  ? "maxlift"
-                  : "line"
-                : undefined) as "maxlift" | "line" | undefined,
-              loadReference: lineToSpread.loadReference?.uid,
-              loadReferenceType: (lineToSpread["loadReference"]
-                ? lineToSpread.loadReference instanceof MaxLift
-                  ? "maxlift"
-                  : "line"
-                : undefined) as "maxlift" | "line" | undefined,
-              rpeReference: lineToSpread.rpeReference?.uid,
-            };
-            return {
-              ...flatExercise,
-              ...lineObj,
-              ...referenceAndType,
-            };
-          }),
-        ];
-      },
-      [],
-    ),
+    lines: flatLines,
   };
 
   return flatProgram;
@@ -1391,8 +1386,8 @@ export function unflattenProgram(
         }),
       );
       if (storeUnresolved && !currentVariant && exercise)
-        (storeUnresolved.exercises = storeUnresolved.exercises || []).push([
-          programExercises.at(-1)!,
+        arrayPushToNullable(storeUnresolved.exercises, [
+          programExercises.at(-1),
           exercise,
         ]);
     }
@@ -1414,22 +1409,30 @@ export function unflattenProgram(
     {},
   );
   flatProgram.lines?.forEach((fullLineInfo) => {
-    const currLine = programLines[fullLineInfo.uid];
+    const currLine = fullLineInfo.uid
+      ? programLines[fullLineInfo.uid]
+      : undefined;
     if (!currLine) return;
     currLine.loadReference =
       fullLineInfo.loadReferenceType === "maxlift"
         ? maxlifts?.find((maxlift) => maxlift.uid == fullLineInfo.loadReference)
-        : fullLineInfo.loadReferenceType === "line"
+        : fullLineInfo.loadReferenceType === "line" &&
+          fullLineInfo.loadReference
         ? programLines[fullLineInfo.loadReference]
         : undefined;
     currLine.repsReference =
       fullLineInfo.repsReferenceType === "maxlift"
         ? maxlifts?.find((maxlift) => maxlift.uid == fullLineInfo.repsReference)
-        : fullLineInfo.repsReferenceType === "line"
+        : fullLineInfo.repsReferenceType === "line" &&
+          fullLineInfo.repsReference
         ? programLines[fullLineInfo.repsReference]
         : undefined;
-    currLine.setsReference = programLines[fullLineInfo.setsReference];
-    currLine.rpeReference = programLines[fullLineInfo.rpeReference];
+    currLine.setsReference = fullLineInfo.setsReference
+      ? programLines[fullLineInfo.setsReference]
+      : undefined;
+    currLine.rpeReference = fullLineInfo.rpeReference
+      ? programLines[fullLineInfo.rpeReference]
+      : undefined;
     if (
       storeUnresolved &&
       !currLine.loadReference &&
