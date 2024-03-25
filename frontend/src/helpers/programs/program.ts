@@ -1374,22 +1374,21 @@ export function unflattenProgram(
           [],
         )
         .find((variant) => variant.uid == exercise);
-      programExercises.push(
-        new ProgramExercise({
-          scheduleWeek: scheduleWeek,
-          scheduleDay: scheduleDay,
-          scheduleOrder: scheduleOrder,
-          exerciseNote: exerciseNote,
-          exercise: currentVariant?.exercise,
-          exerciseVariant: currentVariant,
-          lines: anyLines ? [new ProgramLine({ ...lineInfo })] : [],
-        }),
-      );
+      const newProgramExercise = new ProgramExercise({
+        scheduleWeek: scheduleWeek,
+        scheduleDay: scheduleDay,
+        scheduleOrder: scheduleOrder,
+        exerciseNote: exerciseNote,
+        exercise: currentVariant?.exercise,
+        exerciseVariant: currentVariant,
+        lines: anyLines ? [new ProgramLine({ ...lineInfo })] : [],
+      });
+      programExercises.push(newProgramExercise);
       if (storeUnresolved && !currentVariant && exercise)
-        arrayPushToNullable(storeUnresolved.exercises, [
-          programExercises.at(-1),
-          exercise,
-        ]);
+        storeUnresolved.exercises = arrayPushToNullable(
+          storeUnresolved.exercises,
+          [newProgramExercise, exercise],
+        );
     }
   });
 
