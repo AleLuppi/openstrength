@@ -50,12 +50,16 @@ import type { QPopupEditProps } from "quasar";
 // Define props and emits
 const props = withDefaults(
   defineProps<
-    QPopupEditProps & { forceSave?: boolean; single?: false | "week" | "day" }
+    Omit<QPopupEditProps, "modelValue"> & {
+      modelValue: [string, string];
+      forceSave?: boolean;
+      single?: false | "week" | "day";
+    }
   >(),
   { single: false },
 );
 const emit = defineEmits<{
-  save: [value: any, initialValue: any];
+  save: [value: [string, string], initialValue: [string, string]];
 }>();
 
 /**
@@ -65,7 +69,11 @@ const emit = defineEmits<{
  * @param value current model value.
  * @param initialValue initial model value.
  */
-function doSet(set: (...x: any) => void, value: any, initialValue: any) {
+function doSet(
+  set: () => void,
+  value: [string, string],
+  initialValue: [string, string],
+) {
   // Call base set method
   set();
 

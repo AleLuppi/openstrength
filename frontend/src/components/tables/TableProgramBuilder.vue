@@ -466,7 +466,8 @@ const props = withDefaults(
   {
     exercises: () => [],
     maxlifts: () => ({}),
-    filter: () => [],
+    navigateWeeks: () => [],
+    navigateDays: () => [],
     canMoveUp: true,
     canMoveDown: true,
     expanded: false,
@@ -489,7 +490,7 @@ const emit = defineEmits<{
 }>();
 
 // Set ref
-const editWeekDayName = ref<string[]>(); // week and/or day name that is being modified (to clone or move tables)
+const editWeekDayName = ref<[string, string]>(["", ""]); // week and/or day name that is being modified (to clone or move tables)
 
 // Retrieve and supply current program exercise
 const programExercise = computed(() => props.modelValue);

@@ -469,7 +469,7 @@ defineExpose({
 // Set ref
 const exerciseListElement = ref<QVirtualScroll>(); // reference to scroller element
 const selectedProgram = ref<Program>(); // current program
-const editWeekDayName = ref<[string, string]>(); // week and/or day name that is being modified (to clone or move tables)
+const editWeekDayName = ref<[string, string]>(["", ""]); // week and/or day name that is being modified (to clone or move tables)
 const selectingReference = ref<{
   line: ProgramLine;
   field: string;
