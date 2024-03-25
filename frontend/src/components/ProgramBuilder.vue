@@ -531,7 +531,7 @@ const programExercises = computed<{
     Object.values(dayObject).forEach((idxs) => {
       arraySort(idxs, true, (idx) =>
         Number(
-          selectedProgram.value!.programExercises![idx].scheduleOrder ??
+          selectedProgram.value?.programExercises?.[idx].scheduleOrder ??
             Infinity,
         ),
       );
@@ -977,10 +977,9 @@ function undo(): boolean {
   // Restore program from last pointer position
   if (programHistoryPointer.value > 0) {
     programHistoryPointer.value -= 1;
-    if (programHistory.value.at(programHistoryPointer.value))
-      selectedProgram.value = programHistory.value
-        .at(programHistoryPointer.value)!
-        .duplicate();
+    if (programHistory.value[programHistoryPointer.value])
+      selectedProgram.value =
+        programHistory.value[programHistoryPointer.value].duplicate();
   }
 
   // Inform about undo operation
@@ -1005,10 +1004,9 @@ function redo(): boolean {
   // Try to force next program modification
   if (programHistoryPointer.value + 1 < programHistory.value.length) {
     programHistoryPointer.value += 1;
-    if (programHistory.value.at(programHistoryPointer.value))
-      selectedProgram.value = programHistory.value
-        .at(programHistoryPointer.value)!
-        .duplicate();
+    if (programHistory.value[programHistoryPointer.value])
+      selectedProgram.value =
+        programHistory.value[programHistoryPointer.value].duplicate();
   }
 
   // Inform about redo operation

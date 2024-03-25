@@ -1,3 +1,4 @@
+import type { RouteLocation } from "vue-router";
 import { UserProps, UserRole } from "@/helpers/users/user";
 
 /**
@@ -7,10 +8,7 @@ import { UserProps, UserRole } from "@/helpers/users/user";
  * @param route route that shall be accessed.
  * @returns true if user can access, false otherwise.
  */
-export function routeAccessibleByRole(
-  user: UserProps,
-  route: { [key: string]: any; meta: { [key: string]: any } },
-) {
+export function routeAccessibleByRole(user: UserProps, route: RouteLocation) {
   // Check whether access should be restricted
   const restrictIf =
     route.meta.restrictAccessByRole && // explicit restriction
@@ -28,10 +26,7 @@ export function routeAccessibleByRole(
  * @param route route that shall be accessed.
  * @returns true if user can access, false otherwise.
  */
-export function routeAccessibleByLevel(
-  user: UserProps,
-  route: { [key: string]: any; meta: { [key: string]: any } },
-) {
+export function routeAccessibleByLevel(user: UserProps, route: RouteLocation) {
   // Check whether access should be restricted
   const restrictIf =
     route.meta.restrictAccessToLevel && // explicit restriction
@@ -49,7 +44,7 @@ export function routeAccessibleByLevel(
  */
 export function routeAccessibleByAuthenticated(
   user: UserProps,
-  route: { [key: string]: any; meta: { [key: string]: any } },
+  route: RouteLocation,
 ) {
   // Check whether access should be restricted
   const restrictIf =
@@ -68,7 +63,7 @@ export function routeAccessibleByAuthenticated(
  */
 export function routeAccessibleByNotAuthenticated(
   user: UserProps,
-  route: { [key: string]: any; meta: { [key: string]: any } },
+  route: RouteLocation,
 ) {
   // Check whether access should be restricted
   const restrictIf =
@@ -85,10 +80,7 @@ export function routeAccessibleByNotAuthenticated(
  * @param route route that shall be accessed.
  * @returns true if user can access, false otherwise.
  */
-export function routeAccessibleByUser(
-  user: UserProps,
-  route: { [key: string]: any; meta: { [key: string]: any } },
-) {
+export function routeAccessibleByUser(user: UserProps, route: RouteLocation) {
   // Check if user can access, according to all restricting rules
   return (
     routeAccessibleByRole(user, route) &&

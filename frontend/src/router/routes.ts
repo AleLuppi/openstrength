@@ -149,7 +149,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: "Program Library",
           restrictAccessByRole: [UserRole.coach],
-          redirectNotAuthorized: "home",
+          redirectNotAuthorized: NamedRoutes.home,
         },
       },
       {
