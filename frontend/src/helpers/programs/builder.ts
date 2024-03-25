@@ -140,9 +140,10 @@ export function moveProgramExercise(
     }
   if (
     looseOrder &&
-    destination?.[2] &&
+    destination &&
     program.programExercises?.some(
-      (oneExercise) => oneExercise.scheduleOrder == destination![2],
+      (oneExercise) =>
+        destination && oneExercise.scheduleOrder == destination[2],
     )
   )
     destination[2] = undefined;

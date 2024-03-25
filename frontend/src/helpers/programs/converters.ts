@@ -179,7 +179,7 @@ export function convertProgramToDayBlocks(
 
     // Store exercise info
     if (out.at(-1)?.weekName === week && out.at(-1)?.dayName === day)
-      out.at(-1)!.exercises.push(exerciseInfo);
+      out.at(-1)?.exercises.push(exerciseInfo);
     else
       out.push({
         weekName: week,
@@ -232,7 +232,7 @@ export function convertProgramToCompactView(
       });
 
     // Store exercise and its related schemas
-    compactProgram.at(-1)!.exercises.push({
+    compactProgram.at(-1)?.exercises.push({
       exercise: exerciseFullName,
       order: order,
       schemas:
