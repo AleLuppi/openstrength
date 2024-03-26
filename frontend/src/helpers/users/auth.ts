@@ -6,6 +6,7 @@ import {
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
+  type User,
 } from "firebase/auth";
 import { auth } from "@/firebase";
 
@@ -148,9 +149,9 @@ export function addCallbackOnAuthStateChanged({
   onUserOut,
   onUserChange,
 }: {
-  onUserIn?: (...x: any) => void;
-  onUserOut?: (...x: any) => void;
-  onUserChange?: (...x: any) => void;
+  onUserIn?: (user: User) => void;
+  onUserOut?: () => void;
+  onUserChange?: (user: User | null) => void;
 } = {}) {
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -165,6 +166,6 @@ export function addCallbackOnAuthStateChanged({
     }
 
     // Auth state changed
-    onUserChange?.();
+    onUserChange?.(user);
   });
 }

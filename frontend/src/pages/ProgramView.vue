@@ -2,11 +2,12 @@
   <q-page style="height: 0" :class="{ 'overflow-hidden': denseView }">
     <!-- Program table -->
     <q-splitter
-      v-model="splitterModel"
+      :model-value="splitterModel"
       reverse
       :limits="denseView ? [0, 0] : [0, 50]"
       style="height: 100%"
       :after-class="{ 'overflow-hidden': denseView }"
+      @update:model-value="onSplitterDrag"
     >
       <template #before>
         <!-- Program management card -->
@@ -928,6 +929,7 @@ import {
   symOutlinedShare,
   symOutlinedUndo,
 } from "@quasar/extras/material-symbols-outlined";
+import { useAppStore } from "src/stores/app";
 
 // Import components
 const ProgramBuilder = defineAsyncComponent(
@@ -973,17 +975,10 @@ const FormProgramInfo = defineAsyncComponent(
   () => import("@/components/forms/FormProgramInfo.vue"),
 );
 
-// Define emits
-const emit = defineEmits<{
-  activateDrawerItem: [item: number];
-}>();
-
-// Define expose
-defineExpose({ handleDrawerClick });
-
 // Use plugins
 const $q = useQuasar();
 const i18n = useI18n();
+const appStore = useAppStore();
 const route = useRoute();
 const router = useRouter();
 
@@ -1169,22 +1164,6 @@ watch(selectedProgram, (program) => {
   if (program) coachActiveChanges.program = program;
 });
 
-// Update drawer active item when splitter value changes
-watch(
-  splitterModel,
-  (newVal, oldVal) => {
-    if ((oldVal === 0 || oldVal === undefined) && newVal > 0)
-      emit(
-        "activateDrawerItem",
-        Object.values(UtilsOptions).findIndex(
-          (val) => val == showingUtils.value,
-        ),
-      );
-    if (oldVal && oldVal > 0 && newVal === 0) emit("activateDrawerItem", -1);
-  },
-  { immediate: true },
-);
-
 // Show dialog deleting dialog when required
 watch(deletingProgram, (programToDelete) => {
   if (programToDelete) showDialogDeleteProgram.value = true;
@@ -1197,6 +1176,24 @@ watch(isBuilderCompact, () => {
     mixpanel.track("Builder switched to compact");
   }
 });
+
+/**
+ * Handle splitter drag.
+ *
+ * @param newVal new splitter model value.
+ */
+function onSplitterDrag(newVal: number) {
+  // Update drawer active item when splitter value changes
+  const oldVal = splitterModel.value;
+  if ((oldVal === 0 || oldVal === undefined) && newVal > 0)
+    selectUtilsToShow(
+      Object.values(UtilsOptions).findIndex((val) => val == showingUtils.value),
+    );
+  if (oldVal && oldVal > 0 && newVal === 0) selectUtilsToShow(undefined);
+
+  // Update splitter model value
+  splitterModel.value = newVal;
+}
 
 /**
  * Set saved info and ensure it is preserved.
@@ -1820,34 +1817,33 @@ function onUnsavedProgramRestore() {
  *
  * @param clickParam parameters provided by drawer on click.
  */
-function handleDrawerClick(clickParam: number) {
+watch(() => appStore.supportDrawerActiveElement, selectUtilsToShow);
+
+/**
+ * Select the right utils window to show.
+ *
+ * @param activeElement index of requested element to display.
+ */
+function selectUtilsToShow(activeElement: number | undefined) {
   // Get preferred right view
   let toShow = showingUtils.value;
-  switch (clickParam) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-      toShow = Object.values(UtilsOptions)[clickParam];
-      break;
-    default:
-      splitterModel.value = 0;
-      return;
+  if (
+    activeElement != undefined &&
+    activeElement < Object.keys(UtilsOptions).length
+  ) {
+    toShow = Object.values(UtilsOptions)[activeElement];
+  } else {
+    splitterModel.value = 0;
+    appStore.supportDrawerActiveElement = undefined;
+    return;
   }
 
-  // Update right view or handle view size
-  if (toShow === showingUtils.value) {
-    if (splitterModel.value < splitterThresholdValue) splitterModel.value = 30;
-    else {
-      splitterModel.value = 0;
-      emit("activateDrawerItem", -1);
-      return;
-    }
-  } else {
-    showingUtils.value = toShow;
-    if (splitterModel.value < splitterThresholdValue) splitterModel.value = 30;
-  }
-  emit("activateDrawerItem", clickParam);
+  // Update right view and handle view size
+  showingUtils.value = toShow;
+  if (splitterModel.value < splitterThresholdValue) splitterModel.value = 30;
+
+  // Make sure to have aligned info
+  appStore.supportDrawerActiveElement = activeElement;
 }
 
 /**

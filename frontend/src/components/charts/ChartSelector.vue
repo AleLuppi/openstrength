@@ -140,8 +140,6 @@ const debouncedChartsUpdate = debounce(updateCharts, 10000);
  * Force reload of chart components to refresh charts data.
  */
 async function updateCharts() {
-  console.log(props.filterWeek);
-
   chartDataRequests.value = chartDescriptions.map((chartDescriptor) => {
     return {
       chartInfo: chartDescriptor,
