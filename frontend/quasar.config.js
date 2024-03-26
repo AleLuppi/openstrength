@@ -34,6 +34,7 @@ module.exports = configure(function (/* ctx */) {
       "i18n",
       "mixpanel",
       "quasarDefaultProps",
+      "routerGuards",
       "vueGtag",
     ],
 
