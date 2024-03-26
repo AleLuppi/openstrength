@@ -1,9 +1,10 @@
 import { RouteRecordRaw } from "vue-router";
 import { UserRole } from "@/helpers/users/user";
-import ExternalLayout from "src/layouts/ExternalLayout.vue";
 
 /* Dinamically import the layouts */
 const MainLayout = () => import("layouts/MainLayout.vue");
+const ExternalLayout = () => import("layouts/ExternalLayout.vue");
+const EmptyLayout = () => import("layouts/EmptyLayout.vue");
 
 /* Dinamically import the pages */
 const HomePage = () => import("pages/HomePage.vue");
@@ -101,6 +102,7 @@ const routes: RouteRecordRaw[] = [
           showHeader: true,
         },
       },
+
       {
         path: "/confirmation",
         name: NamedRoutes.landingConfirmation,
@@ -130,6 +132,7 @@ const routes: RouteRecordRaw[] = [
           redirectNotAuthorized: NamedRoutes.home,
         },
       },
+
       {
         path: "/library",
         name: NamedRoutes.exerciseLibrary,
@@ -141,6 +144,7 @@ const routes: RouteRecordRaw[] = [
           redirectNotAuthorized: NamedRoutes.home,
         },
       },
+
       {
         path: "/program/:programId?",
         name: NamedRoutes.program,
@@ -153,6 +157,7 @@ const routes: RouteRecordRaw[] = [
           // TODO showRightDrawer: RightDrawerProgramElements,
         },
       },
+
       {
         path: "/program-library",
         name: NamedRoutes.programLibrary,
@@ -163,6 +168,73 @@ const routes: RouteRecordRaw[] = [
           redirectNotAuthorized: NamedRoutes.home,
         },
       },
+
+      {
+        path: "/login",
+        name: NamedRoutes.login,
+        component: UserLoginPage,
+        props: true,
+        meta: {
+          title: "Login",
+          redirectAuthenticated: NamedRoutes.home,
+        },
+      },
+
+      {
+        path: "/register",
+        name: NamedRoutes.register,
+        component: UserRegisterPage,
+        meta: {
+          title: "Register",
+          redirectAuthenticated: NamedRoutes.home,
+        },
+      },
+
+      {
+        path: "/profile",
+        name: NamedRoutes.profile,
+        component: UserProfilePage,
+        meta: {
+          title: "Profile",
+          redirectNotAuthenticated: NamedRoutes.login,
+        },
+      },
+
+      {
+        path: "/privacy-policy",
+        name: NamedRoutes.privacyPolicy,
+        component: PrivacyPolicyPage,
+        meta: {
+          title: "Privacy Policy",
+        },
+      },
+
+      {
+        path: "/cookie-policy",
+        name: NamedRoutes.cookiePolicy,
+        component: CookiePolicyPage,
+        meta: {
+          title: "Cookie Policy",
+        },
+      },
+
+      {
+        path: "/terms-and-conditions",
+        name: NamedRoutes.termsConditions,
+        component: TermsAndConditionPage,
+        meta: {
+          title: "Terms and Conditions",
+        },
+      },
+    ],
+  },
+
+  // Empty layout
+  {
+    path: "/_EmptyLayout",
+    component: EmptyLayout,
+    redirect: { name: NamedRoutes.landing },
+    children: [
       {
         path: "/view",
         name: NamedRoutes.view,
@@ -182,58 +254,6 @@ const routes: RouteRecordRaw[] = [
             },
           },
         ],
-      },
-      {
-        path: "/login",
-        name: NamedRoutes.login,
-        component: UserLoginPage,
-        props: true,
-        meta: {
-          title: "Login",
-          redirectAuthenticated: NamedRoutes.home,
-        },
-      },
-      {
-        path: "/register",
-        name: NamedRoutes.register,
-        component: UserRegisterPage,
-        meta: {
-          title: "Register",
-          redirectAuthenticated: NamedRoutes.home,
-        },
-      },
-      {
-        path: "/profile",
-        name: NamedRoutes.profile,
-        component: UserProfilePage,
-        meta: {
-          title: "Profile",
-          redirectNotAuthenticated: NamedRoutes.login,
-        },
-      },
-      {
-        path: "/privacy-policy",
-        name: NamedRoutes.privacyPolicy,
-        component: PrivacyPolicyPage,
-        meta: {
-          title: "Privacy Policy",
-        },
-      },
-      {
-        path: "/cookie-policy",
-        name: NamedRoutes.cookiePolicy,
-        component: CookiePolicyPage,
-        meta: {
-          title: "Cookie Policy",
-        },
-      },
-      {
-        path: "/terms-and-conditions",
-        name: NamedRoutes.termsConditions,
-        component: TermsAndConditionPage,
-        meta: {
-          title: "Terms and Conditions",
-        },
       },
     ],
   },
