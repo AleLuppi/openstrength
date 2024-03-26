@@ -1,4 +1,4 @@
-import { ProgramFeedback } from "@/helpers/programs/models";
+import type { ProgramFeedback } from "@/helpers/programs/models";
 import { Program } from "@/helpers/programs/program";
 import { doAddDoc, doGetDocs, doUpdateDoc } from "@/helpers/database/readwrite";
 import {
@@ -93,7 +93,7 @@ export async function loadLatestFeedback(
       numDocs: 1,
       onSuccess: (docVal: { [key: string]: ProgramFeedback }) => {
         feedback = Object.values(docVal)[0];
-        feedback!.uid = Object.keys(docVal)[0];
+        feedback.uid = Object.keys(docVal)[0];
         onSuccess?.(feedback);
       },
       onError: onError,
@@ -102,8 +102,8 @@ export async function loadLatestFeedback(
 
   // Convert possible null values to undefined
   if (feedback) {
-    (feedback as any).feedbacks = (feedback as any).feedbacks.map((fb: any) =>
-      fb === null ? undefined : fb,
+    (feedback as any).feedbacks = (feedback as ProgramFeedback).feedbacks.map(
+      (fb) => (fb === null ? undefined : fb),
     );
   }
 

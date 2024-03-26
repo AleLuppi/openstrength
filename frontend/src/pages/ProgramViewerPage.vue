@@ -196,7 +196,6 @@ const user = useUserStore();
 // Set ref
 const programSnapshot = ref<ProgramFrozenView>(); // current program snapshot
 const programFeedbacks = ref<ProgramFeedback>({ feedbacks: [] }); // feedbacks associated to program
-
 const showCompactProgram = ref<boolean>(false);
 
 // Get requested program id
