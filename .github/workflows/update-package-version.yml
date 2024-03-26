@@ -48,8 +48,8 @@ jobs:
           npm install --no-audit --no-fund --package-lock-only
 
           # update version in app config
-          CONFIG_FILE="./src/boot/config.ts"
-          if sed -i -E "s/(\bversion\b\s*:\s*\"v)[^\"]*\"/\1$PACKAGE_VERSION\"/g w /dev/stdout" $CONFIG_FILE; then
+          CONFIG_FILE=".env"
+          if sed -i -E "s/(\bAPP_VERSION\b\s*=\s*\"v)[^\"]*\"/\1$PACKAGE_VERSION\"/g w /dev/stdout" $CONFIG_FILE; then
             git diff -U0 -- $CONFIG_FILE
           fi
 
