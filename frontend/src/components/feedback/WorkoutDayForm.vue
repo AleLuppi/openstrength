@@ -22,7 +22,7 @@
 
       <q-icon
         v-if="modelValue?.completed"
-        name="sym_o_check"
+        :name="symOutlinedCheck"
         size="sm"
         color="positive"
       ></q-icon>
@@ -84,6 +84,7 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, ref, watch } from "vue";
 import mixpanel from "mixpanel-browser";
+import { symOutlinedCheck } from "@quasar/extras/material-symbols-outlined";
 import { ProgramFrozenView } from "@/helpers/programs/program";
 import { ProgramDayFeedback } from "@/helpers/programs/models";
 

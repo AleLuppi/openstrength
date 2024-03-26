@@ -140,7 +140,7 @@
               :name="
                 programsTemplate.length
                   ? 'fa-regular fa-hand-pointer'
-                  : 'sym_o_exclamation'
+                  : symOutlinedExclamation
               "
               size="2rem"
               color="light-dark"
@@ -231,9 +231,12 @@ import { useQuasar, QDialog } from "quasar";
 import { useI18n } from "vue-i18n";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
+import {
+  symOutlinedExclamation,
+  symOutlinedOpenInNew,
+} from "@quasar/extras/material-symbols-outlined";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { Program } from "@/helpers/programs/program";
-import { symOutlinedOpenInNew } from "@quasar/extras/material-symbols-outlined";
 
 // Import components
 const FormProgramTemplateSaving = defineAsyncComponent(

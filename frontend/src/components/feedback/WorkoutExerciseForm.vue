@@ -65,7 +65,7 @@
               <q-btn
                 flat
                 color="info"
-                icon="sym_o_info"
+                :icon="symOutlinedInfo"
                 class="q-mx-xs q-px-xs"
                 :style="{
                   visibility: exercise.schemaNote[indexLine]
@@ -187,10 +187,11 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import mixpanel from "mixpanel-browser";
+import { biCameraVideo, biChatLeftDots } from "@quasar/extras/bootstrap-icons";
+import { symOutlinedInfo } from "@quasar/extras/material-symbols-outlined";
 import { ProgramExerciseFeedback } from "@/helpers/programs/models";
 import { ProgramFrozenView } from "@/helpers/programs/program";
 import { stringCapitalize } from "@/helpers/scalar";
-import { biCameraVideo, biChatLeftDots } from "@quasar/extras/bootstrap-icons";
 
 // Define props
 const props = withDefaults(
