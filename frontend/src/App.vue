@@ -32,12 +32,7 @@ import { useCoachInfoStore } from "@/stores/coachInfo";
 import { addCallbackOnAuthStateChanged } from "@/helpers/users/auth";
 import { setLocale } from "@/helpers/locales";
 import { UserRole } from "@/helpers/users/user";
-
-// FIXME
-import { User } from "@/helpers/users/user";
-import { ProgramExercise } from "@/helpers/programs/program";
-import { sortExercises } from "@/helpers/exercises/listManagement";
-import { defaultExerciseCollection } from "@/utils/defaultExerciseCollection";
+import { onOnboardingSubmit } from "@/helpers/globalDialogs/manageOnboarding";
 
 // Import components
 import osSplashScreen from "@/components/layout/SplashScreen.vue";
@@ -140,33 +135,6 @@ function dismissUserInteraction() {
   document.body.removeEventListener("mousedown", onUserInteraction);
   document.body.removeEventListener("touchstart", onUserInteraction);
   document.body.removeEventListener("keydown", onUserInteraction);
-}
-
-/**
- * Actions to perform on onboarding dialog submit.
- *
- * @param data object data that shall be saved in user instance.
- */
-async function onOnboardingSubmit(data: { [key: string]: any }) {
-  // Save user info
-  appStore.showDialogOnboarding = false;
-  Object.assign(user.baseUser as User, data);
-  user.saveUser();
-
-  // Assign default exercise library to new coach
-  if (user.role === UserRole.coach) {
-    coachInfo.loadExercises(undefined, true, {
-      onSuccess: (exercises?: ProgramExercise[]) => {
-        if (exercises == undefined || exercises.length <= 0) {
-          defaultExerciseCollection.forEach((exercise) =>
-            exercise.variants?.forEach((variant) => variant.saveNew()),
-          );
-          coachInfo.exercises = defaultExerciseCollection;
-          sortExercises(coachInfo.exercises, true);
-        }
-      },
-    });
-  }
 }
 </script>
 
