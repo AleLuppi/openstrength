@@ -62,6 +62,8 @@ module.exports = configure(function (/* ctx */) {
         node: "node16",
       },
 
+      env: require("dotenv").config().parsed,
+
       vueRouterMode: "history", // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,
@@ -71,7 +73,6 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,

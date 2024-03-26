@@ -25,8 +25,8 @@ declare module "vue-i18n" {
 
 const i18n = createI18n({
   legacy: false,
-  locale: getPreferredLocale() || process.env.VITE_I18N_LOCALE || "en-US",
-  fallbackLocale: process.env.VITE_I18N_FALLBACK_LOCALE || "en-US",
+  locale: getPreferredLocale() || process.env.I18N_LOCALE || "en-US",
+  fallbackLocale: process.env.I18N_FALLBACK_LOCALE || "en-US",
   messages: messages,
   datetimeFormats: datetimeFormats,
 });

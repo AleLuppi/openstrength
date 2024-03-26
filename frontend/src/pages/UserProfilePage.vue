@@ -106,7 +106,7 @@ const user = useUserStore();
 const photoUrl = computed(() => user.photoUrl);
 
 // Get app version
-const appVersion = process.env.VITE_APP_VERSION;
+const appVersion = process.env.APP_VERSION;
 
 /**
  * Sign out user.

@@ -40,6 +40,6 @@ export default boot(async ({ router, store }) => {
   /* Set the page title */
   router.afterEach((to) => {
     document.title =
-      (to.meta.title ? to.meta.title + " - " : "") + process.env.VITE_APP_NAME;
+      (to.meta.title ? to.meta.title + " - " : "") + process.env.APP_NAME;
   });
 });
