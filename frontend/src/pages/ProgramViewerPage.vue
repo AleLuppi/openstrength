@@ -196,6 +196,7 @@ const user = useUserStore();
 // Set ref
 const programSnapshot = ref<ProgramFrozenView>(); // current program snapshot
 const programFeedbacks = ref<ProgramFeedback>({ feedbacks: [] }); // feedbacks associated to program
+
 const showCompactProgram = ref<boolean>(false);
 
 // Get requested program id
@@ -219,6 +220,7 @@ watch(
         },
       },
     );
+
     loadLatestFeedback(docId, {
       onSuccess: (feedback) => {
         programFeedbacks.value = feedback;
@@ -231,7 +233,7 @@ watch(
 // Find which is the next day athlete should check
 const nextDayIdx = computed(() => {
   const idx = programFeedbacks.value.feedbacks.findIndex(
-    (feedback) => !feedback.completed,
+    (feedback) => !feedback?.completed,
   );
   if (idx < 0) return programFeedbacks.value.feedbacks.length;
   return idx;
