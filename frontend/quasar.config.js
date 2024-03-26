@@ -169,10 +169,13 @@ module.exports = configure(function (/* ctx */) {
       swFilename: "sw.js",
       manifestFilename: "manifest.json",
       useCredentialsForManifestTag: false,
+      extendManifestJson(json) {
+        json.name = process.env.APP_NAME;
+        json.short_name = process.env.APP_NAME;
+      },
       // useFilenameHashes: true,
       // extendGenerateSWOptions (cfg) {}
       // extendInjectManifestOptions (cfg) {},
-      // extendManifestJson (json) {}
       // extendPWACustomSWConf (esbuildConf) {}
     },
 
