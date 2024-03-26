@@ -118,7 +118,7 @@
           v-ripple
           class="q-pa-lg column items-center justify-center square-card q-hoverable text-center cursor-pointer"
           clickable
-          @click="$emit('request-global-dialog', 'onboarding')"
+          @click="appStore.showDialogOnboarding = true"
         >
           <!-- Animate when on -->
           <span class="q-focus-helper"></span>
@@ -146,17 +146,14 @@
 </template>
 
 <script setup lang="ts">
+import { useAppStore } from "src/stores/app";
 import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
 import { UserRole } from "@/helpers/users/user";
 import { NamedRoutes } from "@/router";
 
-// Define emits
-defineEmits<{
-  "request-global-dialog": [which: string];
-}>();
-
 // Get user state
+const appStore = useAppStore();
 const user = useUserStore();
 
 // Set coach action buttons

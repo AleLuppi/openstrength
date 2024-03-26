@@ -1,14 +1,28 @@
 <template>
   <div>
+    <!-- Splash screen on loading -->
     <transition name="fade">
       <osSplashScreen v-if="isLoading" />
     </transition>
+
+    <!-- Main content -->
     <router-view />
+
+    <!-- Global dialogs -->
+    <q-dialog v-model="appStore.showDialogOnboarding" no-route-dismiss>
+      <UserOnboarding @submit="onOnboardingSubmit"></UserOnboarding>
+    </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, onMounted, ref } from "vue";
+import {
+  defineAsyncComponent,
+  onBeforeMount,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import mixpanel from "mixpanel-browser";
 import { auth } from "@/firebase";
@@ -17,10 +31,19 @@ import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { addCallbackOnAuthStateChanged } from "@/helpers/users/auth";
 import { setLocale } from "@/helpers/locales";
-// import { UserRole } from "@/helpers/users/user";
+import { UserRole } from "@/helpers/users/user";
 
+// FIXME
+import { User } from "@/helpers/users/user";
+import { ProgramExercise } from "@/helpers/programs/program";
+import { sortExercises } from "@/helpers/exercises/listManagement";
+import { defaultExerciseCollection } from "@/utils/defaultExerciseCollection";
+
+// Import components
 import osSplashScreen from "@/components/layout/SplashScreen.vue";
-import { onBeforeUnmount } from "vue";
+const UserOnboarding = defineAsyncComponent(
+  () => import("@/components/forms/UserOnboarding.vue"),
+);
 
 // Init plugin
 const route = useRoute();
@@ -83,9 +106,9 @@ addCallbackOnAuthStateChanged({
       router.replace(route.redirectedFrom);
     else router.replace({ ...route, force: true });
 
-    // FIXME Show onboarding dialog if required
-    // if (!user.role || user.role == UserRole.unknown)
-    //   showDialogOnboarding.value = true;
+    // Show onboarding dialog if required
+    if (!user.role || user.role == UserRole.unknown)
+      appStore.showDialogOnboarding = true;
 
     // Identify user for proper Mixpanel tracking
     mixpanel.identify(user.uid);
@@ -117,6 +140,33 @@ function dismissUserInteraction() {
   document.body.removeEventListener("mousedown", onUserInteraction);
   document.body.removeEventListener("touchstart", onUserInteraction);
   document.body.removeEventListener("keydown", onUserInteraction);
+}
+
+/**
+ * Actions to perform on onboarding dialog submit.
+ *
+ * @param data object data that shall be saved in user instance.
+ */
+async function onOnboardingSubmit(data: { [key: string]: any }) {
+  // Save user info
+  appStore.showDialogOnboarding = false;
+  Object.assign(user.baseUser as User, data);
+  user.saveUser();
+
+  // Assign default exercise library to new coach
+  if (user.role === UserRole.coach) {
+    coachInfo.loadExercises(undefined, true, {
+      onSuccess: (exercises?: ProgramExercise[]) => {
+        if (exercises == undefined || exercises.length <= 0) {
+          defaultExerciseCollection.forEach((exercise) =>
+            exercise.variants?.forEach((variant) => variant.saveNew()),
+          );
+          coachInfo.exercises = defaultExerciseCollection;
+          sortExercises(coachInfo.exercises, true);
+        }
+      },
+    });
+  }
 }
 </script>
 
