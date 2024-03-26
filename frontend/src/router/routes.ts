@@ -6,21 +6,21 @@ import ExternalLayout from "src/layouts/ExternalLayout.vue";
 const MainLayout = () => import("layouts/MainLayout.vue");
 
 /* Dinamically import the pages */
-const HomeView = () => import("pages/HomeView.vue");
+const HomePage = () => import("pages/HomePage.vue");
 const LandingPage = () => import("pages/LandingPage.vue");
 const LandingConfirmationPage = () =>
   import("pages/LandingConfirmationPage.vue");
-const AthletesView = () => import("pages/AthletesView.vue");
-const LibraryView = () => import("pages/LibraryView.vue");
-const ProgramView = () => import("pages/ProgramView.vue");
-const ProgramViewerView = () => import("pages/ProgramViewerView.vue");
-const ProgramLibraryView = () => import("pages/ProgramLibraryView.vue");
-const UserLoginView = () => import("pages/UserLoginView.vue");
-const UserRegisterView = () => import("pages/UserRegisterView.vue");
-const UserProfileView = () => import("pages/UserProfileView.vue");
-const PrivacyPolicyView = () => import("pages/PrivacyPolicyView.vue");
-const CookiePolicyView = () => import("pages/CookiePolicyView.vue");
-const TermsAndConditionView = () => import("pages/TermsAndConditionsView.vue");
+const AthletesPage = () => import("pages/AthletesPage.vue");
+const LibraryPage = () => import("pages/LibraryPage.vue");
+const ProgramBuilderPage = () => import("pages/ProgramBuilderPage.vue");
+const ProgramViewerPage = () => import("pages/ProgramViewerPage.vue");
+const ProgramLibraryPage = () => import("pages/ProgramLibraryPage.vue");
+const UserLoginPage = () => import("pages/UserLoginPage.vue");
+const UserRegisterPage = () => import("pages/UserRegisterPage.vue");
+const UserProfilePage = () => import("pages/UserProfilePage.vue");
+const PrivacyPolicyPage = () => import("pages/PrivacyPolicyPage.vue");
+const CookiePolicyPage = () => import("pages/CookiePolicyPage.vue");
+const TermsAndConditionPage = () => import("pages/TermsAndConditionsPage.vue");
 const NotFoundPage = () => import("pages/NotFoundPage.vue");
 
 /* Set routes names */
@@ -75,7 +75,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "",
         name: NamedRoutes.home,
-        component: HomeView,
+        component: HomePage,
         meta: {
           title: "Home",
           restrictAccessToLevel: 4,
@@ -122,7 +122,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/athletes",
         name: NamedRoutes.athletes,
-        component: AthletesView,
+        component: AthletesPage,
         meta: {
           title: "Athletes",
           restrictAccessByRole: [UserRole.coach],
@@ -133,7 +133,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/library",
         name: NamedRoutes.exerciseLibrary,
-        component: LibraryView,
+        component: LibraryPage,
         meta: {
           title: "Library",
           restrictAccessByRole: [UserRole.coach],
@@ -144,7 +144,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/program/:programId?",
         name: NamedRoutes.program,
-        component: ProgramView,
+        component: ProgramBuilderPage,
         meta: {
           title: "Program",
           restrictAccessByRole: [UserRole.coach],
@@ -156,7 +156,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/program-library",
         name: NamedRoutes.programLibrary,
-        component: ProgramLibraryView,
+        component: ProgramLibraryPage,
         meta: {
           title: "Program Library",
           restrictAccessByRole: [UserRole.coach],
@@ -176,7 +176,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: "program",
             name: NamedRoutes.viewProgram,
-            component: ProgramViewerView,
+            component: ProgramViewerPage,
             meta: {
               title: "View program",
             },
@@ -186,7 +186,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/login",
         name: NamedRoutes.login,
-        component: UserLoginView,
+        component: UserLoginPage,
         props: true,
         meta: {
           title: "Login",
@@ -196,7 +196,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/register",
         name: NamedRoutes.register,
-        component: UserRegisterView,
+        component: UserRegisterPage,
         meta: {
           title: "Register",
           redirectAuthenticated: NamedRoutes.home,
@@ -205,7 +205,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/profile",
         name: NamedRoutes.profile,
-        component: UserProfileView,
+        component: UserProfilePage,
         meta: {
           title: "Profile",
           redirectNotAuthenticated: NamedRoutes.login,
@@ -214,7 +214,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/privacy-policy",
         name: NamedRoutes.privacyPolicy,
-        component: PrivacyPolicyView,
+        component: PrivacyPolicyPage,
         meta: {
           title: "Privacy Policy",
         },
@@ -222,7 +222,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/cookie-policy",
         name: NamedRoutes.cookiePolicy,
-        component: CookiePolicyView,
+        component: CookiePolicyPage,
         meta: {
           title: "Cookie Policy",
         },
@@ -230,7 +230,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/terms-and-conditions",
         name: NamedRoutes.termsConditions,
-        component: TermsAndConditionView,
+        component: TermsAndConditionPage,
         meta: {
           title: "Terms and Conditions",
         },
