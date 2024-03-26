@@ -99,13 +99,5 @@ export async function loadLatestFeedback(
       onError: onError,
     },
   );
-
-  // Convert possible null values to undefined
-  if (feedback) {
-    (feedback as any).feedbacks = (feedback as any).feedbacks.map((fb: any) =>
-      fb === null ? undefined : fb,
-    );
-  }
-
   return feedback;
 }
