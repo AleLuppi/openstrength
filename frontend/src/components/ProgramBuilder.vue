@@ -37,12 +37,7 @@
         <div
           v-if="index == 0 || week != allWeekDayPairs[index - 1][0]"
           class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-sm"
-          @click="
-            () =>
-              allWeekDayPairs.forEach(([weekVal], idx) => {
-                if (weekVal == week) dayInfoCollapsed[idx] = true;
-              })
-          "
+         
         >
           <!-- Week name -->
           <h4
@@ -111,6 +106,12 @@
             flat
             dense
             color="light-dark"
+            @click="
+            () =>
+              allWeekDayPairs.forEach(([weekVal], idx) => {
+                if (weekVal == week) dayInfoCollapsed[idx] = true;
+              })
+          "
           ></q-btn>
         </div>
 
@@ -121,12 +122,7 @@
             v-intersection="dayTitleInteresctionHandler"
             class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-sm os-day-title"
             :class="{ 'os-day-disabled disabled': !dayCanBeExpanded[index] }"
-            @click="
-              () =>
-                (dayInfoCollapsed[index] = dayCanBeExpanded[index]
-                  ? !dayInfoCollapsed[index]
-                  : false)
-            "
+          
           >
             <!-- Day name -->
             <h6 class="q-mt-none cursor-pointer text-margin-xs">
@@ -217,6 +213,12 @@
               flat
               dense
               color="light-dark"
+              @click="
+              () =>
+                (dayInfoCollapsed[index] = dayCanBeExpanded[index]
+                  ? !dayInfoCollapsed[index]
+                  : false)
+            "
             ></q-btn>
           </div>
 
