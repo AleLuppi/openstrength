@@ -364,6 +364,7 @@ export default {
         new_day_tooltip:
           "Aggiunge un nuovo giorno vuoto alla settimana corrente",
         new_exercise: "Esercizio",
+        new_free_text_exercise: "Testo libero",
         new_exercise_tooltip: "Aggiunge un nuovo esercizio al giorno corrente",
         new_day_error:
           "Impossibile creare un giorno con il nome selezionato, riprova per favore",

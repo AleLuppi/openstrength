@@ -362,6 +362,7 @@ export default {
         new_day: "Day",
         new_day_tooltip: "Add an empty day to this week",
         new_exercise: "Exercise",
+        new_free_text_exercise: "Free text",
         new_exercise_tooltip: "Add a new exercise to this day",
         new_day_error: "Could not create day with selected name, please retry",
         new_day_already_exists: "A day with this name already exists",
