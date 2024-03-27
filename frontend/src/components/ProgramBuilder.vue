@@ -36,12 +36,6 @@
         <!-- Week wrapper -->
         <div
           v-if="index == 0 || week != allWeekDayPairs[index - 1][0]"
-          @click="
-            () =>
-              allWeekDayPairs.forEach(([weekVal], idx) => {
-                if (weekVal == week) dayInfoCollapsed[idx] = true;
-              })
-          "
           class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-sm"
         >
           <!-- Week name -->
@@ -111,6 +105,12 @@
             flat
             dense
             color="light-dark"
+            @click="
+              () =>
+                allWeekDayPairs.forEach(([weekVal], idx) => {
+                  if (weekVal == week) dayInfoCollapsed[idx] = true;
+                })
+            "
           ></q-btn>
         </div>
 
@@ -119,12 +119,6 @@
           <!-- Display day name -->
           <div
             v-intersection="dayTitleInteresctionHandler"
-            @click="
-              () =>
-                (dayInfoCollapsed[index] = dayCanBeExpanded[index]
-                  ? !dayInfoCollapsed[index]
-                  : false)
-            "
             class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-sm os-day-title"
             :class="{ 'os-day-disabled disabled': !dayCanBeExpanded[index] }"
           >
@@ -217,6 +211,12 @@
               flat
               dense
               color="light-dark"
+              @click="
+                () =>
+                  (dayInfoCollapsed[index] = dayCanBeExpanded[index]
+                    ? !dayInfoCollapsed[index]
+                    : false)
+              "
             ></q-btn>
           </div>
 
@@ -553,8 +553,8 @@ const filteredWeekDay = computed(() =>
 
 // Get day visibility status
 const dayCanBeExpanded = computed(() =>
-  allWeekDayPairs.value.map(
-    ([week, day]) => filteredWeekDay.value[week]?.includes(day),
+  allWeekDayPairs.value.map(([week, day]) =>
+    filteredWeekDay.value[week]?.includes(day),
   ),
 );
 const dayShowExpanded = computed(() =>
@@ -1089,9 +1089,7 @@ const dayTitleInteresctionHandler = {
   padding-inline-start: 32px;
   z-index: 1;
   border-radius: 12px;
-  transition:
-    box-shadow 300ms,
-    background-color 300ms;
+  transition: box-shadow 300ms, background-color 300ms;
 
   & .os-show-on-sticky {
     display: none;
