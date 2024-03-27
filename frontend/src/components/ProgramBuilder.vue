@@ -111,6 +111,11 @@
                   if (weekVal == week) dayInfoCollapsed[idx] = true;
                 })
             "
+            () =>
+              allWeekDayPairs.forEach(([weekVal], idx) => {
+                if (weekVal == week) dayInfoCollapsed[idx] = !dayInfoCollapsed[idx];
+              })
+          "
           ></q-btn>
         </div>
 
