@@ -109,7 +109,7 @@
             @click="
             () =>
               allWeekDayPairs.forEach(([weekVal], idx) => {
-                if (weekVal == week) dayInfoCollapsed[idx] = true;
+                if (weekVal == week) dayInfoCollapsed[idx] = !dayInfoCollapsed[idx];
               })
           "
           ></q-btn>
