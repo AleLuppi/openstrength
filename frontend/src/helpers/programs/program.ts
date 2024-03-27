@@ -39,7 +39,7 @@ export type ProgramProps = {
   labels?: string[];
 
   // Program composition
-  programExercises?: ProgramExercise[];
+  programExercises?: (ProgramExercise | ProgramFreeExercise)[];
 
   // Program status
   coach?: CoachUser;
@@ -61,7 +61,7 @@ export type ProgramProps = {
 };
 
 /**
- * Program line properties.
+ * Program exercise properties.
  */
 export type ProgramExerciseProps = {
   // Basic program exercise info
@@ -82,6 +82,25 @@ export type ProgramExerciseProps = {
 
   // Lines composing exercise
   lines?: ProgramLine[];
+};
+
+/**
+ * Program free text exercise properties.
+ */
+export type ProgramFreeExerciseProps = {
+  // Basic program exercise info
+  uid?: string;
+
+  // Father program instance
+  program?: Program;
+
+  // Schedule info
+  scheduleWeek?: string | number;
+  scheduleDay?: string | number;
+  scheduleOrder?: string | number;
+
+  // Exercise-related info
+  text?: string;
 };
 
 /**
@@ -211,7 +230,7 @@ export class Program {
   labels?: string[];
 
   // Program composition
-  programExercises?: ProgramExercise[];
+  programExercises?: (ProgramExercise | ProgramFreeExercise)[];
 
   // Program status
   coach?: CoachUser;
@@ -497,7 +516,7 @@ export class Program {
   getLines() {
     return this.programExercises?.reduce(
       (allLines: ProgramLine[], programExercise) =>
-        programExercise.lines
+         programExercise instanceof ProgramExercise && programExercise.lines
           ? [...allLines, ...programExercise.lines]
           : allLines,
       [],
@@ -594,6 +613,60 @@ export class ProgramExercise {
     return new ProgramExercise({
       ...this,
       lines: this.lines?.map((line) => line.duplicate(shallow)),
+      ...(shallow && {
+        uid: undefined,
+        program: undefined,
+      }),
+    });
+  }
+}
+
+
+/**
+ * Program free exercise entity.
+ *
+ * @public
+ */
+export class ProgramFreeExercise {
+  // Basic program exercise info
+  uid?: string;
+
+  // Father program instance
+  program?: Program;
+
+  // Schedule info
+  scheduleWeek?: string | number;
+  scheduleDay?: string | number;
+  scheduleOrder?: string | number;
+
+  // Exercise-related info
+  text?: string;
+
+  constructor({
+    uid,
+    program,
+    scheduleWeek,
+    scheduleDay,
+    scheduleOrder,
+    text,
+  }: ProgramFreeExerciseProps = {}) {
+    this.uid = uid;
+    this.program = program;
+    this.scheduleWeek = scheduleWeek;
+    this.scheduleDay = scheduleDay;
+    this.scheduleOrder = scheduleOrder;
+    this.text = text;
+  }
+
+  /**
+   * Duplicate program exercise.
+   *
+   * @param shallow avoid copying identifying fields such as uid and parent instance.
+   * @returns a new program exercise with duplicate fields.
+   */
+  duplicate(shallow = false) {
+    return new ProgramFreeExercise({
+      ...this,
       ...(shallow && {
         uid: undefined,
         program: undefined,
@@ -1247,6 +1320,7 @@ function flattenProgram(program: Program) {
   // Prepare flatten lines
   let flatLines = undefined;
   for (const exerciseToSpread of program.programExercises ?? []) {
+    if (exerciseToSpread instanceof ProgramExercise === false) return;
     const { uid, program, exerciseVariant, lines, ...exerciseObj } =
       exerciseToSpread;
     const flatExercise = {
@@ -1395,14 +1469,14 @@ export function unflattenProgram(
   // Correct references in program lines
   const programLines = programExercises.reduce(
     (out: { [key: string]: ProgramLine }, programExercise) => {
-      const currLines =
-        programExercise.lines?.reduce(
+      const currLines = programExercise instanceof ProgramExercise ?
+      programExercise.lines?.filter(line => line instanceof ProgramExercise)?.reduce(
           (out: { [key: string]: ProgramLine }, line) => {
             if (line.uid) out[line.uid] = line;
             return out;
           },
           {},
-        ) ?? {};
+        ) : undefined ?? {};
       return { ...out, ...currLines };
     },
     {},
