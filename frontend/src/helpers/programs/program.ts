@@ -1319,8 +1319,9 @@ function flattenProgram(program: Program) {
 
   // Prepare flatten lines
   let flatLines = undefined;
+  let flatExercise = undefined;
   for (const exerciseToSpread of program.programExercises ?? []) {
-    if (exerciseToSpread instanceof ProgramExercise === false) return;
+    if (exerciseToSpread instanceof ProgramExercise){
     const { uid, program, exerciseVariant, lines, ...exerciseObj } =
       exerciseToSpread;
     const flatExercise = {
@@ -1355,6 +1356,16 @@ function flattenProgram(program: Program) {
       };
     });
     flatLines = arrayConcatToNullable(flatLines, linesExercise);
+    }
+    else if (exerciseToSpread instanceof ProgramFreeExercise){
+      const { uid, program, ...exerciseObj } =
+      exerciseToSpread;
+      
+     flatExercise = {
+      ...exerciseObj,     
+    };
+   
+    }
   }
 
   const flatProgram = {
@@ -1362,6 +1373,7 @@ function flattenProgram(program: Program) {
     coachId: program.coach?.uid,
     athleteId: program.athlete?.uid,
     lines: flatLines,
+    text: flatExercise,
   };
 
   return flatProgram;
@@ -1409,7 +1421,7 @@ export function unflattenProgram(
   },
 ): Program {
   // Get all program exercises and lines
-  const programExercises: ProgramExercise[] = [];
+  const programExercises: (ProgramExercise | ProgramFreeExercise)[] = [];
   flatProgram.lines?.forEach((fullLineInfo) => {
     const {
       exercise,
@@ -1552,5 +1564,6 @@ export function unflattenProgram(
     storeUnresolved.coach = [outProgram, flatProgram.coachId];
   if (storeUnresolved && !outProgram.athlete && flatProgram.athleteId)
     storeUnresolved.athlete = [outProgram, flatProgram.athleteId];
+
   return outProgram;
 }
