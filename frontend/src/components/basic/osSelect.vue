@@ -79,8 +79,8 @@
           </q-item-section>
         </q-item>
       </template>
-      <template v-for="(_, slot) in $slots as Readonly<QSelectSlots>" #[slot]>
-        <slot :name="slot" />
+      <template v-for="(_, slot) in slots" #[slot]="scope">
+        <slot :name="slot" v-bind="scope"></slot>
       </template>
     </q-select>
   </div>
@@ -90,6 +90,9 @@
 import { ref, computed } from "vue";
 import { QSelect } from "quasar";
 import type { QSelectProps, QSelectSlots } from "quasar";
+
+// Define slots
+const slots = defineSlots<QSelectSlots>();
 
 // Define props (from child)
 interface extendedInputProps extends QSelectProps {
