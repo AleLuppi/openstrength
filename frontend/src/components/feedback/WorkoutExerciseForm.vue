@@ -32,19 +32,28 @@
         </p>
       </div>
 
-      <div v-for="(line, indexLine) in props.exercise.lines" :key="indexLine">
-        <q-expansion-item
-          :model-value="readonly"
-          @update:model-value="toggleOpen"
-          hide-expand-icon
-          :header-class="{
-            'bg-green-3 ': exerciseDone,
-          }"
-          class="q-ma-sm shadow-1 overflow-hidden bg-lighter"
-          style="border-radius: 8px"
-        >
-          <template #header>
-            <div class="q-py-sm full-width">
+      <q-expansion-item
+        :model-value="readonly"
+        @update:model-value="toggleOpen"
+        hide-expand-icon
+        :header-class="{
+          'bg-green-3 ': exerciseDone,
+        }"
+        class="q-ma-sm shadow-1 overflow-hidden bg-lighter"
+        style="border-radius: 8px"
+      >
+        <template #header>
+          <div class="q-py-sm full-width">
+            <div
+              v-for="(line, indexLine) in props.exercise.lines"
+              :key="indexLine"
+            >
+              <q-separator
+                v-if="indexLine !== 0"
+                size="1px"
+                class="col q-mx-none q-my-sm"
+              />
+              <!-- Schema and feedback lines -->
               <div class="row items-center justify-between">
                 <div
                   class="row items-center justify-start"
@@ -60,6 +69,7 @@
                   </div>
                 </div>
 
+                <!-- Feedback buttons -->
                 <div
                   class="row items-center justify-end"
                   style="max-width: 30%"
@@ -150,12 +160,17 @@
                 </div>
               </div>
             </div>
-          </template>
+          </div>
+        </template>
 
-          <q-card>
-            <q-card-section>
-              <div class="column justify-center">
-                <!-- Show schema or line data -->
+        <q-card>
+          <q-card-section>
+            <div class="column justify-center">
+              <!-- Show schema or line data -->
+              <div
+                v-for="(line, indexLine) in props.exercise.lines"
+                :key="indexLine"
+              >
                 <div class="row justify-evenly items-center q-pa-none">
                   <!-- Show line values -->
 
@@ -168,7 +183,10 @@
                     dense
                     stack-label
                     hide-bottom-space
-                    :style="{ width: kind == 'load' ? '15%' : '10%' }"
+                    :style="{
+                      width:
+                        kind == 'rpe' ? '10%' : kind == 'reps' ? '20%' : '30%',
+                    }"
                     class="q-pa-none q-ma-none"
                   />
                   <q-btn
@@ -179,18 +197,12 @@
                     color="negative"
                   ></q-btn>
                 </div>
-                <q-btn
-                  icon="add"
-                  flat
-                  ouline
-                  label="Set"
-                  class="q-mt-sm"
-                ></q-btn>
               </div>
-            </q-card-section>
-          </q-card>
-        </q-expansion-item>
-      </div>
+              <q-btn icon="add" flat ouline label="Set" class="q-mt-sm"></q-btn>
+            </div>
+          </q-card-section>
+        </q-card>
+      </q-expansion-item>
     </div>
   </q-card>
 </template>
