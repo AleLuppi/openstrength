@@ -6,7 +6,12 @@
     class="q-mb-sm"
     style="border-radius: 8px"
   >
-    <div class="q-py-sm q-px-none">
+    <div
+      class="q-py-sm q-px-none"
+      :class="{
+        'bg-green-1 ': exerciseDone,
+      }"
+    >
       <div class="row justify-between items-center q-px-sm">
         <div class="row justify-start items-center">
           <q-btn
@@ -26,6 +31,7 @@
           :color="exerciseDone ? 'positive' : 'primary'"
           round
           :outline="!exerciseDone"
+          @click="toggleDone()"
         ></q-btn>
       </div>
       <p class="text-xs text-italic q-ml-sm">
@@ -33,11 +39,9 @@
       </p>
 
       <q-expansion-item
-        :model-value="readonly"
+        :v-model="expanded"
         hide-expand-icon
-        :header-class="{
-          'bg-green-3 ': exerciseDone,
-        }"
+        :default-opened="!exerciseDone"
         class="q-ma-sm shadow-1 overflow-hidden bg-lighter"
         style="border-radius: 8px"
       >
@@ -311,13 +315,11 @@ watch(
  *  - done -> value "true"
  *  - not done -> value "false"
  */
-/*
 function toggleDone() {
   if (props.readonly) return;
   exerciseDone.value = !exerciseDone.value;
   saveExerciseFeedback();
 }
-*/
 
 /**
  * Adds a new empty set for inserting load, rep, rpe
