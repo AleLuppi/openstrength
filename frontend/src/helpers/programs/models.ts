@@ -37,6 +37,16 @@ export type ProgramDayFeedback = {
 };
 
 /**
+ * Available feedback on sets for a single exercise
+ */
+export type ProgramExerciseSetsFeedback = {
+  setIndex?: string | undefined;
+  setLoadFeedback?: string | undefined;
+  setRepsFeedback?: string | undefined;
+  setRpeFeedback?: string | undefined;
+};
+
+/**
  * Athlete feedback on a single exercise.
  */
 export type ProgramExerciseFeedback = {
@@ -46,11 +56,8 @@ export type ProgramExerciseFeedback = {
   completed: boolean | undefined;
   willComplete?: boolean;
   linesFeedback: {
-    loadFeedback?: string | undefined;
-    repsFeedback?: string | undefined;
-    setsFeedback?: string | undefined;
-    rpeFeedback?: string | undefined;
     textFeedback?: string | undefined;
     videoFeedback?: string | undefined;
   }[];
+  setsInsertedFeedback:ProgramExerciseSetsFeedback[];
 };

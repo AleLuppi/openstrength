@@ -27,14 +27,13 @@
           round
           :outline="!exerciseDone"
         ></q-btn>
-        <p class="text-xs text-italic q-ml-sm">
-          {{ props.exercise.note }}
-        </p>
       </div>
+      <p class="text-xs text-italic q-ml-sm">
+        {{ props.exercise.note }}
+      </p>
 
       <q-expansion-item
         :model-value="readonly"
-        @update:model-value="toggleOpen"
         hide-expand-icon
         :header-class="{
           'bg-green-3 ': exerciseDone,
@@ -163,42 +162,70 @@
           </div>
         </template>
 
+        <!-- Set custom insertion -->
         <q-card>
           <q-card-section>
             <div class="column justify-center">
               <!-- Show schema or line data -->
-              <div
-                v-for="(line, indexLine) in props.exercise.lines"
-                :key="indexLine"
-              >
-                <div class="row justify-evenly items-center q-pa-none">
+              <div v-for="(set, indexSet) in setTextFeedbacks" :key="indexSet">
+                <div class="row justify-evenly items-end q-pa-none">
                   <!-- Show line values -->
 
-                  <p class="text-bold">Set</p>
+                  <p class="text-xs" style="font-weight: bold">
+                    Set {{ set.setIndex ?? "" }}
+                  </p>
                   <q-input
-                    v-for="kind in lineValueTypes"
-                    :key="kind"
-                    v-model="line[kind]"
-                    :label="indexLine === 0 ? lineValueLabels[kind] : ''"
+                    v-model="set.setLoadFeedback"
+                    :label="indexSet === 0 ? 'Load' : ''"
                     dense
                     stack-label
                     hide-bottom-space
                     :style="{
-                      width:
-                        kind == 'rpe' ? '10%' : kind == 'reps' ? '20%' : '30%',
+                      width: '30%',
+                    }"
+                    class="q-pa-none q-ma-none"
+                  />
+                  <q-input
+                    v-model="set.setRepsFeedback"
+                    :label="indexSet === 0 ? 'Reps' : ''"
+                    dense
+                    stack-label
+                    hide-bottom-space
+                    :style="{
+                      width: '20%',
+                    }"
+                    class="q-pa-none q-ma-none"
+                  />
+                  <q-input
+                    v-model="set.setRpeFeedback"
+                    :label="indexSet === 0 ? 'Rpe' : ''"
+                    dense
+                    stack-label
+                    hide-bottom-space
+                    :style="{
+                      width: '10%',
                     }"
                     class="q-pa-none q-ma-none"
                   />
                   <q-btn
+                    v-if="set.setIndex"
                     icon="remove"
                     round
                     outline
                     size="xs"
                     color="negative"
+                    @click="removeSet(set.setIndex)"
                   ></q-btn>
                 </div>
               </div>
-              <q-btn icon="add" flat ouline label="Set" class="q-mt-sm"></q-btn>
+              <q-btn
+                icon="add"
+                flat
+                ouline
+                label="Set"
+                class="q-mt-sm"
+                @click="addNewSet()"
+              ></q-btn>
             </div>
           </q-card-section>
         </q-card>
@@ -208,9 +235,11 @@
 </template>
 
 <script setup lang="ts">
-import { ProgramExerciseFeedback } from "@/helpers/programs/models";
+import {
+  ProgramExerciseFeedback,
+  ProgramExerciseSetsFeedback,
+} from "@/helpers/programs/models";
 import { ProgramFrozenView } from "@/helpers/programs/program";
-import { stringCapitalize } from "@/helpers/scalar";
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import mixpanel from "mixpanel-browser";
 
@@ -219,11 +248,8 @@ const props = withDefaults(
   defineProps<{
     // current feedback on exercise by athlete
     modelValue: ProgramExerciseFeedback | undefined;
-
     // frozen program exercise info
     exercise: ProgramFrozenView["weekdays"][number]["exercises"][number];
-
-    //
     readonly: boolean;
   }>(),
   { readonly: false },
@@ -237,13 +263,8 @@ const emit = defineEmits<{
 // Set ref
 const exerciseDone = ref<boolean | undefined>(undefined); // whether exercise has been completed
 const lineTextFeedbacks = ref<string[]>([]); // store text feedbacks
+const setTextFeedbacks = ref<ProgramExerciseSetsFeedback[]>([]); // store feedbacks on sets by athlete
 const showInfoTooltip = ref<boolean[]>([]); // whether to show info tooltip for each line
-
-// Set constant values
-const lineValueTypes: ("load" | "reps" | "rpe")[] = ["load", "reps", "rpe"];
-const lineValueLabels = Object.fromEntries(
-  lineValueTypes.map((val) => [val, stringCapitalize(val)]),
-);
 
 // Initialize exercise completed
 watch(
@@ -254,6 +275,14 @@ watch(
       val?.linesFeedback.map(
         (lineFeedback) => lineFeedback.textFeedback ?? "",
       ) ?? [];
+
+    setTextFeedbacks.value =
+      val?.setsInsertedFeedback.map((setFeedback) => ({
+        setIndex: setFeedback.setIndex ?? "",
+        setLoadFeedback: setFeedback.setLoadFeedback ?? "",
+        setRepsFeedback: setFeedback.setRepsFeedback ?? "",
+        setRpeFeedback: setFeedback.setRpeFeedback ?? "",
+      })) ?? [];
   },
   {
     immediate: true,
@@ -276,6 +305,49 @@ function toggleDone() {
 */
 
 /**
+ * Adds a new empty set for inserting load, rep, rpe
+ */
+function addNewSet() {
+  const emptySetTextFeedback: ProgramExerciseSetsFeedback = {
+    setIndex: (
+      Number(setTextFeedbacks.value.slice(-1)[0]?.setIndex ?? 0) + 1
+    ).toString(),
+    setLoadFeedback: "",
+    setRepsFeedback: "",
+    setRpeFeedback: "",
+  };
+  setTextFeedbacks.value.push(emptySetTextFeedback);
+
+  // Save feedback
+  saveExerciseFeedback();
+}
+
+/**
+ * Removes a set from the available ones
+ * @param indexToRemove
+ */
+function removeSet(indexToRemove: number | string) {
+  const index = setTextFeedbacks.value.findIndex(
+    (feedback) => Number(feedback.setIndex) === Number(indexToRemove),
+  );
+
+  if (index !== -1) {
+    setTextFeedbacks.value.splice(index, 1);
+
+    // Rescale the remaining indexes
+    setTextFeedbacks.value.forEach((feedback) => {
+      const currentIndex = Number(feedback.setIndex);
+      if (currentIndex > Number(indexToRemove)) {
+        feedback.setIndex = (currentIndex - 1).toString();
+      }
+    });
+  }
+
+  // Save modification
+  saveExerciseFeedback();
+}
+
+/**
  * Inform parent on update of exercise feedback.
  */
 function saveExerciseFeedback() {
@@ -287,14 +359,12 @@ function saveExerciseFeedback() {
     linesFeedback:
       props.exercise.lines?.map((line, idx) => {
         return {
-          loadFeedback: undefined, // TODO: update in 2nd communication release
-          repsFeedback: undefined,
-          setsFeedback: undefined,
-          rpeFeedback: undefined,
           textFeedback: lineTextFeedbacks.value[idx],
           videoFeedback: undefined,
         };
       }) || [],
+
+    setsInsertedFeedback: setTextFeedbacks.value,
   };
   emit("update:modelValue", exerciseFeedback);
 
