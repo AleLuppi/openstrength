@@ -98,7 +98,7 @@
                       :delay="500"
                     >
                       {{
-                        exercise.videoFeedback[indexLine]
+                        exercise.textFeedback[indexLine]
                           ? "Il tuo coach ha richiesto un feedback su questa serie"
                           : "Non è necessario dare un feedback su questa serie"
                       }}
@@ -162,6 +162,7 @@
           </div>
         </template>
 
+        <!-- TODO: i18n-->
         <!-- Set custom insertion -->
         <q-card>
           <q-card-section>
@@ -176,7 +177,9 @@
                   </p>
                   <q-input
                     v-model="set.setLoadFeedback"
-                    :label="indexSet === 0 ? 'Load' : ''"
+                    :label="indexSet === 0 ? 'Load (kg)' : ''"
+                    type="number"
+                    :readonly="readonly"
                     dense
                     stack-label
                     hide-bottom-space
@@ -188,6 +191,8 @@
                   <q-input
                     v-model="set.setRepsFeedback"
                     :label="indexSet === 0 ? 'Reps' : ''"
+                    type="number"
+                    :readonly="readonly"
                     dense
                     stack-label
                     hide-bottom-space
@@ -199,6 +204,8 @@
                   <q-input
                     v-model="set.setRpeFeedback"
                     :label="indexSet === 0 ? 'Rpe' : ''"
+                    type="number"
+                    :readonly="readonly"
                     dense
                     stack-label
                     hide-bottom-space
@@ -207,8 +214,9 @@
                     }"
                     class="q-pa-none q-ma-none"
                   />
+
                   <q-btn
-                    v-if="set.setIndex"
+                    v-if="set.setIndex && !readonly"
                     icon="remove"
                     round
                     outline
@@ -218,7 +226,14 @@
                   ></q-btn>
                 </div>
               </div>
+              <p
+                v-if="readonly && setTextFeedbacks.length === 0"
+                class="text-xs text-italic"
+              >
+                Non sono stati registrate informazioni aggiuntive
+              </p>
               <q-btn
+                v-if="!readonly"
                 icon="add"
                 flat
                 ouline
@@ -278,10 +293,10 @@ watch(
 
     setTextFeedbacks.value =
       val?.setsInsertedFeedback.map((setFeedback) => ({
-        setIndex: setFeedback.setIndex ?? "",
-        setLoadFeedback: setFeedback.setLoadFeedback ?? "",
-        setRepsFeedback: setFeedback.setRepsFeedback ?? "",
-        setRpeFeedback: setFeedback.setRpeFeedback ?? "",
+        setIndex: setFeedback.setIndex ?? undefined,
+        setLoadFeedback: setFeedback.setLoadFeedback ?? undefined,
+        setRepsFeedback: setFeedback.setRepsFeedback ?? undefined,
+        setRpeFeedback: setFeedback.setRpeFeedback ?? undefined,
       })) ?? [];
   },
   {
@@ -312,9 +327,9 @@ function addNewSet() {
     setIndex: (
       Number(setTextFeedbacks.value.slice(-1)[0]?.setIndex ?? 0) + 1
     ).toString(),
-    setLoadFeedback: "",
-    setRepsFeedback: "",
-    setRpeFeedback: "",
+    setLoadFeedback: undefined,
+    setRepsFeedback: undefined,
+    setRpeFeedback: undefined,
   };
   setTextFeedbacks.value.push(emptySetTextFeedback);
 
@@ -366,6 +381,7 @@ function saveExerciseFeedback() {
 
     setsInsertedFeedback: setTextFeedbacks.value,
   };
+
   emit("update:modelValue", exerciseFeedback);
 
   // Mixpanel tracking
