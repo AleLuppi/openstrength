@@ -301,19 +301,6 @@
                 </q-tooltip>
               </q-btn>
 
-              <!-- New free text (TEST) -->
-              <q-btn
-                icon="add"
-                label="Testo libero"
-                @click="registerFreeTextEvent()"
-                flat
-                rounded
-              >
-                <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
-                  Inserisci un esercizio senza vincoli di schema
-                </q-tooltip>
-              </q-btn>
-
               <!-- New day -->
               <q-btn
                 icon="add"
@@ -1091,13 +1078,6 @@ const dayTitleInteresctionHandler = {
     threshold: [1],
   },
 };
-
-/**
- * TODO: Remove after TEST
- */
-function registerFreeTextEvent() {
-  mixpanel.track("T1: free text click");
-}
 </script>
 
 <style scoped lang="scss">
