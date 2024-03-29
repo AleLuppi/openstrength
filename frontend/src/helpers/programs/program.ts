@@ -1482,7 +1482,7 @@ export function unflattenProgram(
   const programLines = programExercises.reduce(
     (out: { [key: string]: ProgramLine }, programExercise) => {
       const currLines = programExercise instanceof ProgramExercise ?
-      programExercise.lines?.filter(line => line instanceof ProgramExercise)?.reduce(
+      programExercise.lines?.reduce(
           (out: { [key: string]: ProgramLine }, line) => {
             if (line.uid) out[line.uid] = line;
             return out;
