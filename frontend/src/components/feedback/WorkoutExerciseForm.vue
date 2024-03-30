@@ -284,6 +284,7 @@ const exerciseDone = ref<boolean | undefined>(undefined); // whether exercise ha
 const lineTextFeedbacks = ref<string[]>([]); // store text feedbacks
 const setTextFeedbacks = ref<ProgramExerciseSetsFeedback[]>([]); // store feedbacks on sets by athlete
 const showInfoTooltip = ref<boolean[]>([]); // whether to show info tooltip for each line
+const expanded = ref(true);
 
 // Initialize exercise completed
 watch(
