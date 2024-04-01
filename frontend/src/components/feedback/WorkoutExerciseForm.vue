@@ -9,7 +9,7 @@
     <div
       class="q-py-sm q-px-none"
       :class="{
-        'bg-green-1 ': exerciseDone,
+        'os-exercise-done-background ': exerciseDone,
       }"
     >
       <div class="row justify-between items-center q-px-sm">
@@ -28,7 +28,7 @@
         <q-btn
           size="xs"
           icon="check"
-          :color="exerciseDone ? 'positive' : 'primary'"
+          :color="exerciseDone ? 'primary' : 'primary'"
           round
           :outline="!exerciseDone"
           @click="toggleDone()"
@@ -172,7 +172,12 @@
           <q-card-section>
             <div class="column justify-center">
               <!-- Show schema or line data -->
-              <div v-for="(set, indexSet) in setTextFeedbacks" :key="indexSet">
+              <div
+                v-for="(set, indexSet) in readonly
+                  ? setTextFeedbacks
+                  : setSuggestedTextFeedbacks"
+                :key="indexSet"
+              >
                 <div class="row justify-evenly items-end q-pa-none">
                   <!-- Show line values -->
 
@@ -230,12 +235,7 @@
                   ></q-btn>
                 </div>
               </div>
-              <p
-                v-if="readonly && setTextFeedbacks.length === 0"
-                class="text-xs text-italic"
-              >
-                Non sono stati registrate informazioni aggiuntive
-              </p>
+
               <q-btn
                 v-if="!readonly"
                 icon="add"
@@ -283,6 +283,7 @@ const emit = defineEmits<{
 const exerciseDone = ref<boolean | undefined>(undefined); // whether exercise has been completed
 const lineTextFeedbacks = ref<string[]>([]); // store text feedbacks
 const setTextFeedbacks = ref<ProgramExerciseSetsFeedback[]>([]); // store feedbacks on sets by athlete
+const setSuggestedTextFeedbacks = ref<ProgramExerciseSetsFeedback[]>([]);
 const showInfoTooltip = ref<boolean[]>([]); // whether to show info tooltip for each line
 const expanded = ref(true);
 
@@ -303,6 +304,30 @@ watch(
         setRepsFeedback: setFeedback.setRepsFeedback ?? undefined,
         setRpeFeedback: setFeedback.setRpeFeedback ?? undefined,
       })) ?? [];
+
+    let index = 1;
+
+    setSuggestedTextFeedbacks.value =
+      props.exercise.lines?.flatMap((line) => {
+        if (!line.sets || isNaN(Number(line.sets))) {
+          return {
+            setIndex: (index++).toString(),
+            setLoadFeedback: line.load ?? undefined,
+            setRepsFeedback: line.reps ?? undefined,
+            setRpeFeedback: line.rpe ?? undefined,
+          };
+        } else {
+          return Array.from({ length: Number(line.sets) }, () => ({
+            setIndex: (index++).toString(),
+            setLoadFeedback: line.load ?? undefined,
+            setRepsFeedback: line.reps ?? undefined,
+            setRpeFeedback: line.rpe ?? undefined,
+          }));
+        }
+      }) ?? [];
+
+    console.log("from athlete", setTextFeedbacks.value);
+    console.log("from coach", setSuggestedTextFeedbacks.value);
   },
   {
     immediate: true,
@@ -433,7 +458,7 @@ onUnmounted(() => {
 
 .os-completed::after {
   content: "Completato";
-  background: $positive;
+  background: $primary;
   animation: os-completed-animation 2s ease-in-out 1;
 }
 
@@ -441,6 +466,20 @@ onUnmounted(() => {
   content: "Non lo svolgerò";
   background: $negative;
   animation: os-wontdo-animation 2s ease-in-out 1;
+}
+
+.os-exercise-done-background {
+  background: $os-grey-warm-2; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    180deg,
+    rgba($os-grey-warm-0, 0.2),
+    rgba($os-primary-5, 0.15)
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    180deg,
+    rgba($os-grey-warm-0, 0.2),
+    rgba($os-primary-5, 0.15)
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 @keyframes os-completed-animation {

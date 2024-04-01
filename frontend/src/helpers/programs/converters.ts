@@ -118,14 +118,26 @@ export function convertProgramLineToFrozenLine(
   line: ProgramLine,
 ): ProgramFrozenLine {
   const frozenLine: ProgramFrozenLine = {
-    load: line.loadBaseValue?.toString(),
-    askLoad: false,
-    reps: line.repsBaseValue?.toString(),
-    askReps: false,
-    sets: line.setsBaseValue?.toString(),
+    load:
+      line?.loadComputedValue?.toString() ??
+      line?.loadSupposedValue?.toString() ??
+      line.loadBaseValue?.toString(),
+    askLoad: line?.loadComputedValue ? false : true,
+    reps:
+      line?.repsComputedValue?.toString() ??
+      line?.repsSupposedValue?.toString() ??
+      line.repsBaseValue?.toString(),
+    askReps: line?.repsComputedValue ? false : true,
+    sets:
+      line?.setsComputedValue?.toString() ??
+      line?.setsSupposedValue?.toString() ??
+      line.setsBaseValue?.toString(),
     askSets: false,
-    rpe: line.rpeBaseValue?.toString(),
-    askRpe: false,
+    rpe:
+      line?.rpeComputedValue?.toString() ??
+      line?.rpeSupposedValue?.toString() ??
+      line.rpeBaseValue?.toString(),
+    askRpe: line?.rpeComputedValue ? false : true,
   };
 
   return frozenLine;

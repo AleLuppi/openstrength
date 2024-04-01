@@ -4,7 +4,7 @@
     class="q-pa-sm items-center justify-between"
     :class="{
       'cursor-pointer row': dayShowCollapsed,
-      'border-positive': modelValue?.completed,
+      'border-primary': modelValue?.completed,
     }"
     @click="dayShowCollapsed = false"
   >
@@ -24,7 +24,7 @@
         v-if="modelValue?.completed"
         name="sym_o_check"
         size="sm"
-        color="positive"
+        color="primary"
       ></q-icon>
     </div>
 
@@ -77,7 +77,7 @@
     </div>
 
     <!-- Otherwise show expansion button -->
-    <q-btn v-else icon="expand_more" color="positive" flat></q-btn>
+    <q-btn v-else icon="expand_more" color="primary" flat></q-btn>
   </q-card>
 </template>
 
@@ -97,13 +97,16 @@ const props = withDefaults(
     // current feedback on the day
     modelValue: ProgramDayFeedback | undefined;
 
+    // Show day expanded or collapsed following requests from parent
+    isCollapsed: boolean;
+
     // set if day is next to be done in program
     isNext?: boolean;
 
     // whether to show component for reading only and not update
     readonly?: boolean;
   }>(),
-  { isNext: false, readonly: false },
+  { isCollapsed: true, isNext: false, readonly: false },
 );
 
 // Define emit
@@ -115,7 +118,7 @@ const emit = defineEmits<{
 // Set ref
 const workoutDate = ref<Date>(new Date()); // day on which exercises have been performed
 const workoutNote = ref<string>(""); // optional feedback text on the day
-const dayShowCollapsed = ref<boolean>(false); // whether to show collapsed day
+const dayShowCollapsed = ref<boolean>(props.isCollapsed); // whether to show collapsed day
 const dayFeedback = ref<ProgramDayFeedback>({
   weekName: props.programDay.weekName,
   dayName: props.programDay.dayName,
@@ -132,9 +135,10 @@ const nextExerciseIdx = computed(() =>
 
 // Show day expanded or collapsed following requests from parent
 watch(
-  () => props.modelValue?.completed,
-  (isCompleted) => (dayShowCollapsed.value = isCompleted ?? false),
-  { immediate: true },
+  () => props.isCollapsed,
+  (newValue) => {
+    dayShowCollapsed.value = newValue;
+  },
 );
 
 // Update internal model to input model value
