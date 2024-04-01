@@ -55,122 +55,62 @@
 
       <!-- Show Workout day from athlete point of view -->
       <div v-if="!showCompactProgram">
-        <div
-          v-for="(week, idxWeek) in allWeeks"
-          :key="idxWeek"
-          class="column q-px-sm q-py-none"
+        <q-scroll-area
+          style="height: 112px; max-width: calc(100vw - 16px)"
+          class="q-my-md"
         >
-          <q-expansion-item
-            expand-separator
-            class="q-ma-sm shadow-1 overflow-hidden"
-            header-class="text-white"
-            :class="
-              allWeeks.find(() =>
-                weeksWithDays[week].every((day) =>
-                  programFeedbacks.feedbacks.find(
-                    (feedback) =>
-                      feedback.weekName === week &&
-                      feedback.dayName === day &&
-                      feedback.completed,
-                  ),
-                ),
-              )
-                ? 'os-week-header-done'
-                : 'bg-lighter'
-            "
-            style="border-radius: 8px"
-          >
-            <template #header>
-              <div class="row justify-between items-center" style="width: 100%">
-                <h6
-                  :class="
-                    allWeeks.find(() =>
-                      weeksWithDays[week].every((day) =>
-                        programFeedbacks.feedbacks.find(
-                          (feedback) =>
-                            feedback.weekName === week &&
-                            feedback.dayName === day &&
-                            feedback.completed,
-                        ),
-                      ),
-                    )
-                      ? 'text-white'
-                      : ''
-                  "
-                >
-                  Week {{ week }}
-                </h6>
-              </div>
-            </template>
+          <div class="row no-wrap q-mx-sm">
+            <div
+              v-for="(block, index) in programSnapshot?.weekdays"
+              :key="index"
+              class="column justify-center items-center q-pa-none q-mr-sm shadow-1 overflow-hidden"
+              :class="
+                programFeedbacks.feedbacks[index]?.completed
+                  ? 'os-mobile-day-card-done'
+                  : 'os-mobile-day-card-undone'
+              "
+            >
+              <q-btn
+                flat
+                class="q-pa-none"
+                style="height: 100%; width: 100%"
+                @click="openProgramBlock(index)"
+              >
+                <div class="q-ma-sm">
+                  <p
+                    :class="
+                      programFeedbacks.feedbacks[index]?.completed
+                        ? 'text-bold text-white'
+                        : 'text-bold text-secondary'
+                    "
+                  >
+                    Week {{ block.weekName }}
+                  </p>
+                  <p
+                    :class="
+                      programFeedbacks.feedbacks[index]?.completed
+                        ? 'text-bold text-white'
+                        : 'text-bold text-secondary'
+                    "
+                  >
+                    Day {{ block.dayName }}
+                  </p>
+                  <q-icon
+                    v-if="programFeedbacks.feedbacks[index]?.completed"
+                    color="lighter"
+                    round
+                    name="check"
+                    size="xs"
+                    class="q-py-sm"
+                  ></q-icon>
+                </div>
+              </q-btn>
+            </div>
+          </div>
+        </q-scroll-area>
 
-            <q-card
-              ><q-card-section>
-                <q-scroll-area
-                  style="height: 96px; max-width: calc(100vw - 16px)"
-                >
-                  <div class="row no-wrap q-mx-sm">
-                    <div
-                      v-for="(day, idxDay) in weeksWithDays[week]"
-                      :key="idxDay"
-                      class="column justify-center items-center q-pa-none q-mr-sm shadow-1 overflow-hidden"
-                      :class="
-                        programFeedbacks.feedbacks.find(
-                          (feedback) =>
-                            feedback.weekName === week &&
-                            feedback.dayName === day &&
-                            feedback.completed,
-                        )
-                          ? 'os-mobile-day-card-done'
-                          : 'os-mobile-day-card-undone'
-                      "
-                    >
-                      <q-btn
-                        flat
-                        class="q-pa-none"
-                        style="height: 100%; width: 100%"
-                        @click="openProgramBlock(week, day)"
-                      >
-                        <div>
-                          <p
-                            :class="
-                              programFeedbacks.feedbacks.find(
-                                (feedback) =>
-                                  feedback.weekName === week &&
-                                  feedback.dayName === day &&
-                                  feedback.completed,
-                              )
-                                ? 'text-bold text-white'
-                                : 'text-bold text-secondary'
-                            "
-                          >
-                            Day {{ day }}
-                          </p>
-                          <div>
-                            <q-icon
-                              v-if="
-                                programFeedbacks.feedbacks.find(
-                                  (feedback) =>
-                                    feedback.weekName === week &&
-                                    feedback.dayName === day &&
-                                    feedback.completed,
-                                )
-                              "
-                              color="lighter"
-                              round
-                              name="check"
-                              size="xs"
-                            ></q-icon>
-                          </div>
-                        </div>
-                      </q-btn>
-                    </div>
-                  </div>
-                </q-scroll-area> </q-card-section
-            ></q-card>
-          </q-expansion-item>
-        </div>
         <WorkoutDayForm
-          v-if="selectedIdxDay"
+          :key="selectedIdxDay"
           :programDay="programSnapshot?.weekdays[selectedIdxDay]"
           :modelValue="programFeedbacks.feedbacks[selectedIdxDay]"
           @update:modelValue="
@@ -312,35 +252,12 @@ const user = useUserStore();
 const programSnapshot = ref<ProgramFrozenView>(); // current program snapshot
 const programFeedbacks = ref<ProgramFeedback>({ feedbacks: [] }); // feedbacks associated to program
 
-const selectedIdxDay = ref<number | undefined>();
+const selectedIdxDay = ref<number>(0);
 
 const showCompactProgram = ref<boolean>(false);
 
 // Get requested program id
 const programId = computed(() => String(route.query.id));
-
-const allWeeks = computed(() => {
-  let weeks: string[] = [];
-  programSnapshot.value?.weekdays.forEach((wk) => {
-    weeks.push(wk.weekName);
-  });
-
-  return [...new Set(weeks)];
-});
-
-const weeksWithDays = computed(() => {
-  const result: { [week: string]: string[] } = {};
-
-  for (const week of programSnapshot.value?.weekdays ?? []) {
-    const { weekName, dayName } = week;
-    if (!result[weekName]) {
-      result[weekName] = [];
-    }
-    result[weekName].push(dayName);
-  }
-
-  return result;
-});
 
 // Retrieve requested program document
 watch(
@@ -425,15 +342,10 @@ const columns: QTableProps["columns"] = [
 ];
 
 /**
- * Opens the selected program
- * @param week
- * @param day
+ * Opens the selected program by the user
  */
-function openProgramBlock(week: string | number, day: string | number) {
-  const dayIndex = programSnapshot.value?.weekdays.findIndex((block) => {
-    return block.dayName === day && block.weekName === week;
-  });
-  selectedIdxDay.value = dayIndex !== -1 ? dayIndex : undefined;
+function openProgramBlock(index: string | number) {
+  selectedIdxDay.value = Number(index);
 }
 
 // Operations to perform on component mount
@@ -447,16 +359,16 @@ onMounted(() => {
 .os-mobile-day-card-undone {
   background-color: $lightest;
   border-radius: 16px;
-  width: 80px;
-  height: 80px;
+  width: 96px;
+  height: 96px;
 }
 
 .os-mobile-day-card-done {
   background: $primary;
   background: linear-gradient(180deg, $primary 45%, rgba(214, 68, 5, 1) 100%);
   border-radius: 16px;
-  width: 80px;
-  height: 80px;
+  width: 96px;
+  height: 96px;
 }
 
 .os-week-header-done {
