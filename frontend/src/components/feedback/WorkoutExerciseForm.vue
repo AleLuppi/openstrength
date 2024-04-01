@@ -173,7 +173,7 @@
             <div class="column justify-center">
               <!-- Show schema or line data -->
               <div
-                v-for="(set, indexSet) in readonly
+                v-for="(set, indexSet) in props.modelValue?.completed
                   ? setTextFeedbacks
                   : setSuggestedTextFeedbacks"
                 :key="indexSet"
@@ -325,9 +325,6 @@ watch(
           }));
         }
       }) ?? [];
-
-    console.log("from athlete", setTextFeedbacks.value);
-    console.log("from coach", setSuggestedTextFeedbacks.value);
   },
   {
     immediate: true,
@@ -407,7 +404,12 @@ function saveExerciseFeedback() {
         };
       }) || [],
 
-    setsInsertedFeedback: setTextFeedbacks.value,
+    setsInsertedFeedback: setTextFeedbacks.value.map((setFeedback) => ({
+      setIndex: setFeedback.setIndex,
+      setLoadFeedback: setFeedback.setLoadFeedback,
+      setRepsFeedback: setFeedback.setRepsFeedback,
+      setRpeFeedback: setFeedback.setRpeFeedback,
+    })),
   };
 
   emit("update:modelValue", exerciseFeedback);
