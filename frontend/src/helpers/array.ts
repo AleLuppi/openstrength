@@ -106,6 +106,30 @@ export function arrayOfPairsToObject<K extends string | number | symbol, V>(
 }
 
 /**
+ * Create a numeric range between two numbers.
+ *
+ * @param start initial number, if "stop" is provided, otherwise end number starting from 0.
+ * @param stop ending range number.
+ * @param [reversible=true] if true, allow range from "stop" to "start" if "stop" is smaller than "start".
+ * @returns array of numbers in selected range.
+ */
+export function arrayRange(
+  start: number,
+  stop?: number,
+  { reversible }: { reversible?: boolean } = { reversible: false },
+): number[] {
+  if (stop == undefined) {
+    stop = start;
+    start = 0;
+  }
+  if (stop < start) {
+    if (reversible) [stop, start] = [start, stop];
+    else return [];
+  }
+  return Array.from(new Array(stop - start), (_, i) => i + start);
+}
+
+/**
  * Zip two or more arrays into group of values in a single array.
  *
  * @param [pad=false] if true, preserve longest array length, otherwise stick with shortest length.
