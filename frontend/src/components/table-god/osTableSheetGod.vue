@@ -123,7 +123,7 @@ function getCellConfig(row: number, col: number): TableSheetCellConfig {
     )
       return {
         ...outConfig,
-        currentConfig,
+        ...currentConfig,
       };
     return outConfig;
   }, initialConfig);
@@ -219,7 +219,6 @@ function selectSingleCell(rowNum: number, colNum: number) {
  * @returns true if cell is selected, false otherwise.
  */
 function isSelected(rowNum: number, colNum: number) {
-  console.log("chek");
   if (!selected.value) return false;
   const numRow = rowNum,
     numCol = colNum;
