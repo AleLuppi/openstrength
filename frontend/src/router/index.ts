@@ -96,6 +96,14 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/god",
+    name: "god",
+    component: () => import("@/views/ProgramBuilderGodView.vue"),
+    meta: {
+      title: "God",
+    },
+  },
+  {
     path: "/welcome",
     name: NamedRoutes.landing,
     component: LandingPage,
