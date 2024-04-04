@@ -105,17 +105,7 @@
             flat
             dense
             color="light-dark"
-            @click="
-              () =>
-                allWeekDayPairs.forEach(([weekVal], idx) => {
-                  if (weekVal == week) dayInfoCollapsed[idx] = true;
-                })
-            "
-            () =>
-              allWeekDayPairs.forEach(([weekVal], idx) => {
-                if (weekVal == week) dayInfoCollapsed[idx] = !dayInfoCollapsed[idx];
-              })
-          "
+            @click="toggleWeekCollapse(week)"
           ></q-btn>
         </div>
 
@@ -558,8 +548,8 @@ const filteredWeekDay = computed(() =>
 
 // Get day visibility status
 const dayCanBeExpanded = computed(() =>
-  allWeekDayPairs.value.map(([week, day]) =>
-    filteredWeekDay.value[week]?.includes(day),
+  allWeekDayPairs.value.map(
+    ([week, day]) => filteredWeekDay.value[week]?.includes(day),
   ),
 );
 const dayShowExpanded = computed(() =>
@@ -1055,6 +1045,27 @@ function scrollTo(week: string, day?: string) {
   exerciseListElement.value?.scrollTo(idx);
 }
 
+/**
+ * Expand or collapse every day in a given week.
+ *
+ * If any day is expanded, collapse all days in the week.
+ * If all days are collapsed, expand them all.
+ *
+ * @param week id of the week that shall be expanded or collapsed.
+ */
+function toggleWeekCollapse(week: string) {
+  let setVal = true;
+  allWeekDayPairs.value
+    .reduce((weekObj: number[], [weekVal], idx) => {
+      if (weekVal == week) {
+        weekObj.push(idx);
+        setVal = setVal && dayInfoCollapsed.value[idx];
+      }
+      return weekObj;
+    }, [])
+    .forEach((idx) => (dayInfoCollapsed.value[idx] = !setVal));
+}
+
 // Set method to handle sticky day title
 const dayTitleInteresctionHandler = {
   handler: (entry?: {
@@ -1094,7 +1105,9 @@ const dayTitleInteresctionHandler = {
   padding-inline-start: 32px;
   z-index: 1;
   border-radius: 12px;
-  transition: box-shadow 300ms, background-color 300ms;
+  transition:
+    box-shadow 300ms,
+    background-color 300ms;
 
   & .os-show-on-sticky {
     display: none;
