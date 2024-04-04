@@ -21,7 +21,7 @@ export interface TableSheetCellConfig {
 
   // horizontal and vertical alignment
   justify?: "left" | "center" | "right"; // default: "left"
-  align?: "top" | "middle" | "bottom"; // default: "top"
+  align?: "top" | "middle" | "bottom"; // default: "middle"
 
   // supporting content
   placeholder?: string; // TODO
@@ -36,13 +36,20 @@ export interface TableSheetCellConfig {
   selectionAllowNew?: boolean; // TODO default: false
 
   // whether to allow value editing directly inside the cell
-  inlineEdit?: boolean; // default: false
+  editInline?: boolean; // default: true
+
+  // name of the slot to display when cell shall be edited
+  editSlot?: string;
 
   // highlight the cell
   highlight?: boolean; // TODO default: false
 
   // display values inside chips
   useChip?: boolean | "single" | "multiple"; // default: false
+
+  // cell dimension
+  width?: number | string; // default: 100
+  height?: number | string; // default: 30
 
   // optional styles
   class?: string;

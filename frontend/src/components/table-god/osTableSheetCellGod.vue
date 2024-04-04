@@ -2,27 +2,29 @@
   <component
     :is="type"
     :class="`text-${editing ? 'left' : config.justify ?? 'left'}
-    vertical-${editing ? 'top' : config.align ?? 'top'}
+    vertical-${editing ? 'top' : config.align ?? 'middle'}
     ${config.class ?? ''}`"
     :style="config.style"
     class="cell"
     :rowspan="config.rowSpan"
     :colspan="config.colSpan"
+    :width="config.width ?? 100"
+    :height="config.height ?? 30"
+    style="position: relative"
     @click="handleClick"
   >
-    <component
-      :is="editing ? 'q-input' : 'div'"
-      v-for="(cellValue, cellIdx) in modelValue.values"
-      :key="cellIdx"
-      ref="editComponent"
-      v-model="modelValue.values[cellIdx]"
-      dense
-      borderless
-      class="q-pa-none"
-      input-class="q-pa-none"
-      style="height: unset"
-    >
-      <!-- <q-input :model-value="" input-class="q-pa-none"></q-input> -->
+    <div v-for="(cellValue, cellIdx) in modelValue.values" :key="cellIdx">
+      <q-input
+        v-if="editing && (config.editInline ?? true)"
+        ref="editComponent"
+        v-model="modelValue.values[cellIdx]"
+        dense
+        borderless
+        class="q-pa-none"
+        input-class="q-pa-none"
+        style="height: unset"
+      />
+
       <component
         :is="
           cellValue &&
@@ -32,24 +34,30 @@
             ? 'q-chip'
             : 'div'
         "
-        v-if="!editing"
+        v-else
         color="green-2"
         dense
         style="margin-block: 1px"
       >
         {{ cellValue }}
       </component>
-    </component>
+    </div>
+
+    <slot
+      v-if="editing && config.editSlot"
+      :name="`edit-${config.editSlot}`"
+      :model-value="modelValue"
+    ></slot>
   </component>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from "vue";
+import { nextTick, ref, watch } from "vue";
 import type { QInput } from "quasar";
 import { TableSheetCell, TableSheetCellConfig } from "@/components/models";
 
 // Define props
-const props = withDefaults(
+withDefaults(
   defineProps<{
     // config for current cell
     config?: TableSheetCellConfig;
@@ -84,24 +92,19 @@ watch(editing, (isEditing) => {
  * Manage click on the cell.
  *
  * If inline edit is enabled, enter editing mode on click.
+ *
+ * @param editIdx optional index of value to edit, otherwise try to edit first value.
  */
-function handleClick() {
+function handleClick(editIdx?: number) {
   setTimeout(() => {
-    if (props.config.inlineEdit && !editing.value) {
+    if (!editing.value) {
       editing.value = true;
       nextTick(() => {
-        editComponent.value?.[0].focus();
+        editComponent.value?.[editIdx ?? 0]?.focus();
       });
     }
   }, 50);
 }
-
-// FIXME
-onMounted(() => {
-  window.addEventListener("click", () => {
-    editing.value = false;
-  });
-});
 </script>
 
 <style scoped lang="scss">

@@ -29,7 +29,11 @@
             :class="{
               'cell-selected': isSelected(rowIdx, colIdx) && selected,
             }"
-          />
+          >
+            <template v-for="(_, slot) in $slots" #[slot]="scope">
+              <slot :name="slot" v-bind="scope ?? {}"></slot>
+            </template>
+          </osTableSheetCellGod>
         </tr>
       </component>
     </table>

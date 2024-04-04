@@ -5,7 +5,9 @@
     class="os-table-sheet"
     :config-header-row="headerRowConfig"
     :config-header-col="headerColConfig"
-  />
+    :config="tableConfig"
+  >
+  </osTableSheetGod>
 </template>
 
 <script setup lang="ts">
@@ -44,6 +46,11 @@ const tableValue = ref<TableSheetCell[]>([
     row: 2,
     values: ["Squat - super"],
   },
+  {
+    col: 2,
+    row: 6,
+    values: ["Testo"],
+  },
 ]);
 
 // Header config
@@ -55,6 +62,15 @@ const headerColConfig: TableSheetCellConfig = {
 };
 
 // Table config
+const tableConfig: TableSheetCellConfig[] = [
+  {
+    rowFrom: 1,
+    colFrom: 1,
+    useChip: true,
+    editInline: false,
+    editSlot: "program-line",
+  },
+];
 </script>
 
 <style scoped lang="scss">
