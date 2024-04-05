@@ -75,11 +75,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref }}
       - name: Bump version and push tag
         id: tag-version
-        uses: mathieudutour/github-tag-action@v6.1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          custom_tag: ${{ needs.job-update.outputs.tag-version }}
-          tag_prefix: v
+        run: |
+          # get latest commit hash
+          COMMIT_HASH=$(git log -1 --format="%H")
+
+          # tag commit and push
+          TAG_NAME=v${{ needs.job-update.outputs.tag-version }}
+          git tag -a $TAG_NAME -m "Release version ${{ needs.job-update.outputs.tag-version }}"
+          git push origin $TAG_NAME
