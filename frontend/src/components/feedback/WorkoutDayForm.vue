@@ -97,8 +97,8 @@ const props = withDefaults(
     // current feedback on the day
     modelValue: ProgramDayFeedback | undefined;
 
-    // Show day expanded or collapsed following requests from parent
-    isCollapsed: boolean;
+    // force day to be shown as collapsed
+    showCollapsed?: boolean;
 
     // set if day is next to be done in program
     isNext?: boolean;
@@ -106,7 +106,7 @@ const props = withDefaults(
     // whether to show component for reading only and not update
     readonly?: boolean;
   }>(),
-  { isCollapsed: true, isNext: false, readonly: false },
+  { showCollapsed: false, isNext: false, readonly: false },
 );
 
 // Define emit
@@ -118,7 +118,7 @@ const emit = defineEmits<{
 // Set ref
 const workoutDate = ref<Date>(new Date()); // day on which exercises have been performed
 const workoutNote = ref<string>(""); // optional feedback text on the day
-const dayShowCollapsed = ref<boolean>(props.isCollapsed); // whether to show collapsed day
+const dayShowCollapsed = ref<boolean>(props.showCollapsed); // whether to show collapsed day
 const dayFeedback = ref<ProgramDayFeedback>({
   weekName: props.programDay.weekName,
   dayName: props.programDay.dayName,
@@ -135,10 +135,11 @@ const nextExerciseIdx = computed(() =>
 
 // Show day expanded or collapsed following requests from parent
 watch(
-  () => props.isCollapsed,
+  () => props.showCollapsed,
   (newValue) => {
     dayShowCollapsed.value = newValue;
   },
+  { immediate: true },
 );
 
 // Update internal model to input model value
