@@ -285,26 +285,30 @@ export function convertProgramLineToFrozenLine(
   line: ProgramLine,
 ): ProgramFrozenLine {
   const frozenLine: ProgramFrozenLine = {
-    load:
-      line?.loadComputedValue?.toString() ??
-      line?.loadSupposedValue?.toString() ??
-      line.loadBaseValue?.toString(),
-    askLoad: line?.loadComputedValue ? false : true,
-    reps:
-      line?.repsComputedValue?.toString() ??
-      line?.repsSupposedValue?.toString() ??
-      line.repsBaseValue?.toString(),
-    askReps: line?.repsComputedValue ? false : true,
-    sets:
-      line?.setsComputedValue?.toString() ??
-      line?.setsSupposedValue?.toString() ??
-      line.setsBaseValue?.toString(),
+    load: (
+      line.loadComputedValue ??
+      line.loadSupposedValue ??
+      line.loadBaseValue
+    )?.toString(),
+    askLoad: line.loadComputedValue ? false : true,
+    reps: (
+      line.repsComputedValue ??
+      line.repsSupposedValue ??
+      line.repsBaseValue
+    )?.toString(),
+    askReps: line.repsComputedValue ? false : true,
+    sets: (
+      line.setsComputedValue ??
+      line.setsSupposedValue ??
+      line.setsBaseValue
+    )?.toString(),
     askSets: false,
-    rpe:
-      line?.rpeComputedValue?.toString() ??
-      line?.rpeSupposedValue?.toString() ??
-      line.rpeBaseValue?.toString(),
-    askRpe: line?.rpeComputedValue ? false : true,
+    rpe: (
+      line.rpeComputedValue ??
+      line.rpeSupposedValue ??
+      line.rpeBaseValue
+    )?.toString(),
+    askRpe: line.rpeComputedValue ? false : true,
   };
 
   return frozenLine;
