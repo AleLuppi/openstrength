@@ -55,71 +55,58 @@
 
       <!-- Show Workout day from athlete point of view -->
       <div v-if="!showCompactProgram" class="text-center">
-        <q-scroll-area
-          style="height: 112px; max-width: calc(100vw - 16px)"
-          class="q-my-md"
+        <q-tabs
+          v-model="selectedIdxDay"
+          style="max-width: calc(100vw - 24px); height: 112px"
+          indicator-color="black"
+          align="center"
+          outside-arrows
+          class="os-tabs"
         >
-          <div class="row no-wrap q-mx-sm">
-            <div
-              v-for="(block, index) in programSnapshot?.weekdays"
-              :key="index"
-              class="column justify-center items-center q-pa-none q-mr-sm shadow-1 overflow-hidden"
+          <q-tab
+            v-for="(block, index) in programSnapshot?.weekdays"
+            :key="index"
+            :name="index"
+            class="column justify-center items-center q-pa-none q-mr-sm shadow-1 overflow-hidden os-day-tab"
+            :class="
+              programFeedbacks.feedbacks[index]?.completed
+                ? 'os-day-tab-done'
+                : 'os-day-tab-undone'
+            "
+          >
+            <p
+              class="text-bold"
               :class="
                 programFeedbacks.feedbacks[index]?.completed
-                  ? 'os-mobile-day-card-done'
-                  : 'os-mobile-day-card-undone'
+                  ? 'text-white'
+                  : 'text-secondary'
               "
             >
-              <q-btn
-                flat
-                class="q-pa-none"
-                style="height: 100%; width: 100%"
-                @click="openProgramBlock(index)"
-              >
-                <div class="q-ma-sm">
-                  <p
-                    :class="
-                      programFeedbacks.feedbacks[index]?.completed
-                        ? 'text-bold text-white'
-                        : 'text-bold text-secondary'
-                    "
-                  >
-                    Week {{ block.weekName }}
-                  </p>
-                  <p
-                    :class="
-                      programFeedbacks.feedbacks[index]?.completed
-                        ? 'text-bold text-white'
-                        : 'text-bold text-secondary'
-                    "
-                  >
-                    Day {{ block.dayName }}
-                  </p>
-                  <q-icon
-                    v-if="programFeedbacks.feedbacks[index]?.completed"
-                    color="lighter"
-                    round
-                    name="check"
-                    size="xs"
-                    class="q-py-sm"
-                  ></q-icon>
-                </div>
-              </q-btn>
-            </div>
-          </div>
-        </q-scroll-area>
+              Week {{ block.weekName }}
+              <br />
+              Day {{ block.dayName }}
+            </p>
+            <q-icon
+              v-if="programFeedbacks.feedbacks[index]?.completed"
+              color="lighter"
+              round
+              name="check"
+              size="xs"
+              class="q-py-sm"
+            ></q-icon>
+          </q-tab>
+        </q-tabs>
 
         <WorkoutDayForm
-          :key="selectedIdxDay"
-          :programDay="programSnapshot?.weekdays[selectedIdxDay]"
-          :modelValue="programFeedbacks.feedbacks[selectedIdxDay]"
+          :program-day="programSnapshot?.weekdays[selectedIdxDay]"
+          :model-value="programFeedbacks.feedbacks[selectedIdxDay]"
           @update:modelValue="
             (val) => {
               programFeedbacks.feedbacks[selectedIdxDay] = val;
               saveFeedback(programFeedbacks, programId ?? undefined);
             }
           "
-          :isNext="nextDayIdx == selectedIdxDay"
+          :is-next="nextDayIdx == selectedIdxDay"
           class="q-my-md"
           :class="{ 'q-mx-xl': $q.screen.gt.sm }"
           :readonly="user.role == UserRole.coach"
@@ -348,13 +335,6 @@ const columns: QTableProps["columns"] = [
   },
 ];
 
-/**
- * Opens the selected program by the user
- */
-function openProgramBlock(index: string | number) {
-  selectedIdxDay.value = Number(index);
-}
-
 // Operations to perform on component mount
 onMounted(() => {
   // Show loading spinner
@@ -363,19 +343,24 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.os-mobile-day-card-undone {
-  background-color: $lightest;
-  border-radius: 16px;
-  width: 96px;
-  height: 96px;
+.os-tabs:deep(.q-tabs__arrow) {
+  top: calc(50% - 25px);
 }
 
-.os-mobile-day-card-done {
-  background: $primary;
-  background: linear-gradient(180deg, $primary 45%, rgba(214, 68, 5, 1) 100%);
+.os-day-tab {
   border-radius: 16px;
+  min-width: 96px;
   width: 96px;
   height: 96px;
+
+  &.os-day-tab-done {
+    background: $primary;
+    background: linear-gradient(180deg, $primary 45%, rgba(214, 68, 5, 1) 100%);
+  }
+
+  &.os-day-tab-undone {
+    background-color: $lightest;
+  }
 }
 
 .os-week-header-done {
