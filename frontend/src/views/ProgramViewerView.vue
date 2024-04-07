@@ -54,7 +54,7 @@
       </div>
 
       <!-- Show Workout day from athlete point of view -->
-      <div v-if="!showCompactProgram">
+      <div v-if="!showCompactProgram" class="text-center">
         <q-scroll-area
           style="height: 112px; max-width: calc(100vw - 16px)"
           class="q-my-md"
@@ -125,6 +125,15 @@
           :readonly="user.role == UserRole.coach"
         >
         </WorkoutDayForm>
+
+        <q-btn
+          v-if="selectedIdxDay < programSnapshot?.weekdays.length - 1"
+          label="Vedi giorno successivo"
+          rounded
+          icon-right="arrow_forward"
+          @click="selectedIdxDay += 1"
+          class="q-mx-auto q-my-xl"
+        />
       </div>
 
       <!-- View compact program for athlete -->
