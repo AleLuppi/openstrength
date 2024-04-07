@@ -115,10 +115,8 @@
           :modelValue="programFeedbacks.feedbacks[selectedIdxDay]"
           @update:modelValue="
             (val) => {
-              if (selectedIdxDay) {
-                programFeedbacks.feedbacks[selectedIdxDay] = val;
-                saveFeedback(programFeedbacks, programId ?? undefined);
-              }
+              programFeedbacks.feedbacks[selectedIdxDay] = val;
+              saveFeedback(programFeedbacks, programId ?? undefined);
             }
           "
           :isNext="nextDayIdx == selectedIdxDay"
