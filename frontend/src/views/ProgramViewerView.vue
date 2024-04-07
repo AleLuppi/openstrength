@@ -97,21 +97,29 @@
           </q-tab>
         </q-tabs>
 
-        <WorkoutDayForm
-          :program-day="programSnapshot?.weekdays[selectedIdxDay]"
-          :model-value="programFeedbacks.feedbacks[selectedIdxDay]"
-          @update:modelValue="
-            (val) => {
-              programFeedbacks.feedbacks[selectedIdxDay] = val;
-              saveFeedback(programFeedbacks, programId ?? undefined);
-            }
-          "
-          :is-next="nextDayIdx == selectedIdxDay"
-          class="q-my-md"
-          :class="{ 'q-mx-xl': $q.screen.gt.sm }"
-          :readonly="user.role == UserRole.coach"
-        >
-        </WorkoutDayForm>
+        <q-tab-panels v-model="selectedIdxDay" animated keep-alive>
+          <q-tab-panel
+            v-for="(block, indexDay) in programSnapshot?.weekdays"
+            :key="indexDay"
+            :name="indexDay"
+            class="q-pa-none"
+          >
+            <WorkoutDayForm
+              :program-day="block"
+              :model-value="programFeedbacks.feedbacks[indexDay]"
+              @update:modelValue="
+                (val) => {
+                  programFeedbacks.feedbacks[indexDay] = val;
+                  saveFeedback(programFeedbacks, programId ?? undefined);
+                }
+              "
+              :is-next="nextDayIdx == indexDay"
+              class="q-my-md"
+              :class="{ 'q-mx-xl': $q.screen.gt.sm }"
+              :readonly="user.role == UserRole.coach"
+            />
+          </q-tab-panel>
+        </q-tab-panels>
 
         <q-btn
           v-if="selectedIdxDay < programSnapshot?.weekdays.length - 1"
