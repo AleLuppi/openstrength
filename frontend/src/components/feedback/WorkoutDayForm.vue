@@ -136,9 +136,7 @@ const nextExerciseIdx = computed(() =>
 // Show day expanded or collapsed following requests from parent
 watch(
   () => props.showCollapsed,
-  (newValue) => {
-    dayShowCollapsed.value = newValue;
-  },
+  (newValue) => (dayShowCollapsed.value = newValue),
   { immediate: true },
 );
 

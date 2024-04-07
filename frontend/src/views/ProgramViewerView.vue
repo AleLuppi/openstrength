@@ -57,7 +57,6 @@
       <div v-if="!showCompactProgram" class="text-center">
         <q-tabs
           v-model="selectedIdxDay"
-          style="max-width: calc(100vw - 24px); height: 112px"
           indicator-color="black"
           align="center"
           outside-arrows
@@ -351,8 +350,15 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.os-tabs:deep(.q-tabs__arrow) {
-  top: calc(50% - 25px);
+.os-tabs {
+  max-width: calc(100vw - 24px);
+  height: 112px;
+
+  &:deep(.q-tabs__arrow) {
+    display: flex;
+    align-items: center;
+    justify-items: center;
+  }
 }
 
 .os-day-tab {
@@ -360,6 +366,7 @@ onMounted(() => {
   min-width: 96px;
   width: 96px;
   height: 96px;
+  align-self: center;
 
   &.os-day-tab-done {
     background: $primary;
