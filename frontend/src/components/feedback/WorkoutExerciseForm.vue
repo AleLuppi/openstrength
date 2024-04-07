@@ -325,6 +325,9 @@ watch(
           }));
         }
       }) ?? [];
+
+    // Force model value to be different from undefined
+    if (!val) saveExerciseFeedback();
   },
   {
     immediate: true,
