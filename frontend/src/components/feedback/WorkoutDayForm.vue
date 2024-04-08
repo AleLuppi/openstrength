@@ -83,10 +83,11 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import { debounce, scroll } from "quasar";
+import mixpanel from "mixpanel-browser";
 import { ProgramFrozenView } from "@/helpers/programs/program";
 import WorkoutExerciseForm from "./WorkoutExerciseForm.vue";
 import { ProgramDayFeedback } from "@/helpers/programs/models";
-import mixpanel from "mixpanel-browser";
 
 // Define props
 const props = withDefaults(
@@ -175,14 +176,24 @@ watch(
 );
 
 /**
+ * Save feedback with debounce.
+ */
+const saveFeedback = debounce(() => {
+  completeDay(dayFeedback.value.completed);
+}, 10000);
+
+// Save feedback when updated, after a debounce
+watch(dayFeedback, saveFeedback, { deep: true });
+
+/**
  * Emit daily feedback.
  *
  * @param [completed=true] whether day can be considered completed by athlete.
  */
 function completeDay(completed: boolean = true) {
-  dayShowCollapsed.value = completed;
   if (!props.readonly) {
     // Update feedback if not in read only mode
+    const wasCompleted = dayFeedback.value.completed;
     dayFeedback.value.completed = completed;
     dayFeedback.value.completedOn = completed ? workoutDate.value : undefined;
     dayFeedback.value.textFeedback = workoutNote.value;
@@ -193,8 +204,12 @@ function completeDay(completed: boolean = true) {
       mixpanel.track("Athlete Feedback: Day completed", {
         Feedback: workoutNote.value,
       });
+
+      // Scroll to top
+      if (!wasCompleted) scroll.setVerticalScrollPosition(window, 0, 300);
     }
     emit("update:modelValue", dayFeedback.value);
+    saveFeedback.cancel();
   }
 }
 </script>
