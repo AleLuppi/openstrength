@@ -354,7 +354,7 @@ onMounted(() => {
   max-width: calc(100vw - 24px);
   height: 112px;
 
-  &:deep(.q-tabs__arrow) {
+  &.q-tabs--scrollable:deep(.q-tabs__arrow) {
     display: flex;
     align-items: center;
     justify-items: center;
