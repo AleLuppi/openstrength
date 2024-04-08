@@ -159,7 +159,10 @@
                 v-for="(lineSet, setIdx) in lineSets"
                 :key="lineSet.setIndex"
               >
-                <div class="row justify-evenly items-end q-pa-none">
+                <div
+                  class="row justify-evenly items-end q-pa-none"
+                  :class="{ 'os-set-skipped': lineSet.setSkipped }"
+                >
                   <!-- Show line values -->
                   <p class="text-left text-xs text-bold col-2">
                     Set {{ setIdx + 1 }}
@@ -168,7 +171,7 @@
                     v-model="lineSet.setLoad"
                     :label="setIdx === 0 ? 'Load (kg)' : ''"
                     type="number"
-                    :readonly="readonly"
+                    :readonly="readonly || lineSet.setSkipped"
                     dense
                     stack-label
                     hide-bottom-space
@@ -178,7 +181,7 @@
                     v-model="lineSet.setReps"
                     :label="setIdx === 0 ? 'Reps' : ''"
                     type="number"
-                    :readonly="readonly"
+                    :readonly="readonly || lineSet.setSkipped"
                     dense
                     stack-label
                     hide-bottom-space
@@ -188,7 +191,7 @@
                     v-model="lineSet.setRpe"
                     :label="setIdx === 0 ? 'Rpe' : ''"
                     type="number"
-                    :readonly="readonly"
+                    :readonly="readonly || lineSet.setSkipped"
                     dense
                     stack-label
                     hide-bottom-space
@@ -197,12 +200,14 @@
 
                   <q-btn
                     v-if="!readonly"
-                    icon="remove"
+                    :icon="lineSet.setSkipped ? 'add' : 'remove'"
                     round
                     outline
                     size="xs"
-                    color="negative"
-                    @click="removeSet(lineIdx, lineSet.setIndex)"
+                    :color="lineSet.setSkipped ? 'positive' : 'negative'"
+                    @click="
+                      removeSet(lineIdx, lineSet.setIndex, lineSet.setSkipped)
+                    "
                   ></q-btn>
                 </div>
               </div>
@@ -366,8 +371,9 @@ function addSet(
  *
  * @param lineIdx program line index whose feedback shall be updated.
  * @param setIdx index of the set to remove.
+ * @param [restore=false] if true, re-add a skipped set instead of removing it.
  */
-function removeSet(lineIdx: number, setIdx: number) {
+function removeSet(lineIdx: number, setIdx: number, restore: boolean = false) {
   // Delete the requested set
   if (
     setIdx < 1 ||
@@ -392,7 +398,7 @@ function removeSet(lineIdx: number, setIdx: number) {
       modelValue.value.linesFeedback[lineIdx].setsPerformed?.find(
         (setInfo) => setInfo.setIndex == setIdx,
       ) ?? {},
-      { setSkipped: true },
+      { setSkipped: !restore },
     );
   }
 
@@ -531,6 +537,19 @@ onUnmounted(() => {
   100% {
     transform: translateX(-100%);
     visibility: visible;
+  }
+}
+
+.os-set-skipped {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 70%;
+    left: 0;
+    border-bottom: 1px solid $negative;
+    width: 90%;
   }
 }
 </style>
