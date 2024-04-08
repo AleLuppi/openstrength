@@ -148,8 +148,26 @@ watch(
       weekName: props.programDay.weekName,
       dayName: props.programDay.dayName,
       completed: false,
-      exercisesFeedback: [],
+      exercisesFeedback: props.programDay.exercises.map((exercise) => ({
+        exerciseName: exercise.exerciseName,
+        variantName: exercise.variantName,
+        completed: false,
+        willComplete: true,
+        linesFeedback:
+          exercise.lines?.map(() => {
+            return {
+              loadFeedback: undefined,
+              repsFeedback: undefined,
+              setsFeedback: undefined,
+              rpeFeedback: undefined,
+              textFeedback: undefined,
+              videoFeedback: undefined,
+              setsPerformed: undefined,
+            };
+          }) || [],
+      })),
     };
+
     workoutDate.value = value?.completedOn ?? new Date();
     workoutNote.value = value?.textFeedback ?? "";
   },
