@@ -59,5 +59,5 @@ export type ProgramExerciseFeedback = {
     textFeedback?: string | undefined;
     videoFeedback?: string | undefined;
   }[];
-  setsInsertedFeedback:ProgramExerciseSetsFeedback[];
+  setsInsertedFeedback: ProgramExerciseSetsFeedback[];
 };

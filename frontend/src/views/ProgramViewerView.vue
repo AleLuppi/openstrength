@@ -54,7 +54,7 @@
       </div>
 
       <!-- Show Workout day from athlete point of view -->
-      <div v-if="!showCompactProgram" class="text-center">
+      <div v-if="!showCompactProgram" class="column items-center">
         <q-tabs
           v-model="selectedIdxDay"
           indicator-color="black"
