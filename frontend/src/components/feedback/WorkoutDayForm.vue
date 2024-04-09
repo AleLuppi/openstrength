@@ -210,6 +210,8 @@ function completeDay(completed: boolean = true) {
     }
     emit("update:modelValue", dayFeedback.value);
     saveFeedback.cancel();
+  } else {
+    dayShowCollapsed.value = completed;
   }
 }
 </script>
