@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { ref, computed, nextTick } from "vue";
 import { defineStore } from "pinia";
 import { doGetDocs } from "@/helpers/database/readwrite";
 import { dbCollections } from "@/helpers/database/collections";
@@ -86,7 +86,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
           _programsUnresolved.value.coach.forEach(
             ([program]) => (program.coach = user.baseUser),
           );
-        _programsUnresolved.value.coach = undefined;
+        nextTick(() => (_programsUnresolved.value.coach = undefined));
       }
       if (athletes.value && _programsUnresolved.value.athletes) {
         // Solve athlete reference
@@ -96,7 +96,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
               (athlete) => athlete.uid === athleteId,
             )),
         );
-        _programsUnresolved.value.athletes = undefined;
+        nextTick(() => (_programsUnresolved.value.athletes = undefined));
       }
       if (exercises.value && _programsUnresolved.value.exercises) {
         // Solve exercises references
@@ -114,7 +114,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
               programExercise.exerciseVariant?.exercise;
           },
         );
-        _programsUnresolved.value.exercises = undefined;
+        nextTick(() => (_programsUnresolved.value.exercises = undefined));
       }
       if (maxlifts.value && _programsUnresolved.value.maxlifts) {
         // Solve maxlifts references
@@ -130,7 +130,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
               );
           },
         );
-        _programsUnresolved.value.maxlifts = undefined;
+        nextTick(() => (_programsUnresolved.value.maxlifts = undefined));
       }
       return _programs.value;
     },
@@ -157,7 +157,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
             (athlete) => athlete.uid == athleteId,
           );
         });
-        _maxliftsUnresolved.value.athletes = undefined;
+        nextTick(() => (_maxliftsUnresolved.value.athletes = undefined));
       }
       if (exercises.value && _maxliftsUnresolved.value.exercises) {
         // Solve exercises references
@@ -168,7 +168,7 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
             );
           },
         );
-        _maxliftsUnresolved.value.exercises = undefined;
+        nextTick(() => (_maxliftsUnresolved.value.exercises = undefined));
       }
       return _maxlifts.value;
     },

@@ -68,8 +68,47 @@ export function convertLineToSchema(line: ProgramLine): string {
     referencedLoadText != undefined &&
     line.loadReference instanceof ProgramLine
   ) {
+    let loadFinalText;
+    const sameWeekSameDay =
+      String(line.loadReference.programExercise?.scheduleWeek) ===
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.loadReference.programExercise?.scheduleDay) ===
+        String(line.programExercise?.scheduleDay);
+    const sameWeekDifferentDay =
+      String(line.loadReference.programExercise?.scheduleWeek) ===
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.loadReference.programExercise?.scheduleDay) !=
+        String(line.programExercise?.scheduleDay);
+    const sameDayDifferentWeek =
+      String(line.loadReference.programExercise?.scheduleWeek) !=
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.loadReference.programExercise?.scheduleDay) ===
+        String(line.programExercise?.scheduleDay);
+    const differentDayDifferentWeek =
+      String(line.loadReference.programExercise?.scheduleWeek) !=
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.loadReference.programExercise?.scheduleDay) !=
+        String(line.programExercise?.scheduleDay);
+
+    if (sameWeekSameDay) {
+      loadFinalText = "";
+    } else if (sameWeekDifferentDay) {
+      loadFinalText = "Day " + line.loadReference.programExercise?.scheduleDay;
+    } else if (sameDayDifferentWeek) {
+      loadFinalText =
+        "Week " + line.loadReference.programExercise?.scheduleWeek;
+    } else if (differentDayDifferentWeek) {
+      loadFinalText =
+        "Week " +
+        line.loadReference.programExercise?.scheduleWeek +
+        " Day " +
+        line.loadReference.programExercise?.scheduleDay;
+    } else {
+      loadFinalText = referencedLoadText;
+    }
+
     schemaLoad = line.loadBaseValue
-      ? referencedLoadText + " " + line.loadBaseValue
+      ? loadFinalText + " " + line.loadBaseValue
       : "";
   } else {
     schemaLoad = line.loadBaseValue ? line.loadBaseValue : "";
@@ -77,7 +116,54 @@ export function convertLineToSchema(line: ProgramLine): string {
 
   // Determine schema for reps
   let schemaReps = "";
-  if (referencedRepsText != undefined) {
+  if (
+    referencedRepsText != undefined &&
+    line.repsReference instanceof ProgramLine
+  ) {
+    let repsFinalText;
+    const sameWeekSameDay =
+      String(line.repsReference.programExercise?.scheduleWeek) ===
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.repsReference.programExercise?.scheduleDay) ===
+        String(line.programExercise?.scheduleDay);
+    const sameWeekDifferentDay =
+      String(line.repsReference.programExercise?.scheduleWeek) ===
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.repsReference.programExercise?.scheduleDay) !=
+        String(line.programExercise?.scheduleDay);
+    const sameDayDifferentWeek =
+      String(line.repsReference.programExercise?.scheduleWeek) !=
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.repsReference.programExercise?.scheduleDay) ===
+        String(line.programExercise?.scheduleDay);
+    const differentDayDifferentWeek =
+      String(line.repsReference.programExercise?.scheduleWeek) !=
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.repsReference.programExercise?.scheduleDay) !=
+        String(line.programExercise?.scheduleDay);
+
+    if (sameWeekSameDay) {
+      repsFinalText = "";
+    } else if (sameWeekDifferentDay) {
+      repsFinalText = "Day " + line.repsReference.programExercise?.scheduleDay;
+    } else if (sameDayDifferentWeek) {
+      repsFinalText =
+        "Week " + line.repsReference.programExercise?.scheduleWeek;
+    } else if (differentDayDifferentWeek) {
+      repsFinalText =
+        "Week " +
+        line.repsReference.programExercise?.scheduleWeek +
+        " Day " +
+        line.repsReference.programExercise?.scheduleDay;
+    } else {
+      repsFinalText = referencedRepsText;
+    }
+
+    schemaReps = line.repsBaseValue ? repsFinalText + line.repsBaseValue : "";
+  } else if (
+    referencedRepsText != undefined &&
+    line.repsReference instanceof MaxLift
+  ) {
     schemaReps = line.repsBaseValue
       ? referencedRepsText + line.repsBaseValue
       : "";
@@ -87,9 +173,51 @@ export function convertLineToSchema(line: ProgramLine): string {
 
   // Determine schema for sets
   let schemaSets = "";
-  if (referencedSetsText != undefined) {
+  if (
+    referencedSetsText != undefined &&
+    line.setsReference instanceof ProgramLine
+  ) {
+    let setsFinalText;
+    const sameWeekSameDay =
+      String(line.setsReference.programExercise?.scheduleWeek) ===
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.setsReference.programExercise?.scheduleDay) ===
+        String(line.programExercise?.scheduleDay);
+    const sameWeekDifferentDay =
+      String(line.setsReference.programExercise?.scheduleWeek) ===
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.setsReference.programExercise?.scheduleDay) !=
+        String(line.programExercise?.scheduleDay);
+    const sameDayDifferentWeek =
+      String(line.setsReference.programExercise?.scheduleWeek) !=
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.setsReference.programExercise?.scheduleDay) ===
+        String(line.programExercise?.scheduleDay);
+    const differentDayDifferentWeek =
+      String(line.setsReference.programExercise?.scheduleWeek) !=
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.setsReference.programExercise?.scheduleDay) !=
+        String(line.programExercise?.scheduleDay);
+
+    if (sameWeekSameDay) {
+      setsFinalText = "";
+    } else if (sameWeekDifferentDay) {
+      setsFinalText = "Day " + line.setsReference.programExercise?.scheduleDay;
+    } else if (sameDayDifferentWeek) {
+      setsFinalText =
+        "Week " + line.setsReference.programExercise?.scheduleWeek;
+    } else if (differentDayDifferentWeek) {
+      setsFinalText =
+        "Week " +
+        line.setsReference.programExercise?.scheduleWeek +
+        " Day " +
+        line.setsReference.programExercise?.scheduleDay;
+    } else {
+      setsFinalText = referencedSetsText;
+    }
+
     schemaSets = line.setsBaseValue
-      ? "x" + referencedSetsText + line.setsBaseValue + "s"
+      ? "x" + setsFinalText + line.setsBaseValue + "s"
       : "";
   } else {
     schemaSets = line.setsBaseValue ? "x" + line.setsBaseValue + "s" : "";
@@ -97,10 +225,49 @@ export function convertLineToSchema(line: ProgramLine): string {
 
   // Determine schema for rpe
   let schemaRpe = "";
-  if (referencedRpeText != undefined) {
-    schemaRpe = line.rpeBaseValue
-      ? "@" + referencedRpeText + line.rpeBaseValue
-      : "";
+  if (
+    referencedRpeText != undefined &&
+    line.rpeReference instanceof ProgramLine
+  ) {
+    let rpeFinalText;
+    const sameWeekSameDay =
+      String(line.rpeReference.programExercise?.scheduleWeek) ===
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.rpeReference.programExercise?.scheduleDay) ===
+        String(line.programExercise?.scheduleDay);
+    const sameWeekDifferentDay =
+      String(line.rpeReference.programExercise?.scheduleWeek) ===
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.rpeReference.programExercise?.scheduleDay) !=
+        String(line.programExercise?.scheduleDay);
+    const sameDayDifferentWeek =
+      String(line.rpeReference.programExercise?.scheduleWeek) !=
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.rpeReference.programExercise?.scheduleDay) ===
+        String(line.programExercise?.scheduleDay);
+    const differentDayDifferentWeek =
+      String(line.rpeReference.programExercise?.scheduleWeek) !=
+        String(line.programExercise?.scheduleWeek) &&
+      String(line.rpeReference.programExercise?.scheduleDay) !=
+        String(line.programExercise?.scheduleDay);
+
+    if (sameWeekSameDay) {
+      rpeFinalText = "";
+    } else if (sameWeekDifferentDay) {
+      rpeFinalText = "Day " + line.rpeReference.programExercise?.scheduleDay;
+    } else if (sameDayDifferentWeek) {
+      rpeFinalText = "Week " + line.rpeReference.programExercise?.scheduleWeek;
+    } else if (differentDayDifferentWeek) {
+      rpeFinalText =
+        "Week " +
+        line.rpeReference.programExercise?.scheduleWeek +
+        " Day " +
+        line.rpeReference.programExercise?.scheduleDay;
+    } else {
+      rpeFinalText = referencedRpeText;
+    }
+
+    schemaRpe = line.rpeBaseValue ? "@" + rpeFinalText + line.rpeBaseValue : "";
   } else {
     schemaRpe = line.rpeBaseValue ? "@" + line.rpeBaseValue : "";
   }
@@ -118,14 +285,30 @@ export function convertProgramLineToFrozenLine(
   line: ProgramLine,
 ): ProgramFrozenLine {
   const frozenLine: ProgramFrozenLine = {
-    load: line.loadBaseValue?.toString(),
-    askLoad: false,
-    reps: line.repsBaseValue?.toString(),
-    askReps: false,
-    sets: line.setsBaseValue?.toString(),
+    load: (
+      line.loadComputedValue ??
+      line.loadSupposedValue ??
+      line.loadBaseValue
+    )?.toString(),
+    askLoad: line.loadComputedValue ? false : true,
+    reps: (
+      line.repsComputedValue ??
+      line.repsSupposedValue ??
+      line.repsBaseValue
+    )?.toString(),
+    askReps: line.repsComputedValue ? false : true,
+    sets: (
+      line.setsComputedValue ??
+      line.setsSupposedValue ??
+      line.setsBaseValue
+    )?.toString(),
     askSets: false,
-    rpe: line.rpeBaseValue?.toString(),
-    askRpe: false,
+    rpe: (
+      line.rpeComputedValue ??
+      line.rpeSupposedValue ??
+      line.rpeBaseValue
+    )?.toString(),
+    askRpe: line.rpeComputedValue ? false : true,
   };
 
   return frozenLine;
