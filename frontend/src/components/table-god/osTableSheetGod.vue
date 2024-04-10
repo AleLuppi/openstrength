@@ -12,7 +12,11 @@
         :key="tableIdx"
       >
         <tr
-          v-for="rowIdx in arrayRange(1, numRows + 1, { reversible: true })"
+          v-for="rowIdx in arrayRange(
+            1,
+            numRows + 1 + (showEmptyLine && tableIdx ? 1 : 0),
+            { reversible: true },
+          )"
           :key="rowIdx"
         >
           <osTableSheetCellGod
@@ -21,6 +25,7 @@
             :config="getCellConfig(rowIdx, colIdx)"
             :type="tableIdx == 0 ? 'th' : 'td'"
             :model-value="getCellModelValue(rowIdx, colIdx)"
+            @update:model-value="updateCellModelValue"
             :row="rowIdx"
             :col="colIdx"
             @mousedown="onSelectionStart(rowIdx, colIdx)"
@@ -40,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import osTableSheetCellGod from "./osTableSheetCellGod.vue";
 import { arrayRange } from "@/helpers/array";
 import { TableSheetCell, TableSheetCellConfig } from "@/components/models";
@@ -150,31 +155,65 @@ function getCellConfig(row: number, col: number): TableSheetCellConfig {
 }
 
 /**
- * FIXME
- * @param row
- * @param col
+ * Get the model value of a cell.
+ *
+ * If the cell does not exist in the model yet,
+ * it will be created with the default values.
+ *
+ * @param row row number of the cell.
+ * @param col column number of the cell.
+ * @returns model value of the given cell.
  */
-function getCellModelValue(row: number, col: number) {
+function getCellModelValue(row: number, col: number): TableSheetCell {
   let cellValue = modelValue.value.find(
     (val) => val.row == row && val.col == col,
   );
   if (!cellValue) {
     cellValue = { values: [], row: row, col: col };
-    modelValue.value.push(cellValue);
+    if (row <= numRowsBody.value && col <= numColsBody.value)
+      modelValue.value.push(cellValue);
   }
   return cellValue;
 }
 
-//eslint-disable-next-line
-function rangeToString(
-  fromRow: number,
-  fromCol: number,
-  toRow?: number,
-  toCol?: number,
-) {
-  const row = toRow != undefined ? `${fromRow}:${toRow}` : fromRow.toString();
-  const col = toCol != undefined ? `${fromCol}:${toCol}` : fromCol.toString();
-  return `${row};${col}`;
+/**
+ * Update cell value.
+ *
+ * @param value new value to set.
+ */
+function updateCellModelValue(value: TableSheetCell) {
+  const { row, col } = value;
+  const cellValue = getCellModelValue(row, col);
+  cellValue.values = value.values;
+  let outNumRows = numRowsBody.value + 1;
+
+  // Add new line if necessary
+  if (row > numRowsBody.value && col <= numColsBody.value) {
+    modelValue.value.push(cellValue);
+    outNumRows -= 1;
+  }
+
+  // Remove trailing empty lines if necessary
+  while (outNumRows > 0) {
+    const lastRowCells = modelValue.value.filter(
+      (val) => val.row == outNumRows,
+    );
+
+    // Check if line should be removed
+    if (
+      props.deleteEmptyLine &&
+      lastRowCells.every(
+        (cell) =>
+          cell.values.length == 0 ||
+          (cell.values.length == 1 && cell.values[0] == ""),
+      )
+    ) {
+      modelValue.value = modelValue.value.filter(
+        (val) => !lastRowCells.includes(val),
+      );
+      outNumRows -= 1;
+    } else outNumRows = -1;
+  }
 }
 
 /**
@@ -244,7 +283,118 @@ function isSelected(rowNum: number, colNum: number) {
   );
 }
 
+/**
+ * Clear the selected cells.
+ */
+function onSelectionDelete() {
+  // Ensure some data are selected
+  if (!selected.value) return;
+
+  // Get starting and ending values in order
+  const rowStart = Math.min(selected.value.rowFrom, selected.value.rowTo),
+    rowEnd = Math.max(selected.value.rowFrom, selected.value.rowTo),
+    colStart = Math.min(selected.value.colFrom, selected.value.colTo),
+    colEnd = Math.max(selected.value.colFrom, selected.value.colTo);
+
+  // Ignore deletion if only one cell is selected
+  if (rowStart == rowEnd && colStart == colEnd) return;
+
+  // Clear values in cells
+  for (let row = rowStart; row <= rowEnd; row++) {
+    for (let col = colStart; col <= colEnd; col++) {
+      updateCellModelValue({ row: row, col: col, values: [] });
+    }
+  }
+}
+
+/**
+ * Override copy to save data to clipboard.
+ *
+ * @param clipboardEvent event that triggered copy.
+ */
+function onCopy(clipboardEvent: ClipboardEvent) {
+  // Ensure some data are selected
+  if (!selected.value) return;
+
+  // Get starting and ending values in order
+  const rowStart = Math.min(selected.value?.rowFrom, selected.value?.rowTo),
+    rowEnd = Math.max(selected.value?.rowFrom, selected.value?.rowTo),
+    colStart = Math.min(selected.value?.colFrom, selected.value?.colTo),
+    colEnd = Math.max(selected.value?.colFrom, selected.value?.colTo);
+
+  // Prepare text to copy
+  const rowData = [];
+  const colData: string[] = [];
+  for (let row = rowStart; row <= rowEnd; row++) {
+    colData.length = 0;
+    for (let col = colStart; col <= colEnd; col++) {
+      if (row <= numRowsBody.value)
+        colData.push(getCellModelValue(row, col).values.join(";;"));
+    }
+    rowData.push(colData.join("\t"));
+  }
+
+  // Copy text
+  clipboardEvent.clipboardData?.setData("text/plain", rowData.join("\n"));
+  clipboardEvent.preventDefault();
+}
+
+/**
+ * Override paste to get data from clipboard.
+ *
+ * @param clipboardEvent event that triggered paste.
+ */
+function onPaste(clipboardEvent: ClipboardEvent) {
+  // Ensure one cell is selected
+  if (!selected.value) return;
+
+  // Get starting cell
+  const rowStart = Math.min(selected.value?.rowFrom, selected.value?.rowTo),
+    colStart = Math.min(selected.value?.colFrom, selected.value?.colTo);
+
+  // Replace data in table with input
+  clipboardEvent.clipboardData
+    ?.getData("text/plain")
+    .split(/\r?\n/)
+    .forEach((rowData, rowIndex) =>
+      rowData.split(/\t/).forEach((colData, colIndex) => {
+        if (rowStart + rowIndex <= numRowsBody.value + 1)
+          updateCellModelValue({
+            row: rowStart + rowIndex,
+            col: colStart + colIndex,
+            values: colData.split(";;"),
+          });
+      }),
+    );
+}
+
 // TODO manage col and row span
+
+/**
+ * Manage keydown events on table.
+ *
+ * @param event keydown event.
+ */
+function manageKeydown(event: KeyboardEvent) {
+  if (!selected.value) return;
+
+  // Check for delete key
+  if (event.key == "Delete" || event.key == "Backspace") onSelectionDelete();
+}
+
+// Add useful listeners
+onMounted(() => {
+  document.addEventListener("keydown", manageKeydown);
+  document.addEventListener("copy", onCopy);
+  document.addEventListener("paste", onPaste);
+});
+
+// Remove listeners
+onBeforeUnmount(() => {
+  document.removeEventListener("keydown", manageKeydown);
+  document.removeEventListener("copy", onCopy);
+  document.removeEventListener("paste", onPaste);
+});
 </script>
 
 <style scoped lang="scss">
