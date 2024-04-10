@@ -618,6 +618,7 @@
                 :modelValue="programFeedbacks?.feedbacks[indexDay]"
                 class="q-my-md"
                 readonly
+                show-collapsed
               ></WorkoutDayForm>
             </div>
 

@@ -26,12 +26,12 @@ export function arrayUniqueValues<T, R>(
 }
 
 /**
- * Get the unique values in an array.
+ * Sort the values of an array.
  *
  * @param array input vector.
- * @param sorted if true, also sort values.
+ * @param inplace if true, sort array in place, otherwise create a new array.
  * @param [sortBy=(val) => val] optional transformation applied to values before comparing them.
- * @returns a new array with only unique values.
+ * @returns a new array with sorted values.
  */
 export function arraySort<T, R>(
   array: T[],
@@ -103,6 +103,30 @@ export function arrayOfPairsToObject<K extends string | number | symbol, V>(
     },
     {} as { [key in K]: V[] },
   );
+}
+
+/**
+ * Create a numeric range between two numbers.
+ *
+ * @param start initial number, if "stop" is provided, otherwise end number starting from 0.
+ * @param stop ending range number.
+ * @param [reversible=true] if true, allow range from "stop" to "start" if "stop" is smaller than "start".
+ * @returns array of numbers in selected range.
+ */
+export function arrayRange(
+  start: number,
+  stop?: number,
+  { reversible }: { reversible?: boolean } = { reversible: false },
+): number[] {
+  if (stop == undefined) {
+    stop = start;
+    start = 0;
+  }
+  if (stop < start) {
+    if (reversible) [stop, start] = [start, stop];
+    else return [];
+  }
+  return Array.from(new Array(stop - start), (_, i) => i + start);
 }
 
 /**
