@@ -3,9 +3,15 @@
 /***********************/
 
 export interface TableSheetCell {
+  // cell position
   row: number;
   col: number;
+
+  // cell values to display
   values: (string | number | boolean)[];
+
+  // any meta useful to track
+  meta?: any;
 }
 
 export interface TableSheetCellConfig {
@@ -23,10 +29,14 @@ export interface TableSheetCellConfig {
   justify?: "left" | "center" | "right"; // default: "left"
   align?: "top" | "middle" | "bottom"; // default: "middle"
 
+  // empty cell value
+  placeholder?: string;
+
   // supporting content
-  placeholder?: string; // TODO
-  stringPrefix?: string; // TODO
-  stringSuffix?: string; // TODO
+  stringPrefix?: string | string[]; // TODO
+  stringSuffix?: string | string[]; // TODO
+  booleanIcon?: string | string[];
+  booleanIconUnchecked?: string | string[];
 
   // validation rules
   validation?: (val: string | number) => boolean | string; // TODO
@@ -35,7 +45,7 @@ export interface TableSheetCellConfig {
   selectionList?: []; // TODO
   selectionAllowNew?: boolean; // TODO default: false
 
-  // whether to allow value editing directly inside the cell
+  // whether to allow value editing directly inside the cell (always true for booleans)
   editInline?: boolean; // default: true
 
   // name of the slot to display when cell shall be edited
@@ -46,6 +56,8 @@ export interface TableSheetCellConfig {
 
   // display values inside chips
   useChip?: boolean | "single" | "multiple"; // default: false
+  chipColor?: string;
+  chipSelectedColor?: string;
 
   // cell dimension
   width?: number | string; // default: 100

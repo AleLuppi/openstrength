@@ -6,6 +6,7 @@ import {
   arrayZip,
   arrayUniqueSubsequentValues,
   arrayRange,
+  arrayEnsureList,
 } from "../array";
 
 describe("Test @/helpers/array", () => {
@@ -351,6 +352,41 @@ describe("Test @/helpers/array", () => {
       const res = arrayUniqueSubsequentValues(arr);
       expect(res).toStrictEqual([1, 2, 3, 4, 3]);
       expect(res).not.toBe(arr);
+    });
+  });
+
+  /**
+   * arrayEnsureList
+   */
+  describe("'arrayEnsureList' function", () => {
+    test("undefined input", () => {
+      const input = undefined;
+      const result = arrayEnsureList(input);
+      expect(result).toBe(undefined);
+    });
+
+    test("numeric array input", () => {
+      const input = [1, 2, 3];
+      const result = arrayEnsureList(input);
+      expect(result).toStrictEqual([1, 2, 3]);
+    });
+
+    test("string array input", () => {
+      const input = ["a", "b", "c"];
+      const result = arrayEnsureList(input);
+      expect(result).toStrictEqual(["a", "b", "c"]);
+    });
+
+    test("single numeric value input", () => {
+      const input = 5;
+      const result = arrayEnsureList(input);
+      expect(result).toStrictEqual([5]);
+    });
+
+    test("single string value input", () => {
+      const input = "a";
+      const result = arrayEnsureList(input);
+      expect(result).toStrictEqual(["a"]);
     });
   });
 });

@@ -14,33 +14,61 @@
     @click="handleClick"
   >
     <div v-for="(cellValue, cellIdx) in modelValue.values" :key="cellIdx">
-      <q-input
-        v-if="editing && (config.editInline ?? true)"
-        ref="editComponent"
-        v-model="modelValue.values[cellIdx]"
-        dense
-        borderless
-        class="q-pa-none"
-        input-class="q-pa-none"
-        style="height: unset"
-      />
+      <div v-if="typeof cellValue == 'string' || typeof cellValue == 'number'">
+        <q-input
+          v-if="editing && (config.editInline ?? true)"
+          ref="editComponent"
+          :model-value="cellValue"
+          @update:model-value="
+            (val) => {
+              if (val != undefined) modelValue.values[cellIdx] = val;
+            }
+          "
+          :placeholder="cellIdx == 0 ? config.placeholder : undefined"
+          dense
+          borderless
+          class="q-pa-none"
+          input-class="q-pa-none"
+          style="height: unset"
+        />
 
-      <component
-        :is="
-          cellValue &&
-          (config.useChip == true ||
-            (config.useChip == 'single' && modelValue.values.length <= 1) ||
-            (config.useChip == 'multiple' && modelValue.values.length > 1))
-            ? 'q-chip'
-            : 'div'
-        "
-        v-else
-        color="green-2"
-        dense
-        style="margin-block: 1px"
-      >
-        {{ cellValue }}
-      </component>
+        <component
+          :is="
+            cellValue &&
+            (config.useChip == true ||
+              (config.useChip == 'single' && modelValue.values.length <= 1) ||
+              (config.useChip == 'multiple' && modelValue.values.length > 1))
+              ? 'q-chip'
+              : 'div'
+          "
+          v-else
+          color="green-2"
+          dense
+          style="margin-block: 1px"
+        >
+          {{ cellValue }}
+        </component>
+      </div>
+
+      <div v-else-if="typeof cellValue == 'boolean'">
+        <q-checkbox
+          v-model="modelValue.values[cellIdx]"
+          :checked-icon="
+            configValues.booleanIcon?.[
+              cellIdx % configValues.booleanIcon.length
+            ]
+          "
+          :unchecked-icon="
+            configValues.booleanIconUnchecked?.[
+              cellIdx % configValues.booleanIconUnchecked.length
+            ]
+          "
+        ></q-checkbox>
+      </div>
+    </div>
+
+    <div v-if="modelValue.values.length == 0" class="text-grey-6">
+      {{ config.placeholder }}
     </div>
 
     <slot
@@ -52,12 +80,13 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import type { QInput } from "quasar";
 import { TableSheetCell, TableSheetCellConfig } from "@/components/models";
+import { arrayEnsureList } from "@/helpers/array";
 
 // Define props
-withDefaults(
+const props = withDefaults(
   defineProps<{
     // config for current cell
     config?: TableSheetCellConfig;
@@ -68,7 +97,7 @@ withDefaults(
     // whether to highlight the cell on mouse hover
     highlightOnHover?: boolean;
   }>(),
-  { config: () => ({}), type: "td", useChip: false, highlightOnHover: true },
+  { config: () => ({}), type: "td", highlightOnHover: true },
 );
 
 // FIXME delete eslint line
@@ -79,13 +108,23 @@ const modelValue = defineModel<TableSheetCell>({ required: true });
 // eslint-disable-next-line
 const editing = defineModel<boolean>("editing", { default: false });
 
-// Reference to edit (or text display) component
+// Reference to component for editing or displaying text
 const editComponent = ref<(QInput | HTMLElement)[]>();
 
 // Add at least one value to cell
 watch(editing, (isEditing) => {
   if (isEditing && modelValue.value.values.length == 0)
     modelValue.value.values.push("");
+});
+
+// Ensure value-related config is in array terms
+const configValues = computed(() => {
+  return {
+    stringPrefix: arrayEnsureList(props.config.stringPrefix),
+    stringSuffix: arrayEnsureList(props.config.stringSuffix),
+    booleanIcon: arrayEnsureList(props.config.booleanIcon),
+    booleanIconUnchecked: arrayEnsureList(props.config.booleanIconUnchecked),
+  };
 });
 
 /**

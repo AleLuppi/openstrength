@@ -23,7 +23,6 @@
             :model-value="getCellModelValue(rowIdx, colIdx)"
             :row="rowIdx"
             :col="colIdx"
-            :use-chip="tableIdx == 0 || colIdx <= 0 ? useChipHeader : useChip"
             @mousedown="onSelectionStart(rowIdx, colIdx)"
             @mouseover="onSelectionContinue(rowIdx, colIdx)"
             :class="{
@@ -55,9 +54,13 @@ const props = withDefaults(
     configHeaderCol?: TableSheetCellConfig;
     configBody?: TableSheetCellConfig;
 
-    // whether to display table values inside chips
-    useChip?: boolean | "single" | "multiple";
-    useChipHeader?: boolean | "single" | "multiple";
+    // display an empty line at the end TODO
+    showEmptyLine?: boolean;
+    deleteEmptyLine?: boolean;
+    emptyLineConfig?: TableSheetCellConfig;
+
+    // model value debounce in ms
+    debounce?: string | number;
 
     // whether to apply an outside border to the table
     bordered?: boolean;
@@ -66,8 +69,9 @@ const props = withDefaults(
     config: () => [],
     configHeaderRow: () => ({}),
     configHeaderCol: () => ({}),
-    useChip: false,
-    useChipHeader: false,
+    showEmptyLine: false,
+    deleteEmptyLine: true,
+    debounce: 25,
   },
 );
 
@@ -102,9 +106,15 @@ const numColsBody = computed(() =>
 );
 
 /**
- * FIXME
- * @param row
- * @param col
+ * Get the config of a cell.
+ *
+ * The resulting config is a merge of header and body configs,
+ * which can be overwritten by any custom cell configs.
+ * Output config will be used to render the cell.
+ *
+ * @param row row number of cell.
+ * @param col column number of cell.
+ * @returns config object for the given cell.
  */
 function getCellConfig(row: number, col: number): TableSheetCellConfig {
   // Assign a starting config for header or body
