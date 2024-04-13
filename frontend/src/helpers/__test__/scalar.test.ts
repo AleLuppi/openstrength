@@ -5,7 +5,7 @@ import {
   stringGetNextFromList,
 } from "../scalar";
 
-describe("Test @/helpers/scalar", () => {
+describe("Test helpers/scalar", () => {
   /******************/
   /***** NUMBER *****/
   /******************/

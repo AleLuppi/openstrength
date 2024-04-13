@@ -10,9 +10,9 @@
           <os-text-copyable :text="urlFullPath"></os-text-copyable>
           <router-link
             :to="urlRelativePath"
-            @click="registerEvent()"
             target="_blank"
             class="q-mt-sm"
+            @click="registerEvent()"
           >
             {{ $t("coach.program_management.viewer.preview") }}
           </router-link>
@@ -37,8 +37,12 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import router, { NamedRoutes } from "@/router";
+import { useRouter } from "vue-router";
 import mixpanel from "mixpanel-browser";
+import { NamedRoutes } from "src/router";
+
+// Init plugin
+const router = useRouter();
 
 // Define props
 const props = defineProps<{
@@ -48,7 +52,7 @@ const props = defineProps<{
 
 // Define emits
 const emit = defineEmits<{
-  "update:modelValue": [value: Boolean];
+  "update:modelValue": [value: boolean];
 }>();
 
 // Get relative path for preview

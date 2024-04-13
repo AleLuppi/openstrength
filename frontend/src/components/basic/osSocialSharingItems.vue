@@ -12,7 +12,7 @@
         :description="network.description"
         :quote="network.quote"
         :hashtags="network.hashtags"
-        :twitterUser="network.twitterUser"
+        :twitter-user="network.twitterUser"
         :media="network.media"
         class="social-grid-item no-decoration"
       >

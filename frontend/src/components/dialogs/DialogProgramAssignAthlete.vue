@@ -13,7 +13,7 @@
             debounce="500"
             class="col"
           >
-            <template v-slot:prepend>
+            <template #prepend>
               <q-icon name="search" />
             </template>
           </os-input>
@@ -25,10 +25,10 @@
       <TableManagedAthletes
         ref="athletesTableElement"
         :athletes="athletes"
-        @selection="onAthleteSelection"
         :selected="selected"
-        @update:selected="(val) => emit('update:selected', val)"
         :filter="searchAthlete"
+        @selection="onAthleteSelection"
+        @update:selected="(val) => emit('update:selected', val)"
       />
     </q-card>
   </q-dialog>
@@ -57,8 +57,8 @@ defineProps({
 
 // Define emits
 const emit = defineEmits<{
-  "update:modelValue": [value: Boolean];
-  selection: [evt: Event, row: Object, index: Number];
+  "update:modelValue": [value: boolean];
+  selection: [evt: Event, row: object, index: number];
   "update:selected": [value?: AthleteUser];
 }>();
 
@@ -66,7 +66,7 @@ const emit = defineEmits<{
 const searchAthlete = ref<string>();
 
 // Set what to do on athlete selection
-function onAthleteSelection(...params: [Event, Object, Number]) {
+function onAthleteSelection(...params: [Event, object, number]) {
   searchAthlete.value = "";
   emit("update:modelValue", false);
   emit("selection", ...params);

@@ -7,7 +7,7 @@
         style="
           font-size: 16px;
           text-align: left;
-          font-family: &quot;Helvetica&quot;, sans-serif;
+          font-family: 'Helvetica', sans-serif;
           color: #661d1d;
           background-color: #ffeded;
           border-radius: 3px;
@@ -39,7 +39,7 @@
           style="
             font-size: 16px;
             text-align: left;
-            font-family: &quot;Helvetica&quot;, sans-serif;
+            font-family: 'Helvetica', sans-serif;
             color: #085229;
             background-color: #e7faf0;
             border-radius: 3px;
@@ -92,7 +92,7 @@
                 font-size: 32px;
                 text-align: left;
                 font-weight: 700;
-                font-family: &quot;Helvetica&quot;, sans-serif;
+                font-family: 'Helvetica', sans-serif;
                 color: #3c4858;
                 background-color: transparent;
                 text-align: left;
@@ -107,7 +107,7 @@
               style="
                 font-size: 16px;
                 text-align: left;
-                font-family: &quot;Helvetica&quot;, sans-serif;
+                font-family: 'Helvetica', sans-serif;
                 color: #3c4858;
                 background-color: transparent;
                 text-align: left;
@@ -128,9 +128,9 @@
                 <div class="form__label-row">
                   <div class="entry__field">
                     <input
+                      id="EMAIL"
                       class="input"
                       type="text"
-                      id="EMAIL"
                       name="EMAIL"
                       autocomplete="off"
                       placeholder="EMAIL"
@@ -146,7 +146,7 @@
                   style="
                     font-size: 16px;
                     text-align: left;
-                    font-family: &quot;Helvetica&quot;, sans-serif;
+                    font-family: 'Helvetica', sans-serif;
                     color: #661d1d;
                     background-color: #ffeded;
                     border-radius: 3px;
@@ -164,22 +164,22 @@
                   <div class="entry__choice" style="">
                     <label>
                       <input
+                        id="OPT_IN"
                         type="checkbox"
                         class="input_replaced"
                         value="1"
-                        id="OPT_IN"
                         name="OPT_IN"
                         required
                       />
                       <span
                         class="checkbox checkbox_tick_positive"
-                        style="margin-left:"
+                        style="margin-left: "
                       ></span
                       ><span
                         style="
                           font-size: 14px;
                           text-align: left;
-                          font-family: &quot;Helvetica&quot;, sans-serif;
+                          font-family: 'Helvetica', sans-serif;
                           color: #3c4858;
                           background-color: transparent;
                         "
@@ -201,7 +201,7 @@
                   style="
                     font-size: 16px;
                     text-align: left;
-                    font-family: &quot;Helvetica&quot;, sans-serif;
+                    font-family: 'Helvetica', sans-serif;
                     color: #661d1d;
                     background-color: #ffeded;
                     border-radius: 3px;
@@ -214,7 +214,7 @@
                   style="
                     font-size: 12px;
                     text-align: left;
-                    font-family: &quot;Helvetica&quot;, sans-serif;
+                    font-family: 'Helvetica', sans-serif;
                     color: #8390a4;
                     text-align: left;
                   "
@@ -233,7 +233,7 @@
                   font-size: 16px;
                   text-align: right;
                   font-weight: 700;
-                  font-family: &quot;Helvetica&quot;, sans-serif;
+                  font-family: 'Helvetica', sans-serif;
                   color: #ffffff;
                   background-color: #3e4857;
                   border-radius: 5px;
@@ -289,7 +289,7 @@ declare global {
     REQUIRED_ERROR_MESSAGE: string;
     GENERIC_INVALID_MESSAGE: string;
     translation: object;
-    AUTOHIDE: Boolean;
+    AUTOHIDE: boolean;
   }
 }
 window.REQUIRED_CODE_ERROR_MESSAGE = "Scegli un prefisso paese";
@@ -324,8 +324,7 @@ onMounted(() => {
 @font-face {
   font-display: block;
   font-family: Roboto;
-  src:
-    url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/7529907e9eaf8ebb5220c5f9850e3811.woff2)
+  src: url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/7529907e9eaf8ebb5220c5f9850e3811.woff2)
       format("woff2"),
     url(https://assets.brevo.com/font/Roboto/Latin/normal/normal/25c678feafdc175a70922a116c9be3e7.woff)
       format("woff");
@@ -335,8 +334,7 @@ onMounted(() => {
   font-display: fallback;
   font-family: Roboto;
   font-weight: 600;
-  src:
-    url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/6e9caeeafb1f3491be3e32744bc30440.woff2)
+  src: url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/6e9caeeafb1f3491be3e32744bc30440.woff2)
       format("woff2"),
     url(https://assets.brevo.com/font/Roboto/Latin/medium/normal/71501f0d8d5aa95960f6475d5487d4c2.woff)
       format("woff");
@@ -346,8 +344,7 @@ onMounted(() => {
   font-display: fallback;
   font-family: Roboto;
   font-weight: 700;
-  src:
-    url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/3ef7cf158f310cf752d5ad08cd0e7e60.woff2)
+  src: url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/3ef7cf158f310cf752d5ad08cd0e7e60.woff2)
       format("woff2"),
     url(https://assets.brevo.com/font/Roboto/Latin/bold/normal/ece3a1d82f18b60bcce0211725c476aa.woff)
       format("woff");

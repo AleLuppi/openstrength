@@ -15,9 +15,9 @@
       </slot>
       <q-btn
         :label="$t('coach.program_management.builder.begin')"
-        @click="addWeek(String(defaultWeekName))"
         rounded
         unelevated
+        @click="addWeek(String(defaultWeekName))"
       ></q-btn>
     </div>
 
@@ -25,12 +25,12 @@
     <q-virtual-scroll
       v-else
       ref="exerciseListElement"
+      v-slot="{ item: [week, day], index }"
       style="height: 100%"
       :items="allWeekDayPairs"
       virtual-scroll-slice-size="2"
       virtual-scroll-item-size="50"
       separator
-      v-slot="{ item: [week, day], index }"
     >
       <div :key="`${week}.${day}`">
         <!-- Week wrapper -->
@@ -49,13 +49,13 @@
           <div class="q-pl-sm">
             <!-- Duplicate week -->
             <q-btn
-              @click.stop="editWeekDayName = ['', '']"
               icon="fa-regular fa-clone"
               size="sm"
               color="dark-light"
               flat
               round
               :ripple="false"
+              @click.stop="editWeekDayName = ['', '']"
             >
               <q-tooltip anchor="top middle" :offset="[0, 40]">
                 {{ $t("coach.program_management.builder.week_duplicate") }}
@@ -63,11 +63,6 @@
 
               <FormProgramNewWeekDay
                 v-model="editWeekDayName"
-                @save="
-                  (val?: [string, string]) => {
-                    if (val) duplicateWeek([week, day], val);
-                  }
-                "
                 :title="
                   $t('coach.program_management.builder.week_duplicate_form')
                 "
@@ -75,19 +70,24 @@
                 single="week"
                 anchor="center right"
                 self="center left"
+                @save="
+                  (val?: [string, string]) => {
+                    if (val) duplicateWeek([week, day], val);
+                  }
+                "
               >
               </FormProgramNewWeekDay>
             </q-btn>
 
             <!-- Delete week -->
             <q-btn
-              @click.stop="deleteWeek(week)"
               icon="fa-regular fa-trash-can"
               size="sm"
               color="dark-light"
               flat
               round
               :ripple="false"
+              @click.stop="deleteWeek(week)"
             >
               <q-tooltip anchor="top middle" :offset="[0, 40]">
                 {{ $t("coach.program_management.builder.week_delete") }}
@@ -134,14 +134,14 @@
 
                 <FormProgramNewWeekDay
                   v-model="editWeekDayName"
+                  :cover="true"
+                  single="day"
+                  :offset="[15, 0]"
                   @save="
                     (val?: [string, string]) => {
                       if (val) moveDay([week, day], val);
                     }
                   "
-                  :cover="true"
-                  single="day"
-                  :offset="[15, 0]"
                 >
                 </FormProgramNewWeekDay>
               </span>
@@ -151,13 +151,13 @@
             <div v-show="dayCanBeExpanded[index]" class="q-pl-sm">
               <!-- Duplicate day -->
               <q-btn
-                @click.stop="editWeekDayName = ['', '']"
                 icon="fa-regular fa-clone"
                 size="sm"
                 color="dark-light"
                 flat
                 round
                 :ripple="false"
+                @click.stop="editWeekDayName = ['', '']"
               >
                 <q-tooltip anchor="top middle" :offset="[0, 40]">
                   {{ $t("coach.program_management.builder.day_duplicate") }}
@@ -165,30 +165,30 @@
 
                 <FormProgramNewWeekDay
                   v-model="editWeekDayName"
-                  @save="
-                    (val?: [string, string]) => {
-                      if (val) duplicateDay([week, day], val);
-                    }
-                  "
                   :title="
                     $t('coach.program_management.builder.day_duplicate_form')
                   "
                   :cover="false"
                   anchor="center right"
                   self="center left"
+                  @save="
+                    (val?: [string, string]) => {
+                      if (val) duplicateDay([week, day], val);
+                    }
+                  "
                 >
                 </FormProgramNewWeekDay>
               </q-btn>
 
               <!-- Delete day -->
               <q-btn
-                @click.stop="deleteDay([week, day])"
                 icon="fa-regular fa-trash-can"
                 size="sm"
                 color="dark-light"
                 flat
                 round
                 :ripple="false"
+                @click.stop="deleteDay([week, day])"
               >
                 <q-tooltip anchor="top middle" :offset="[0, 40]">
                   {{ $t("coach.program_management.builder.day_delete") }}
@@ -235,8 +235,8 @@
                         .name!,
                     ))
                 "
+                v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
                 :model-value="selectedProgram.programExercises[exerciseIdx]"
-                @update:model-value="updateProgram()"
                 :exercises="exercises"
                 :maxlifts="maxliftsPerExercise"
                 :can-move-up="currIdx > 0"
@@ -245,8 +245,8 @@
                 "
                 :navigate-weeks="Object.keys(filteredWeekDay)"
                 :navigate-days="filteredWeekDay[week]"
-                v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
                 :dense="dense"
+                @update:model-value="updateProgram()"
                 @duplicate="
                   (toWeek, toDay) =>
                     duplicateExercise(exerciseIdx, [toWeek, toDay])
@@ -285,9 +285,9 @@
               <q-btn
                 icon="add"
                 :label="$t('coach.program_management.builder.new_exercise')"
-                @click="addExercise([week, day])"
                 flat
                 rounded
+                @click="addExercise([week, day])"
               >
                 <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
                   {{
@@ -300,9 +300,9 @@
               <q-btn
                 icon="add"
                 :label="$t('coach.program_management.builder.new_day')"
-                @click="addDay([week, day])"
                 flat
                 rounded
+                @click="addDay([week, day])"
               >
                 <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
                   {{ $t("coach.program_management.builder.new_day_tooltip") }}
@@ -313,9 +313,9 @@
               <q-btn
                 icon="add"
                 :label="$t('coach.program_management.builder.new_week')"
-                @click="addWeek(week)"
                 flat
                 rounded
+                @click="addWeek(week)"
               >
                 <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
                   {{ $t("coach.program_management.builder.new_week_tooltip") }}
@@ -330,9 +330,9 @@
     <!-- Show dialog to stop reference line selection -->
     <q-dialog
       :model-value="Boolean(selectingReference)"
-      @update:model-value="selectingReference = undefined"
       seamless
       position="bottom"
+      @update:model-value="selectingReference = undefined"
     >
       <q-card class="bg-lighter" style="width: 350px">
         <q-card-section class="row items-center no-wrap">
@@ -344,7 +344,7 @@
 
           <q-space />
 
-          <q-btn icon="close" label="Cancel" color="negative" v-close-popup />
+          <q-btn v-close-popup icon="close" label="Cancel" color="negative" />
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -354,6 +354,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, defineAsyncComponent } from "vue";
 import {
+  IntersectionValue,
   QVirtualScroll,
   debounce as debounceFunction,
   throttle as throttleFunction,
@@ -449,7 +450,7 @@ defineExpose({
 // Set ref
 const exerciseListElement = ref<QVirtualScroll>(); // reference to scroller element
 const selectedProgram = ref<Program>(); // current program
-const editWeekDayName = ref<[string, string]>(); // week and/or day name that is being modified (to clone or move tables)
+const editWeekDayName = ref<[string, string]>(["", ""]); // week and/or day name that is being modified (to clone or move tables)
 const selectingReference = ref<{
   line: ProgramLine;
   field: string;
@@ -511,7 +512,7 @@ const programExercises = computed<{
     Object.values(dayObject).forEach((idxs) => {
       arraySort(idxs, true, (idx) =>
         Number(
-          selectedProgram.value!.programExercises![idx].scheduleOrder ??
+          selectedProgram.value?.programExercises?.[idx].scheduleOrder ??
             Infinity,
         ),
       );
@@ -606,7 +607,7 @@ function onReferenceSelection(reference: ProgramLine) {
 function moveExerciseAndUpdate(
   programExercise?: ProgramExercise | number,
   destination?: [string, string, string | undefined],
-  duplicate: boolean = false,
+  duplicate = false,
   {
     sourceFallback = false,
     sourceOffset = 0,
@@ -735,10 +736,10 @@ function deleteDay(scheduleInfo: [string, string, string?]) {
 function moveDay(
   scheduleInfo: [string, string, string?],
   destination: [string, string, string?],
-  nextFreeDestination: boolean = false,
-  createIfEmpty: boolean = true,
-  duplicate: boolean = false,
-  doScroll: boolean = true,
+  nextFreeDestination = false,
+  createIfEmpty = true,
+  duplicate = false,
+  doScroll = true,
 ) {
   // Get source and destination day
   const [fromWeek, fromDay] = scheduleInfo;
@@ -797,10 +798,7 @@ function moveDay(
  * @param destination destination week and day.
  * @param [doScroll=true] if true, scroll to the newly created element.
  */
-function addDay(
-  destination: [string, string, string?],
-  doScroll: boolean = true,
-) {
+function addDay(destination: [string, string, string?], doScroll = true) {
   moveDay(["", ""], destination, true, true, doScroll);
 }
 
@@ -814,7 +812,7 @@ function addDay(
 function duplicateDay(
   scheduleInfo: [string, string, string?],
   destination: [string, string, string?],
-  doScroll: boolean = true,
+  doScroll = true,
 ) {
   // Duplicate all data tables
   moveDay(scheduleInfo, destination, false, undefined, true, doScroll);
@@ -845,7 +843,7 @@ function deleteWeek(scheduleInfo: string | [string, string?, string?]) {
  */
 function addWeek(
   destination: string | [string, string?, string?],
-  doScroll: boolean = true,
+  doScroll = true,
 ) {
   // Get destination week and day
   let [week, day] = destination instanceof Array ? destination : [destination];
@@ -867,7 +865,7 @@ function addWeek(
 function duplicateWeek(
   scheduleInfo: string | [string, string, string?],
   destination: string | [string, string, string?],
-  doScroll: boolean = true,
+  doScroll = true,
 ) {
   // Get destination week
   let dstWeek = destination instanceof Array ? destination[0] : destination;
@@ -960,10 +958,9 @@ function undo(): boolean {
   // Restore program from last pointer position
   if (programHistoryPointer.value > 0) {
     programHistoryPointer.value -= 1;
-    if (programHistory.value.at(programHistoryPointer.value))
-      selectedProgram.value = programHistory.value
-        .at(programHistoryPointer.value)!
-        .duplicate();
+    if (programHistory.value[programHistoryPointer.value])
+      selectedProgram.value =
+        programHistory.value[programHistoryPointer.value].duplicate();
   }
 
   // Inform about undo operation
@@ -988,10 +985,9 @@ function redo(): boolean {
   // Try to force next program modification
   if (programHistoryPointer.value + 1 < programHistory.value.length) {
     programHistoryPointer.value += 1;
-    if (programHistory.value.at(programHistoryPointer.value))
-      selectedProgram.value = programHistory.value
-        .at(programHistoryPointer.value)!
-        .duplicate();
+    if (programHistory.value[programHistoryPointer.value])
+      selectedProgram.value =
+        programHistory.value[programHistoryPointer.value].duplicate();
   }
 
   // Inform about redo operation
@@ -1024,7 +1020,7 @@ const updateProgram = debounceFunction(doUpdateProgram, props.debounce);
  *
  * @param [saveChange=true] if true, save changes in history, otherwise ignore it.
  */
-function doUpdateProgram(saveChange: boolean = true) {
+function doUpdateProgram(saveChange = true) {
   // Store changes and inform parent of update
   if (saveChange) storeChanges(selectedProgram.value);
   emit("update:modelValue", selectedProgram.value);
@@ -1067,14 +1063,8 @@ function toggleWeekCollapse(week: string) {
 }
 
 // Set method to handle sticky day title
-const dayTitleInteresctionHandler = {
-  handler: (entry?: {
-    [key: string]: any;
-    isIntersecting?: boolean | undefined;
-    boundingClientRect?: { [key: string]: number | undefined };
-    intersectionRect?: { [key: string]: number | undefined };
-    target?: Element;
-  }): boolean => {
+const dayTitleInteresctionHandler: IntersectionValue = {
+  handler: (entry): boolean => {
     // Add classes when element becomes sticky, delete them otherwise
     if (
       !entry?.isIntersecting &&

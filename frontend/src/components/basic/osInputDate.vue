@@ -3,7 +3,6 @@
     ref="inputElement"
     v-bind="cleanProps"
     :model-value="inputModelValue"
-    @update:model-value="(val) => (outModelValue = val)"
     :mask="modelValueMask"
     :rules="[
       (val) =>
@@ -11,6 +10,7 @@
           ? true
           : $t('form.date_wrong_format', { format: modelValueFormat }),
     ]"
+    @update:model-value="(val) => (outModelValue = val)"
   >
     <template v-if="showDateSelector" #append>
       <q-icon name="event" class="cursor-pointer">

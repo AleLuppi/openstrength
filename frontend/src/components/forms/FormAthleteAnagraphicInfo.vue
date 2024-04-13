@@ -6,7 +6,6 @@
         <os-input
           v-model="athleteName"
           :label="$t('coach.athlete_management.fields.name')"
-          :readonly="readonly"
           class="col-md-auto col-sm-6 col-12"
         />
 
@@ -14,7 +13,6 @@
         <os-input
           v-model="athleteSurname"
           :label="$t('coach.athlete_management.fields.surname')"
-          :readonly="readonly"
           class="col-md-auto col-sm-6 col-12"
         />
 
@@ -22,7 +20,6 @@
         <os-input-date
           v-model="athleteBirthday"
           :label="$t('coach.athlete_management.fields.birthday')"
-          :readonly="readonly"
           class="col-md-auto col-sm-6 col-12"
         ></os-input-date>
 
@@ -67,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, PropType, readonly } from "vue";
+import { ref, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { QForm } from "quasar";
 import { useQuasar } from "quasar";
@@ -79,22 +76,18 @@ import mixpanel from "mixpanel-browser";
 const $q = useQuasar();
 const i18n = useI18n();
 
-// Set props
-const props = defineProps({
-  athlete: {
-    type: AthleteUser,
-    required: true,
-  },
-  onSubmit: {
-    type: Function,
-  },
-  optionsAthleteGender: {
-    type: Array as PropType<UserGender[]>,
-    default: undefined,
-  },
-});
+// Define props
+const props = defineProps<{
+  athlete: AthleteUser;
+  optionsAthleteGender?: UserGender[];
+}>();
 
-// Set expose
+// Define emits
+const emit = defineEmits<{
+  submit: [athlete: AthleteUser];
+}>();
+
+// Define expose
 defineExpose({
   focus: () => formElement.value?.focus(),
   validate: (shouldFocus?: boolean) => formElement.value?.validate(shouldFocus),
@@ -157,8 +150,9 @@ function onSubmit() {
   athlete.weight = athleteWeight.value;
   athlete.coachNote = athleteNote.value;
 
-  props.onSubmit?.(athlete);
+  emit("submit", athlete);
 
+  // TODO move outside
   athlete.saveUpdate({
     onSuccess: () => {
       $q.notify({

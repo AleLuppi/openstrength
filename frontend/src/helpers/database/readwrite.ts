@@ -42,8 +42,8 @@ export async function doAddDoc(
     addUserId?: boolean | string;
     addCurrentTimestamp?: boolean | string;
     undefinedToNull?: boolean;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {},
 ) {
   // Add user ID if required
@@ -101,8 +101,8 @@ export async function doAddDocWithId(
     addUserId?: boolean | string;
     addCurrentTimestamp?: boolean | string;
     undefinedToNull?: boolean;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {},
 ) {
   // Add user ID if required
@@ -161,8 +161,8 @@ export async function doUpdateDoc(
     addUserId?: boolean | string;
     addCurrentTimestamp?: boolean | string;
     undefinedToNull?: boolean;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {},
 ) {
   // Add user ID if required
@@ -212,8 +212,8 @@ export async function doGetDocWithID(
     onError,
   }: {
     nullToUndefined?: boolean;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {},
 ) {
   // Obtain document
@@ -256,8 +256,8 @@ export async function doGetDocs(
     ordering?: string[];
     numDocs?: number;
     nullToUndefined?: boolean;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {},
 ) {
   // Prepare query
@@ -312,8 +312,8 @@ export async function doDeleteDoc(
     onSuccess,
     onError,
   }: {
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {},
 ) {
   // Remove document
@@ -342,8 +342,8 @@ export async function checkDocExists(
     onSuccess,
     onError,
   }: {
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {},
 ) {
   // Check if document exists
@@ -376,8 +376,8 @@ export async function changeDocId(
     onSuccess,
     onError,
   }: {
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {},
 ) {
   // TODO need to move subcollections as well

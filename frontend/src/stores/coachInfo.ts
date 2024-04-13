@@ -200,13 +200,13 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
    */
   async function loadAthletes(
     coachId?: string,
-    quiet: boolean = false,
+    quiet = false,
     {
       onSuccess,
       onError,
     }: {
-      onSuccess?: Function;
-      onError?: Function;
+      onSuccess?: (...x: any) => void;
+      onError?: (...x: any) => void;
     } = {},
   ) {
     // Get user ID if needed
@@ -247,13 +247,13 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
    */
   async function loadExercises(
     coachId?: string,
-    quiet: boolean = false,
+    quiet = false,
     {
       onSuccess,
       onError,
     }: {
-      onSuccess?: Function;
-      onError?: Function;
+      onSuccess?: (...x: any) => void;
+      onError?: (...x: any) => void;
     } = {},
   ) {
     // Get user ID if needed
@@ -288,13 +288,13 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
    */
   async function loadPrograms(
     coachId?: string,
-    quiet: boolean = false,
+    quiet = false,
     {
       onSuccess,
       onError,
     }: {
-      onSuccess?: Function;
-      onError?: Function;
+      onSuccess?: (...x: any) => void;
+      onError?: (...x: any) => void;
     } = {},
   ) {
     // Get user ID if needed
@@ -366,13 +366,13 @@ export const useCoachInfoStore = defineStore("coachInfo", () => {
    */
   async function loadMaxLifts(
     coachId?: string,
-    quiet: boolean = false,
+    quiet = false,
     {
       onSuccess,
       onError,
     }: {
-      onSuccess?: Function;
-      onError?: Function;
+      onSuccess?: (...x: any) => void;
+      onError?: (...x: any) => void;
     } = {},
   ) {
     // Get user ID if needed

@@ -200,8 +200,8 @@ export class User {
     onError,
   }: {
     user?: User | CoachUser | AthleteUser;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void; // TODO
+    onError?: (...x: any) => void; // TODO
   } = {}) {
     addDocUser(user || this, { onSuccess: onSuccess, onError: onError });
   }
@@ -212,8 +212,8 @@ export class User {
     onError,
   }: {
     user?: User | CoachUser | AthleteUser;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void; // TODO
+    onError?: (...x: any) => void; // TODO
   } = {}) {
     updateDocUser(user || this, { onSuccess: onSuccess, onError: onError });
   }

@@ -18,9 +18,6 @@
       outlined
       dense
       :options="options"
-      @filter="filter"
-      @input-value="onInputValue"
-      @new-value="updateFromNewValue = Boolean(newOnExplicitRequest)"
       :label="undefined"
       :placeholder="placeholder"
       :use-chips="multiple"
@@ -35,6 +32,9 @@
       "
       lazy-rules
       :class="{ 'no-gap-input': !multiple }"
+      @filter="filter"
+      @input-value="onInputValue"
+      @new-value="updateFromNewValue = Boolean(newOnExplicitRequest)"
     >
       <template #no-option="slotProps">
         <q-item>
@@ -79,8 +79,8 @@
           </q-item-section>
         </q-item>
       </template>
-      <template v-for="(_, slot) in $slots as Readonly<QSelectSlots>" #[slot]>
-        <slot :name="slot" />
+      <template v-for="(_, slot) in slots" #[slot]="scope">
+        <slot :name="slot" v-bind="scope || {}"></slot>
       </template>
     </q-select>
   </div>
@@ -90,6 +90,9 @@
 import { ref, computed } from "vue";
 import { QSelect } from "quasar";
 import type { QSelectProps, QSelectSlots } from "quasar";
+
+// Define slots
+const slots = defineSlots<QSelectSlots>();
 
 // Define props (from child)
 interface extendedInputProps extends QSelectProps {
@@ -168,7 +171,7 @@ const placeholder = computed(() =>
  * @param val input text.
  * @param doneFn register callback to update options.
  */
-function filter(val: string, doneFn: Function) {
+function filter(val: string, doneFn: (func: () => void) => void) {
   // No input, display all options
   if (val === "") {
     doneFn(() => {

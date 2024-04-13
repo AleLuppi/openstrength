@@ -6,7 +6,7 @@ import {
   ProgramCompactView,
 } from "@/helpers/programs/program";
 import { orderProgramExercises } from "@/helpers/programs/linesManagement";
-import { MaxLift } from "../maxlifts/maxlift";
+import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import { uid } from "quasar";
 
 /**
@@ -362,7 +362,7 @@ export function convertProgramToDayBlocks(
 
     // Store exercise info
     if (out.at(-1)?.weekName === week && out.at(-1)?.dayName === day)
-      out.at(-1)!.exercises.push(exerciseInfo);
+      out.at(-1)?.exercises.push(exerciseInfo);
     else
       out.push({
         weekName: week,
@@ -415,7 +415,7 @@ export function convertProgramToCompactView(
       });
 
     // Store exercise and its related schemas
-    compactProgram.at(-1)!.exercises.push({
+    compactProgram.at(-1)?.exercises.push({
       exercise: exerciseFullName,
       order: order,
       schemas:

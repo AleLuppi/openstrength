@@ -55,7 +55,7 @@
               <div class="row items-center justify-end col-4">
                 <!-- Show required text feedback -->
                 <q-btn
-                  icon="sym_o_message"
+                  :icon="biChatLeftDots"
                   :color="lineTextFeedbacks[indexLine] ? 'primary' : 'light'"
                   flat
                   class="q-mx-xs q-px-xs"
@@ -85,9 +85,9 @@
                     }}
                   </q-tooltip>
                   <q-popup-edit
+                    v-slot="scope"
                     style="width: 70%"
                     :model-value="lineTextFeedbacks[indexLine]"
-                    v-slot="scope"
                     @save="
                       (val) => {
                         lineTextFeedbacks[indexLine] = val;
@@ -96,22 +96,22 @@
                     "
                   >
                     <os-input
+                      v-model="scope.value"
                       autofocus
                       type="textarea"
-                      v-model="scope.value"
                       :readonly="readonly"
                     />
                     <q-btn
+                      :label="readonly ? 'Chiudi' : 'Salva commento'"
                       class="full-width"
                       @click.stop.prevent="scope.set"
-                      :label="readonly ? 'Chiudi' : 'Salva commento'"
                     />
                   </q-popup-edit>
                 </q-btn>
 
                 <!-- Show required video feedback -->
                 <q-btn
-                  icon="sym_o_videocam"
+                  :icon="biCameraVideo"
                   color="light"
                   flat
                   class="q-mx-xs q-px-xs"
@@ -229,13 +229,14 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch, onMounted, onUnmounted, computed } from "vue";
+import mixpanel from "mixpanel-browser";
+import { biCameraVideo, biChatLeftDots } from "@quasar/extras/bootstrap-icons";
 import { ProgramExerciseFeedback } from "@/helpers/programs/models";
 import {
   ProgramFrozenLine,
   ProgramFrozenView,
 } from "@/helpers/programs/program";
-import { ref, watch, onMounted, onUnmounted, computed } from "vue";
-import mixpanel from "mixpanel-browser";
 import {
   arrayPushToNullable,
   arrayRange,
@@ -256,11 +257,9 @@ const props = withDefaults(
 );
 
 // Define models
-/* eslint-disable */
 const modelValue = defineModel<ProgramExerciseFeedback>({
   required: true,
 }); // current feedback on exercise by athlete
-/* eslint-enable */
 
 // Set ref
 const exerciseDone = ref<boolean | undefined>(undefined); // whether exercise has been completed
@@ -373,7 +372,7 @@ function addSet(
  * @param setIdx index of the set to remove.
  * @param [restore=false] if true, re-add a skipped set instead of removing it.
  */
-function removeSet(lineIdx: number, setIdx: number, restore: boolean = false) {
+function removeSet(lineIdx: number, setIdx: number, restore = false) {
   // Delete the requested set
   if (
     setIdx < 1 ||

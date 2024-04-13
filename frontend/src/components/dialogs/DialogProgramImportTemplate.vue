@@ -16,7 +16,7 @@
             debounce="500"
             class="col"
           >
-            <template v-slot:prepend>
+            <template #prepend>
               <q-icon name="search" />
             </template>
           </os-input>
@@ -28,12 +28,12 @@
       <TableExistingPrograms
         ref="programTemplateTableElement"
         :programs="templatePrograms"
-        @selection="onProgramSelection"
         :selected="selected"
-        @update:selected="onProgramSelected"
         :filter="searchProgram"
         :show-fields="['name', 'lastUpdated']"
         style="max-height: 60vh"
+        @selection="onProgramSelection"
+        @update:selected="onProgramSelected"
       ></TableExistingPrograms>
 
       <q-card-actions align="right">
@@ -67,8 +67,8 @@ const props = defineProps<
 
 // Define emits
 const emit = defineEmits<{
-  "update:modelValue": [value: Boolean];
-  selection: [evt: Event, row: Object, index: Number];
+  "update:modelValue": [value: boolean];
+  selection: [evt: Event, row: object, index: number];
   "update:selected": [value?: Program];
 }>();
 
@@ -90,7 +90,7 @@ const templatePrograms = computed(() =>
  *
  * @param params selection parameters.
  */
-function onProgramSelection(...params: [Event, Object, Number]) {
+function onProgramSelection(...params: [Event, object, number]) {
   searchProgram.value = "";
   emit("selection", ...params);
 }

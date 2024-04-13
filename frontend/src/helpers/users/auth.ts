@@ -6,6 +6,7 @@ import {
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
+  type User,
 } from "firebase/auth";
 import { auth } from "@/firebase";
 
@@ -19,9 +20,9 @@ export enum AuthError {
 export function doCreateUserWithEmailAndPassword(
   email: string,
   password: string,
-  requireEmailVerification: boolean = false,
-  onSuccess?: Function,
-  onError?: Function,
+  requireEmailVerification = false,
+  onSuccess?: (...x: any) => void,
+  onError?: (...x: any) => void,
 ) {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -64,8 +65,8 @@ export function doCreateUserWithEmailAndPassword(
 export function doSignInWithEmailAndPassword(
   email: string,
   password: string,
-  onSuccess?: Function,
-  onError?: Function,
+  onSuccess?: (...x: any) => void,
+  onError?: (...x: any) => void,
 ) {
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -109,8 +110,8 @@ export function doSignInWithGoogle({
   onSuccess,
   onError,
 }: {
-  onSuccess?: Function;
-  onError?: Function;
+  onSuccess?: (...x: any) => void;
+  onError?: (...x: any) => void;
 } = {}) {
   const provider = new GoogleAuthProvider();
   signInWithPopup(auth, provider)
@@ -122,8 +123,8 @@ export function doSignOut({
   onSuccess,
   onError,
 }: {
-  onSuccess?: Function;
-  onError?: Function;
+  onSuccess?: (...x: any) => void;
+  onError?: (...x: any) => void;
 } = {}) {
   signOut(auth)
     .then(() => {
@@ -148,9 +149,9 @@ export function addCallbackOnAuthStateChanged({
   onUserOut,
   onUserChange,
 }: {
-  onUserIn?: Function;
-  onUserOut?: Function;
-  onUserChange?: Function;
+  onUserIn?: (user: User) => void;
+  onUserOut?: () => void;
+  onUserChange?: (user: User | null) => void;
 } = {}) {
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -165,6 +166,6 @@ export function addCallbackOnAuthStateChanged({
     }
 
     // Auth state changed
-    onUserChange?.();
+    onUserChange?.(user);
   });
 }

@@ -12,20 +12,20 @@
         :class="dense ? 'row' : 'column'"
       >
         <q-btn
-          @click="emit('move', false)"
           icon="arrow_drop_up"
           flat
           dense
           :color="canMoveUp ? 'secondary' : 'grey-5'"
           :disable="!canMoveUp"
+          @click="emit('move', false)"
         />
         <q-btn
-          @click="emit('move', true)"
           icon="arrow_drop_down"
           flat
           dense
           :color="canMoveDown ? 'secondary' : 'grey-5'"
           :disable="!canMoveDown"
+          @click="emit('move', true)"
         />
       </div>
 
@@ -38,15 +38,15 @@
             'os-exercise-form': !dense,
             'os-exercise-form-dense': dense,
           }"
-          @click="showExpanded = true"
           style="position: relative"
+          @click="showExpanded = true"
         >
           <q-slide-transition>
             <div v-show="showExpanded">
               <os-select
+                v-model="exerciseName"
                 use-input
                 :input-debounce="debounce"
-                v-model="exerciseName"
                 :options="exercises.map((exercise) => exercise.name)"
                 :placeholder="
                   $t('coach.program_management.builder.exercise_name')
@@ -76,9 +76,9 @@
               </os-select>
               <q-separator color="inherit" spaced="xs" />
               <os-select
+                v-model="variantName"
                 use-input
                 :input-debounce="debounce"
-                v-model="variantName"
                 :options="
                   programExercise.exercise?.variants?.map((variant) => ({
                     label: variant.isDefault
@@ -120,26 +120,26 @@
               <q-separator color="inherit" spaced="xs" />
               <os-input
                 :model-value="programExercise.exerciseNote"
+                :debounce="debounce"
+                type="textarea"
+                :placeholder="$t('coach.program_management.builder.note_name')"
+                hide-bottom-space
                 @update:model-value="
                   (val) => {
                     programExercise.exerciseNote = (val ?? '').toString();
                     emitProgramExercise();
                   }
                 "
-                :debounce="debounce"
-                type="textarea"
-                :placeholder="$t('coach.program_management.builder.note_name')"
-                hide-bottom-space
               >
               </os-input>
               <q-btn
                 icon="expand_less"
-                @click.stop="showExpanded = false"
                 flat
                 dense
                 color="secondary"
                 class="full-width"
                 :ripple="false"
+                @click.stop="showExpanded = false"
               />
             </div>
           </q-slide-transition>
@@ -170,6 +170,8 @@
             $t('coach.program_management.builder.line_duplicate_in_day'),
             $t('coach.program_management.builder.line_delete'),
           ]"
+          :direction="dense ? 't' : 'b'"
+          class="q-mx-sm"
           @click="
             (idx: number) => {
               switch (idx) {
@@ -191,13 +193,10 @@
               }
             }
           "
-          :direction="dense ? 't' : 'b'"
-          class="q-mx-sm"
         >
           <template #slot-0>
             <FormProgramNewWeekDay
               v-model="editWeekDayName"
-              @save="(val) => emit('duplicate', val[0], val[1])"
               :title="
                 $t(
                   'coach.program_management.builder.line_duplicate_in_day_form',
@@ -207,6 +206,7 @@
               :cover="false"
               anchor="center right"
               self="center left"
+              @save="(val) => emit('duplicate', val[0], val[1])"
             >
             </FormProgramNewWeekDay>
           </template>
@@ -229,7 +229,7 @@
           requestText: 'checkbox',
           requestVideo: 'checkbox',
         }"
-        :childProps="{
+        :child-props="{
           requestText: {
             'checked-icon': 'fa-solid fa-comment-dots',
             'unchecked-icon': 'fa-solid fa-comment-slash',
@@ -267,7 +267,7 @@
           rpe: $t('coach.program_management.fields.rpe').toLocaleLowerCase(),
           note: $t('coach.program_management.fields.note').toLocaleLowerCase(),
         }"
-        :showNewLine="{
+        :show-new-line="{
           load: '',
           reps: '',
           sets: '',
@@ -276,16 +276,16 @@
           requestText: false,
           requestVideo: false,
         }"
-        :deleteEmptyLine="true"
+        :delete-empty-line="true"
+        dense
+        :debounce="debounce"
+        class="col os-light-border"
         @row-click="
           (_1: any, _2: any, idx: number) => {
             if (programExercise.lines?.at(idx))
               emit('selectReference', programExercise.lines.at(idx)!);
           }
         "
-        dense
-        :debounce="debounce"
-        class="col os-light-border"
       >
         <template #item="itemProps">
           <q-btn
@@ -341,6 +341,9 @@
                     ].includes(maxliftType as MaxLiftType),
                   )"
                   :key="maxliftType"
+                  v-close-popup
+                  clickable
+                  dense
                   @click="
                     assignReference(
                       programExercise.lines!.at(itemProps.rowIndex)!,
@@ -349,16 +352,15 @@
                     );
                     emitProgramExercise();
                   "
-                  clickable
-                  v-close-popup
-                  dense
                 >
                   <!-- TODO i18n -->
                   <q-item-section>{{ maxliftType }}</q-item-section>
                 </q-item>
                 <q-separator />
                 <q-item
+                  v-close-popup
                   clickable
+                  dense
                   @click="
                     emit(
                       'requireReference',
@@ -366,8 +368,6 @@
                       itemProps.col.field,
                     )
                   "
-                  v-close-popup
-                  dense
                 >
                   <q-item-section>{{
                     $t("coach.program_management.builder.reference_select_line")
@@ -384,7 +384,9 @@
                         | 'rpeRef'
                     ] != undefined
                   "
+                  v-close-popup
                   clickable
+                  dense
                   @click="
                     assignReference(
                       programExercise.lines!.at(itemProps.rowIndex)!,
@@ -393,8 +395,6 @@
                     );
                     emitProgramExercise();
                   "
-                  v-close-popup
-                  dense
                 >
                   <q-item-section>{{
                     $t("coach.program_management.builder.reference_remove")
@@ -466,7 +466,8 @@ const props = withDefaults(
   {
     exercises: () => [],
     maxlifts: () => ({}),
-    filter: () => [],
+    navigateWeeks: () => [],
+    navigateDays: () => [],
     canMoveUp: true,
     canMoveDown: true,
     expanded: false,
@@ -489,7 +490,7 @@ const emit = defineEmits<{
 }>();
 
 // Set ref
-const editWeekDayName = ref<string[]>(); // week and/or day name that is being modified (to clone or move tables)
+const editWeekDayName = ref<[string, string]>(["", ""]); // week and/or day name that is being modified (to clone or move tables)
 
 // Retrieve and supply current program exercise
 const programExercise = computed(() => props.modelValue);
