@@ -55,7 +55,7 @@
               <div class="row items-center justify-end col-4">
                 <!-- Show required text feedback -->
                 <q-btn
-                :icon="biChatLeftDots"
+                  :icon="biChatLeftDots"
                   :color="lineTextFeedbacks[indexLine] ? 'primary' : 'light'"
                   flat
                   class="q-mx-xs q-px-xs"
@@ -85,9 +85,9 @@
                     }}
                   </q-tooltip>
                   <q-popup-edit
+                    v-slot="scope"
                     style="width: 70%"
                     :model-value="lineTextFeedbacks[indexLine]"
-                    v-slot="scope"
                     @save="
                       (val) => {
                         lineTextFeedbacks[indexLine] = val;
@@ -96,62 +96,153 @@
                     "
                   >
                     <os-input
+                      v-model="scope.value"
                       autofocus
                       type="textarea"
-                      v-model="scope.value"
                       :readonly="readonly"
                     />
                     <q-btn
+                      :label="readonly ? 'Chiudi' : 'Salva commento'"
                       class="full-width"
                       @click.stop.prevent="scope.set"
-                      :label="readonly ? 'Chiudi' : 'Salva commento'"
                     />
                   </q-popup-edit>
                 </q-btn>
 
-              <!-- Show required video feedback -->
-              <q-btn
-              :icon="biCameraVideo"
-                color="light"
-                flat
-                class="q-mx-xs q-px-xs"
-                @click.stop
-              >
-                <q-badge
-                  v-if="exercise.videoFeedback[indexLine]"
-                  floating
-                  rounded
-                  color="red"
-                  style="top: 2px; right: 0"
+                <!-- Show required video feedback -->
+                <q-btn
+                  :icon="biCameraVideo"
+                  color="light"
+                  flat
+                  class="q-mx-xs q-px-xs"
+                  @click.stop
                 >
-                </q-badge>
-                <q-tooltip
-                  anchor="top middle"
-                  self="bottom middle"
-                  :offset="[10, 10]"
-                  :delay="500"
-                >
-                  {{
-                    exercise.videoFeedback[indexLine]
-                      ? "Il tuo coach ha richiesto un video per questa serie"
-                      : "Non è stato richiesto un video per questa serie"
-                  }}
-                </q-tooltip>
-              </q-btn>
+                  <q-badge
+                    v-if="exercise.videoFeedback[indexLine]"
+                    floating
+                    rounded
+                    color="red"
+                    style="top: 2px; right: 0"
+                  >
+                  </q-badge>
+                  <q-tooltip
+                    anchor="top middle"
+                    self="bottom middle"
+                    :offset="[10, 10]"
+                    :delay="500"
+                  >
+                    {{
+                      exercise.videoFeedback[indexLine]
+                        ? "Il tuo coach ha richiesto un video per questa serie"
+                        : "Non è stato richiesto un video per questa serie"
+                    }}
+                  </q-tooltip>
+                </q-btn>
+              </div>
             </div>
           </div>
-        </q-card-section>
+        </div>
+      </template>
+
+      <template #default>
+        <!-- TODO: i18n-->
+        <!-- Set custom insertion -->
+        <q-card>
+          <q-card-section class="q-px-sm">
+            <div
+              v-for="(lineSets, lineIdx) in sortedSetsPerformed"
+              :key="lineIdx"
+              class="column justify-center"
+            >
+              <!-- Show schema or line data -->
+              <div
+                v-for="(lineSet, setIdx) in lineSets"
+                :key="lineSet.setIndex"
+              >
+                <div
+                  class="row justify-evenly items-end q-pa-none"
+                  :class="{ 'os-set-skipped': lineSet.setSkipped }"
+                >
+                  <!-- Show line values -->
+                  <p class="text-left text-xs text-bold col-2">
+                    Set {{ setIdx + 1 }}
+                  </p>
+                  <q-input
+                    v-model="lineSet.setLoad"
+                    :label="setIdx === 0 ? 'Load (kg)' : ''"
+                    type="number"
+                    :readonly="readonly || lineSet.setSkipped"
+                    dense
+                    stack-label
+                    hide-bottom-space
+                    class="q-px-sm q-ma-none col-4"
+                  />
+                  <q-input
+                    v-model="lineSet.setReps"
+                    :label="setIdx === 0 ? 'Reps' : ''"
+                    type="number"
+                    :readonly="readonly || lineSet.setSkipped"
+                    dense
+                    stack-label
+                    hide-bottom-space
+                    class="q-px-sm q-ma-none col-3"
+                  />
+                  <q-input
+                    v-model="lineSet.setRpe"
+                    :label="setIdx === 0 ? 'Rpe' : ''"
+                    type="number"
+                    :readonly="readonly || lineSet.setSkipped"
+                    dense
+                    stack-label
+                    hide-bottom-space
+                    class="q-px-sm q-ma-none col-2"
+                  />
+
+                  <q-btn
+                    v-if="!readonly"
+                    :icon="lineSet.setSkipped ? 'add' : 'remove'"
+                    round
+                    outline
+                    size="xs"
+                    :color="lineSet.setSkipped ? 'positive' : 'negative'"
+                    @click="
+                      removeSet(lineIdx, lineSet.setIndex, lineSet.setSkipped)
+                    "
+                  ></q-btn>
+                </div>
+              </div>
+
+              <q-btn
+                v-if="!readonly"
+                icon="add"
+                flat
+                label="Set"
+                class="q-mt-sm"
+                @click="addSet(lineIdx)"
+              />
+            </div>
+          </q-card-section>
+        </q-card>
       </template>
     </q-expansion-item>
   </q-card>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from "vue";
+import { ref, watch, onMounted, onUnmounted, computed } from "vue";
 import mixpanel from "mixpanel-browser";
 import { biCameraVideo, biChatLeftDots } from "@quasar/extras/bootstrap-icons";
 import { ProgramExerciseFeedback } from "@/helpers/programs/models";
-import { ProgramFrozenLine,ProgramFrozenView } from "@/helpers/programs/program";
+import {
+  ProgramFrozenLine,
+  ProgramFrozenView,
+} from "@/helpers/programs/program";
+import {
+  arrayPushToNullable,
+  arrayRange,
+  arraySortObjectsByField,
+} from "@/helpers/array";
+import { objectAssignNotUndefined } from "@/helpers/object";
 
 // Define props
 const props = withDefaults(
@@ -166,11 +257,9 @@ const props = withDefaults(
 );
 
 // Define models
-/* eslint-disable */
 const modelValue = defineModel<ProgramExerciseFeedback>({
   required: true,
 }); // current feedback on exercise by athlete
-/* eslint-enable */
 
 // Set ref
 const exerciseDone = ref<boolean | undefined>(undefined); // whether exercise has been completed
@@ -283,7 +372,7 @@ function addSet(
  * @param setIdx index of the set to remove.
  * @param [restore=false] if true, re-add a skipped set instead of removing it.
  */
-function removeSet(lineIdx: number, setIdx: number, restore: boolean = false) {
+function removeSet(lineIdx: number, setIdx: number, restore = false) {
   // Delete the requested set
   if (
     setIdx < 1 ||
