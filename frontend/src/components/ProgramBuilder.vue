@@ -37,12 +37,6 @@
         <div
           v-if="index == 0 || week != allWeekDayPairs[index - 1][0]"
           class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-sm"
-          @click="
-            () =>
-              allWeekDayPairs.forEach(([weekVal], idx) => {
-                if (weekVal == week) dayInfoCollapsed[idx] = true;
-              })
-          "
         >
           <!-- Week name -->
           <h4
@@ -111,6 +105,7 @@
             flat
             dense
             color="light-dark"
+            @click="toggleWeekCollapse(week)"
           ></q-btn>
         </div>
 
@@ -121,12 +116,6 @@
             v-intersection="dayTitleInteresctionHandler"
             class="row items-center q-gutter-x-xs bg-white q-px-sm q-mx-none q-mb-sm os-day-title"
             :class="{ 'os-day-disabled disabled': !dayCanBeExpanded[index] }"
-            @click="
-              () =>
-                (dayInfoCollapsed[index] = dayCanBeExpanded[index]
-                  ? !dayInfoCollapsed[index]
-                  : false)
-            "
           >
             <!-- Day name -->
             <h6 class="q-mt-none cursor-pointer text-margin-xs">
@@ -217,6 +206,12 @@
               flat
               dense
               color="light-dark"
+              @click="
+                () =>
+                  (dayInfoCollapsed[index] = dayCanBeExpanded[index]
+                    ? !dayInfoCollapsed[index]
+                    : false)
+              "
             ></q-btn>
           </div>
 
@@ -229,6 +224,10 @@
               margin="1000px"
             >
               <TableProgramBuilder
+                v-if="
+                  selectedProgram.programExercises[exerciseIdx] instanceof
+                  ProgramExercise
+                "
                 v-show="
                   filter.exercise.length == 0 ||
                   selectedProgram.programExercises[exerciseIdx].exercise ==
@@ -282,6 +281,30 @@
                 "
                 @select-reference="(line) => onReferenceSelection(line)"
               ></TableProgramBuilder>
+
+              <!-- Show free text exercise-->
+              <TableFreeExercise
+                v-if="
+                  selectedProgram.programExercises[exerciseIdx] instanceof
+                  ProgramFreeExercise
+                "
+                v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
+                :model-value="selectedProgram.programExercises[exerciseIdx]"
+                :can-move-up="currIdx > 0"
+                :can-move-down="
+                  currIdx < programExercises[week][day].length - 1
+                "
+                :navigate-weeks="Object.keys(filteredWeekDay)"
+                :navigate-days="filteredWeekDay[week]"
+                :dense="dense"
+                @update:model-value="updateProgram()"
+                @duplicate="
+                  (toWeek, toDay) =>
+                    duplicateExercise(exerciseIdx, [toWeek, toDay])
+                "
+                @delete="deleteExercise(exerciseIdx)"
+                @move="(down) => moveOrderExercise(exerciseIdx, down ? 1 : -1)"
+              ></TableFreeExercise>
             </os-lazy>
 
             <!-- New element buttons -->
@@ -297,6 +320,25 @@
                 <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
                   {{
                     $t("coach.program_management.builder.new_exercise_tooltip")
+                  }}
+                </q-tooltip>
+              </q-btn>
+
+              <!-- New free text exercise -->
+              <q-btn
+                icon="add"
+                :label="
+                  $t('coach.program_management.builder.new_free_text_exercise')
+                "
+                flat
+                rounded
+                @click="addFreeExercise([week, day])"
+              >
+                <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+                  {{
+                    $t(
+                      "coach.program_management.builder.new_free_text_exercise_tooltip",
+                    )
                   }}
                 </q-tooltip>
               </q-btn>
@@ -368,6 +410,7 @@ import { arrayCompare, arrayOfPairsToObject, arraySort } from "@/helpers/array";
 import {
   Program,
   ProgramExercise,
+  ProgramFreeExercise,
   ProgramLine,
 } from "@/helpers/programs/program";
 import { Exercise } from "@/helpers/exercises/exercise";
@@ -389,6 +432,9 @@ import {
 // Import components
 const TableProgramBuilder = defineAsyncComponent(
   () => import("@/components/tables/TableProgramBuilder.vue"),
+);
+const TableFreeExercise = defineAsyncComponent(
+  () => import("@/components/tables/TableFreeExercise.vue"),
 );
 const FormProgramNewWeekDay = defineAsyncComponent(
   () => import("@/components/forms/FormProgramNewWeekDay.vue"),
@@ -554,8 +600,8 @@ const filteredWeekDay = computed(() =>
 
 // Get day visibility status
 const dayCanBeExpanded = computed(() =>
-  allWeekDayPairs.value.map(([week, day]) =>
-    filteredWeekDay.value[week]?.includes(day),
+  allWeekDayPairs.value.map(
+    ([week, day]) => filteredWeekDay.value[week]?.includes(day),
   ),
 );
 const dayShowExpanded = computed(() =>
@@ -632,6 +678,7 @@ function moveExerciseAndUpdate(
     programExercise,
     destination,
     duplicate,
+    freeText,
     {
       sourceFallback: sourceFallback,
       sourceOffset: sourceOffset,
@@ -650,14 +697,20 @@ function moveExerciseAndUpdate(
  * @param moveBy how many positions to move the exercise up or down (positive to increase order, negative to decrease it).
  */
 function moveOrderExercise(
-  programExercise: ProgramExercise | number,
+  programExercise: ProgramExercise | ProgramFreeExercise | number,
   moveBy: number,
 ) {
-  moveExerciseAndUpdate(programExercise, undefined, false, {
-    sourceFallback: true,
-    sourceOffset: moveBy,
-    looseOrder: false,
-  });
+  moveExerciseAndUpdate(
+    programExercise,
+    undefined,
+    false,
+    programExercise instanceof ProgramFreeExercise,
+    {
+      sourceFallback: true,
+      sourceOffset: moveBy,
+      looseOrder: false,
+    },
+  );
 }
 
 /**
@@ -665,7 +718,9 @@ function moveOrderExercise(
  *
  * @param programExercise exercise data that shall be deleted.
  */
-function deleteExercise(programExercise: ProgramExercise | number) {
+function deleteExercise(
+  programExercise: ProgramExercise | ProgramFreeExercise | number,
+) {
   // Delete exercise by moving to unknown destination
   moveExerciseAndUpdate(programExercise, undefined);
 
@@ -681,12 +736,33 @@ function deleteExercise(programExercise: ProgramExercise | number) {
  */
 function addExercise(
   destination?: [string, string, string?],
-  programExercise?: ProgramExercise | number,
+  programExercise?: ProgramExercise | ProgramFreeExercise | number,
 ) {
   // Add table in selected position
   moveExerciseAndUpdate(
     programExercise,
     destination as [string, string, string],
+    true,
+    false,
+    { sourceFallback: true, sourceOffset: 0, looseOrder: true },
+  );
+}
+
+/**
+ * Add one exercise to the list.
+ *
+ * @param destination position where exercise shall be placed, ignoring order if already occupied.
+ * @param programExercise if provided, initialize a non-empty exercise by duplication of supplied one.
+ */
+function addFreeExercise(
+  destination?: [string, string, string?],
+  programExercise?: ProgramFreeExercise | number,
+) {
+  // Add table in selected position
+  moveExerciseAndUpdate(
+    programExercise,
+    destination as [string, string, string],
+    true,
     true,
     { sourceFallback: true, sourceOffset: 0, looseOrder: true },
   );
@@ -699,7 +775,7 @@ function addExercise(
  * @param destination optional destination week and day, otherwise duplicate in original week and day.
  */
 function duplicateExercise(
-  programExercise: ProgramExercise | number,
+  programExercise: ProgramExercise | ProgramFreeExercise | number,
   destination?: [string, string, string?],
 ) {
   addExercise(destination, programExercise);
@@ -774,6 +850,7 @@ function moveDay(
         programExercise,
         [toWeek, toDay, undefined],
         false,
+        programExercise instanceof ProgramExercise,
         { looseOrder: true },
       );
     isSourceEmpty = false;
@@ -1046,6 +1123,27 @@ function scrollTo(week: string, day?: string) {
   exerciseListElement.value?.scrollTo(idx);
 }
 
+/**
+ * Expand or collapse every day in a given week.
+ *
+ * If any day is expanded, collapse all days in the week.
+ * If all days are collapsed, expand them all.
+ *
+ * @param week id of the week that shall be expanded or collapsed.
+ */
+function toggleWeekCollapse(week: string) {
+  let setVal = true;
+  allWeekDayPairs.value
+    .reduce((weekObj: number[], [weekVal], idx) => {
+      if (weekVal == week) {
+        weekObj.push(idx);
+        setVal = setVal && dayInfoCollapsed.value[idx];
+      }
+      return weekObj;
+    }, [])
+    .forEach((idx) => (dayInfoCollapsed.value[idx] = !setVal));
+}
+
 // Set method to handle sticky day title
 const dayTitleInteresctionHandler: IntersectionValue = {
   handler: (entry): boolean => {
@@ -1079,7 +1177,9 @@ const dayTitleInteresctionHandler: IntersectionValue = {
   padding-inline-start: 32px;
   z-index: 1;
   border-radius: 12px;
-  transition: box-shadow 300ms, background-color 300ms;
+  transition:
+    box-shadow 300ms,
+    background-color 300ms;
 
   & .os-show-on-sticky {
     display: none;

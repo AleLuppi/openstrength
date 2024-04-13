@@ -1,159 +1,121 @@
 <template>
   <q-card
     :class="{
-      'os-completed': exerciseDone,
+      'os-completed os-exercise-done-background': exerciseDone,
     }"
-    class="q-mb-sm"
+    class="q-mb-sm q-py-sm q-px-none no-shadow"
   >
-    <!-- TODO: i18n for all the component-->
+    <div class="row justify-between items-center q-px-sm">
+      <h6>
+        {{ props.exercise.exerciseName + " " + props.exercise.variantName }}
+      </h6>
+      <q-btn
+        size="xs"
+        icon="check"
+        :color="exerciseDone ? 'primary' : 'primary'"
+        round
+        :outline="!exerciseDone"
+        @click="toggleDone"
+      />
+    </div>
+    <p class="text-xs text-italic q-ml-sm">
+      {{ props.exercise.note }}
+    </p>
+
     <q-expansion-item
-      :model-value="readonly || !exerciseDone"
       hide-expand-icon
-      :header-class="{
-        'bg-green-3 ': exerciseDone,
-      }"
-      @update:model-value="toggleDone"
+      :default-opened="!exerciseDone"
+      class="q-ma-sm overflow-hidden bg-lighter"
+      style="border-radius: 8px"
     >
       <template #header>
         <div class="q-py-sm full-width">
-          <div class="row items-center justify-between">
-            <p class="text-bold">
-              {{
-                props.exercise.exerciseName + " " + props.exercise.variantName
-              }}
-            </p>
-
-            <q-btn
-              size="xs"
-              icon="check"
-              :color="exerciseDone ? 'positive' : 'primary'"
-              round
-              :outline="!exerciseDone"
-            ></q-btn>
-          </div>
-
-          <p class="text-italic">
-            {{ props.exercise.note }}
-          </p>
-        </div>
-      </template>
-
-      <template #default>
-        <q-card-section>
-          <!-- Show schema or line data -->
           <div
-            v-for="(line, indexLine) in props.exercise.lines"
+            v-for="(schema, indexLine) in props.exercise.schema"
             :key="indexLine"
-            class="row justify-between items-center q-pa-none"
           >
-            <!-- Show line values -->
-            <q-input
-              v-for="kind in lineValueTypes"
-              :key="kind"
-              v-model="line[kind]"
-              :label="indexLine === 0 ? lineValueLabels[kind] : ''"
-              readonly
-              dense
-              stack-label
-              hide-bottom-space
-              :style="{ width: kind == 'load' ? '15%' : '10%' }"
-              class="q-pa-none q-ma-none"
+            <q-separator
+              v-if="indexLine !== 0"
+              size="1px"
+              class="col q-mx-none q-my-sm"
             />
 
-            <div class="row items-center q-pa-none q-ma-none">
-              <!-- Show line note from coach -->
-              <q-btn
-                flat
-                color="info"
-                :icon="symOutlinedInfo"
-                class="q-mx-xs q-px-xs"
-                :style="{
-                  visibility: exercise.schemaNote[indexLine]
-                    ? 'visible'
-                    : 'hidden',
-                }"
-                @click="
-                  showInfoTooltip[indexLine] = !showInfoTooltip[indexLine]
-                "
-                @touchend.prevent="
-                  showInfoTooltip[indexLine] = !showInfoTooltip[indexLine]
-                "
-                @mouseenter="showInfoTooltip[indexLine] = true"
-                @mouseleave="showInfoTooltip[indexLine] = false"
-              >
-                <q-tooltip
-                  v-model="showInfoTooltip[indexLine]"
-                  anchor="top middle"
-                  self="bottom middle"
-                  :offset="[10, 10]"
-                  class="bg-lighter bordered text-xs"
-                  no-parent-event
-                >
-                  {{ exercise.schemaNote[indexLine] }}
-                </q-tooltip>
-              </q-btn>
+            <!-- Schema and feedback lines -->
+            <div class="row items-center justify-between">
+              <div class="column items-start col-8">
+                <p class="text-italic">
+                  {{ props.exercise.schemaNote[indexLine] }}
+                </p>
+                <p class="text-bold">
+                  {{ schema }}
+                </p>
+              </div>
 
-              <!-- Show required text feedback -->
-              <q-btn
+              <!-- Feedback buttons -->
+              <div class="row items-center justify-end col-4">
+                <!-- Show required text feedback -->
+                <q-btn
                 :icon="biChatLeftDots"
-                :color="lineTextFeedbacks[indexLine] ? 'primary' : 'light'"
-                flat
-                class="q-mx-xs q-px-xs"
-              >
-                <q-badge
-                  v-if="
-                    exercise.textFeedback[indexLine] &&
-                    !lineTextFeedbacks[indexLine]
-                  "
-                  floating
-                  rounded
-                  color="red"
-                  style="top: 2px; right: 0"
+                  :color="lineTextFeedbacks[indexLine] ? 'primary' : 'light'"
+                  flat
+                  class="q-mx-xs q-px-xs"
+                  @click.stop
                 >
-                </q-badge>
-                <q-tooltip
-                  anchor="top middle"
-                  self="bottom middle"
-                  :offset="[10, 10]"
-                  :delay="500"
-                >
-                  {{
-                    exercise.videoFeedback[indexLine]
-                      ? "Il tuo coach ha richiesto un feedback su questa serie"
-                      : "Non è necessario dare un feedback su questa serie"
-                  }}
-                </q-tooltip>
-                <q-popup-edit
-                  v-slot="scope"
-                  style="width: 70%"
-                  :model-value="lineTextFeedbacks[indexLine]"
-                  @save="
-                    (val) => {
-                      lineTextFeedbacks[indexLine] = val;
-                      saveExerciseFeedback();
-                    }
-                  "
-                >
-                  <os-input
-                    v-model="scope.value"
-                    autofocus
-                    type="textarea"
-                    :readonly="readonly"
-                  />
-                  <q-btn
-                    class="full-width"
-                    :label="readonly ? 'Chiudi' : 'Salva commento'"
-                    @click.stop.prevent="scope.set"
-                  />
-                </q-popup-edit>
-              </q-btn>
+                  <q-badge
+                    v-if="
+                      exercise.textFeedback[indexLine] &&
+                      !lineTextFeedbacks[indexLine]
+                    "
+                    floating
+                    rounded
+                    color="red"
+                    style="top: 2px; right: 0"
+                  >
+                  </q-badge>
+                  <q-tooltip
+                    anchor="top middle"
+                    self="bottom middle"
+                    :offset="[10, 10]"
+                    :delay="500"
+                  >
+                    {{
+                      exercise.textFeedback[indexLine]
+                        ? "Il tuo coach ha richiesto un feedback su questa serie"
+                        : "Non è necessario dare un feedback su questa serie"
+                    }}
+                  </q-tooltip>
+                  <q-popup-edit
+                    style="width: 70%"
+                    :model-value="lineTextFeedbacks[indexLine]"
+                    v-slot="scope"
+                    @save="
+                      (val) => {
+                        lineTextFeedbacks[indexLine] = val;
+                        saveExerciseFeedback();
+                      }
+                    "
+                  >
+                    <os-input
+                      autofocus
+                      type="textarea"
+                      v-model="scope.value"
+                      :readonly="readonly"
+                    />
+                    <q-btn
+                      class="full-width"
+                      @click.stop.prevent="scope.set"
+                      :label="readonly ? 'Chiudi' : 'Salva commento'"
+                    />
+                  </q-popup-edit>
+                </q-btn>
 
               <!-- Show required video feedback -->
               <q-btn
-                :icon="biCameraVideo"
+              :icon="biCameraVideo"
                 color="light"
                 flat
                 class="q-mx-xs q-px-xs"
+                @click.stop
               >
                 <q-badge
                   v-if="exercise.videoFeedback[indexLine]"
@@ -188,56 +150,84 @@
 import { ref, watch, onMounted, onUnmounted } from "vue";
 import mixpanel from "mixpanel-browser";
 import { biCameraVideo, biChatLeftDots } from "@quasar/extras/bootstrap-icons";
-import { symOutlinedInfo } from "@quasar/extras/material-symbols-outlined";
 import { ProgramExerciseFeedback } from "@/helpers/programs/models";
-import { ProgramFrozenView } from "@/helpers/programs/program";
-import { stringCapitalize } from "@/helpers/scalar";
+import { ProgramFrozenLine,ProgramFrozenView } from "@/helpers/programs/program";
 
 // Define props
 const props = withDefaults(
   defineProps<{
-    // current feedback on exercise by athlete
-    modelValue: ProgramExerciseFeedback | undefined;
-
     // frozen program exercise info
     exercise: ProgramFrozenView["weekdays"][number]["exercises"][number];
 
-    //
+    // open exercise feedback in read-only mode
     readonly: boolean;
   }>(),
   { readonly: false },
 );
 
-// Define emit
-const emit = defineEmits<{
-  "update:modelValue": [value: ProgramExerciseFeedback];
-}>();
+// Define models
+/* eslint-disable */
+const modelValue = defineModel<ProgramExerciseFeedback>({
+  required: true,
+}); // current feedback on exercise by athlete
+/* eslint-enable */
 
 // Set ref
 const exerciseDone = ref<boolean | undefined>(undefined); // whether exercise has been completed
 const lineTextFeedbacks = ref<string[]>([]); // store text feedbacks
 const showInfoTooltip = ref<boolean[]>([]); // whether to show info tooltip for each line
 
-// Set constant values
-const lineValueTypes: ("load" | "reps" | "sets" | "rpe")[] = [
-  "load",
-  "reps",
-  "sets",
-  "rpe",
-];
-const lineValueLabels = Object.fromEntries(
-  lineValueTypes.map((val) => [val, stringCapitalize(val)]),
+// Get a sorted list of performed sets
+const sortedSetsPerformed = computed(() =>
+  modelValue.value.linesFeedback.map((lineFeedback) =>
+    lineFeedback.setsPerformed
+      ? arraySortObjectsByField(lineFeedback.setsPerformed, "setIndex")
+      : [],
+  ),
 );
 
 // Initialize exercise completed
 watch(
-  () => props.modelValue,
+  modelValue,
   (val) => {
+    // Extract useful values
     exerciseDone.value = val?.completed ?? false;
     lineTextFeedbacks.value =
       val?.linesFeedback.map(
         (lineFeedback) => lineFeedback.textFeedback ?? "",
       ) ?? [];
+
+    // Ensure sets feedback is initialized
+    props.exercise.lines?.forEach((line, lineIdx) => {
+      const numSets = getSetsNumber(line);
+
+      // Ensure one set per line
+      const setsPerformed = arrayRange(1, numSets + 1).map(
+        (setIdx) =>
+          val.linesFeedback[lineIdx]?.setsPerformed?.find(
+            (setInfo) => setInfo.setIndex == setIdx,
+          ) ?? {
+            setIndex: setIdx,
+            setLoad: line.load,
+            setReps: line.reps,
+            setRpe: line.rpe,
+          },
+      );
+
+      // Add extra sets
+      setsPerformed.push(
+        ...(val.linesFeedback[lineIdx]?.setsPerformed?.filter(
+          (setInfo) => setInfo.setIndex < 1 || setInfo.setIndex > numSets,
+        ) ?? []),
+      );
+
+      // Assign to model value
+      if (!modelValue.value.linesFeedback[lineIdx])
+        modelValue.value.linesFeedback[lineIdx] = {};
+      objectAssignNotUndefined(modelValue.value.linesFeedback[lineIdx], {
+        setsPerformed: setsPerformed,
+      });
+    });
   },
   {
     immediate: true,
@@ -258,6 +248,75 @@ function toggleDone() {
 }
 
 /**
+ * Add a new empty performed set.
+ *
+ * @param lineIdx program line index whose feedback shall be updated.
+ * @param [position="after"] where to add the new set.
+ */
+function addSet(
+  lineIdx: number,
+  position: number | "before" | "after" = "after",
+) {
+  // TODO also add before and in between
+  switch (position) {
+    case "after":
+      arrayPushToNullable(
+        modelValue.value.linesFeedback[lineIdx].setsPerformed,
+        {
+          setIndex:
+            (sortedSetsPerformed.value[lineIdx].at(-1)?.setIndex ?? 0) + 1,
+          setLoad: undefined,
+          setReps: undefined,
+          setRpe: undefined,
+        },
+      );
+  }
+
+  // Save feedback
+  saveExerciseFeedback();
+}
+
+/**
+ * Removes a set from the available ones.
+ *
+ * @param lineIdx program line index whose feedback shall be updated.
+ * @param setIdx index of the set to remove.
+ * @param [restore=false] if true, re-add a skipped set instead of removing it.
+ */
+function removeSet(lineIdx: number, setIdx: number, restore: boolean = false) {
+  // Delete the requested set
+  if (
+    setIdx < 1 ||
+    (props.exercise.lines &&
+      setIdx > getSetsNumber(props.exercise.lines[lineIdx]))
+  ) {
+    modelValue.value.linesFeedback[lineIdx].setsPerformed =
+      modelValue.value.linesFeedback[lineIdx].setsPerformed?.filter(
+        (setInfo) => setInfo.setIndex != setIdx,
+      );
+
+    // Rescale the remaining sets indexes
+    modelValue.value.linesFeedback[lineIdx].setsPerformed?.forEach(
+      (setInfo) => {
+        if (setIdx > 0 && setInfo.setIndex > setIdx) setInfo.setIndex -= 1;
+        else if (setIdx <= 0 && setInfo.setIndex < setIdx)
+          setInfo.setIndex += 1;
+      },
+    );
+  } else {
+    Object.assign(
+      modelValue.value.linesFeedback[lineIdx].setsPerformed?.find(
+        (setInfo) => setInfo.setIndex == setIdx,
+      ) ?? {},
+      { setSkipped: !restore },
+    );
+  }
+
+  // Save modification
+  saveExerciseFeedback();
+}
+
+/**
  * Inform parent on update of exercise feedback.
  */
 function saveExerciseFeedback() {
@@ -269,21 +328,32 @@ function saveExerciseFeedback() {
     linesFeedback:
       props.exercise.lines?.map((line, idx) => {
         return {
-          loadFeedback: undefined, // TODO: update in 2nd communication release
+          loadFeedback: undefined,
           repsFeedback: undefined,
           setsFeedback: undefined,
           rpeFeedback: undefined,
           textFeedback: lineTextFeedbacks.value[idx],
           videoFeedback: undefined,
+          setsPerformed: modelValue.value.linesFeedback[idx].setsPerformed,
         };
       }) || [],
   };
-  emit("update:modelValue", exerciseFeedback);
+
+  modelValue.value = exerciseFeedback;
 
   // Mixpanel tracking
   mixpanel.track("Athlete Feedback on exercise", {
     Feedback: exerciseFeedback.linesFeedback,
   });
+}
+
+/**
+ * Get the number of sets in a line.
+ *
+ * @param line program line to check.
+ */
+function getSetsNumber(line: ProgramFrozenLine) {
+  return !line.sets || isNaN(Number(line.sets)) ? 1 : Number(line.sets);
 }
 
 /**
@@ -326,7 +396,7 @@ onUnmounted(() => {
 
 .os-completed::after {
   content: "Completato";
-  background: $positive;
+  background: $primary;
   animation: os-completed-animation 2s ease-in-out 1;
 }
 
@@ -334,6 +404,20 @@ onUnmounted(() => {
   content: "Non lo svolgerò";
   background: $negative;
   animation: os-wontdo-animation 2s ease-in-out 1;
+}
+
+.os-exercise-done-background {
+  background: $os-grey-warm-2; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    180deg,
+    rgba($os-grey-warm-0, 0.2),
+    rgba($os-primary-5, 0.15)
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    180deg,
+    rgba($os-grey-warm-0, 0.2),
+    rgba($os-primary-5, 0.15)
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 @keyframes os-completed-animation {
@@ -363,6 +447,19 @@ onUnmounted(() => {
   100% {
     transform: translateX(-100%);
     visibility: visible;
+  }
+}
+
+.os-set-skipped {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 70%;
+    left: 0;
+    border-bottom: 1px solid $negative;
+    width: 90%;
   }
 }
 </style>

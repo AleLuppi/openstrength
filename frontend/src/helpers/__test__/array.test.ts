@@ -5,6 +5,7 @@ import {
   arraySort,
   arrayZip,
   arrayUniqueSubsequentValues,
+  arrayRange,
   arrayPushToNullable,
   arrayConcatToNullable,
 } from "../array";
@@ -260,6 +261,65 @@ describe("Test helpers/array", () => {
       const res = arrayOfPairsToObject(arr);
       expect(res).toBeTypeOf("object");
       expect(res).toStrictEqual({});
+    });
+  });
+
+  /**
+   * arrayRange
+   */
+  describe("'arrayRange' function", () => {
+    // TODO
+
+    test("5 numbers from 0", () => {
+      const res = arrayRange(5);
+      expect(res).toStrictEqual([0, 1, 2, 3, 4]);
+    });
+
+    test("10 numbers from 0", () => {
+      const res = arrayRange(10);
+      expect(res).toStrictEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    });
+
+    test("0 numbers", () => {
+      const res = arrayRange(0);
+      expect(res).toStrictEqual([]);
+    });
+
+    test("-2 numbers", () => {
+      const res = arrayRange(-2);
+      expect(res).toStrictEqual([]);
+    });
+
+    test("-2 numbers, reversible", () => {
+      const res = arrayRange(-2, undefined, { reversible: true });
+      expect(res).toStrictEqual([-2, -1]);
+    });
+
+    test("from 3 to 8", () => {
+      const res = arrayRange(3, 8);
+      expect(res).toStrictEqual([3, 4, 5, 6, 7]);
+    });
+
+    test("from -7 to 7", () => {
+      const res = arrayRange(-7, 7);
+      expect(res).toStrictEqual([
+        -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6,
+      ]);
+    });
+
+    test("from -12 to -5", () => {
+      const res = arrayRange(-12, -5);
+      expect(res).toStrictEqual([-12, -11, -10, -9, -8, -7, -6]);
+    });
+
+    test("from -5 to -12", () => {
+      const res = arrayRange(-5, -12);
+      expect(res).toStrictEqual([]);
+    });
+
+    test("from -5 to -12, reversible", () => {
+      const res = arrayRange(-5, -12, { reversible: true });
+      expect(res).toStrictEqual([-12, -11, -10, -9, -8, -7, -6]);
     });
   });
 
