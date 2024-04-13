@@ -16,6 +16,7 @@
     "build:pwa": "quasar build -m pwa",
     "build:pwa:debug": "quasar build -m pwa -d",
     "release": "npm run build && firebase hosting:channel:deploy",
+    "release:debug": "npm run build:pwa:debug && firebase hosting:channel:deploy",
     "deploy": "npm run build && firebase deploy --only hosting",
     "test": "npm run test:unit",
     "test:unit": "vitest",
