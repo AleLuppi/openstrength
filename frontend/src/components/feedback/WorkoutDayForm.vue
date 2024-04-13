@@ -4,7 +4,7 @@
     class="q-pa-sm items-center justify-between"
     :class="{
       'cursor-pointer row': dayShowCollapsed,
-      'border-positive': modelValue?.completed,
+      'border-primary': modelValue?.completed,
     }"
     @click="dayShowCollapsed = false"
   >
@@ -24,7 +24,7 @@
         v-if="modelValue?.completed"
         :name="symOutlinedCheck"
         size="sm"
-        color="positive"
+        color="primary"
       ></q-icon>
     </div>
 
@@ -77,12 +77,13 @@
     </div>
 
     <!-- Otherwise show expansion button -->
-    <q-btn v-else icon="expand_more" color="positive" flat></q-btn>
+    <q-btn v-else icon="expand_more" color="primary" flat></q-btn>
   </q-card>
 </template>
 
 <script setup lang="ts">
 import { computed, defineAsyncComponent, ref, watch } from "vue";
+import { debounce, scroll } from "quasar";
 import mixpanel from "mixpanel-browser";
 import { symOutlinedCheck } from "@quasar/extras/material-symbols-outlined";
 import { ProgramFrozenView } from "@/helpers/programs/program";
@@ -102,13 +103,16 @@ const props = withDefaults(
     // current feedback on the day
     modelValue: ProgramDayFeedback | undefined;
 
+    // force day to be shown as collapsed
+    showCollapsed?: boolean;
+
     // set if day is next to be done in program
     isNext?: boolean;
 
     // whether to show component for reading only and not update
     readonly?: boolean;
   }>(),
-  { isNext: false, readonly: false },
+  { showCollapsed: false, isNext: false, readonly: false },
 );
 
 // Define emit
@@ -120,7 +124,7 @@ const emit = defineEmits<{
 // Set ref
 const workoutDate = ref<Date>(new Date()); // day on which exercises have been performed
 const workoutNote = ref<string>(""); // optional feedback text on the day
-const dayShowCollapsed = ref<boolean>(false); // whether to show collapsed day
+const dayShowCollapsed = ref<boolean>(props.showCollapsed); // whether to show collapsed day
 const dayFeedback = ref<ProgramDayFeedback>({
   weekName: props.programDay.weekName,
   dayName: props.programDay.dayName,
@@ -137,8 +141,8 @@ const nextExerciseIdx = computed(() =>
 
 // Show day expanded or collapsed following requests from parent
 watch(
-  () => props.modelValue?.completed,
-  (isCompleted) => (dayShowCollapsed.value = isCompleted ?? false),
+  () => props.showCollapsed,
+  (newValue) => (dayShowCollapsed.value = newValue),
   { immediate: true },
 );
 
@@ -150,8 +154,26 @@ watch(
       weekName: props.programDay.weekName,
       dayName: props.programDay.dayName,
       completed: false,
-      exercisesFeedback: [],
+      exercisesFeedback: props.programDay.exercises.map((exercise) => ({
+        exerciseName: exercise.exerciseName,
+        variantName: exercise.variantName,
+        completed: false,
+        willComplete: true,
+        linesFeedback:
+          exercise.lines?.map(() => {
+            return {
+              loadFeedback: undefined,
+              repsFeedback: undefined,
+              setsFeedback: undefined,
+              rpeFeedback: undefined,
+              textFeedback: undefined,
+              videoFeedback: undefined,
+              setsPerformed: undefined,
+            };
+          }) || [],
+      })),
     };
+
     workoutDate.value = value?.completedOn ?? new Date();
     workoutNote.value = value?.textFeedback ?? "";
   },
@@ -159,14 +181,24 @@ watch(
 );
 
 /**
+ * Save feedback with debounce.
+ */
+const saveFeedback = debounce(() => {
+  completeDay(dayFeedback.value.completed);
+}, 10000);
+
+// Save feedback when updated, after a debounce
+watch(dayFeedback, saveFeedback, { deep: true });
+
+/**
  * Emit daily feedback.
  *
  * @param [completed=true] whether day can be considered completed by athlete.
  */
 function completeDay(completed = true) {
-  dayShowCollapsed.value = completed;
   if (!props.readonly) {
     // Update feedback if not in read only mode
+    const wasCompleted = dayFeedback.value.completed;
     dayFeedback.value.completed = completed;
     dayFeedback.value.completedOn = completed ? workoutDate.value : undefined;
     dayFeedback.value.textFeedback = workoutNote.value;
@@ -177,8 +209,14 @@ function completeDay(completed = true) {
       mixpanel.track("Athlete Feedback: Day completed", {
         Feedback: workoutNote.value,
       });
+
+      // Scroll to top
+      if (!wasCompleted) scroll.setVerticalScrollPosition(window, 0, 300);
     }
     emit("update:modelValue", dayFeedback.value);
+    saveFeedback.cancel();
+  } else {
+    dayShowCollapsed.value = completed;
   }
 }
 </script>

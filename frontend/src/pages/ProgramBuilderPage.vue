@@ -619,6 +619,7 @@
                 :model-value="programFeedbacks?.feedbacks[indexDay]"
                 class="q-my-md"
                 readonly
+                show-collapsed
               ></WorkoutDayForm>
             </div>
 
@@ -895,7 +896,7 @@ import {
 } from "vue";
 import { debounce, QDialog, QCard, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
-import { useRoute, useRouter } from "vue-router";
+import { type RouteLocationRaw, useRoute, useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { useCoachActiveChangesStore } from "@/stores/coachActiveChanges";
@@ -1222,7 +1223,7 @@ function openProgram(programId?: string, force = false) {
       ...route,
       params: { ...route.params, programId: programId },
       query: { ...(programId ? {} : { new: "true" }) },
-    });
+    } as RouteLocationRaw);
 
     // Clear any possible pending request
     substituteProgramId.value = undefined;

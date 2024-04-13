@@ -1,6 +1,6 @@
 {
   "name": "openstrength",
-  "version": "0.5.5",
+  "version": "0.5.7",
   "description": "Smarter and Better Workout Planning",
   "productName": "OpenStrength",
   "private": true,
@@ -16,6 +16,7 @@
     "build:pwa": "quasar build -m pwa",
     "build:pwa:debug": "quasar build -m pwa -d",
     "release": "npm run build && firebase hosting:channel:deploy",
+    "release:debug": "npm run build:pwa:debug && firebase hosting:channel:deploy",
     "deploy": "npm run build && firebase deploy --only hosting",
     "test": "npm run test:unit",
     "test:unit": "vitest",
@@ -56,7 +57,18 @@
     "prettier": "^2.5.1",
     "typescript": "^4.5.4",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^1.3.1"
+    "vitest": "^1.3.1",
+    "workbox-build": "^7.0.0",
+    "workbox-cacheable-response": "^7.0.0",
+    "workbox-core": "^7.0.0",
+    "workbox-expiration": "^7.0.0",
+    "workbox-precaching": "^7.0.0",
+    "workbox-routing": "^7.0.0",
+    "workbox-strategies": "^7.0.0"
+  },
+  "overrides": {
+    "vite": "^4.0.0",
+    "@vitejs/plugin-vue": "^4.0.0"
   },
   "engines": {
     "node": "^18 || ^16 || ^14.19",

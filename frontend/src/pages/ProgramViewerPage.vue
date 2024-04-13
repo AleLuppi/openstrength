@@ -54,24 +54,80 @@
       </div>
 
       <!-- Show Workout day from athlete point of view -->
-      <div v-if="!showCompactProgram">
-        <WorkoutDayForm
-          v-for="(block, indexDay) in programSnapshot?.weekdays"
-          :key="indexDay"
-          :program-day="block"
-          :model-value="programFeedbacks.feedbacks[indexDay]"
-          :is-next="nextDayIdx == indexDay"
-          class="q-my-md"
-          :class="{ 'q-mx-xl': $q.screen.gt.sm }"
-          :readonly="user.role == UserRole.coach"
-          @update:model-value="
-            (val) => {
-              programFeedbacks.feedbacks[indexDay] = val;
-              saveFeedback(programFeedbacks, programId ?? undefined);
-            }
-          "
+      <div v-if="!showCompactProgram" class="column items-center">
+        <q-tabs
+          v-model="selectedIdxDay"
+          indicator-color="black"
+          align="center"
+          outside-arrows
+          class="os-tabs"
         >
-        </WorkoutDayForm>
+          <q-tab
+            v-for="(block, index) in programSnapshot?.weekdays"
+            :key="index"
+            :name="index"
+            class="column justify-center items-center q-pa-none q-mr-sm shadow-1 overflow-hidden os-day-tab"
+            :class="
+              programFeedbacks.feedbacks[index]?.completed
+                ? 'os-day-tab-done'
+                : 'os-day-tab-undone'
+            "
+          >
+            <p
+              class="text-bold"
+              :class="
+                programFeedbacks.feedbacks[index]?.completed
+                  ? 'text-white'
+                  : 'text-secondary'
+              "
+            >
+              Week {{ block.weekName }}
+              <br />
+              Day {{ block.dayName }}
+            </p>
+            <q-icon
+              v-if="programFeedbacks.feedbacks[index]?.completed"
+              color="lighter"
+              round
+              name="check"
+              size="xs"
+              class="q-py-sm"
+            ></q-icon>
+          </q-tab>
+        </q-tabs>
+
+        <q-tab-panels v-model="selectedIdxDay" animated keep-alive>
+          <q-tab-panel
+            v-for="(block, indexDay) in programSnapshot?.weekdays"
+            :key="indexDay"
+            :name="indexDay"
+            class="q-pa-none"
+          >
+            <WorkoutDayForm
+              :program-day="block"
+              :model-value="programFeedbacks.feedbacks[indexDay]"
+              :is-next="nextDayIdx == indexDay"
+              :readonly="user.role == UserRole.coach"
+              class="q-my-md"
+              :class="{ 'q-mx-xl': $q.screen.gt.sm }"
+              @update:model-value="
+                (val) => {
+                  programFeedbacks.feedbacks[indexDay] = val;
+                  saveFeedback(programFeedbacks, programId ?? undefined);
+                }
+              "
+            />
+          </q-tab-panel>
+        </q-tab-panels>
+
+        <q-btn
+          v-if="selectedIdxDay < programSnapshot?.weekdays.length - 1"
+          label="Vedi giorno successivo"
+          rounded
+          icon-right="arrow_forward"
+          class="q-mx-auto q-my-xl"
+          @click="selectedIdxDay += 1"
+        />
       </div>
 
       <!-- View compact program for athlete -->
@@ -196,6 +252,7 @@ const user = useUserStore();
 // Set ref
 const programSnapshot = ref<ProgramFrozenView>(); // current program snapshot
 const programFeedbacks = ref<ProgramFeedback>({ feedbacks: [] }); // feedbacks associated to program
+const selectedIdxDay = ref<number>(0); // current shown day
 const showCompactProgram = ref<boolean>(false);
 
 // Get requested program id
@@ -289,3 +346,38 @@ onMounted(() => {
   $q.loading.show();
 });
 </script>
+
+<style scoped lang="scss">
+.os-tabs {
+  max-width: calc(100vw - 24px);
+  height: 112px;
+
+  &.q-tabs--scrollable:deep(.q-tabs__arrow) {
+    display: flex;
+    align-items: center;
+    justify-items: center;
+  }
+}
+
+.os-day-tab {
+  border-radius: 16px;
+  min-width: 96px;
+  width: 96px;
+  height: 96px;
+  align-self: center;
+
+  &.os-day-tab-done {
+    background: $primary;
+    background: linear-gradient(180deg, $primary 45%, rgba(214, 68, 5, 1) 100%);
+  }
+
+  &.os-day-tab-undone {
+    background-color: $lightest;
+  }
+}
+
+.os-week-header-done {
+  background: $primary;
+  background: linear-gradient(90deg, $primary 50%, rgba(214, 68, 5, 1) 100%);
+}
+</style>

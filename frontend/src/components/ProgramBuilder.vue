@@ -105,13 +105,7 @@
             flat
             dense
             color="light-dark"
-            @click="
-              () =>
-                allWeekDayPairs.forEach(([weekVal], idx) => {
-                  if (weekVal == week)
-                    dayInfoCollapsed[idx] = !dayInfoCollapsed[idx];
-                })
-            "
+            @click="toggleWeekCollapse(week)"
           ></q-btn>
         </div>
 
@@ -1128,6 +1122,27 @@ function scrollTo(week: string, day?: string) {
   if (idx < 0) idx = allWeekDayPairs.value.findIndex((val) => val[0] == week);
   if (idx < 0) return;
   exerciseListElement.value?.scrollTo(idx);
+}
+
+/**
+ * Expand or collapse every day in a given week.
+ *
+ * If any day is expanded, collapse all days in the week.
+ * If all days are collapsed, expand them all.
+ *
+ * @param week id of the week that shall be expanded or collapsed.
+ */
+function toggleWeekCollapse(week: string) {
+  let setVal = true;
+  allWeekDayPairs.value
+    .reduce((weekObj: number[], [weekVal], idx) => {
+      if (weekVal == week) {
+        weekObj.push(idx);
+        setVal = setVal && dayInfoCollapsed.value[idx];
+      }
+      return weekObj;
+    }, [])
+    .forEach((idx) => (dayInfoCollapsed.value[idx] = !setVal));
 }
 
 // Set method to handle sticky day title

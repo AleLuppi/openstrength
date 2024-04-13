@@ -405,6 +405,7 @@ export default {
         compact_view: "Compact view",
         feedback_from_athlete: "Feedback from athlete",
         feedback_from_athlete_refresh_tooltip: "Click here to update the view",
+        show_feedbacks_tooltip: "Show athlete feedbacks",
       },
       viewer: {
         title: "Program for",

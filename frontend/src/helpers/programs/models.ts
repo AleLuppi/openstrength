@@ -52,5 +52,12 @@ export type ProgramExerciseFeedback = {
     rpeFeedback?: string | undefined;
     textFeedback?: string | undefined;
     videoFeedback?: string | undefined;
+    setsPerformed?: {
+      setIndex: number;
+      setLoad?: string | undefined;
+      setReps?: string | undefined;
+      setRpe?: string | undefined;
+      setSkipped?: boolean;
+    }[];
   }[];
 };

@@ -412,6 +412,7 @@ export default {
         feedback_from_athlete: "Feedback dall'atleta",
         feedback_from_athlete_refresh_tooltip:
           "Clicca qui per aggiornare i dati",
+        show_feedbacks_tooltip: "Mostra feedback atleta",
       },
       viewer: {
         title: "Programma per",
