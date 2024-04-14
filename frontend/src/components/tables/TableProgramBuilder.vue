@@ -593,7 +593,9 @@ const variantName = computed({
 const showExpanded = computed({
   get: () =>
     props.expanded ||
-    (!programExercise.value.exercise && !programExercise.value.textOnly),
+    (!programExercise.value.exercise && !programExercise.value.textOnly) ||
+    (!programExercise.value.exerciseNote &&
+      programExercise.value.textOnly == true),
   set: (val) => {
     emit("update:expanded", val);
   },
