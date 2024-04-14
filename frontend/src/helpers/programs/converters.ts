@@ -358,6 +358,7 @@ export function convertProgramToDayBlocks(
           programExercise.lines?.map(
             (line) => line.requestFeedbackVideo ?? false,
           ) ?? [],
+        textOnly: programExercise.textOnly,
       };
 
     // Store exercise info

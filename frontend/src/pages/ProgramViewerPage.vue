@@ -219,7 +219,7 @@
 import { ref, watch, onMounted, computed, defineAsyncComponent } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { NamedRoutes } from "@/router";
+// import { NamedRoutes } from "@/router";
 import { useQuasar } from "quasar";
 import type { QTableProps } from "quasar";
 import { useUserStore } from "@/stores/user";

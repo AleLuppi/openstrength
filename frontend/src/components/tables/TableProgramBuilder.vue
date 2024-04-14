@@ -43,9 +43,8 @@
           class="q-pa-sm bg-lighter os-light-border col-8"
           :class="{
             'cursor-pointer': !showExpanded,
-            'os-exercise-form': !dense && !programExercise.textOnly,
-            'os-exercise-form-dense': dense && !programExercise.textOnly,
-            'os-exercise-form-text-only': programExercise.textOnly,
+            'os-exercise-form': !dense,
+            'os-exercise-form-dense': dense,
           }"
           style="position: relative"
           @click="showExpanded = true"
@@ -234,17 +233,20 @@
 
       <!-- Data table -->
       <osTableSheet
-        v-if="!programExercise.textOnly"
         v-model="exerciseData"
-        :headers="[
-          'load',
-          'reps',
-          'sets',
-          'rpe',
-          'note',
-          'requestText',
-          'requestVideo',
-        ]"
+        :headers="
+          programExercise.textOnly
+            ? ['requestText', 'requestVideo']
+            : [
+                'load',
+                'reps',
+                'sets',
+                'rpe',
+                'note',
+                'requestText',
+                'requestVideo',
+              ]
+        "
         :types="{
           requestText: 'checkbox',
           requestVideo: 'checkbox',
@@ -287,19 +289,24 @@
           rpe: $t('coach.program_management.fields.rpe').toLocaleLowerCase(),
           note: $t('coach.program_management.fields.note').toLocaleLowerCase(),
         }"
-        :show-new-line="{
-          load: '',
-          reps: '',
-          sets: '',
-          rpe: '',
-          note: '',
-          requestText: false,
-          requestVideo: false,
-        }"
+        :show-new-line="
+          programExercise.textOnly
+            ? false
+            : {
+                load: '',
+                reps: '',
+                sets: '',
+                rpe: '',
+                note: '',
+                requestText: false,
+                requestVideo: false,
+              }
+        "
         :delete-empty-line="true"
         dense
         :debounce="debounce"
-        class="col os-light-border"
+        class="os-light-border"
+        :class="programExercise.textOnly ? 'col-2' : 'col'"
         @row-click="
           (_1: any, _2: any, idx: number) => {
             if (programExercise.lines?.at(idx))
@@ -521,7 +528,11 @@ function emitProgramExercise() {
 // Program exercise lines in tabular format
 const exerciseData = computed({
   get: () =>
-    programExercise.value.lines
+    programExercise.value.textOnly
+      ? programLinesToTable([
+          programExercise.value.lines?.[0] ?? new ProgramLine(),
+        ])
+      : programExercise.value.lines
       ? programLinesToTable(programExercise.value.lines)
       : [],
   set: (data) => {
@@ -661,9 +672,5 @@ function getReferenceDisplayName(reference: ProgramLine | MaxLift | undefined) {
 .os-exercise-form-dense {
   border-radius: 10px 10px 0 0;
   margin-block-end: -1px;
-}
-
-.os-exercise-form-text-only {
-  border-radius: 10px;
 }
 </style>

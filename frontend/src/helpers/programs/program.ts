@@ -183,6 +183,7 @@ export type ProgramFrozenView = {
       schemaNote: string[];
       textFeedback: boolean[];
       videoFeedback: boolean[];
+      textOnly?: boolean;
     }[];
   }[];
   frozenOn: Date;
