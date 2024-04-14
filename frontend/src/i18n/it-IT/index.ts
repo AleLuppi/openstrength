@@ -366,6 +366,8 @@ export default {
         new_exercise: "Esercizio",
         new_free_text_exercise: "Testo libero",
         new_exercise_tooltip: "Aggiunge un nuovo esercizio al giorno corrente",
+        new_free_text_exercise_tooltip:
+          "Aggiunge una casella di testo libero al giorno corrente",
         new_day_error:
           "Impossibile creare un giorno con il nome selezionato, riprova per favore",
         new_day_already_exists: "Un giorno con questo nome esiste già",
