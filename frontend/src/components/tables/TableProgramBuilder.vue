@@ -30,7 +30,15 @@
       </div>
 
       <!-- Exercise info -->
-      <div :class="dense ? 'row justify-between items-end col-12' : 'col-3'">
+      <div
+        :class="
+          dense
+            ? 'row justify-between items-end col-12'
+            : programExercise.textOnly
+            ? 'col'
+            : 'col-3'
+        "
+      >
         <div
           class="q-pa-sm bg-lighter os-light-border col-8"
           :class="{
@@ -43,81 +51,88 @@
         >
           <q-slide-transition>
             <div v-show="showExpanded">
-              <os-select
-                v-model="exerciseName"
-                use-input
-                :input-debounce="debounce"
-                :options="exercises.map((exercise) => exercise.name)"
-                :placeholder="
-                  $t('coach.program_management.builder.exercise_name')
-                "
-                hide-bottom-space
-                new-value-mode="add-unique"
-                :after-options-add-new="true"
-                :no-options-add-new="true"
-                add-option-class="text-primary text-bold text-center"
-                :add-option-format-text="
+              <div v-if="!programExercise.textOnly">
+                <os-select
+                  v-model="exerciseName"
+                  use-input
+                  :input-debounce="debounce"
+                  :options="exercises.map((exercise) => exercise.name)"
+                  :placeholder="
+                    $t('coach.program_management.builder.exercise_name')
+                  "
+                  hide-bottom-space
+                  new-value-mode="add-unique"
+                  :after-options-add-new="true"
+                  :no-options-add-new="true"
+                  add-option-class="text-primary text-bold text-center"
+                  :add-option-format-text="
                   (text: string) =>
                     $t('coach.exercise_management.create_named_exercise', {
                       exercise: text,
                     })
                 "
-              >
-                <q-tooltip
-                  v-if="!exerciseName"
-                  anchor="center right"
-                  self="center left"
-                  :offset="[-10, 0]"
                 >
-                  {{
-                    $t("coach.program_management.builder.exercise_name_tooltip")
-                  }}
-                </q-tooltip>
-              </os-select>
-              <q-separator color="inherit" spaced="xs" />
-              <os-select
-                v-model="variantName"
-                use-input
-                :input-debounce="debounce"
-                :options="
-                  programExercise.exercise?.variants?.map((variant) => ({
-                    label: variant.isDefault
-                      ? $t('coach.exercise_management.default_variant')
-                      : variant.name,
-                    value: variant.isDefault ? '' : variant.name,
-                  }))
-                "
-                emit-value
-                :placeholder="
-                  $t('coach.program_management.builder.variant_name')
-                "
-                hide-bottom-space
-                new-value-mode="add-unique"
-                :readonly="!programExercise.exercise"
-                :after-options-add-new="true"
-                :no-options-add-new="true"
-                add-option-class="text-primary text-bold text-center"
-                :add-option-format-text="
+                  <q-tooltip
+                    v-if="!exerciseName"
+                    anchor="center right"
+                    self="center left"
+                    :offset="[-10, 0]"
+                  >
+                    {{
+                      $t(
+                        "coach.program_management.builder.exercise_name_tooltip",
+                      )
+                    }}
+                  </q-tooltip>
+                </os-select>
+                <q-separator color="inherit" spaced="xs" />
+                <os-select
+                  v-model="variantName"
+                  use-input
+                  :input-debounce="debounce"
+                  :options="
+                    programExercise.exercise?.variants?.map((variant) => ({
+                      label: variant.isDefault
+                        ? $t('coach.exercise_management.default_variant')
+                        : variant.name,
+                      value: variant.isDefault ? '' : variant.name,
+                    }))
+                  "
+                  emit-value
+                  :placeholder="
+                    $t('coach.program_management.builder.variant_name')
+                  "
+                  hide-bottom-space
+                  new-value-mode="add-unique"
+                  :readonly="!programExercise.exercise"
+                  :after-options-add-new="true"
+                  :no-options-add-new="true"
+                  add-option-class="text-primary text-bold text-center"
+                  :add-option-format-text="
                   (text: string) =>
                     $t('coach.exercise_management.create_named_variant', {
                       variant: text,
                     })
                 "
-              >
-                <q-tooltip
-                  v-if="
-                    programExercise.exercise && !programExercise.exerciseVariant
-                  "
-                  anchor="center right"
-                  self="center left"
-                  :offset="[-10, 0]"
                 >
-                  {{
-                    $t("coach.program_management.builder.variant_name_tooltip")
-                  }}
-                </q-tooltip>
-              </os-select>
-              <q-separator color="inherit" spaced="xs" />
+                  <q-tooltip
+                    v-if="
+                      programExercise.exercise &&
+                      !programExercise.exerciseVariant
+                    "
+                    anchor="center right"
+                    self="center left"
+                    :offset="[-10, 0]"
+                  >
+                    {{
+                      $t(
+                        "coach.program_management.builder.variant_name_tooltip",
+                      )
+                    }}
+                  </q-tooltip>
+                </os-select>
+                <q-separator color="inherit" spaced="xs" />
+              </div>
               <os-input
                 :model-value="programExercise.exerciseNote"
                 :debounce="debounce"
@@ -154,7 +169,10 @@
                 {{ variantName ? " - " + variantName : "" }}
               </p>
               <p
-                class="text-xs text-italic text-ellipsis"
+                :class="{
+                  'text-xs text-italic text-ellipsis':
+                    !programExercise.textOnly,
+                }"
                 style="max-width: 50vw"
               >
                 {{ programExercise.exerciseNote }}
@@ -216,15 +234,19 @@
       <!-- Data table -->
       <osTableSheet
         v-model="exerciseData"
-        :headers="[
-          'load',
-          'reps',
-          'sets',
-          'rpe',
-          'note',
-          'requestText',
-          'requestVideo',
-        ]"
+        :headers="
+          programExercise.textOnly
+            ? ['requestText', 'requestVideo']
+            : [
+                'load',
+                'reps',
+                'sets',
+                'rpe',
+                'note',
+                'requestText',
+                'requestVideo',
+              ]
+        "
         :types="{
           requestText: 'checkbox',
           requestVideo: 'checkbox',
@@ -267,19 +289,24 @@
           rpe: $t('coach.program_management.fields.rpe').toLocaleLowerCase(),
           note: $t('coach.program_management.fields.note').toLocaleLowerCase(),
         }"
-        :show-new-line="{
-          load: '',
-          reps: '',
-          sets: '',
-          rpe: '',
-          note: '',
-          requestText: false,
-          requestVideo: false,
-        }"
+        :show-new-line="
+          programExercise.textOnly
+            ? false
+            : {
+                load: '',
+                reps: '',
+                sets: '',
+                rpe: '',
+                note: '',
+                requestText: false,
+                requestVideo: false,
+              }
+        "
         :delete-empty-line="true"
         dense
         :debounce="debounce"
-        class="col os-light-border"
+        class="os-light-border"
+        :class="programExercise.textOnly ? 'col-2' : 'col'"
         @row-click="
           (_1: any, _2: any, idx: number) => {
             if (programExercise.lines?.at(idx))
@@ -501,7 +528,11 @@ function emitProgramExercise() {
 // Program exercise lines in tabular format
 const exerciseData = computed({
   get: () =>
-    programExercise.value.lines
+    programExercise.value.textOnly
+      ? programLinesToTable([
+          programExercise.value.lines?.[0] ?? new ProgramLine(),
+        ])
+      : programExercise.value.lines
       ? programLinesToTable(programExercise.value.lines)
       : [],
   set: (data) => {
@@ -571,7 +602,11 @@ const variantName = computed({
 
 // Check whether exercise info should be shown expanded or not
 const showExpanded = computed({
-  get: () => props.expanded || !programExercise.value.exercise,
+  get: () =>
+    props.expanded ||
+    (!programExercise.value.exercise && !programExercise.value.textOnly) ||
+    (!programExercise.value.exerciseNote &&
+      programExercise.value.textOnly == true),
   set: (val) => {
     emit("update:expanded", val);
   },

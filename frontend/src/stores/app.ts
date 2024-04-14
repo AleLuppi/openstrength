@@ -21,7 +21,6 @@ export const useAppStore = defineStore("app", () => {
     hasInteracted.value = false;
     supportDrawerActiveElement.value = undefined;
     showDialogOnboarding.value = false;
-    console.log("resetting");
   }
 
   return {

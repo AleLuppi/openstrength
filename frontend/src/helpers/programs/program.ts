@@ -61,7 +61,7 @@ export type ProgramProps = {
 };
 
 /**
- * Program line properties.
+ * Program exercise properties.
  */
 export type ProgramExerciseProps = {
   // Basic program exercise info
@@ -82,6 +82,9 @@ export type ProgramExerciseProps = {
 
   // Lines composing exercise
   lines?: ProgramLine[];
+
+  // Require text-only exercise (no lines)
+  textOnly?: boolean;
 };
 
 /**
@@ -180,6 +183,7 @@ export type ProgramFrozenView = {
       schemaNote: string[];
       textFeedback: boolean[];
       videoFeedback: boolean[];
+      textOnly?: boolean;
     }[];
   }[];
   frozenOn: Date;
@@ -559,6 +563,9 @@ export class ProgramExercise {
   // Lines composing exercise
   lines?: ProgramLine[];
 
+  // Require text-only exercise (no lines)
+  textOnly?: boolean;
+
   constructor({
     uid,
     program,
@@ -569,6 +576,7 @@ export class ProgramExercise {
     exerciseVariant,
     exerciseNote,
     lines,
+    textOnly,
   }: ProgramExerciseProps = {}) {
     this.uid = uid;
     this.program = program;
@@ -582,6 +590,7 @@ export class ProgramExercise {
       line.programExercise = this;
     });
     this.lines = lines;
+    this.textOnly = textOnly;
   }
 
   /**
@@ -1254,7 +1263,7 @@ function flattenProgram(program: Program) {
       exercise: exerciseToSpread.exerciseVariant?.uid,
     };
     let linesToStore = lines;
-    if (!linesToStore || !linesToStore.length)
+    if (exerciseToSpread.textOnly || !linesToStore || !linesToStore.length)
       linesToStore = [new ProgramLine()];
     const linesExercise = linesToStore.map((lineToSpread) => {
       const { programExercise, ...lineObj } = lineToSpread;
@@ -1343,6 +1352,7 @@ export function unflattenProgram(
       scheduleDay,
       scheduleOrder,
       exerciseNote,
+      textOnly,
       setsReference,
       repsReference,
       repsReferenceType,
@@ -1381,7 +1391,8 @@ export function unflattenProgram(
         exerciseNote: exerciseNote,
         exercise: currentVariant?.exercise,
         exerciseVariant: currentVariant,
-        lines: anyLines ? [new ProgramLine({ ...lineInfo })] : [],
+        textOnly: textOnly,
+        lines: anyLines && !textOnly ? [new ProgramLine({ ...lineInfo })] : [],
       });
       programExercises.push(newProgramExercise);
       if (storeUnresolved && !currentVariant && exercise)
@@ -1478,5 +1489,6 @@ export function unflattenProgram(
     storeUnresolved.coach = [outProgram, flatProgram.coachId];
   if (storeUnresolved && !outProgram.athlete && flatProgram.athleteId)
     storeUnresolved.athlete = [outProgram, flatProgram.athleteId];
+
   return outProgram;
 }

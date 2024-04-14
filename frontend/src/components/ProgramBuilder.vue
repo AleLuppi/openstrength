@@ -276,7 +276,7 @@
                     (selectingReference = { line: line, field: field })
                 "
                 @select-reference="(line) => onReferenceSelection(line)"
-              ></TableProgramBuilder>
+              />
             </os-lazy>
 
             <!-- New element buttons -->
@@ -292,6 +292,25 @@
                 <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
                   {{
                     $t("coach.program_management.builder.new_exercise_tooltip")
+                  }}
+                </q-tooltip>
+              </q-btn>
+
+              <!-- New free text exercise -->
+              <q-btn
+                icon="add"
+                :label="
+                  $t('coach.program_management.builder.new_free_text_exercise')
+                "
+                flat
+                rounded
+                @click="addFreeExercise([week, day])"
+              >
+                <q-tooltip anchor="top middle" :offset="[0, 40]" :delay="500">
+                  {{
+                    $t(
+                      "coach.program_management.builder.new_free_text_exercise_tooltip",
+                    )
                   }}
                 </q-tooltip>
               </q-btn>
@@ -549,8 +568,8 @@ const filteredWeekDay = computed(() =>
 
 // Get day visibility status
 const dayCanBeExpanded = computed(() =>
-  allWeekDayPairs.value.map(
-    ([week, day]) => filteredWeekDay.value[week]?.includes(day),
+  allWeekDayPairs.value.map(([week, day]) =>
+    filteredWeekDay.value[week]?.includes(day),
   ),
 );
 const dayShowExpanded = computed(() =>
@@ -603,6 +622,7 @@ function onReferenceSelection(reference: ProgramLine) {
  * @param [sourceFallback=false] if true, use source position as destination if not provided (do not delete exercise).
  * @param [sourceOffset=0] optional offset to source position, only used if source is used as destination fallback.
  * @param [looseOrder=false] if true, place the exercise at the end of selected day if destination is occupied.
+ * @param [textOnly=false] if true, create a free text exercise instead of a standard one.
  */
 function moveExerciseAndUpdate(
   programExercise?: ProgramExercise | number,
@@ -612,10 +632,12 @@ function moveExerciseAndUpdate(
     sourceFallback = false,
     sourceOffset = 0,
     looseOrder = false,
+    textOnly = false,
   }: {
     sourceFallback?: boolean;
     sourceOffset?: number;
     looseOrder?: boolean;
+    textOnly?: boolean;
   } = {},
 ) {
   // No sense if program in unknown
@@ -631,6 +653,7 @@ function moveExerciseAndUpdate(
       sourceFallback: sourceFallback,
       sourceOffset: sourceOffset,
       looseOrder: looseOrder,
+      textOnly: textOnly,
     },
   );
 
@@ -683,7 +706,31 @@ function addExercise(
     programExercise,
     destination as [string, string, string],
     true,
-    { sourceFallback: true, sourceOffset: 0, looseOrder: true },
+    {
+      sourceFallback: true,
+      sourceOffset: 0,
+      looseOrder: true,
+      textOnly: false,
+    },
+  );
+}
+
+/**
+ * Add one exercise to the list.
+ *
+ * @param destination position where exercise shall be placed, ignoring order if already occupied.
+ * @param programExercise if provided, initialize a non-empty exercise by duplication of supplied one.
+ */
+function addFreeExercise(
+  destination?: [string, string, string?],
+  programExercise?: ProgramExercise | number,
+) {
+  // Add table in selected position
+  moveExerciseAndUpdate(
+    programExercise,
+    destination as [string, string, string],
+    true,
+    { sourceFallback: true, sourceOffset: 0, looseOrder: true, textOnly: true },
   );
 }
 
@@ -1095,9 +1142,7 @@ const dayTitleInteresctionHandler: IntersectionValue = {
   padding-inline-start: 32px;
   z-index: 1;
   border-radius: 12px;
-  transition:
-    box-shadow 300ms,
-    background-color 300ms;
+  transition: box-shadow 300ms, background-color 300ms;
 
   & .os-show-on-sticky {
     display: none;
