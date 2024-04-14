@@ -2,7 +2,6 @@ import { uid } from "quasar";
 import {
   Program,
   ProgramExercise,
-  ProgramFreeExercise,
   ProgramLine,
 } from "@/helpers/programs/program";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
@@ -95,25 +94,25 @@ export function tableToProgramLines(
  * @param [sourceFallback=false] if true, use source position as destination if not provided (do not delete exercise).
  * @param [sourceOffset=0] optional offset to source position, only used if source is used as destination fallback.
  * @param [looseOrder=false] if true, place the exercise at the end of selected day if destination is occupied.
- * @param [freeText=false] if true, creates a free text exercise instead of a standard one
+ * @param [textOnly=false] if true, create a free text exercise instead of a standard one.
  * @returns program instance.
  */
 export function moveProgramExercise(
   program: Program,
-  programExercise?: ProgramExercise | ProgramFreeExercise | number,
+  programExercise?: ProgramExercise | number,
   destination?: [string, string, string | number | undefined],
   duplicate = false,
-  freeText = false,
   {
     sourceFallback = false,
     sourceOffset = 0,
     looseOrder = false,
+    textOnly = false,
   }: {
     sourceFallback?: boolean;
     sourceOffset?: number;
     looseOrder?: boolean;
+    textOnly?: boolean;
   } = {},
- 
 ): Program {
   // Nothing to do if both program exercise and destination are unknown
   if (programExercise == undefined && destination == undefined) return program;
@@ -188,16 +187,12 @@ export function moveProgramExercise(
     );
   } else if (programExercise == undefined) {
     // If exercise is unknown, a new exercise is being creted
-    (program.programExercises = program.programExercises || []).push(freeText ? 
-      new ProgramFreeExercise({
-      scheduleWeek: destination[0],
-      scheduleDay: destination[1],
-      scheduleOrder: destination[2],
-    }) : 
+    (program.programExercises = program.programExercises || []).push(
       new ProgramExercise({
         scheduleWeek: destination[0],
         scheduleDay: destination[1],
         scheduleOrder: destination[2],
+        textOnly: textOnly,
       }),
     );
   } else {

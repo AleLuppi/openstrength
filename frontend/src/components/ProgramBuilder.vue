@@ -224,10 +224,6 @@
               margin="1000px"
             >
               <TableProgramBuilder
-                v-if="
-                  selectedProgram.programExercises[exerciseIdx] instanceof
-                  ProgramExercise
-                "
                 v-show="
                   filter.exercise.length == 0 ||
                   selectedProgram.programExercises[exerciseIdx].exercise ==
@@ -280,31 +276,7 @@
                     (selectingReference = { line: line, field: field })
                 "
                 @select-reference="(line) => onReferenceSelection(line)"
-              ></TableProgramBuilder>
-
-              <!-- Show free text exercise-->
-              <TableFreeExercise
-                v-if="
-                  selectedProgram.programExercises[exerciseIdx] instanceof
-                  ProgramFreeExercise
-                "
-                v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
-                :model-value="selectedProgram.programExercises[exerciseIdx]"
-                :can-move-up="currIdx > 0"
-                :can-move-down="
-                  currIdx < programExercises[week][day].length - 1
-                "
-                :navigate-weeks="Object.keys(filteredWeekDay)"
-                :navigate-days="filteredWeekDay[week]"
-                :dense="dense"
-                @update:model-value="updateProgram()"
-                @duplicate="
-                  (toWeek, toDay) =>
-                    duplicateExercise(exerciseIdx, [toWeek, toDay])
-                "
-                @delete="deleteExercise(exerciseIdx)"
-                @move="(down) => moveOrderExercise(exerciseIdx, down ? 1 : -1)"
-              ></TableFreeExercise>
+              />
             </os-lazy>
 
             <!-- New element buttons -->
@@ -410,7 +382,6 @@ import { arrayCompare, arrayOfPairsToObject, arraySort } from "@/helpers/array";
 import {
   Program,
   ProgramExercise,
-  ProgramFreeExercise,
   ProgramLine,
 } from "@/helpers/programs/program";
 import { Exercise } from "@/helpers/exercises/exercise";
@@ -432,9 +403,6 @@ import {
 // Import components
 const TableProgramBuilder = defineAsyncComponent(
   () => import("@/components/tables/TableProgramBuilder.vue"),
-);
-const TableFreeExercise = defineAsyncComponent(
-  () => import("@/components/tables/TableFreeExercise.vue"),
 );
 const FormProgramNewWeekDay = defineAsyncComponent(
   () => import("@/components/forms/FormProgramNewWeekDay.vue"),
@@ -654,20 +622,22 @@ function onReferenceSelection(reference: ProgramLine) {
  * @param [sourceFallback=false] if true, use source position as destination if not provided (do not delete exercise).
  * @param [sourceOffset=0] optional offset to source position, only used if source is used as destination fallback.
  * @param [looseOrder=false] if true, place the exercise at the end of selected day if destination is occupied.
+ * @param [textOnly=false] if true, create a free text exercise instead of a standard one.
  */
 function moveExerciseAndUpdate(
-  programExercise?: ProgramExercise | ProgramFreeExercise | number,
+  programExercise?: ProgramExercise | number,
   destination?: [string, string, string | undefined],
   duplicate = false,
-  freeText = false,
   {
     sourceFallback = false,
     sourceOffset = 0,
     looseOrder = false,
+    textOnly = false,
   }: {
     sourceFallback?: boolean;
     sourceOffset?: number;
     looseOrder?: boolean;
+    textOnly?: boolean;
   } = {},
 ) {
   // No sense if program in unknown
@@ -679,11 +649,11 @@ function moveExerciseAndUpdate(
     programExercise,
     destination,
     duplicate,
-    freeText,
     {
       sourceFallback: sourceFallback,
       sourceOffset: sourceOffset,
       looseOrder: looseOrder,
+      textOnly: textOnly,
     },
   );
 
@@ -698,20 +668,14 @@ function moveExerciseAndUpdate(
  * @param moveBy how many positions to move the exercise up or down (positive to increase order, negative to decrease it).
  */
 function moveOrderExercise(
-  programExercise: ProgramExercise | ProgramFreeExercise | number,
+  programExercise: ProgramExercise | number,
   moveBy: number,
 ) {
-  moveExerciseAndUpdate(
-    programExercise,
-    undefined,
-    false,
-    programExercise instanceof ProgramFreeExercise,
-    {
-      sourceFallback: true,
-      sourceOffset: moveBy,
-      looseOrder: false,
-    },
-  );
+  moveExerciseAndUpdate(programExercise, undefined, false, {
+    sourceFallback: true,
+    sourceOffset: moveBy,
+    looseOrder: false,
+  });
 }
 
 /**
@@ -719,9 +683,7 @@ function moveOrderExercise(
  *
  * @param programExercise exercise data that shall be deleted.
  */
-function deleteExercise(
-  programExercise: ProgramExercise | ProgramFreeExercise | number,
-) {
+function deleteExercise(programExercise: ProgramExercise | number) {
   // Delete exercise by moving to unknown destination
   moveExerciseAndUpdate(programExercise, undefined);
 
@@ -737,15 +699,19 @@ function deleteExercise(
  */
 function addExercise(
   destination?: [string, string, string?],
-  programExercise?: ProgramExercise | ProgramFreeExercise | number,
+  programExercise?: ProgramExercise | number,
 ) {
   // Add table in selected position
   moveExerciseAndUpdate(
     programExercise,
     destination as [string, string, string],
     true,
-    false,
-    { sourceFallback: true, sourceOffset: 0, looseOrder: true },
+    {
+      sourceFallback: true,
+      sourceOffset: 0,
+      looseOrder: true,
+      textOnly: false,
+    },
   );
 }
 
@@ -757,15 +723,14 @@ function addExercise(
  */
 function addFreeExercise(
   destination?: [string, string, string?],
-  programExercise?: ProgramFreeExercise | number,
+  programExercise?: ProgramExercise | number,
 ) {
   // Add table in selected position
   moveExerciseAndUpdate(
     programExercise,
     destination as [string, string, string],
     true,
-    true,
-    { sourceFallback: true, sourceOffset: 0, looseOrder: true },
+    { sourceFallback: true, sourceOffset: 0, looseOrder: true, textOnly: true },
   );
 }
 
@@ -776,7 +741,7 @@ function addFreeExercise(
  * @param destination optional destination week and day, otherwise duplicate in original week and day.
  */
 function duplicateExercise(
-  programExercise: ProgramExercise | ProgramFreeExercise | number,
+  programExercise: ProgramExercise | number,
   destination?: [string, string, string?],
 ) {
   addExercise(destination, programExercise);
@@ -851,7 +816,6 @@ function moveDay(
         programExercise,
         [toWeek, toDay, undefined],
         false,
-        programExercise instanceof ProgramExercise,
         { looseOrder: true },
       );
     isSourceEmpty = false;

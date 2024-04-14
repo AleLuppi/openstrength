@@ -30,94 +30,110 @@
       </div>
 
       <!-- Exercise info -->
-      <div :class="dense ? 'row justify-between items-end col-12' : 'col-3'">
+      <div
+        :class="
+          dense
+            ? 'row justify-between items-end col-12'
+            : programExercise.textOnly
+            ? 'col'
+            : 'col-3'
+        "
+      >
         <div
           class="q-pa-sm bg-lighter os-light-border col-8"
           :class="{
             'cursor-pointer': !showExpanded,
-            'os-exercise-form': !dense,
-            'os-exercise-form-dense': dense,
+            'os-exercise-form': !dense && !programExercise.textOnly,
+            'os-exercise-form-dense': dense && !programExercise.textOnly,
+            'os-exercise-form-text-only': programExercise.textOnly,
           }"
           style="position: relative"
           @click="showExpanded = true"
         >
           <q-slide-transition>
             <div v-show="showExpanded">
-              <os-select
-                v-model="exerciseName"
-                use-input
-                :input-debounce="debounce"
-                :options="exercises.map((exercise) => exercise.name)"
-                :placeholder="
-                  $t('coach.program_management.builder.exercise_name')
-                "
-                hide-bottom-space
-                new-value-mode="add-unique"
-                :after-options-add-new="true"
-                :no-options-add-new="true"
-                add-option-class="text-primary text-bold text-center"
-                :add-option-format-text="
+              <div v-if="!programExercise.textOnly">
+                <os-select
+                  v-model="exerciseName"
+                  use-input
+                  :input-debounce="debounce"
+                  :options="exercises.map((exercise) => exercise.name)"
+                  :placeholder="
+                    $t('coach.program_management.builder.exercise_name')
+                  "
+                  hide-bottom-space
+                  new-value-mode="add-unique"
+                  :after-options-add-new="true"
+                  :no-options-add-new="true"
+                  add-option-class="text-primary text-bold text-center"
+                  :add-option-format-text="
                   (text: string) =>
                     $t('coach.exercise_management.create_named_exercise', {
                       exercise: text,
                     })
                 "
-              >
-                <q-tooltip
-                  v-if="!exerciseName"
-                  anchor="center right"
-                  self="center left"
-                  :offset="[-10, 0]"
                 >
-                  {{
-                    $t("coach.program_management.builder.exercise_name_tooltip")
-                  }}
-                </q-tooltip>
-              </os-select>
-              <q-separator color="inherit" spaced="xs" />
-              <os-select
-                v-model="variantName"
-                use-input
-                :input-debounce="debounce"
-                :options="
-                  programExercise.exercise?.variants?.map((variant) => ({
-                    label: variant.isDefault
-                      ? $t('coach.exercise_management.default_variant')
-                      : variant.name,
-                    value: variant.isDefault ? '' : variant.name,
-                  }))
-                "
-                emit-value
-                :placeholder="
-                  $t('coach.program_management.builder.variant_name')
-                "
-                hide-bottom-space
-                new-value-mode="add-unique"
-                :readonly="!programExercise.exercise"
-                :after-options-add-new="true"
-                :no-options-add-new="true"
-                add-option-class="text-primary text-bold text-center"
-                :add-option-format-text="
+                  <q-tooltip
+                    v-if="!exerciseName"
+                    anchor="center right"
+                    self="center left"
+                    :offset="[-10, 0]"
+                  >
+                    {{
+                      $t(
+                        "coach.program_management.builder.exercise_name_tooltip",
+                      )
+                    }}
+                  </q-tooltip>
+                </os-select>
+                <q-separator color="inherit" spaced="xs" />
+                <os-select
+                  v-model="variantName"
+                  use-input
+                  :input-debounce="debounce"
+                  :options="
+                    programExercise.exercise?.variants?.map((variant) => ({
+                      label: variant.isDefault
+                        ? $t('coach.exercise_management.default_variant')
+                        : variant.name,
+                      value: variant.isDefault ? '' : variant.name,
+                    }))
+                  "
+                  emit-value
+                  :placeholder="
+                    $t('coach.program_management.builder.variant_name')
+                  "
+                  hide-bottom-space
+                  new-value-mode="add-unique"
+                  :readonly="!programExercise.exercise"
+                  :after-options-add-new="true"
+                  :no-options-add-new="true"
+                  add-option-class="text-primary text-bold text-center"
+                  :add-option-format-text="
                   (text: string) =>
                     $t('coach.exercise_management.create_named_variant', {
                       variant: text,
                     })
                 "
-              >
-                <q-tooltip
-                  v-if="
-                    programExercise.exercise && !programExercise.exerciseVariant
-                  "
-                  anchor="center right"
-                  self="center left"
-                  :offset="[-10, 0]"
                 >
-                  {{
-                    $t("coach.program_management.builder.variant_name_tooltip")
-                  }}
-                </q-tooltip>
-              </os-select>
-              <q-separator color="inherit" spaced="xs" />
+                  <q-tooltip
+                    v-if="
+                      programExercise.exercise &&
+                      !programExercise.exerciseVariant
+                    "
+                    anchor="center right"
+                    self="center left"
+                    :offset="[-10, 0]"
+                  >
+                    {{
+                      $t(
+                        "coach.program_management.builder.variant_name_tooltip",
+                      )
+                    }}
+                  </q-tooltip>
+                </os-select>
+                <q-separator color="inherit" spaced="xs" />
+              </div>
               <os-input
                 :model-value="programExercise.exerciseNote"
                 :debounce="debounce"
@@ -154,7 +170,10 @@
                 {{ variantName ? " - " + variantName : "" }}
               </p>
               <p
-                class="text-xs text-italic text-ellipsis"
+                :class="{
+                  'text-xs text-italic text-ellipsis':
+                    !programExercise.textOnly,
+                }"
                 style="max-width: 50vw"
               >
                 {{ programExercise.exerciseNote }}
@@ -215,6 +234,7 @@
 
       <!-- Data table -->
       <osTableSheet
+        v-if="!programExercise.textOnly"
         v-model="exerciseData"
         :headers="[
           'load',
@@ -571,7 +591,9 @@ const variantName = computed({
 
 // Check whether exercise info should be shown expanded or not
 const showExpanded = computed({
-  get: () => props.expanded || !programExercise.value.exercise,
+  get: () =>
+    props.expanded ||
+    (!programExercise.value.exercise && !programExercise.value.textOnly),
   set: (val) => {
     emit("update:expanded", val);
   },
@@ -637,5 +659,9 @@ function getReferenceDisplayName(reference: ProgramLine | MaxLift | undefined) {
 .os-exercise-form-dense {
   border-radius: 10px 10px 0 0;
   margin-block-end: -1px;
+}
+
+.os-exercise-form-text-only {
+  border-radius: 10px;
 }
 </style>

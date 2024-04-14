@@ -39,7 +39,7 @@ export type ProgramProps = {
   labels?: string[];
 
   // Program composition
-  programExercises?: (ProgramExercise | ProgramFreeExercise)[];
+  programExercises?: ProgramExercise[];
 
   // Program status
   coach?: CoachUser;
@@ -82,25 +82,9 @@ export type ProgramExerciseProps = {
 
   // Lines composing exercise
   lines?: ProgramLine[];
-};
 
-/**
- * Program free text exercise properties.
- */
-export type ProgramFreeExerciseProps = {
-  // Basic program exercise info
-  uid?: string;
-
-  // Father program instance
-  program?: Program;
-
-  // Schedule info
-  scheduleWeek?: string | number;
-  scheduleDay?: string | number;
-  scheduleOrder?: string | number;
-
-  // Exercise-related info
-  text?: string;
+  // Require text-only exercise (no lines)
+  textOnly?: boolean;
 };
 
 /**
@@ -230,7 +214,7 @@ export class Program {
   labels?: string[];
 
   // Program composition
-  programExercises?: (ProgramExercise | ProgramFreeExercise)[];
+  programExercises?: ProgramExercise[];
 
   // Program status
   coach?: CoachUser;
@@ -516,7 +500,7 @@ export class Program {
   getLines() {
     return this.programExercises?.reduce(
       (allLines: ProgramLine[], programExercise) =>
-         programExercise instanceof ProgramExercise && programExercise.lines
+        programExercise.lines
           ? [...allLines, ...programExercise.lines]
           : allLines,
       [],
@@ -578,6 +562,9 @@ export class ProgramExercise {
   // Lines composing exercise
   lines?: ProgramLine[];
 
+  // Require text-only exercise (no lines)
+  textOnly?: boolean;
+
   constructor({
     uid,
     program,
@@ -588,6 +575,7 @@ export class ProgramExercise {
     exerciseVariant,
     exerciseNote,
     lines,
+    textOnly,
   }: ProgramExerciseProps = {}) {
     this.uid = uid;
     this.program = program;
@@ -601,6 +589,7 @@ export class ProgramExercise {
       line.programExercise = this;
     });
     this.lines = lines;
+    this.textOnly = textOnly;
   }
 
   /**
@@ -613,60 +602,6 @@ export class ProgramExercise {
     return new ProgramExercise({
       ...this,
       lines: this.lines?.map((line) => line.duplicate(shallow)),
-      ...(shallow && {
-        uid: undefined,
-        program: undefined,
-      }),
-    });
-  }
-}
-
-
-/**
- * Program free exercise entity.
- *
- * @public
- */
-export class ProgramFreeExercise {
-  // Basic program exercise info
-  uid?: string;
-
-  // Father program instance
-  program?: Program;
-
-  // Schedule info
-  scheduleWeek?: string | number;
-  scheduleDay?: string | number;
-  scheduleOrder?: string | number;
-
-  // Exercise-related info
-  text?: string;
-
-  constructor({
-    uid,
-    program,
-    scheduleWeek,
-    scheduleDay,
-    scheduleOrder,
-    text,
-  }: ProgramFreeExerciseProps = {}) {
-    this.uid = uid;
-    this.program = program;
-    this.scheduleWeek = scheduleWeek;
-    this.scheduleDay = scheduleDay;
-    this.scheduleOrder = scheduleOrder;
-    this.text = text;
-  }
-
-  /**
-   * Duplicate program exercise.
-   *
-   * @param shallow avoid copying identifying fields such as uid and parent instance.
-   * @returns a new program exercise with duplicate fields.
-   */
-  duplicate(shallow = false) {
-    return new ProgramFreeExercise({
-      ...this,
       ...(shallow && {
         uid: undefined,
         program: undefined,
@@ -1319,9 +1254,7 @@ function flattenProgram(program: Program) {
 
   // Prepare flatten lines
   let flatLines = undefined;
-  let flatExercise = undefined;
   for (const exerciseToSpread of program.programExercises ?? []) {
-    if (exerciseToSpread instanceof ProgramExercise){
     const { uid, program, exerciseVariant, lines, ...exerciseObj } =
       exerciseToSpread;
     const flatExercise = {
@@ -1329,7 +1262,7 @@ function flattenProgram(program: Program) {
       exercise: exerciseToSpread.exerciseVariant?.uid,
     };
     let linesToStore = lines;
-    if (!linesToStore || !linesToStore.length)
+    if (exerciseToSpread.textOnly || !linesToStore || !linesToStore.length)
       linesToStore = [new ProgramLine()];
     const linesExercise = linesToStore.map((lineToSpread) => {
       const { programExercise, ...lineObj } = lineToSpread;
@@ -1356,16 +1289,6 @@ function flattenProgram(program: Program) {
       };
     });
     flatLines = arrayConcatToNullable(flatLines, linesExercise);
-    }
-    else if (exerciseToSpread instanceof ProgramFreeExercise){
-      const { uid, program, ...exerciseObj } =
-      exerciseToSpread;
-      
-     flatExercise = {
-      ...exerciseObj,     
-    };
-   
-    }
   }
 
   const flatProgram = {
@@ -1373,7 +1296,6 @@ function flattenProgram(program: Program) {
     coachId: program.coach?.uid,
     athleteId: program.athlete?.uid,
     lines: flatLines,
-    text: flatExercise,
   };
 
   return flatProgram;
@@ -1421,7 +1343,7 @@ export function unflattenProgram(
   },
 ): Program {
   // Get all program exercises and lines
-  const programExercises: (ProgramExercise | ProgramFreeExercise)[] = [];
+  const programExercises: ProgramExercise[] = [];
   flatProgram.lines?.forEach((fullLineInfo) => {
     const {
       exercise,
@@ -1429,6 +1351,7 @@ export function unflattenProgram(
       scheduleDay,
       scheduleOrder,
       exerciseNote,
+      textOnly,
       setsReference,
       repsReference,
       repsReferenceType,
@@ -1467,7 +1390,8 @@ export function unflattenProgram(
         exerciseNote: exerciseNote,
         exercise: currentVariant?.exercise,
         exerciseVariant: currentVariant,
-        lines: anyLines ? [new ProgramLine({ ...lineInfo })] : [],
+        textOnly: textOnly,
+        lines: anyLines && !textOnly ? [new ProgramLine({ ...lineInfo })] : [],
       });
       programExercises.push(newProgramExercise);
       if (storeUnresolved && !currentVariant && exercise)
@@ -1481,14 +1405,14 @@ export function unflattenProgram(
   // Correct references in program lines
   const programLines = programExercises.reduce(
     (out: { [key: string]: ProgramLine }, programExercise) => {
-      const currLines = programExercise instanceof ProgramExercise ?
-      programExercise.lines?.reduce(
+      const currLines =
+        programExercise.lines?.reduce(
           (out: { [key: string]: ProgramLine }, line) => {
             if (line.uid) out[line.uid] = line;
             return out;
           },
           {},
-        ) : undefined ?? {};
+        ) ?? {};
       return { ...out, ...currLines };
     },
     {},
