@@ -68,7 +68,7 @@ const searchAthlete = ref<string>();
 // Set what to do on athlete selection
 function onAthleteSelection(...params: [Event, Object, Number]) {
   searchAthlete.value = "";
-  emit("update:modelValue", false);
   emit("selection", ...params);
+  setTimeout(() => emit("update:modelValue", false), 10);
 }
 </script>

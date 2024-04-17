@@ -30,6 +30,15 @@
 
     <!-- Show exercise info if required -->
     <div v-if="!dayShowCollapsed">
+      <div v-if="!readonly && !unlockedFeedback" class="text-center q-py-md">
+        <p class="text-bold">Pronto a iniziare questo giorno?</p>
+        <q-btn
+          label="Inizia allenamento"
+          @click="unlockedFeedback = true"
+          rounded
+        />
+      </div>
+
       <!-- Show single exercise cards -->
       <WorkoutExerciseForm
         v-for="(exercise, idxExercise) in programDay.exercises"
@@ -39,8 +48,8 @@
         :class="{
           'os-next-exercise': isNext && idxExercise == nextExerciseIdx,
         }"
-        :readonly="readonly"
-      ></WorkoutExerciseForm>
+        :readonly="readonly || !unlockedFeedback"
+      />
 
       <div class="row q-py-md">
         <os-input-date
@@ -126,6 +135,7 @@ const dayFeedback = ref<ProgramDayFeedback>({
   completed: false,
   exercisesFeedback: [],
 }); // feedback on program day
+const unlockedFeedback = ref<boolean>(false);
 
 // Find which is the next exercise athlete should perform
 const nextExerciseIdx = computed(() =>
@@ -183,7 +193,13 @@ const saveFeedback = debounce(() => {
 }, 10000);
 
 // Save feedback when updated, after a debounce
-watch(dayFeedback, saveFeedback, { deep: true });
+watch(
+  dayFeedback,
+  () => {
+    if (!props.readonly && unlockedFeedback.value) saveFeedback();
+  },
+  { deep: true },
+);
 
 /**
  * Emit daily feedback.
