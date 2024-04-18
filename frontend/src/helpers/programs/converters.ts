@@ -419,8 +419,9 @@ export function convertProgramToCompactView(
     compactProgram.at(-1)?.exercises.push({
       exercise: exerciseFullName,
       order: order,
-      schemas:
-        programExercise.lines?.map((line) => convertLineToSchema(line)) ?? [],
+      schemas: programExercise.textOnly
+        ? [programExercise.exerciseNote ?? ""]
+        : programExercise.lines?.map((line) => convertLineToSchema(line)) ?? [],
     });
   });
 
