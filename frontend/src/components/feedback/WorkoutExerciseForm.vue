@@ -227,6 +227,7 @@
                 class="q-mt-sm"
                 @click="addSet(lineIdx)"
               />
+              <q-separator inset class="q-my-md" color="grey-3" />
             </div>
           </q-card-section>
         </q-card>
