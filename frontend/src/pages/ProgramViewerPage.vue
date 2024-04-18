@@ -68,7 +68,7 @@
             :name="index"
             class="column justify-center items-center q-pa-none q-mr-sm shadow-1 overflow-hidden os-day-tab"
             :class="
-              programFeedbacks.feedbacks[index]?.completed
+              orderedFeedbacks[index]?.completed
                 ? 'os-day-tab-done'
                 : 'os-day-tab-undone'
             "
@@ -76,7 +76,7 @@
             <p
               class="text-bold"
               :class="
-                programFeedbacks.feedbacks[index]?.completed
+                orderedFeedbacks[index]?.completed
                   ? 'text-white'
                   : 'text-secondary'
               "
@@ -86,7 +86,7 @@
               Day {{ block.dayName }}
             </p>
             <q-icon
-              v-if="programFeedbacks.feedbacks[index]?.completed"
+              v-if="orderedFeedbacks[index]?.completed"
               color="lighter"
               round
               name="check"
@@ -105,16 +105,13 @@
           >
             <WorkoutDayForm
               :program-day="block"
-              :model-value="programFeedbacks.feedbacks[indexDay]"
+              :model-value="orderedFeedbacks[indexDay]"
               :is-next="nextDayIdx == indexDay"
               :readonly="user.role == UserRole.coach"
               class="q-my-md"
               :class="{ 'q-mx-xl': $q.screen.gt.sm }"
               @update:model-value="
-                (val) => {
-                  programFeedbacks.feedbacks[indexDay] = val;
-                  saveFeedback(programFeedbacks, programId ?? undefined);
-                }
+                updateFeedback($event, block.weekName, block.dayName)
               "
             />
           </q-tab-panel>
@@ -229,7 +226,7 @@ import {
   dbSubcollections,
 } from "@/helpers/database/collections";
 import { ProgramFrozenView } from "@/helpers/programs/program";
-import { ProgramFeedback } from "@/helpers/programs/models";
+import { ProgramDayFeedback, ProgramFeedback } from "@/helpers/programs/models";
 import {
   loadLatestFeedback,
   saveFeedback,
@@ -257,6 +254,14 @@ const showCompactProgram = ref<boolean>(false);
 
 // Get requested program id
 const programId = computed(() => String(route.query.id));
+
+// Get ordered feedbacks
+const orderedFeedbacks = computed(
+  () =>
+    programSnapshot.value?.weekdays.map(({ weekName, dayName }) =>
+      getDailyFeedback(weekName, dayName),
+    ) ?? [],
+);
 
 // Retrieve requested program document
 watch(
@@ -339,6 +344,37 @@ const columns: QTableProps["columns"] = [
     style: "width: 10%",
   },
 ];
+
+/**
+ * Update the feedback for a specific week and day.
+ *
+ * @param {ProgramDayFeedback} feedback - The feedback to be updated.
+ * @param {string} week - Name of the week.
+ * @param {string} day - Name of the day.
+ */
+function updateFeedback(
+  feedback: ProgramDayFeedback,
+  week: string,
+  day: string,
+) {
+  const currFeedback = getDailyFeedback(week, day);
+  if (currFeedback) Object.assign(currFeedback, feedback);
+  else programFeedbacks.value.feedbacks.push(feedback);
+  saveFeedback(programFeedbacks.value, programId.value ?? undefined);
+}
+
+/**
+ * Retrieve the feedback for a specific week and day.
+ *
+ * @param {string} week - Name of the interesting week.
+ * @param {string} day - Name of the interesting day.
+ * @return {ProgramFeedback} Feedback object for the specified week and day.
+ */
+function getDailyFeedback(week: string, day: string) {
+  return programFeedbacks.value.feedbacks.find(
+    (feedback) => feedback?.weekName === week && feedback?.dayName === day,
+  );
+}
 
 // Operations to perform on component mount
 onMounted(() => {
