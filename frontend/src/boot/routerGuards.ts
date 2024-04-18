@@ -1,6 +1,7 @@
 import { boot } from "quasar/wrappers";
 import type { RouteRecordName } from "vue-router";
 import { NamedRoutes } from "@/router";
+import { useAppStore } from "@/stores/app";
 import { useUserStore } from "@/stores/user";
 import {
   routeAccessibleByRole,
@@ -10,6 +11,11 @@ import {
 } from "@/router/routeAccessManagement";
 
 export default boot(async ({ router, store }) => {
+  /* Check if router is ready */
+  router.isReady().then(() => {
+    useAppStore(store).isRouterReady = true;
+  });
+
   /* Optional redirects */
   router.beforeEach(async (to) => {
     const user = useUserStore(store);

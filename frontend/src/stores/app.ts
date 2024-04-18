@@ -8,6 +8,9 @@ export const useAppStore = defineStore("app", () => {
   // whether user has ever interacted with the app
   const hasInteracted = ref<boolean>(false);
 
+  // whether router is ready
+  const isRouterReady = ref<boolean>(false);
+
   // current active element on supporting drawer
   const supportDrawerActiveElement = ref<number>();
 
@@ -19,12 +22,14 @@ export const useAppStore = defineStore("app", () => {
    */
   function $reset() {
     hasInteracted.value = false;
+    isRouterReady.value = false;
     supportDrawerActiveElement.value = undefined;
     showDialogOnboarding.value = false;
   }
 
   return {
     hasInteracted,
+    isRouterReady,
     supportDrawerActiveElement,
     showDialogOnboarding,
     $reset,

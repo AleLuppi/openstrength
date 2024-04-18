@@ -99,7 +99,7 @@ addCallbackOnAuthStateChanged({
     // Try to move to original page if app has not been used yet, otherwise re-check current page
     if (route.redirectedFrom && !appStore.hasInteracted)
       router.replace(route.redirectedFrom);
-    else router.replace({ ...route, force: true });
+    else if (appStore.isRouterReady) router.replace({ ...route, force: true });
 
     // Show onboarding dialog if required
     if (!user.role || user.role == UserRole.unknown)
@@ -115,7 +115,7 @@ addCallbackOnAuthStateChanged({
     coachInfo.$reset();
 
     // Refresh page to allow redirect if on unauthorized page
-    router.replace({ ...route, force: true });
+    if (appStore.isRouterReady) router.replace({ ...route, force: true });
   },
 });
 

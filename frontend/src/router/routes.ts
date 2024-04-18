@@ -154,7 +154,6 @@ const routes: RouteRecordRaw[] = [
           restrictAccessByRole: [UserRole.coach],
           restrictAccessToLevel: 4,
           redirectNotAuthorized: NamedRoutes.home,
-          // TODO showRightDrawer: RightDrawerProgramElements,
         },
       },
 
