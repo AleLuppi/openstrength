@@ -23,10 +23,12 @@
     </p>
 
     <q-expansion-item
+      :model-value="exercise.textOnly ? false : undefined"
       hide-expand-icon
       :default-opened="!exerciseDone"
       class="q-ma-sm overflow-hidden bg-lighter"
       style="border-radius: 8px"
+      @update:model-value="undefined"
     >
       <template #header>
         <div class="q-py-sm full-width">
@@ -48,7 +50,7 @@
                     {{ props.exercise.schemaNote[indexLine] }}
                   </p>
                   <p class="text-bold">
-                    {{ exercise.note }}
+                    {{ schema }}
                   </p>
                 </div>
 
