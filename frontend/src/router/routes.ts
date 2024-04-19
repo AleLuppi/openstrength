@@ -225,6 +225,16 @@ const routes: RouteRecordRaw[] = [
           title: "Terms and Conditions",
         },
       },
+
+      // FIXME delete
+      {
+        path: "/god",
+        name: "god",
+        component: () => import("@/pages/ProgramBuilderGodView.vue"),
+        meta: {
+          title: "God",
+        },
+      },
     ],
   },
 
