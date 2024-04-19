@@ -21,6 +21,9 @@ export interface TableSheetCellConfig {
   colFrom?: number | undefined;
   colTo?: number | undefined;
 
+  // Whether cell is in read-only mode
+  readonly?: boolean; // default: false
+
   // row and column span for the cell
   rowSpan?: number; // default: 1
   colSpan?: number; // default: 1

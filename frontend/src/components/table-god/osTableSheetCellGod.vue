@@ -15,6 +15,7 @@
   >
     <div v-for="(cellValue, cellIdx) in modelValue.values" :key="cellIdx">
       <div v-if="typeof cellValue == 'string' || typeof cellValue == 'number'">
+        <!-- Input for string or number values -->
         <q-input
           v-if="editing && (config.editInline ?? true)"
           ref="editComponent"
@@ -26,9 +27,7 @@
           input-class="q-pa-none"
           style="height: unset"
           @update:model-value="
-            (val) => {
-              if (val != undefined) modelValue.values[cellIdx] = val;
-            }
+            if ($event != undefined) modelValue.values[cellIdx] = $event;
           "
         />
 
@@ -50,9 +49,10 @@
         </component>
       </div>
 
+      <!-- Checkbox for boolean values -->
       <div v-else-if="typeof cellValue == 'boolean'">
         <q-checkbox
-          v-model="modelValue.values[cellIdx]"
+          :model-value="modelValue.values[cellIdx]"
           :checked-icon="
             configValues.booleanIcon?.[
               cellIdx % configValues.booleanIcon.length
@@ -63,10 +63,14 @@
               cellIdx % configValues.booleanIconUnchecked.length
             ]
           "
-        ></q-checkbox>
+          @update:model-value="
+            if (editing) modelValue.values[cellIdx] = $event;
+          "
+        />
       </div>
     </div>
 
+    <!-- Placeholder -->
     <div v-if="modelValue.values.length == 0" class="text-grey-6">
       {{ config.placeholder }}
     </div>
@@ -75,6 +79,7 @@
       v-if="editing && config.editSlot"
       :name="`edit-${config.editSlot}`"
       :model-value="modelValue"
+      @update:model-value="modelValue = $event"
     ></slot>
   </component>
 </template>
@@ -100,13 +105,9 @@ const props = withDefaults(
   { config: () => ({}), type: "td", highlightOnHover: true },
 );
 
-// FIXME delete eslint line
-// eslint-disable-next-line
-const modelValue = defineModel<TableSheetCell>({ required: true });
-
-// FIXME delete eslint line
-// eslint-disable-next-line
-const editing = defineModel<boolean>("editing", { default: false });
+// Set cell models
+const modelValue = defineModel<TableSheetCell>({ required: true }); // cell model value
+const editing = defineModel<boolean>("editing", { default: false }); // editing status
 
 // Reference to component for editing or displaying text
 const editComponent = ref<(QInput | HTMLElement)[]>();
@@ -136,7 +137,7 @@ const configValues = computed(() => {
  */
 function handleClick(editIdx?: number) {
   setTimeout(() => {
-    if (!editing.value) {
+    if (!editing.value && !props.config.readonly) {
       editing.value = true;
       nextTick(() => {
         editComponent.value?.[editIdx ?? 0]?.focus();

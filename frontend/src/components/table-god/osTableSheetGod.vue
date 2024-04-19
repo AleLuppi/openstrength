@@ -57,12 +57,15 @@ const props = withDefaults(
     config?: TableSheetCellConfig[];
     configHeaderRow?: TableSheetCellConfig;
     configHeaderCol?: TableSheetCellConfig;
-    configBody?: TableSheetCellConfig;
+    configBody?: TableSheetCellConfig | undefined;
+
+    // set table in read-only mode
+    readonly?: boolean;
 
     // display an empty line at the end TODO
     showEmptyLine?: boolean;
     deleteEmptyLine?: boolean;
-    emptyLineConfig?: TableSheetCellConfig;
+    emptyLineConfig?: TableSheetCellConfig | undefined; // TODO
 
     // model value debounce in ms
     debounce?: string | number;
@@ -74,8 +77,11 @@ const props = withDefaults(
     config: () => [],
     configHeaderRow: () => ({}),
     configHeaderCol: () => ({}),
+    configBody: undefined,
+    readonly: false,
     showEmptyLine: false,
     deleteEmptyLine: true,
+    emptyLineConfig: undefined,
     debounce: 25,
   },
 );
@@ -151,6 +157,10 @@ function getCellConfig(row: number, col: number): TableSheetCellConfig {
     cellConfig.colFrom =
     cellConfig.colTo =
       undefined;
+
+  // Any cell is set to read-only mode if the table is read-only
+  if (props.readonly) cellConfig.readonly = props.readonly;
+
   return cellConfig;
 }
 
