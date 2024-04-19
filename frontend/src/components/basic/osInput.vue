@@ -30,8 +30,8 @@
       class="input-number-hide-arrows"
       :class="{ 'placeholder-hide-on-focus': placeholderHideOnFocus }"
     >
-      <template v-for="(_, slot) in $slots as Readonly<QInputSlots>" #[slot]>
-        <slot :name="slot" />
+      <template v-for="(_, slot) in slots" #[slot]="scope">
+        <slot :name="slot" v-bind="scope || {}"></slot>
       </template>
     </q-input>
   </div>
@@ -41,6 +41,9 @@
 import { ref } from "vue";
 import { QInput } from "quasar";
 import type { QInputProps, QInputSlots } from "quasar";
+
+// Define slots
+const slots = defineSlots<QInputSlots>();
 
 // Define props (from child)
 export interface osInputProps extends QInputProps {

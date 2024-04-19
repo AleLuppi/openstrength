@@ -5,11 +5,11 @@
         {{ $t("coach.charts_management.list.charts_section") }}
       </h6>
       <q-btn
-        @click="updateCharts()"
         icon="fa-solid fa-refresh"
         :flat="!oldData"
         round
         color="secondary"
+        @click="updateCharts()"
       >
         <q-tooltip :offset="[10, 10]">
           {{ $t("coach.charts_management.list.refresh_tooltip") }}
@@ -140,8 +140,6 @@ const debouncedChartsUpdate = debounce(updateCharts, 10000);
  * Force reload of chart components to refresh charts data.
  */
 async function updateCharts() {
-  console.log(props.filterWeek);
-
   chartDataRequests.value = chartDescriptions.map((chartDescriptor) => {
     return {
       chartInfo: chartDescriptor,

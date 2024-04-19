@@ -1,13 +1,13 @@
 <template>
   <q-form
     ref="formElement"
+    class="q-my-md q-gutter-sm"
     @submit="onSubmit"
     @reset="onReset"
-    class="q-my-md q-gutter-sm"
   >
     <q-card-section class="q-gutter-x-xs">
       <div
-        v-for="(maxlift, index) in maxlifts"
+        v-for="(maxlift, index) in maxliftsUnderUpdate"
         :key="index"
         class="row justify-between items-center"
       >
@@ -67,14 +67,14 @@ defineExpose({
 });
 
 // Set ref
-const maxlifts = ref<MaxLift[]>([]); // maxlifts that shall be updated
+const maxliftsUnderUpdate = ref<MaxLift[]>([]); // maxlifts that shall be updated
 const formElement = ref<QForm>(); // form element
 
 // Update maxlifts to input ones
 watch(
   props.maxlifts,
   (inMaxlifts) => {
-    maxlifts.value = props.clone
+    maxliftsUnderUpdate.value = props.clone
       ? inMaxlifts.map((maxlift) => maxlift.duplicate(true))
       : inMaxlifts;
   },
@@ -85,7 +85,7 @@ watch(
  * Perform operations on form submit.
  */
 function onSubmit() {
-  emit("submit", maxlifts.value);
+  emit("submit", maxliftsUnderUpdate.value);
 }
 
 /**

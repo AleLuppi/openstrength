@@ -1,7 +1,7 @@
 <template>
   <q-stepper
-    v-model="step"
     ref="stepperElement"
+    v-model="step"
     color="primary"
     header-class="text-bold"
     animated
@@ -55,7 +55,7 @@
           v-model="selectedRole"
           :texts="buttonsRoles"
           :exclusive="true"
-          :useLocale="true"
+          :use-locale="true"
           :min-choices="1"
         />
       </div>
@@ -77,7 +77,7 @@
           ref="sportsToggleElement"
           v-model="selectedSports"
           :texts="buttonsSports"
-          :useLocale="true"
+          :use-locale="true"
         />
       </div>
 
@@ -96,13 +96,13 @@
     </q-step>
 
     <!-- Stepper navigation controls -->
-    <template v-slot:navigation>
+    <template #navigation>
       <q-stepper-navigation class="text-right">
         <q-btn
           v-if="step > 1"
           flat
-          @click="stepperElement?.previous()"
           class="q-mx-sm"
+          @click="stepperElement?.previous()"
         >
           {{ $t("common.back") }}
         </q-btn>
@@ -116,28 +116,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { GlobalComponents, computed, ref } from "vue";
 import { QStepper } from "quasar";
-import osInput from "@/components/basic/osInput.vue";
-import osToggleButtons from "@/components/basic/osToggleButtons.vue";
 import { logoFullImage } from "@/assets/sources";
 import { UserRole } from "@/helpers/users/user";
 
-// Set props
-const props = defineProps({
-  onSubmit: {
-    type: Function,
-    default: () => {},
-  },
-});
+// Set emits
+const emit = defineEmits<{
+  submit: [
+    data: {
+      [key: string]: any;
+    },
+  ];
+}>();
 
 // Set ref
 const stepperElement = ref<QStepper>();
-const userNameInputElement = ref<typeof osInput>();
-const userSurnameInputElement = ref<typeof osInput>();
-const rolesToggleElement = ref<typeof osToggleButtons>();
-const sportsToggleElement = ref<typeof osToggleButtons>();
-const athletesRangeToggleElement = ref<typeof osToggleButtons>();
+const userNameInputElement = ref<GlobalComponents["osInput"]>();
+const userSurnameInputElement = ref<GlobalComponents["osInput"]>();
+const rolesToggleElement = ref<GlobalComponents["osToggleButtons"]>();
+const sportsToggleElement = ref<GlobalComponents["osToggleButtons"]>();
+const athletesRangeToggleElement = ref<GlobalComponents["osToggleButtons"]>();
 const step = ref(1);
 const userName = ref("");
 const userSurname = ref("");
@@ -220,6 +219,6 @@ function onSubmit() {
   }
 
   // Call props method
-  props.onSubmit?.(data);
+  emit("submit", data);
 }
 </script>

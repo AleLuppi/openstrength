@@ -26,6 +26,7 @@ import {
   matchNumberUnsignedInteger,
 } from "@/helpers/regex";
 import { convertProgramToDayBlocks } from "@/helpers/programs/converters";
+import { arrayConcatToNullable, arrayPushToNullable } from "../array";
 
 /**
  * Training program properties.
@@ -60,7 +61,7 @@ export type ProgramProps = {
 };
 
 /**
- * Program line properties.
+ * Program exercise properties.
  */
 export type ProgramExerciseProps = {
   // Basic program exercise info
@@ -81,6 +82,9 @@ export type ProgramExerciseProps = {
 
   // Lines composing exercise
   lines?: ProgramLine[];
+
+  // Require text-only exercise (no lines)
+  textOnly?: boolean;
 };
 
 /**
@@ -179,6 +183,7 @@ export type ProgramFrozenView = {
       schemaNote: string[];
       textFeedback: boolean[];
       videoFeedback: boolean[];
+      textOnly?: boolean;
     }[];
   }[];
   frozenOn: Date;
@@ -296,8 +301,8 @@ export class Program {
   }: {
     program?: Program;
     saveFrozenView?: boolean;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     const programToSave = program || this;
     programToSave.createdOn = new Date();
@@ -322,8 +327,8 @@ export class Program {
   }: {
     program?: Program;
     saveFrozenView?: boolean;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     const programToUpdate = program || this;
     programToUpdate.lastUpdated = new Date();
@@ -350,8 +355,8 @@ export class Program {
   }: {
     program?: Program;
     saveFrozenView?: boolean;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     const programToSave = program || this;
     if (programToSave.uid)
@@ -374,7 +379,7 @@ export class Program {
    * @param shallow avoid copying identifying fields such as uid and parent instance.
    * @returns a new program with duplicate fields.
    */
-  duplicate(shallow: boolean = false): Program {
+  duplicate(shallow = false): Program {
     const programClone = new Program({
       ...this,
       programExercises: this.programExercises?.map((programExercise) =>
@@ -421,10 +426,10 @@ export class Program {
     onError,
   }: {
     program?: Program;
-    onAthleteUpdateSuccess?: Function;
-    onAthleteUpdateError?: Function;
-    onSuccess?: Function;
-    onError?: Function;
+    onAthleteUpdateSuccess?: (...x: any) => void;
+    onAthleteUpdateError?: (...x: any) => void;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     // Ensure program is mapped onto a database document
     const programToDelete = program || this;
@@ -471,8 +476,8 @@ export class Program {
     onError,
   }: {
     program?: Program;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     // Ensure program is mapped onto a database document
     const programToDelete = program || this;
@@ -558,6 +563,9 @@ export class ProgramExercise {
   // Lines composing exercise
   lines?: ProgramLine[];
 
+  // Require text-only exercise (no lines)
+  textOnly?: boolean;
+
   constructor({
     uid,
     program,
@@ -568,6 +576,7 @@ export class ProgramExercise {
     exerciseVariant,
     exerciseNote,
     lines,
+    textOnly,
   }: ProgramExerciseProps = {}) {
     this.uid = uid;
     this.program = program;
@@ -581,6 +590,7 @@ export class ProgramExercise {
       line.programExercise = this;
     });
     this.lines = lines;
+    this.textOnly = textOnly;
   }
 
   /**
@@ -589,7 +599,7 @@ export class ProgramExercise {
    * @param shallow avoid copying identifying fields such as uid and parent instance.
    * @returns a new program exercise with duplicate fields.
    */
-  duplicate(shallow: boolean = false) {
+  duplicate(shallow = false) {
     return new ProgramExercise({
       ...this,
       lines: this.lines?.map((line) => line.duplicate(shallow)),
@@ -816,18 +826,18 @@ export class ProgramLine {
 
   // Supposed values
   get setsSupposedValue(): number | undefined {
-    if (this.setsBaseValue && matchNumberFractionInteger(this.setsBaseValue)) {
-      const [secondNumber, firstNumber] = matchNumberFractionInteger(
-        this.setsBaseValue,
-      )!
-        .slice(1, 3)
-        .map(Number);
+    const matchValue =
+      this.setsBaseValue && matchNumberFractionInteger(this.setsBaseValue);
+    if (matchValue) {
+      const [secondNumber, firstNumber] = matchValue.slice(1, 3).map(Number);
       return (secondNumber + firstNumber) / 2;
     } else if (
       this.setsBaseValue &&
-      matchNumberIntegerInBrackets(this.setsBaseValue)
+      matchNumberIntegerInBrackets(this.setsBaseValue)?.at(1)
     ) {
-      return parseInt(matchNumberIntegerInBrackets(this.setsBaseValue)?.at(1)!);
+      return parseInt(
+        matchNumberIntegerInBrackets(this.setsBaseValue)?.at(1) ?? "0",
+      );
     } else if (this.setsOperation) {
       const referenceValue =
         this.setsReference?.setsComputedValue ??
@@ -843,18 +853,18 @@ export class ProgramLine {
     } else return undefined;
   }
   get repsSupposedValue(): number | undefined {
-    if (this.repsBaseValue && matchNumberFractionInteger(this.repsBaseValue)) {
-      const [secondNumber, firstNumber] = matchNumberFractionInteger(
-        this.repsBaseValue,
-      )!
-        .slice(1, 3)
-        .map(Number);
+    const matchValue =
+      this.repsBaseValue && matchNumberFractionInteger(this.repsBaseValue);
+    if (matchValue) {
+      const [secondNumber, firstNumber] = matchValue.slice(1, 3).map(Number);
       return (secondNumber + firstNumber) / 2;
     } else if (
       this.repsBaseValue &&
-      matchNumberIntegerInBrackets(this.repsBaseValue)
+      matchNumberIntegerInBrackets(this.repsBaseValue)?.at(1)
     ) {
-      return parseInt(matchNumberIntegerInBrackets(this.repsBaseValue)?.at(1)!);
+      return parseInt(
+        matchNumberIntegerInBrackets(this.repsBaseValue)?.at(1) ?? "0",
+      );
     } else if (this.repsOperation) {
       const referenceValue = this.refRepsValue;
       return referenceValue
@@ -949,18 +959,18 @@ export class ProgramLine {
     return undefined;
   }
   get rpeSupposedValue(): number | undefined {
-    if (this.rpeBaseValue && matchNumberFractionFloat(this.rpeBaseValue)) {
-      const [secondNumber, firstNumber] = matchNumberFractionFloat(
-        this.rpeBaseValue,
-      )!
-        .slice(1, 3)
-        .map(Number);
+    const matchValue =
+      this.rpeBaseValue && matchNumberFractionFloat(this.rpeBaseValue);
+    if (matchValue) {
+      const [secondNumber, firstNumber] = matchValue.slice(1, 3).map(Number);
       return (secondNumber + firstNumber) / 2;
     } else if (
       this.rpeBaseValue &&
-      matchNumberFloatInBrackets(this.rpeBaseValue)
+      matchNumberFloatInBrackets(this.rpeBaseValue)?.at(1)
     ) {
-      return parseFloat(matchNumberFloatInBrackets(this.rpeBaseValue)?.at(1)!);
+      return parseFloat(
+        matchNumberFloatInBrackets(this.rpeBaseValue)?.at(1) ?? "0",
+      );
     } else if (this.rpeOperation !== undefined) {
       const referenceValue =
         this.rpeReference?.rpeComputedValue ??
@@ -1147,7 +1157,7 @@ export class ProgramLine {
    * @param shallow avoid copying identifying fields such as uid and parent instance.
    * @returns a new program line with duplicate fields.
    */
-  duplicate(shallow: boolean = false) {
+  duplicate(shallow = false) {
     return new ProgramLine({
       ...this,
       ...(shallow && {
@@ -1167,7 +1177,10 @@ export class ProgramLine {
  */
 export function addDocProgram(
   program: Program,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   const { uid, ...programObj } = flattenProgram(program);
   doAddDoc(dbCollections.programs, programObj, {
@@ -1190,7 +1203,10 @@ export function addDocProgram(
 export function addDocProgramFrozen(
   programView: ProgramFrozenView,
   programId: string,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   doAddDoc(
     `${dbCollections.programs}/${programId}/${dbSubcollections.programSnapshots}`,
@@ -1211,7 +1227,10 @@ export function addDocProgramFrozen(
  */
 export function updateDocProgram(
   program: Program,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   const { uid, ...programObj } = flattenProgram(program);
   const docId = program.uid;
@@ -1233,51 +1252,51 @@ export function updateDocProgram(
  */
 function flattenProgram(program: Program) {
   const { programExercises, coach, athlete, ...programObj } = program;
+
+  // Prepare flatten lines
+  let flatLines = undefined;
+  for (const exerciseToSpread of program.programExercises ?? []) {
+    const { uid, program, exerciseVariant, lines, ...exerciseObj } =
+      exerciseToSpread;
+    const flatExercise = {
+      ...exerciseObj,
+      exercise: exerciseToSpread.exerciseVariant?.uid,
+    };
+    let linesToStore = lines;
+    if (exerciseToSpread.textOnly || !linesToStore || !linesToStore.length)
+      linesToStore = [new ProgramLine()];
+    const linesExercise = linesToStore.map((lineToSpread) => {
+      const { programExercise, ...lineObj } = lineToSpread;
+      const referenceAndType = {
+        setsReference: lineToSpread.setsReference?.uid,
+        repsReference: lineToSpread.repsReference?.uid,
+        repsReferenceType: (lineToSpread.repsReference
+          ? lineToSpread.repsReference instanceof MaxLift
+            ? "maxlift"
+            : "line"
+          : undefined) as "maxlift" | "line" | undefined,
+        loadReference: lineToSpread.loadReference?.uid,
+        loadReferenceType: (lineToSpread["loadReference"]
+          ? lineToSpread.loadReference instanceof MaxLift
+            ? "maxlift"
+            : "line"
+          : undefined) as "maxlift" | "line" | undefined,
+        rpeReference: lineToSpread.rpeReference?.uid,
+      };
+      return {
+        ...flatExercise,
+        ...lineObj,
+        ...referenceAndType,
+      };
+    });
+    flatLines = arrayConcatToNullable(flatLines, linesExercise);
+  }
+
   const flatProgram = {
     ...programObj,
     coachId: program.coach?.uid,
     athleteId: program.athlete?.uid,
-    lines: program.programExercises?.reduce(
-      (out: { [key: string]: any }[], exerciseToSpread) => {
-        const { uid, program, exerciseVariant, lines, ...exerciseObj } =
-          exerciseToSpread;
-        const flatExercise = {
-          ...exerciseObj,
-          exercise: exerciseToSpread.exerciseVariant?.uid,
-        };
-        let linesToStore = lines;
-        if (!linesToStore || !linesToStore.length)
-          linesToStore = [new ProgramLine()];
-        return [
-          ...out,
-          ...linesToStore.map((lineToSpread) => {
-            const { programExercise, ...lineObj } = lineToSpread;
-            const referenceAndType = {
-              setsReference: lineToSpread.setsReference?.uid,
-              repsReference: lineToSpread.repsReference?.uid,
-              repsReferenceType: (lineToSpread.repsReference
-                ? lineToSpread.repsReference instanceof MaxLift
-                  ? "maxlift"
-                  : "line"
-                : undefined) as "maxlift" | "line" | undefined,
-              loadReference: lineToSpread.loadReference?.uid,
-              loadReferenceType: (lineToSpread["loadReference"]
-                ? lineToSpread.loadReference instanceof MaxLift
-                  ? "maxlift"
-                  : "line"
-                : undefined) as "maxlift" | "line" | undefined,
-              rpeReference: lineToSpread.rpeReference?.uid,
-            };
-            return {
-              ...flatExercise,
-              ...lineObj,
-              ...referenceAndType,
-            };
-          }),
-        ];
-      },
-      [],
-    ),
+    lines: flatLines,
   };
 
   return flatProgram;
@@ -1333,6 +1352,7 @@ export function unflattenProgram(
       scheduleDay,
       scheduleOrder,
       exerciseNote,
+      textOnly,
       setsReference,
       repsReference,
       repsReferenceType,
@@ -1364,22 +1384,22 @@ export function unflattenProgram(
           [],
         )
         .find((variant) => variant.uid == exercise);
-      programExercises.push(
-        new ProgramExercise({
-          scheduleWeek: scheduleWeek,
-          scheduleDay: scheduleDay,
-          scheduleOrder: scheduleOrder,
-          exerciseNote: exerciseNote,
-          exercise: currentVariant?.exercise,
-          exerciseVariant: currentVariant,
-          lines: anyLines ? [new ProgramLine({ ...lineInfo })] : [],
-        }),
-      );
+      const newProgramExercise = new ProgramExercise({
+        scheduleWeek: scheduleWeek,
+        scheduleDay: scheduleDay,
+        scheduleOrder: scheduleOrder,
+        exerciseNote: exerciseNote,
+        exercise: currentVariant?.exercise,
+        exerciseVariant: currentVariant,
+        textOnly: textOnly,
+        lines: anyLines && !textOnly ? [new ProgramLine({ ...lineInfo })] : [],
+      });
+      programExercises.push(newProgramExercise);
       if (storeUnresolved && !currentVariant && exercise)
-        (storeUnresolved.exercises = storeUnresolved.exercises || []).push([
-          programExercises.at(-1)!,
-          exercise,
-        ]);
+        storeUnresolved.exercises = arrayPushToNullable(
+          storeUnresolved.exercises,
+          [newProgramExercise, exercise],
+        );
     }
   });
 
@@ -1399,22 +1419,30 @@ export function unflattenProgram(
     {},
   );
   flatProgram.lines?.forEach((fullLineInfo) => {
-    const currLine = programLines[fullLineInfo.uid];
+    const currLine = fullLineInfo.uid
+      ? programLines[fullLineInfo.uid]
+      : undefined;
     if (!currLine) return;
     currLine.loadReference =
       fullLineInfo.loadReferenceType === "maxlift"
         ? maxlifts?.find((maxlift) => maxlift.uid == fullLineInfo.loadReference)
-        : fullLineInfo.loadReferenceType === "line"
+        : fullLineInfo.loadReferenceType === "line" &&
+          fullLineInfo.loadReference
         ? programLines[fullLineInfo.loadReference]
         : undefined;
     currLine.repsReference =
       fullLineInfo.repsReferenceType === "maxlift"
         ? maxlifts?.find((maxlift) => maxlift.uid == fullLineInfo.repsReference)
-        : fullLineInfo.repsReferenceType === "line"
+        : fullLineInfo.repsReferenceType === "line" &&
+          fullLineInfo.repsReference
         ? programLines[fullLineInfo.repsReference]
         : undefined;
-    currLine.setsReference = programLines[fullLineInfo.setsReference];
-    currLine.rpeReference = programLines[fullLineInfo.rpeReference];
+    currLine.setsReference = fullLineInfo.setsReference
+      ? programLines[fullLineInfo.setsReference]
+      : undefined;
+    currLine.rpeReference = fullLineInfo.rpeReference
+      ? programLines[fullLineInfo.rpeReference]
+      : undefined;
     if (
       storeUnresolved &&
       !currLine.loadReference &&
@@ -1461,5 +1489,6 @@ export function unflattenProgram(
     storeUnresolved.coach = [outProgram, flatProgram.coachId];
   if (storeUnresolved && !outProgram.athlete && flatProgram.athleteId)
     storeUnresolved.athlete = [outProgram, flatProgram.athleteId];
+
   return outProgram;
 }

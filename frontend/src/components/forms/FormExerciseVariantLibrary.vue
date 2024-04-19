@@ -18,7 +18,7 @@
         required
         class="col-12"
       >
-        <template v-slot:before>
+        <template #before>
           <span class="text-bold text-h6" style="font-size: medium">
             {{ props.variant.exercise?.name + " - " }}
           </span>
@@ -130,7 +130,7 @@ defineExpose({
 // Set ref
 const formElement = ref<QForm>();
 const variantName = ref<string>();
-const variantMuscleGroups = ref<string[]>();
+const variantMuscleGroups = ref<ExerciseMuscleGroups[]>();
 const variantLoadType = ref<string>();
 const variantEquipment = ref<string[]>();
 const variantVideo = ref<string>();

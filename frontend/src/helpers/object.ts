@@ -6,7 +6,7 @@ import { inspect } from "util";
  * @param obj object whose emptiness should be checked.
  * @returns true if object is empty, false otherwise.
  */
-export function objectIsEmpty(obj: Object) {
+export function objectIsEmpty(obj: object) {
   return Object.keys(obj).length === 0;
 }
 
@@ -16,8 +16,8 @@ export function objectIsEmpty(obj: Object) {
  * @param obj object that shall be filtered.
  * @returns filtered version of the object.
  */
-export function objectFilterOutUndefined(obj: { [key: string]: any }) {
-  const ret: { [key: string]: any } = {};
+export function objectFilterOutUndefined<T>(obj: { [key: string]: T }) {
+  const ret: { [key: string]: T } = {};
   Object.keys(obj)
     .filter((key) => obj[key] !== undefined)
     .forEach((key) => (ret[key] = obj[key]));
@@ -32,10 +32,10 @@ export function objectFilterOutUndefined(obj: { [key: string]: any }) {
  * @param ignoreUndefined if true, ignore undefined values, otherwise keep them.
  * @returns object with sorted key-value pairs.
  */
-export function objectSortKeysByList(
-  obj: { [key: string]: any },
+export function objectSortKeysByList<T>(
+  obj: { [key: string]: T },
   list: string[],
-  ignoreUndefined: boolean = false,
+  ignoreUndefined = false,
 ) {
   const out: typeof obj = {};
   list.forEach((key) => {
@@ -50,9 +50,9 @@ export function objectSortKeysByList(
  * @param objA destination object that shall be updated.
  * @param objB source object that provides values.
  */
-export function objectAssignNotUndefined(
-  objA: { [key: string]: any },
-  objB: { [key: string]: any },
+export function objectAssignNotUndefined<Ta, Tb>(
+  objA: { [K in keyof Ta]: Ta[K] },
+  objB: { [K in keyof Tb]: Tb[K] },
 ) {
   Object.assign(objA, objectFilterOutUndefined(objB));
 }
@@ -136,10 +136,10 @@ export function objectDeepCopy<T extends object>(obj: T): T {
  * @param to value that replaces the original one.
  * @returns updated object with mapped values.
  */
-export function objectDeepValueToValue<T extends object>(
+export function objectDeepValueToValue<T extends object, R>(
   obj: T,
-  from: any,
-  to: any,
+  from: T[keyof T],
+  to: R,
 ): T {
   return JSON.parse(JSON.stringify(obj, (k, v) => (v === from ? to : v)));
 }

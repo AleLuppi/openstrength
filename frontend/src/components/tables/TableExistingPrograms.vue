@@ -1,5 +1,6 @@
 <template>
   <os-table
+    v-model:selected="selectedRows"
     :columns="columns"
     :rows="rows"
     row-key="uid"
@@ -12,12 +13,11 @@
         ? 'os-table-max-height-with-header justify-center'
         : 'os-table-max-height justify-center'
     "
-    @row-click="
-      (...params: [Event, Object, Number]) => emit('selection', ...params)
-    "
     selection="single"
-    v-model:selected="selectedRows"
     :sort-by="sortBy"
+    @row-click="
+      (...params: [Event, object, number]) => emit('selection', ...params)
+    "
   ></os-table>
 </template>
 
@@ -28,6 +28,7 @@ import { Program } from "@/helpers/programs/program";
 import { useI18n } from "vue-i18n";
 import { NamedRoutes } from "@/router";
 import { dateFromStringLocale } from "@/helpers/scalar";
+import { symOutlinedOpenInNew } from "@quasar/extras/material-symbols-outlined";
 
 // Init plugin
 const $q = useQuasar();
@@ -63,7 +64,10 @@ const props = withDefaults(
     sortBy?: string;
   }>(),
   {
+    selected: undefined,
+    showFields: undefined,
     small: false,
+    activeProgram: undefined,
     allowInfo: false,
     allowOpen: false,
     allowDelete: false,
@@ -74,7 +78,7 @@ const props = withDefaults(
 
 // Define emits
 const emit = defineEmits<{
-  selection: [evt: Event, row: Object, index: Number];
+  selection: [evt: Event, row: object, index: number];
   "update:selected": [value?: Program];
   info: [program: Program];
   delete: [program: Program];
@@ -119,8 +123,8 @@ const columns = computed(() => {
           field: "startedOn",
           sortable: true,
           sort: (a: string, b: string) =>
-            (dateFromStringLocale(a, "short") as any) -
-            (dateFromStringLocale(b, "short") as any),
+            (dateFromStringLocale(a, "short")?.getTime() ?? 0) -
+            (dateFromStringLocale(b, "short")?.getTime() ?? 0),
         });
         break;
       case "finishedOn":
@@ -132,8 +136,8 @@ const columns = computed(() => {
           field: "finishedOn",
           sortable: true,
           sort: (a: string, b: string) =>
-            (dateFromStringLocale(a, "short") as any) -
-            (dateFromStringLocale(b, "short") as any),
+            (dateFromStringLocale(a, "short")?.getTime() ?? 0) -
+            (dateFromStringLocale(b, "short")?.getTime() ?? 0),
         });
         break;
       case "lastUpdated":
@@ -145,8 +149,8 @@ const columns = computed(() => {
           field: "lastUpdated",
           sortable: true,
           sort: (a: string, b: string) =>
-            (dateFromStringLocale(a, "short") as any) -
-            (dateFromStringLocale(b, "short") as any),
+            (dateFromStringLocale(a, "short")?.getTime() ?? 0) -
+            (dateFromStringLocale(b, "short")?.getTime() ?? 0),
         });
         break;
     }
@@ -224,7 +228,7 @@ const rows = computed(() => {
     onopen: {
       element: "button",
       to: { name: NamedRoutes.program, params: { programId: program.uid } },
-      icon: "open_in_new",
+      icon: symOutlinedOpenInNew,
       flat: true,
       round: true,
       label: props.showButtonLabel ? i18n.t("common.open") : undefined,

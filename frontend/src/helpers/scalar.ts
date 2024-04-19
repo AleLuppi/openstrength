@@ -1,4 +1,4 @@
-import i18n from "@/i18n";
+import { i18n } from "boot/i18n";
 import { matchNumberUnsignedInteger } from "@/helpers/regex";
 import { arrayUniqueValues } from "@/helpers/array";
 
@@ -22,7 +22,7 @@ export function numberClamp(num: number, min: number, max: number) {
  * @param ndigits how many digits to keep.
  * @returns rounded decimal number.
  */
-export function numberRoundToDecimal(num: number, ndigits: number = 0) {
+export function numberRoundToDecimal(num: number, ndigits = 0) {
   const factor = Math.pow(10, Math.max(Math.floor(ndigits), 0));
   return Math.round(num * factor) / factor;
 }

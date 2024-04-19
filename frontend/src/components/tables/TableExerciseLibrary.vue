@@ -1,5 +1,6 @@
 <template>
   <os-table
+    v-model:selected="selected"
     :columns="columns"
     :rows="rows"
     virtual-scroll
@@ -9,10 +10,9 @@
         ? 'os-table-max-height-with-header'
         : 'os-table-max-height'
     "
-    @row-click="$props.onUpdate"
     :selection="isVariant ? 'none' : 'single'"
-    v-model:selected="selected"
     :sort-by="isVariant ? 'variant' : 'exercise'"
+    @row-click="$props.onUpdate"
   ></os-table>
 </template>
 
@@ -26,7 +26,7 @@ const i18n = useI18n();
 
 // Allow row selection from parent
 const selected = ref<{ [key: string]: any }[]>();
-function selectRowByName(name: string, clearOnFail: boolean = false) {
+function selectRowByName(name: string, clearOnFail = false) {
   const row = rows.value.find((row) => Boolean(name) && row.name == name);
   if (row) selected.value = [row];
   else if (clearOnFail) selected.value = [];

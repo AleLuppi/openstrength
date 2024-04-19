@@ -2,7 +2,7 @@ import { Program } from "@/helpers/programs/program";
 import type { ProgramFilter } from "@/helpers/programs/models";
 import { AthleteUser } from "@/helpers/users/user";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
-import { arrayUniqueValues } from "../array";
+import { arrayUniqueValues } from "@/helpers/array";
 
 /**
  * Create a dummy athlete.
@@ -48,8 +48,8 @@ function initializeProgramTemplateInstance(program?: Program): Program {
 export function filterProgram(
   program: Program,
   filter: ProgramFilter,
-  includeUndefined: boolean = false,
-  inplace: boolean = false,
+  includeUndefined = false,
+  inplace = false,
 ): Program {
   const outProgram = inplace ? program : program.duplicate();
   outProgram.programExercises = outProgram.programExercises?.filter(

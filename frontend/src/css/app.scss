@@ -1,0 +1,504 @@
+// app global css in SCSS form
+
+/***** Setup fonts *****/
+h1,
+.text-h1 {
+  margin-block-start: 0.6em;
+  margin-block-end: 0.4em;
+  font-weight: $os-fontweight-bold;
+  font-size: $os-fontsize-xxxl;
+  color: $os-secondary-9;
+}
+
+h2,
+.text-h2 {
+  margin-block-start: 0.6em;
+  margin-block-end: 0.4em;
+  font-weight: $os-fontweight-bold;
+  font-size: $os-fontsize-xxl;
+  color: $os-secondary-8;
+}
+
+h3,
+.text-h3 {
+  margin-block-start: 0.6em;
+  margin-block-end: 0.4em;
+  font-weight: $os-fontweight-bold;
+  font-size: $os-fontsize-lg;
+  color: $os-secondary-5;
+}
+
+h4,
+.text-h4 {
+  margin-block-start: 0.6em;
+  margin-block-end: 0.4em;
+  font-weight: $os-fontweight-semibold;
+  font-size: $os-fontsize-md;
+  color: $os-secondary-6;
+}
+
+h5,
+.text-h5 {
+  margin-block-start: 0.6em;
+  margin-block-end: 0.4em;
+  font-weight: $os-fontweight-semibold;
+  font-size: $os-fontsize-regular;
+  color: $os-secondary-6;
+}
+
+h6,
+.text-h6 {
+  margin-block-start: 0.6em;
+  margin-block-end: 0.4em;
+  font-weight: $os-fontweight-semibold;
+  font-size: $os-fontsize-regular;
+  color: $os-secondary-7;
+}
+
+.text-margin-xs {
+  margin-block-start: 0em;
+  margin-block-end: 0.2em;
+}
+
+p {
+  margin-block-start: 0;
+  margin-block-end: 0.2em;
+}
+
+a {
+  font-weight: bolder;
+
+  &:not(.link-child) {
+    color: $os-secondary-5;
+
+    &:hover {
+      color: $os-secondary-9;
+    }
+  }
+
+  &.link-child {
+    color: inherit;
+    @extend .no-decoration;
+  }
+}
+
+.text-xs {
+  margin-block-start: 0;
+  margin-block-end: 0.2em;
+  font-weight: $os-fontweight-regular;
+  font-size: $os-fontsize-xs;
+  color: $os-grey-8;
+}
+
+.text-md {
+  font-size: $os-fontsize-md;
+}
+
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/***** Setup colors *****/
+// Brand colors
+.text-primary {
+  color: $primary !important;
+}
+
+.bg-primary {
+  color: $onPrimary !important;
+  background: $primary !important;
+}
+
+.text-secondary {
+  color: $secondary !important;
+}
+
+.bg-secondary {
+  color: $onSecondary !important;
+  background: $secondary !important;
+}
+
+.text-accent {
+  color: $accent !important;
+}
+
+.bg-accent {
+  color: $onAccent !important;
+  background: $accent !important;
+}
+
+.text-dark {
+  color: $dark !important;
+}
+
+.bg-dark {
+  color: $onDark !important;
+  background: $dark !important;
+}
+
+//Background colors
+.text-lightest {
+  color: $lightest !important;
+}
+
+.bg-lightest {
+  color: $onLightest !important;
+  background: $lightest !important;
+}
+
+.text-lighter {
+  color: $lighter !important;
+}
+
+.bg-lighter {
+  color: $onLighter !important;
+  background: $lighter !important;
+}
+
+.text-light {
+  color: $light !important;
+}
+
+.bg-light {
+  color: $onLight !important;
+  background: $light !important;
+}
+
+.text-light-dark {
+  color: $light-dark !important;
+}
+
+.bg-light-dark {
+  color: $onLight-dark !important;
+  background: $light-dark !important;
+}
+
+.text-dark-light {
+  color: $dark-light !important;
+}
+
+.bg-dark-light {
+  color: $onDark-light !important;
+  background: $dark-light !important;
+}
+
+.text-darker {
+  color: $darker !important;
+}
+
+.bg-darker {
+  color: $onDarker !important;
+  background: $darker !important;
+}
+
+.text-darkest {
+  color: $darkest !important;
+}
+
+.bg-darkest {
+  color: $onDarkest !important;
+  background: $darkest !important;
+}
+
+// Semantic colors
+.text-positive {
+  color: $positive !important;
+}
+
+.bg-positive {
+  color: $onPositive !important;
+  background: $positive !important;
+}
+
+.text-negative {
+  color: $negative !important;
+}
+
+.bg-negative {
+  color: $onNegative !important;
+  background: $negative !important;
+}
+
+.text-info {
+  color: $info !important;
+}
+
+.bg-info {
+  color: $onInfo !important;
+  background: $info !important;
+}
+
+.text-warning {
+  color: $warning !important;
+}
+
+.bg-warning {
+  color: $onWarning !important;
+  background: $warning !important;
+}
+
+.bg-inherit {
+  background: inherit;
+}
+
+/***** Setup sizes *****/
+.limit-max-width {
+  max-width: min(50em, 700px);
+}
+
+.dialog-min-width {
+  min-width: min(max(40em, 500px), 96vw);
+}
+
+.width-90 {
+  width: 90%;
+}
+
+/***** Setup appearance *****/
+.bordered {
+  // TODO uniform name with other colors
+  border: 1px solid $dark-light;
+}
+
+.border-primary {
+  border: 2px solid $primary;
+}
+
+.border-positive {
+  border: 2px solid $positive;
+}
+
+/***** Useful classes *****/
+
+// Prevent text selection
+.prevent-select {
+  -webkit-user-select: none; // Safari
+  -ms-user-select: none; // IE 10 and IE 11
+  user-select: none; // Standard syntax
+}
+
+// Avoid underline
+.no-decoration {
+  text-decoration: none;
+}
+
+// Underline
+.underlined {
+  text-decoration: underline;
+}
+
+// Dashed underline
+.underlined-dashed {
+  text-decoration: underline dashed;
+  text-underline-offset: 0.3em;
+}
+
+// Exclude element from print
+@media print {
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+}
+
+/***** DOM element related classes *****/
+// Input
+.input-required:after {
+  color: $red;
+  content: " *";
+  display: inline;
+}
+
+// Icon
+.text-icon-color {
+  color: $os-primary-4 !important;
+}
+
+.bg-icon-color {
+  color: $os-primary-4 !important;
+}
+
+// Button
+.text-button-primary {
+  color: $primary !important;
+}
+
+.bg-button-primary {
+  color: $onPrimary !important;
+  background: $primary !important;
+}
+
+.text-button-secondary {
+  color: $secondary !important;
+}
+
+.bg-button-secondary {
+  color: $onSecondary !important;
+  background: $secondary !important;
+}
+
+.text-button-negative {
+  color: $os-secondary-4 !important;
+}
+
+.bg-button-negative {
+  background: $os-secondary-4 !important;
+}
+
+// Table
+.bg-table-header {
+  background: $os-grey-cold-2 !important;
+}
+
+.bg-table-row {
+  background: $os-grey-0 !important;
+}
+
+.bg-table-row-selected {
+  background: $os-grey-cold-1 !important;
+}
+
+.text-table-header {
+  font-size: 0.9rem;
+  color: $os-grey-cold-7;
+}
+
+// Input
+.text-input-top-label {
+  font-size: 0.9rem;
+  color: $os-grey-cold-7;
+}
+
+.placeholder-light .q-placeholder::placeholder {
+  color: $light;
+  opacity: 1;
+}
+
+.placeholder-hide-on-focus :focus.q-placeholder::placeholder {
+  color: transparent;
+}
+
+// Charts
+.text-chart-color1 {
+  color: $chart-color1 !important;
+}
+
+.text-chart-color2 {
+  color: $chart-color2 !important;
+}
+
+.text-chart-color3 {
+  color: $chart-color3 !important;
+}
+
+.text-chart-color4 {
+  color: $chart-color4 !important;
+}
+
+.text-chart-color5 {
+  color: $chart-color5 !important;
+}
+
+.text-chart-color6 {
+  color: $chart-color6 !important;
+}
+
+// Global Scrollbar
+::-webkit-scrollbar {
+  width: 14px;
+  background-color: $os-grey-0;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $os-grey-warm-4;
+  border-radius: 100px;
+  border: 4px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  min-height: 50px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  border-width: 3px;
+  background-color: $os-grey-warm-6;
+}
+
+/***** Animations *****/
+.animate-pulse-with-rotation {
+  animation: animation-pulse-with-rotation 5s ease-in-out
+    var(--animation-delay, 0s) infinite;
+}
+
+@keyframes animation-pulse-with-rotation {
+  0%,
+  10% {
+    transform: scale(1);
+  }
+  3%,
+  7% {
+    transform: scale(1.13) rotate(-10deg);
+  }
+  5% {
+    transform: scale(1.15) rotate(10deg);
+  }
+}
+
+.animate-pulse-with-rotation-sm {
+  animation: animation-pulse-with-rotation-sm 5s ease-in-out
+    var(--animation-delay, 0s) infinite;
+}
+
+@keyframes animation-pulse-with-rotation-sm {
+  0%,
+  10% {
+    transform: scale(1);
+  }
+  3%,
+  7% {
+    transform: scale(1.12) rotate(-5deg);
+  }
+  5% {
+    transform: scale(1.13) rotate(5deg);
+  }
+}
+
+.animate-heartbeat {
+  animation: animation-heartbeat 5s ease-in-out var(--animation-delay, 0s)
+    infinite;
+}
+
+@keyframes animation-heartbeat {
+  0%,
+  10%,
+  20% {
+    transform: scale(1);
+  }
+  5%,
+  15% {
+    transform: scale(1.15);
+  }
+}
+
+.animate-heartbeat-with-rotation {
+  animation: animation-heartbeat-with-rotation 5s ease-in-out
+    var(--animation-delay, 0s) infinite;
+}
+
+@keyframes animation-heartbeat-with-rotation {
+  0%,
+  10%,
+  20% {
+    transform: scale(1);
+  }
+  3%,
+  7%,
+  13%,
+  17% {
+    transform: scale(1.13) rotate(-10deg);
+  }
+  5%,
+  15% {
+    transform: scale(1.15) rotate(10deg);
+  }
+}

@@ -1,16 +1,16 @@
 <template>
   <q-list>
     <q-btn
+      v-for="(text, key) in textsMap"
       v-bind="props"
+      :key="text"
       rounded
       no-caps
-      v-for="(text, key) in textsMap"
-      :key="text"
       :color="selected.includes(key) ? 'primary' : 'lighter'"
       :text-color="selected.includes(key) ? 'lighter' : 'dark'"
-      @click="toggleButton(key)"
       class="bordered"
       :class="$q.screen.lt.sm ? 'q-ma-xs' : 'q-ma-sm'"
+      @click="toggleButton(key)"
     >
       {{ props.useLocale ? $t(text) : text }}
     </q-btn>

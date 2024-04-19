@@ -22,7 +22,7 @@
 
       <q-icon
         v-if="modelValue?.completed"
-        name="sym_o_check"
+        :name="symOutlinedCheck"
         size="sm"
         color="primary"
       ></q-icon>
@@ -66,7 +66,6 @@
         />
         <q-btn
           class="col-12"
-          @click.stop="completeDay()"
           :label="
             readonly
               ? 'Chiudi'
@@ -74,13 +73,14 @@
               ? 'Salva modifiche'
               : 'Salva allenamento'
           "
+          @click.stop="completeDay()"
         />
         <q-btn
           v-if="!readonly && modelValue?.completed"
           class="q-mt-md col-12"
-          @click.stop="completeDay(false)"
           flat
           label="Segna come non completato"
+          @click.stop="completeDay(false)"
         />
       </div>
     </div>
@@ -91,12 +91,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, defineAsyncComponent, ref, watch } from "vue";
 import { debounce, scroll } from "quasar";
 import mixpanel from "mixpanel-browser";
+import { symOutlinedCheck } from "@quasar/extras/material-symbols-outlined";
 import { ProgramFrozenView } from "@/helpers/programs/program";
-import WorkoutExerciseForm from "./WorkoutExerciseForm.vue";
 import { ProgramDayFeedback } from "@/helpers/programs/models";
+
+// Import components
+const WorkoutExerciseForm = defineAsyncComponent(
+  () => import("@/components/feedback/WorkoutExerciseForm.vue"),
+);
 
 // Define props
 const props = withDefaults(
@@ -206,7 +211,7 @@ watch(
  *
  * @param [completed=true] whether day can be considered completed by athlete.
  */
-function completeDay(completed: boolean = true) {
+function completeDay(completed = true) {
   if (!props.readonly) {
     // Update feedback if not in read only mode
     const wasCompleted = dayFeedback.value.completed;

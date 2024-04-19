@@ -8,7 +8,7 @@
 import { logoFullImage } from "@/assets/sources";
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .loader {
   position: fixed;
   top: 0;

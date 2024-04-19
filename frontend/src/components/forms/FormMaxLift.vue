@@ -1,9 +1,9 @@
 <template>
   <q-form
     ref="formElement"
+    class="q-my-md q-gutter-sm column"
     @submit="onSubmit"
     @reset="onReset"
-    class="q-my-md q-gutter-sm column"
   >
     <q-card-section class="q-gutter-x-xs">
       <!-- Exercise name -->
@@ -42,8 +42,8 @@
         :label="$t('coach.maxlift_management.fields.estimated1rm')"
         readonly
       >
-        <template v-slot:after>
-          <q-icon name="sym_o_help" class="cursor-pointer">
+        <template #after>
+          <q-icon :name="symOutlinedHelp" class="cursor-pointer">
             <q-tooltip>
               {{
                 maxliftSelectedExercise?.defaultVariant?.loadType &&
@@ -104,6 +104,7 @@ import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import { estimate1RMfromNRM } from "@/helpers/charts/chartDatasetComputations";
 import { AthleteUser } from "@/helpers/users/user";
 import { getMaxliftUnit } from "@/helpers/maxlifts/utils";
+import { symOutlinedHelp } from "@quasar/extras/material-symbols-outlined";
 
 // Set props
 const props = defineProps({

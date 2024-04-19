@@ -125,8 +125,8 @@ export class MaxLift {
     onError,
   }: {
     maxlift?: MaxLift;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     const maxliftToUpdate = maxlift || this;
     maxliftToUpdate.createdOn = new Date();
@@ -147,8 +147,8 @@ export class MaxLift {
     onError,
   }: {
     maxlift?: MaxLift;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     const maxliftToUpdate = maxlift || this;
     maxliftToUpdate.lastUpdated = new Date();
@@ -171,8 +171,8 @@ export class MaxLift {
     onError,
   }: {
     maxlift?: MaxLift;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     const maxliftToSave = maxlift || this;
     if (maxliftToSave.uid)
@@ -186,7 +186,7 @@ export class MaxLift {
    * @param shallow avoid copying identifying fields such as uid and parent instance.
    * @returns a new maxlift with duplicate fields.
    */
-  duplicate(shallow: boolean = false) {
+  duplicate(shallow = false) {
     return new MaxLift({
       ...this,
       ...(shallow && {
@@ -205,7 +205,10 @@ export class MaxLift {
  */
 export function addDocMaxLift(
   maxlift: MaxLift,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   const { uid: _, athlete: athlete, ...maxliftObj } = maxlift;
   const flatMaxliftObj = {
@@ -231,7 +234,10 @@ export function addDocMaxLift(
  */
 export function updateDocMaxLift(
   maxlift: MaxLift,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   const { uid: docId, athlete: athlete, ...maxliftObj } = maxlift;
   const flatMaxliftObj = {

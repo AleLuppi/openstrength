@@ -5,13 +5,14 @@ import {
   ProgramExercise,
   ProgramLine,
 } from "@/helpers/programs/program";
-
+import {
+  convertLineToSchema,
+  convertProgramToCompactView,
+} from "../converters";
 import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
-import { convertLineToSchema } from "../converters";
-import { convertProgramToCompactView } from "../converters";
 import { Exercise, ExerciseVariant } from "@/helpers/exercises/exercise";
 
-describe("Test @/helpers/programs/converters", () => {
+describe("Test helpers/programs/converters", () => {
   // Data to test functions
   const program: Program = new Program({
     uid: "rand-uid",
@@ -123,7 +124,7 @@ describe("Test @/helpers/programs/converters", () => {
   });
 });
 
-describe("Test @/helpers/programs/converters", () => {
+describe("Test helpers/programs/converters", () => {
   describe("Test convertLineToSchema", () => {
     describe("NO REFERENCE", () => {
       // Reference data

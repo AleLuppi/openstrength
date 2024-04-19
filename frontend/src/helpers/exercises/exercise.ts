@@ -67,8 +67,8 @@ export type ExerciseProps = {
   variants?: ExerciseVariant[];
 
   // Computed info
-  muscleGroups?: string[];
-  equipment?: string[];
+  muscleGroups?: ExerciseMuscleGroups[];
+  equipment?: ExerciseEquipment[];
 };
 
 /**
@@ -85,8 +85,8 @@ export type ExerciseVariantProps = {
   // Variant info
   description?: string;
   loadType?: ExerciseLoadType;
-  muscleGroups?: string[];
-  equipment?: string[];
+  muscleGroups?: ExerciseMuscleGroups[];
+  equipment?: ExerciseEquipment[];
 
   // Additional info
   videoUrl?: string;
@@ -119,7 +119,7 @@ export class Exercise {
       ...new Set(
         this.variants?.reduce(
           (outList, variant) => outList.concat(variant.muscleGroups ?? []),
-          [] as string[],
+          [] as ExerciseMuscleGroups[],
         ),
       ),
     ];
@@ -131,7 +131,7 @@ export class Exercise {
       ...new Set(
         this.variants?.reduce(
           (outList, variant) => outList.concat(variant.equipment ?? []),
-          [] as string[],
+          [] as ExerciseEquipment[],
         ),
       ),
     ];
@@ -152,7 +152,7 @@ export class Exercise {
    *
    * @param force if true, force addition of default variant even if already existent.
    */
-  addDefaultVariant(force: boolean = false) {
+  addDefaultVariant(force = false) {
     if (force || !this.variants?.find((variant) => variant.isDefault))
       (this.variants = this.variants || []).push(
         new ExerciseVariant({
@@ -169,7 +169,7 @@ export class Exercise {
    * @param shallow avoid copying identifying fields such as uid and parent instance.
    * @returns a new exercise with duplicate fields.
    */
-  duplicate(shallow: boolean = false) {
+  duplicate(shallow = false) {
     return new Exercise({
       ...this,
       variants: this.variants?.map((variant) => variant.duplicate(shallow)),
@@ -190,8 +190,8 @@ export class Exercise {
     onError,
   }: {
     exercise?: Exercise;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     addDocExercise(exercise || this, {
       onSuccess: onSuccess,
@@ -212,8 +212,8 @@ export class Exercise {
     onError,
   }: {
     exercise?: Exercise;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     updateDocExercise(exercise || this, {
       onSuccess: onSuccess,
@@ -234,8 +234,8 @@ export class Exercise {
     onError,
   }: {
     exercise?: Exercise;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     // Remove each variant, thus remove the exercise
     (exercise || this).variants?.forEach((variant) =>
@@ -260,8 +260,8 @@ export class ExerciseVariant {
   // Variant info
   description?: string;
   loadType?: ExerciseLoadType;
-  muscleGroups?: string[];
-  equipment?: string[];
+  muscleGroups?: ExerciseMuscleGroups[];
+  equipment?: ExerciseEquipment[];
 
   // Additional info
   videoUrl?: string;
@@ -297,7 +297,7 @@ export class ExerciseVariant {
    * @param shallow avoid copying identifying fields such as uid and parent instance.
    * @returns a new variant with duplicate fields.
    */
-  duplicate(shallow: boolean = false) {
+  duplicate(shallow = false) {
     return new ExerciseVariant({
       ...this,
       ...(shallow && { uid: undefined, name: undefined, exercise: undefined }),
@@ -317,8 +317,8 @@ export class ExerciseVariant {
     onError,
   }: {
     variant?: ExerciseVariant;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     addDocExerciseVariant(variant || this, (variant || this).exercise, {
       onSuccess: onSuccess,
@@ -339,8 +339,8 @@ export class ExerciseVariant {
     onError,
   }: {
     variant?: ExerciseVariant;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     updateDocExerciseVariant(variant || this, (variant || this).exercise, {
       onSuccess: onSuccess,
@@ -361,8 +361,8 @@ export class ExerciseVariant {
     onError,
   }: {
     variant?: ExerciseVariant;
-    onSuccess?: Function;
-    onError?: Function;
+    onSuccess?: (...x: any) => void;
+    onError?: (...x: any) => void;
   } = {}) {
     // Ensure variant is mapped onto a database document
     const variantToDelete = variant || this;
@@ -388,7 +388,10 @@ export class ExerciseVariant {
  */
 export function addDocExercise(
   exercise: Exercise,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   exercise.variants?.forEach((variant) =>
     addDocExerciseVariant(variant, exercise, {
@@ -409,7 +412,10 @@ export function addDocExercise(
 export function addDocExerciseVariant(
   exerciseVariant: ExerciseVariant,
   exercise?: Exercise,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   const extendedVariantObj = extractExerciseVariantInfo(
     exerciseVariant,
@@ -434,7 +440,10 @@ export function addDocExerciseVariant(
  */
 export function updateDocExercise(
   exercise: Exercise,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   // Update existing variants, or create a new document for new variants
   exercise.variants?.forEach((variant) => {
@@ -462,7 +471,10 @@ export function updateDocExercise(
 export function updateDocExerciseVariant(
   exerciseVariant: ExerciseVariant,
   exercise?: Exercise,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   const extendedVariantObj = extractExerciseVariantInfo(
     exerciseVariant,
