@@ -163,9 +163,13 @@
           </q-slide-transition>
         </div>
         <osButtonSupport
-          :icons="['fa-regular fa-clone', 'fa-regular fa-trash-can']"
-          :colors="['lighter', 'lighter']"
-          :hover-colors="['info', 'negative']"
+          :icons="[
+            'fa-regular fa-clone',
+            'fa-regular fa-trash-can',
+            'sym_o_info',
+          ]"
+          :colors="['lighter', 'lighter', 'lighter']"
+          :hover-colors="['info', 'negative', 'info']"
           :tooltips="[
             $t('coach.program_management.builder.line_duplicate_in_day'),
             $t('coach.program_management.builder.line_delete'),
@@ -186,6 +190,9 @@
                 case 1:
                   emit('delete');
                   break;
+                case 2:
+                  emit('update:lineComputedInfo', programExercise.lines);
+                  showDialogStressors = true;
                 default:
                   break;
               }
@@ -209,6 +216,20 @@
               self="center left"
             >
             </FormProgramNewWeekDay>
+          </template>
+          <template #slot-2>
+            <q-tooltip
+              v-model="showDialogStressors"
+              class="bg-lightest bordered"
+            >
+              <p
+                v-for="(line, idx) in showLinesComputedInfo"
+                :key="idx"
+                class="column text-sm"
+              >
+                {{ line }}
+              </p>
+            </q-tooltip>
           </template>
         </osButtonSupport>
       </div>
@@ -413,7 +434,7 @@
 import { ref, defineAsyncComponent, computed } from "vue";
 import { ProgramExercise, ProgramLine } from "@/helpers/programs/program";
 import {
-  type MaxLift,
+  MaxLift,
   type MaxLiftType,
   MaxLiftTypesPerValue,
 } from "@/helpers/maxlifts/maxlift";
@@ -462,6 +483,9 @@ const props = withDefaults(
 
     // Debounce input elements by provided amount (ms)
     debounce?: number;
+
+    // Computed stressors for lines
+    lineComputedInfo?: string[];
   }>(),
   {
     exercises: () => [],
@@ -481,6 +505,7 @@ const emit = defineEmits<{
   "update:expanded": [expanded: boolean];
   duplicate: [week: string, day: string];
   delete: [];
+  "update:lineComputedInfo": [lines: ProgramLine[] | undefined];
   move: [down: boolean];
   newExercise: [exerciseName: string];
   newVariant: [variantName: string];
@@ -490,7 +515,7 @@ const emit = defineEmits<{
 
 // Set ref
 const editWeekDayName = ref<string[]>(); // week and/or day name that is being modified (to clone or move tables)
-
+const showDialogStressors = ref(false);
 // Retrieve and supply current program exercise
 const programExercise = computed(() => props.modelValue);
 function emitProgramExercise() {
@@ -573,6 +598,13 @@ const showExpanded = computed({
   get: () => props.expanded || !programExercise.value.exercise,
   set: (val) => {
     emit("update:expanded", val);
+  },
+});
+
+const showLinesComputedInfo = computed({
+  get: () => props.lineComputedInfo,
+  set: (val) => {
+    emit("update:lineComputedInfo", val);
   },
 });
 

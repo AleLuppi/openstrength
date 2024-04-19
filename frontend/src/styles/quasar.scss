@@ -92,8 +92,16 @@ a {
   color: $os-grey-8;
 }
 
+.text-sm {
+  font-size: $os-fontsize-sm;
+}
+
 .text-md {
   font-size: $os-fontsize-md;
+}
+
+.text-regular {
+  font-size: $os-fontsize-regular;
 }
 
 .text-ellipsis {

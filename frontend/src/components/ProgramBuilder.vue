@@ -245,6 +245,7 @@
                 "
                 :navigate-weeks="Object.keys(filteredWeekDay)"
                 :navigate-days="filteredWeekDay[week]"
+                :line-computed-info="computedLineStressors"
                 v-model:expanded="exercisesInfoExpanded[exerciseIdx]"
                 :dense="dense"
                 @duplicate="
@@ -252,6 +253,9 @@
                     duplicateExercise(exerciseIdx, [toWeek, toDay])
                 "
                 @delete="deleteExercise(exerciseIdx)"
+                @update:line-computed-info="
+                  (lines) => getExerciseStressors(lines)
+                "
                 @move="(down) => moveOrderExercise(exerciseIdx, down ? 1 : -1)"
                 @new-exercise="
                   (name) =>
@@ -379,6 +383,10 @@ import {
   mergePrograms,
   sortProgramExercises,
 } from "@/helpers/programs/linesManagement";
+import {
+  estimate1RMfromNRM,
+  estimateMissingLineProps,
+} from "@/helpers/charts/chartDatasetComputations";
 
 // Import components
 const TableProgramBuilder = defineAsyncComponent(
@@ -458,6 +466,8 @@ const exercisesInfoExpanded = ref<boolean[]>([]); // check if an exercise info t
 const dayInfoCollapsed = ref<boolean[]>([]); // check if a day should be expanded or collapsed
 const programHistory = ref<Program[]>([]); // store changes to data to allow walking history
 const programHistoryPointer = ref<number>(0); // pointer to current data version in history
+
+const computedLineStressors = ref<string[]>();
 
 // Retrieve and supply current program
 watch(
@@ -661,10 +671,188 @@ function moveOrderExercise(
  */
 function deleteExercise(programExercise: ProgramExercise | number) {
   // Delete exercise by moving to unknown destination
+
   moveExerciseAndUpdate(programExercise, undefined);
 
   // Mixpanel tracking
   mixpanel.track("Delete Exercise from Program");
+}
+
+/**
+ * Allows to get a maxlift value from available ones.
+ * Note: if 1RM is not available recomputes it using 3RM, 5RM, etc
+ * If nothing is present undefined is returned
+ */
+function getMaxliftValue(exerciseName: string | undefined): number | undefined {
+  if (!exerciseName) return undefined;
+
+  // Check if maxlift is present
+  const availableMaxlifts = maxliftsPerExercise.value[exerciseName];
+  if (
+    availableMaxlifts &&
+    !availableMaxlifts["Max Reps"] &&
+    !availableMaxlifts["Max Time"]
+  ) {
+    if (availableMaxlifts["1RM"]) {
+      return Number(availableMaxlifts["1RM"].value);
+    } else {
+      if (availableMaxlifts["3RM"]) {
+        return estimate1RMfromNRM(availableMaxlifts["3RM"]);
+      } else if (availableMaxlifts["5RM"]) {
+        return estimate1RMfromNRM(availableMaxlifts["5RM"]);
+      } else if (availableMaxlifts["6RM"]) {
+        return estimate1RMfromNRM(availableMaxlifts["6RM"]);
+      } else if (availableMaxlifts["8RM"]) {
+        return estimate1RMfromNRM(availableMaxlifts["8RM"]);
+      } else if (availableMaxlifts["10RM"]) {
+        return estimate1RMfromNRM(availableMaxlifts["10RM"]);
+      } else {
+        return undefined;
+      }
+    }
+  } else {
+    return undefined;
+  }
+}
+
+/**
+ * Computes the missing parameters for the provided lines from emit
+ */
+function getExerciseStressors(lines: ProgramLine[] | undefined): string[] {
+  const stressors: string[] = [];
+  if (!lines) {
+    stressors.push("Non ci sono dati disponibili, compila l'esercizio");
+    return stressors;
+  }
+
+  lines.forEach((line) => {
+    // If some values are empty, estimate them
+    let estimatedLoad = undefined;
+    let estimatedReps = undefined;
+    let estimatedRpe = undefined;
+
+    // Estimate if something is missing
+    if (
+      line.loadBaseValue === "" ||
+      line.repsBaseValue === "" ||
+      line.rpeBaseValue === ""
+    ) {
+      if (line.loadReference instanceof MaxLift) {
+        const estimatedLine = estimateMissingLineProps(
+          line,
+          Number(line.loadReference.value),
+        );
+
+        estimatedLoad =
+          estimatedLine?.loadValue ??
+          estimatedLine?.loadComputedValue ??
+          estimatedLine?.loadSupposedValue;
+        estimatedReps =
+          estimatedLine?.repsValue ??
+          estimatedLine?.loadComputedValue ??
+          estimatedLine?.loadSupposedValue;
+        estimatedRpe =
+          estimatedLine?.rpeValue ??
+          estimatedLine?.loadComputedValue ??
+          estimatedLine?.loadSupposedValue;
+      } else if (
+        line.loadReference instanceof ProgramLine &&
+        getMaxliftValue(line.programExercise?.exercise?.name)
+      ) {
+        // Estimate first the referenced line
+        const maxliftValue = getMaxliftValue(
+          line.programExercise?.exercise?.name,
+        );
+
+        if (maxliftValue) {
+          let estimatedLineReference = estimateMissingLineProps(
+            line.loadReference,
+            maxliftValue,
+          );
+
+          // Assign estimated values to reference line
+          line.loadReference = estimatedLineReference;
+
+          // Recompute actual line values
+          const estimatedLine = estimateMissingLineProps(line, maxliftValue);
+
+          estimatedLoad =
+            estimatedLine?.loadValue ??
+            estimatedLine?.loadComputedValue ??
+            estimatedLine?.loadSupposedValue;
+          estimatedReps =
+            estimatedLine?.repsValue ??
+            estimatedLine?.loadComputedValue ??
+            estimatedLine?.loadSupposedValue;
+          estimatedRpe =
+            estimatedLine?.rpeValue ??
+            estimatedLine?.loadComputedValue ??
+            estimatedLine?.loadSupposedValue;
+        }
+      } else if (
+        !line.loadReference &&
+        getMaxliftValue(line.programExercise?.exercise?.name)
+      ) {
+        const maxliftValue = getMaxliftValue(
+          line.programExercise?.exercise?.name,
+        );
+
+        if (maxliftValue) {
+          const estimatedLine = estimateMissingLineProps(line, maxliftValue);
+
+          estimatedLoad = estimatedLine?.loadOperation
+            ? maxliftValue *
+              parseFloat(estimatedLine?.loadOperation.split("*")[1])
+            : estimatedLine?.loadValue ??
+              estimatedLine?.loadComputedValue ??
+              estimatedLine?.loadSupposedValue ??
+              estimatedLine?.loadBaseValue;
+          estimatedReps =
+            estimatedLine?.repsValue ??
+            estimatedLine?.repsComputedValue ??
+            estimatedLine?.repsSupposedValue;
+          estimatedRpe =
+            estimatedLine?.rpeValue ??
+            estimatedLine?.rpeComputedValue ??
+            estimatedLine?.rpeSupposedValue;
+        }
+      }
+    } else {
+      estimatedLoad =
+        line.loadComputedValue ?? line.loadSupposedValue ?? line.loadBaseValue;
+      estimatedReps =
+        line.repsComputedValue ?? line.repsSupposedValue ?? line.repsBaseValue;
+      estimatedRpe =
+        line.rpeComputedValue ?? line.rpeSupposedValue ?? line.rpeBaseValue;
+    }
+
+    const load = line.loadValue
+      ? `${line.loadValue} kg`
+      : estimatedLoad
+      ? `(${estimatedLoad} kg)`
+      : line.loadBaseValue;
+
+    const reps = line.repsValue
+      ? `${line.repsValue}`
+      : estimatedReps
+      ? `(${estimatedReps})`
+      : line.repsBaseValue;
+
+    const sets = line.setsValue ? `x${line.setsValue}s` : line.setsBaseValue;
+    const rpe = line.rpeValue
+      ? `@${line.rpeValue}`
+      : estimatedRpe
+      ? `(@${estimatedRpe})`
+      : line.rpeBaseValue;
+
+    stressors.push(
+      `${load ? load : ""} ${reps ? reps : ""}${sets ? sets : ""} ${
+        rpe ? rpe : ""
+      }`,
+    );
+  });
+  computedLineStressors.value = [...stressors];
+  return stressors;
 }
 
 /**
