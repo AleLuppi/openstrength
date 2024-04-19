@@ -34,8 +34,8 @@
         <p class="text-bold">Pronto a iniziare questo giorno?</p>
         <q-btn
           label="Inizia allenamento"
-          @click="unlockedFeedback = true"
           rounded
+          @click="unlockedFeedback = true"
         />
       </div>
 
