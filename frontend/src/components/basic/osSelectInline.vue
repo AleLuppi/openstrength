@@ -2,8 +2,8 @@
   <q-btn flat rounded :color="textColor">
     {{ label }} <q-chip dense :color="chipColor">{{ modelValue }}</q-chip>
     <q-popup-edit
-      v-model="modelValue"
       v-slot="popupScope"
+      v-model="modelValue"
       cover
       anchor="center left"
       class="q-px-md"

@@ -19,17 +19,17 @@
           v-if="editing && (config.editInline ?? true)"
           ref="editComponent"
           :model-value="cellValue"
-          @update:model-value="
-            (val) => {
-              if (val != undefined) modelValue.values[cellIdx] = val;
-            }
-          "
           :placeholder="cellIdx == 0 ? config.placeholder : undefined"
           dense
           borderless
           class="q-pa-none"
           input-class="q-pa-none"
           style="height: unset"
+          @update:model-value="
+            (val) => {
+              if (val != undefined) modelValue.values[cellIdx] = val;
+            }
+          "
         />
 
         <component

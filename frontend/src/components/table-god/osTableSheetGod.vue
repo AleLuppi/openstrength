@@ -1,10 +1,10 @@
 <template>
   <div class="q-pa-md">
     <table
-      @mouseup="onSelectionEnd"
-      @mouseleave="onSelectionEnd"
       class="prevent-select"
       :class="{ 'table-bordered': bordered }"
+      @mouseup="onSelectionEnd"
+      @mouseleave="onSelectionEnd"
     >
       <component
         :is="tableIdx == 0 ? 'thead' : 'tbody'"
@@ -25,14 +25,14 @@
             :config="getCellConfig(rowIdx, colIdx)"
             :type="tableIdx == 0 ? 'th' : 'td'"
             :model-value="getCellModelValue(rowIdx, colIdx)"
-            @update:model-value="updateCellModelValue"
             :row="rowIdx"
             :col="colIdx"
-            @mousedown="onSelectionStart(rowIdx, colIdx)"
-            @mouseover="onSelectionContinue(rowIdx, colIdx)"
             :class="{
               'cell-selected': isSelected(rowIdx, colIdx) && selected,
             }"
+            @update:model-value="updateCellModelValue"
+            @mousedown="onSelectionStart(rowIdx, colIdx)"
+            @mouseover="onSelectionContinue(rowIdx, colIdx)"
           >
             <template v-for="(_, slot) in $slots" #[slot]="scope">
               <slot :name="slot" v-bind="scope ?? {}"></slot>
