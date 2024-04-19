@@ -9,7 +9,7 @@
 export function arrayUniqueValues<T, R>(
   array: T[],
   sorted: boolean | ((val: T, arr: T[]) => R) = true,
-  deep: boolean = false,
+  deep = false,
 ): T[] {
   const newArray = deep
     ? Object.values(
@@ -35,7 +35,7 @@ export function arrayUniqueValues<T, R>(
  */
 export function arraySort<T, R>(
   array: T[],
-  inplace: boolean = false,
+  inplace = false,
   sortBy: (val: T, arr: T[]) => T | R = (val) => val,
 ): T[] {
   return (inplace ? array : [...array]).sort((elA, elB) => {
@@ -78,7 +78,7 @@ export function arrayCompare(arrayA: any[], arrayB: any[]) {
 export function arraySortObjectsByField<T extends object, R>(
   array: T[],
   field: keyof T,
-  inplace: boolean = false,
+  inplace = false,
   sortBy: (val: T[keyof T], arr: T[]) => R = (val) => val as R,
 ) {
   return arraySort(array, inplace, (val, arr) => sortBy(val[field], arr));
@@ -93,16 +93,13 @@ export function arraySortObjectsByField<T extends object, R>(
  */
 export function arrayOfPairsToObject<K extends string | number | symbol, V>(
   array: [K, V][],
-  unique: boolean = false,
+  unique = false,
 ): { [key in K]: V[] } {
-  return array.reduce(
-    (out, [key, value]) => {
-      if (unique) out[key] = arrayUniqueValues([...(out[key] ?? []), value]);
-      else out[key] = (out[key] ?? []).concat([value]);
-      return out;
-    },
-    {} as { [key in K]: V[] },
-  );
+  return array.reduce((out, [key, value]) => {
+    if (unique) out[key] = arrayUniqueValues([...(out[key] ?? []), value]);
+    else out[key] = (out[key] ?? []).concat([value]);
+    return out;
+  }, {} as { [key in K]: V[] });
 }
 
 /**
@@ -136,7 +133,7 @@ export function arrayRange(
  * @param arrays any number of arrays to zip.
  * @returns an array containing list of values from each input arrays in order.
  */
-export function arrayZip<T>(arrays: T[][], pad: boolean = false): T[][] {
+export function arrayZip<T>(arrays: T[][], pad = false): T[][] {
   const length = Math[pad ? "max" : "min"](...arrays.map((arr) => arr.length));
 
   return Array(length)
@@ -145,7 +142,7 @@ export function arrayZip<T>(arrays: T[][], pad: boolean = false): T[][] {
 }
 
 /**
- * Push a value to an possibly undefined array.
+ * Push a value to a possibly undefined array.
  *
  * @param array possibly undefined array.
  * @param value value to push.
@@ -153,8 +150,22 @@ export function arrayZip<T>(arrays: T[][], pad: boolean = false): T[][] {
  */
 export function arrayPushToNullable<T>(array: T[] | undefined, value: T): T[] {
   const outArray = array || [];
-  outArray.push(value);
-  return outArray;
+  return outArray.concat([value]);
+}
+
+/**
+ * Concat values to a possibly undefined array.
+ *
+ * @param array possibly undefined array.
+ * @param values values to concat.
+ * @returns array instance with inserted values.
+ */
+export function arrayConcatToNullable<T>(
+  array: T[] | undefined,
+  values: T[],
+): T[] {
+  const outArray = array || [];
+  return outArray.concat(values);
 }
 
 /**

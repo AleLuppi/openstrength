@@ -6,10 +6,12 @@ import {
   arrayZip,
   arrayUniqueSubsequentValues,
   arrayRange,
+  arrayPushToNullable,
+  arrayConcatToNullable,
   arrayEnsureList,
 } from "../array";
 
-describe("Test @/helpers/array", () => {
+describe("Test helpers/array", () => {
   /**
    * arrayUniqueValues
    */
@@ -340,6 +342,44 @@ describe("Test @/helpers/array", () => {
         [5, 0],
       ]);
       expect(res).not.toBe(arr1);
+    });
+  });
+
+  /**
+   * arrayPushToNullable
+   */
+  describe("'arrayPushToNullable' function", () => {
+    test("single value to array", () => {
+      const arr = [1, 2, 3, 4, 5];
+      const res = arrayPushToNullable(arr, 6);
+      expect(res).toStrictEqual([1, 2, 3, 4, 5, 6]);
+      expect(res).not.toBe(arr);
+    });
+
+    test("single value to undefined", () => {
+      const arr = undefined;
+      const res = arrayPushToNullable(arr, 6);
+      expect(res).toStrictEqual([6]);
+      expect(res).not.toBe(arr);
+    });
+  });
+
+  /**
+   * arrayConcatToNullable
+   */
+  describe("'arrayConcatToNullable' function", () => {
+    test("single value to array", () => {
+      const arr = [1, 2, 3, 4, 5];
+      const res = arrayConcatToNullable(arr, [6]);
+      expect(res).toStrictEqual([1, 2, 3, 4, 5, 6]);
+      expect(res).not.toBe(arr);
+    });
+
+    test("multiple values to array", () => {
+      const arr = [1, 2, 3, 4, 5];
+      const res = arrayConcatToNullable(arr, [6, 7, 8, 9]);
+      expect(res).toStrictEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      expect(res).not.toBe(arr);
     });
   });
 

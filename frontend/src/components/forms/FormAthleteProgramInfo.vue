@@ -6,7 +6,7 @@
         <q-btn
           outline
           :to="{ name: 'program', params: { programId: props.program.uid } }"
-          icon="open_in_new"
+          :icon="symOutlinedOpenInNew"
           :label="$t('coach.athlete_management.call_to_action.modify_program')"
           class="q-mr-md"
           @click="registerProgramOpeningEvent()"
@@ -27,8 +27,8 @@
         <p>
           {{ $t("coach.athlete_management.assign.another_program_assigned") }}
           <a
-            @click="emit('assign', program)"
             class="cursor-pointer text-primary"
+            @click="emit('assign', program)"
           >
             {{ $t("coach.athlete_management.assign.assign_this") }}
           </a>
@@ -81,6 +81,7 @@ import { useQuasar } from "quasar";
 import { Program } from "@/helpers/programs/program";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
+import { symOutlinedOpenInNew } from "@quasar/extras/material-symbols-outlined";
 
 // Init plugin
 const $q = useQuasar();

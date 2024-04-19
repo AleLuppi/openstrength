@@ -34,7 +34,10 @@ import {
  */
 export function addDocUser(
   user: User | CoachUser | AthleteUser,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   // Get user info
   const { uid: uid, config: config, ...userObj } = user;
@@ -71,7 +74,10 @@ export function addDocUser(
 export function addDocUserConfig(
   userConfig: UserConfig,
   userId: string,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   doAddDocWithId(
     `${dbCollections.users}/${userId}/${dbSubcollections.userConfig}`,
@@ -93,7 +99,10 @@ export function addDocUserConfig(
  */
 export function updateDocUser(
   user: User | CoachUser | AthleteUser,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   const { uid: docId, ...userObj } = user;
   userObj.lastUpdated = new Date();
@@ -121,7 +130,10 @@ export function updateDocUser(
  */
 export function loadDocUser(
   uid: string,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   // Get user
   return doGetDocWithID(dbCollections.users, uid, {
@@ -151,7 +163,10 @@ export function loadDocUser(
  */
 export async function loadDocUserConfig(
   uid: string,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   // Get user config
   return doGetDocWithID(
@@ -179,7 +194,10 @@ export async function loadDocUserConfig(
 export async function getDocUserByField(
   field: string,
   value: string,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   // Get documents and select first one only
   let userDoc: { [key: string]: any } | undefined = undefined;
@@ -210,7 +228,10 @@ export async function getDocUserByField(
 export function changeDocUserId(
   oldId: string,
   newId: string,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   changeDocId(dbCollections.users, oldId, newId, {
     onSuccess: onSuccess,

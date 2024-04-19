@@ -1,6 +1,13 @@
 <template>
-  <os-table :columns="columns" :rows="rows" row-key="rowId" virtual-scroll hide-pagination class="os-table-max-height"
-    selection="single"></os-table>
+  <os-table
+    :columns="columns"
+    :rows="rows"
+    row-key="rowId"
+    virtual-scroll
+    hide-pagination
+    class="os-table-max-height"
+    selection="single"
+  ></os-table>
 </template>
 
 <script setup lang="ts">

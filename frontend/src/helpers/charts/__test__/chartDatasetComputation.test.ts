@@ -12,7 +12,7 @@ import { MaxLift } from "@/helpers/maxlifts/maxlift";
 /***** Line computation *****/
 /****************************/
 
-describe("Test '@/helpers/charts/chartDatasetComputations'", () => {
+describe("Test 'helpers/charts/chartDatasetComputations'", () => {
   describe("Test on calculations from rpeTable", () => {
     test("'calculatePercentage1RM' test line 2 of excel sheet", () => {
       expect(calculatePercentage1RM(3, 9)).toBe(89);

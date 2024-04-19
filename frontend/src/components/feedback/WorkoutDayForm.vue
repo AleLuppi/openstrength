@@ -22,7 +22,7 @@
 
       <q-icon
         v-if="modelValue?.completed"
-        name="sym_o_check"
+        :name="symOutlinedCheck"
         size="sm"
         color="primary"
       ></q-icon>
@@ -30,6 +30,15 @@
 
     <!-- Show exercise info if required -->
     <div v-if="!dayShowCollapsed">
+      <div v-if="!readonly && !unlockedFeedback" class="text-center q-py-md">
+        <p class="text-bold">Pronto a iniziare questo giorno?</p>
+        <q-btn
+          label="Inizia allenamento"
+          rounded
+          @click="unlockedFeedback = true"
+        />
+      </div>
+
       <!-- Show single exercise cards -->
       <WorkoutExerciseForm
         v-for="(exercise, idxExercise) in programDay.exercises"
@@ -39,8 +48,8 @@
         :class="{
           'os-next-exercise': isNext && idxExercise == nextExerciseIdx,
         }"
-        :readonly="readonly"
-      ></WorkoutExerciseForm>
+        :readonly="readonly || !unlockedFeedback"
+      />
 
       <div class="row q-py-md">
         <os-input-date
@@ -57,7 +66,6 @@
         />
         <q-btn
           class="col-12"
-          @click.stop="completeDay()"
           :label="
             readonly
               ? 'Chiudi'
@@ -65,13 +73,14 @@
               ? 'Salva modifiche'
               : 'Salva allenamento'
           "
+          @click.stop="completeDay()"
         />
         <q-btn
           v-if="!readonly && modelValue?.completed"
           class="q-mt-md col-12"
-          @click.stop="completeDay(false)"
           flat
           label="Segna come non completato"
+          @click.stop="completeDay(false)"
         />
       </div>
     </div>
@@ -82,12 +91,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, defineAsyncComponent, ref, watch } from "vue";
 import { debounce, scroll } from "quasar";
 import mixpanel from "mixpanel-browser";
+import { symOutlinedCheck } from "@quasar/extras/material-symbols-outlined";
 import { ProgramFrozenView } from "@/helpers/programs/program";
-import WorkoutExerciseForm from "./WorkoutExerciseForm.vue";
 import { ProgramDayFeedback } from "@/helpers/programs/models";
+
+// Import components
+const WorkoutExerciseForm = defineAsyncComponent(
+  () => import("@/components/feedback/WorkoutExerciseForm.vue"),
+);
 
 // Define props
 const props = withDefaults(
@@ -126,6 +140,7 @@ const dayFeedback = ref<ProgramDayFeedback>({
   completed: false,
   exercisesFeedback: [],
 }); // feedback on program day
+const unlockedFeedback = ref<boolean>(false);
 
 // Find which is the next exercise athlete should perform
 const nextExerciseIdx = computed(() =>
@@ -183,14 +198,20 @@ const saveFeedback = debounce(() => {
 }, 10000);
 
 // Save feedback when updated, after a debounce
-watch(dayFeedback, saveFeedback, { deep: true });
+watch(
+  dayFeedback,
+  () => {
+    if (!props.readonly && unlockedFeedback.value) saveFeedback();
+  },
+  { deep: true },
+);
 
 /**
  * Emit daily feedback.
  *
  * @param [completed=true] whether day can be considered completed by athlete.
  */
-function completeDay(completed: boolean = true) {
+function completeDay(completed = true) {
   if (!props.readonly) {
     // Update feedback if not in read only mode
     const wasCompleted = dayFeedback.value.completed;

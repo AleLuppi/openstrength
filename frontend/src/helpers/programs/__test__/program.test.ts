@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
-import { ProgramLine } from "@/helpers/programs/program";
+import { ProgramLine } from "../program";
 
-describe("Test @/helpers/programs/program", () => {
+describe("Test helpers/programs/program", () => {
   describe("'ProgramLine' computed values", () => {
     describe("load-related tests", () => {
       // Reference data
@@ -947,4 +947,3 @@ describe("Test @/helpers/programs/program", () => {
     });
   });
 });
-

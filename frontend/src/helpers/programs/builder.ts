@@ -94,21 +94,24 @@ export function tableToProgramLines(
  * @param [sourceFallback=false] if true, use source position as destination if not provided (do not delete exercise).
  * @param [sourceOffset=0] optional offset to source position, only used if source is used as destination fallback.
  * @param [looseOrder=false] if true, place the exercise at the end of selected day if destination is occupied.
+ * @param [textOnly=false] if true, create a free text exercise instead of a standard one.
  * @returns program instance.
  */
 export function moveProgramExercise(
   program: Program,
   programExercise?: ProgramExercise | number,
   destination?: [string, string, string | number | undefined],
-  duplicate: boolean = false,
+  duplicate = false,
   {
     sourceFallback = false,
     sourceOffset = 0,
     looseOrder = false,
+    textOnly = false,
   }: {
     sourceFallback?: boolean;
     sourceOffset?: number;
     looseOrder?: boolean;
+    textOnly?: boolean;
   } = {},
 ): Program {
   // Nothing to do if both program exercise and destination are unknown
@@ -140,9 +143,10 @@ export function moveProgramExercise(
     }
   if (
     looseOrder &&
-    destination?.[2] &&
+    destination &&
     program.programExercises?.some(
-      (oneExercise) => oneExercise.scheduleOrder == destination![2],
+      (oneExercise) =>
+        destination && oneExercise.scheduleOrder == destination[2],
     )
   )
     destination[2] = undefined;
@@ -188,6 +192,7 @@ export function moveProgramExercise(
         scheduleWeek: destination[0],
         scheduleDay: destination[1],
         scheduleOrder: destination[2],
+        textOnly: textOnly,
       }),
     );
   } else {

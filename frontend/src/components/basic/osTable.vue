@@ -1,6 +1,7 @@
 <template>
   <q-table
     v-bind="$attrs"
+    v-model:selected="selected"
     flat
     wrap-cells
     separator="horizontal"
@@ -15,12 +16,11 @@
     :rows-per-page-options="[10, 25, 50, 100, 0]"
     :hide-selected-banner="true"
     row-key="name"
-    v-model:selected="selected"
     binary-state-sort
     class="os-table-sticky-header"
   >
     <!-- Set header style -->
-    <template v-slot:header="props">
+    <template #header="props">
       <q-tr :props="props" class="bg-table-header">
         <q-th
           v-for="col in props.cols"
@@ -34,9 +34,15 @@
     </template>
 
     <!-- Set custom rows -->
-    <template v-slot:body="props">
+    <template #body="props">
       <q-tr
         :props="props"
+        class="bg-table-row"
+        :class="{
+          'cursor-pointer': $attrs.onRowClick || props.row.expanded,
+          'bg-table-row-selected': props.selected,
+          'os-tr-selected': props.selected,
+        }"
         @click="
           (event: Event) => {
             ($attrs.onRowClick as Function)?.(event, props.row);
@@ -45,12 +51,6 @@
             props.expand = !props.expand;
           }
         "
-        class="bg-table-row"
-        :class="{
-          'cursor-pointer': $attrs.onRowClick || props.row.expanded,
-          'bg-table-row-selected': props.selected,
-          'os-tr-selected': props.selected,
-        }"
       >
         <q-td
           v-for="col in props.cols"
@@ -63,13 +63,13 @@
       </q-tr>
 
       <q-tr
-        v-show="props.expand"
-        :props="props"
         v-for="row in props.row.expanded"
+        v-show="props.expand"
         :key="row"
+        :props="props"
         class="q-px-lg bg-lighter table-element-selected-child"
-        @click="($attrs.onSubRowClick as Function)?.(props.row, row)"
         :class="{ 'cursor-pointer': $attrs.onSubRowClick }"
+        @click="($attrs.onSubRowClick as Function)?.(props.row, row)"
       >
         <q-td v-for="(colvalue, colname) in row" :key="colname">
           <osVariableElement :props="colvalue" />

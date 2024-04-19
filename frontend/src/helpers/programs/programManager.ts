@@ -13,7 +13,10 @@ import { arrayPushToNullable, arrayUniqueSubsequentValues } from "../array";
 export function assignProgramToAthlete(
   program: Program,
   athlete: AthleteUser,
-  { onSuccess, onError }: { onSuccess?: Function; onError?: Function } = {},
+  {
+    onSuccess,
+    onError,
+  }: { onSuccess?: (...x: any) => void; onError?: (...x: any) => void } = {},
 ) {
   // Update athlete info
   athlete.assignedProgramId = program.uid;

@@ -22,7 +22,7 @@ import { MaxLift } from "@/helpers/maxlifts/maxlift";
  */
 export function sortProgramExercises(
   exercises: ProgramExercise[],
-  sortLines: boolean = true,
+  sortLines = true,
 ): ProgramExercise[] {
   if (sortLines)
     exercises.forEach((exercise) => {
@@ -66,10 +66,7 @@ export function sortProgramExercises(
  * @param inplace if true, sort lines in place, otherwise create a new array.
  * @returns sorted program lines.
  */
-export function sortProgramLines(
-  lines: ProgramLine[],
-  inplace: boolean = false,
-) {
+export function sortProgramLines(lines: ProgramLine[], inplace = false) {
   return arraySort(lines, inplace, (line) => line.lineOrder);
 }
 
@@ -88,8 +85,8 @@ export function orderProgramExercises(
     day: string | number,
     order: string | number,
   ) => string = (week, day, order) => [week, day, order].join(sep),
-  sep: string = ".",
-  sortLines: boolean = true,
+  sep = ".",
+  sortLines = true,
 ): {
   [key: string]: ProgramExercise;
 } {
@@ -226,7 +223,7 @@ export function mergePrograms(
   firstProgram: Program,
   secondProgram: Program,
   mapMaxlifts: [MaxLift, MaxLift][] | boolean = true,
-  inplace: boolean = true,
+  inplace = true,
 ): Program {
   // Get matching maxlifts in the two program
   let matchingMaxlifts: [MaxLift, MaxLift][] = [];
