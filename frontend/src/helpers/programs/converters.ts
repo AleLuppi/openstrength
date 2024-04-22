@@ -8,6 +8,7 @@ import {
 import { orderProgramExercises } from "@/helpers/programs/linesManagement";
 import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import { uid } from "quasar";
+import sanitizeHtml from 'sanitize-html';
 
 /**
  * Get the displayable name of a selected reference.
@@ -420,10 +421,19 @@ export function convertProgramToCompactView(
       exercise: exerciseFullName,
       order: order,
       schemas: programExercise.textOnly
-        ? [programExercise.exerciseNote ?? ""]
+        ? [removeHtmlTags(sanitizeHtml(programExercise.exerciseNote, { allowedTags: ['b', 'u', 'i', 'br', 'div']})) ?? ""]
         : programExercise.lines?.map((line) => convertLineToSchema(line)) ?? [],
     });
   });
 
   return compactProgram;
+}
+
+/**
+ * Removes HTML tags from a string and replaces them with spaces.
+ * @param htmlText The HTML-formatted text to process.
+ * @returns The text with HTML tags replaced by spaces.
+ */
+export function removeHtmlTags(htmlText: string): string {
+  return htmlText.replace(/<[^>]*>/g, ' ');
 }

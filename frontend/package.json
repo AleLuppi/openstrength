@@ -32,6 +32,7 @@
     "mixpanel-browser": "^2.49.0",
     "pinia": "^2.0.11",
     "quasar": "^2.6.0",
+    "sanitize-html": "^2.13.0",
     "util": "^0.12.5",
     "vue": "^3.4.0",
     "vue-gtag": "^2.0.1",

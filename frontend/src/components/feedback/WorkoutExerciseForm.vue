@@ -30,6 +30,8 @@
       style="border-radius: 8px"
       @update:model-value="undefined"
     >
+
+            
       <template #header>
         <div class="q-py-sm full-width">
           <div
@@ -50,9 +52,13 @@
                 <p v-if="!exercise.textOnly" class="text-italic">
                   {{ props.exercise.schemaNote[indexLine] }}
                 </p>
-                <p class="text-bold">
+                <p v-if="!exercise.textOnly" class="text-bold">
                   {{ schema }}
                 </p>
+                <div v-else v-html="sanitizeHtml(schema, {
+                  allowedTags: ['b', 'u', 'i', 'strike', 'br', 'div']
+                })"></div>
+            
               </div>
 
               <!-- Feedback buttons -->
@@ -248,6 +254,7 @@ import {
   arraySortObjectsByField,
 } from "@/helpers/array";
 import { objectAssignNotUndefined } from "@/helpers/object";
+import sanitizeHtml from 'sanitize-html';
 
 // Define props
 const props = withDefaults(
