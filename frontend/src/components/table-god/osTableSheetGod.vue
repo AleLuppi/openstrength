@@ -1,47 +1,45 @@
 <template>
-  <div class="q-pa-md">
-    <table
-      class="prevent-select"
-      :class="{ 'table-bordered': bordered }"
-      @mouseup="onSelectionEnd"
-      @mouseleave="onSelectionEnd"
+  <table
+    class="prevent-select"
+    :class="{ 'table-bordered': bordered }"
+    @mouseup="onSelectionEnd"
+    @mouseleave="onSelectionEnd"
+  >
+    <component
+      :is="tableIdx == 0 ? 'thead' : 'tbody'"
+      v-for="(numRows, tableIdx) in [-numRowsHeader, numRowsBody]"
+      :key="tableIdx"
     >
-      <component
-        :is="tableIdx == 0 ? 'thead' : 'tbody'"
-        v-for="(numRows, tableIdx) in [-numRowsHeader, numRowsBody]"
-        :key="tableIdx"
+      <tr
+        v-for="rowIdx in arrayRange(
+          1,
+          numRows + 1 + (showEmptyLine && !readonly && tableIdx ? 1 : 0),
+          { reversible: true },
+        )"
+        :key="rowIdx"
       >
-        <tr
-          v-for="rowIdx in arrayRange(
-            1,
-            numRows + 1 + (showEmptyLine && tableIdx ? 1 : 0),
-            { reversible: true },
-          )"
-          :key="rowIdx"
+        <osTableSheetCellGod
+          v-for="colIdx in arrayRange(-numColsHeader + 1, numColsBody + 1)"
+          :key="colIdx"
+          :config="getCellConfig(rowIdx, colIdx)"
+          :type="tableIdx == 0 ? 'th' : 'td'"
+          :model-value="getCellModelValue(rowIdx, colIdx)"
+          :row="rowIdx"
+          :col="colIdx"
+          :class="{
+            'cell-selected': isSelected(rowIdx, colIdx) && selected,
+          }"
+          @update:model-value="updateCellModelValue"
+          @mousedown="onSelectionStart(rowIdx, colIdx)"
+          @mouseover="onSelectionContinue(rowIdx, colIdx)"
         >
-          <osTableSheetCellGod
-            v-for="colIdx in arrayRange(-numColsHeader + 1, numColsBody + 1)"
-            :key="colIdx"
-            :config="getCellConfig(rowIdx, colIdx)"
-            :type="tableIdx == 0 ? 'th' : 'td'"
-            :model-value="getCellModelValue(rowIdx, colIdx)"
-            :row="rowIdx"
-            :col="colIdx"
-            :class="{
-              'cell-selected': isSelected(rowIdx, colIdx) && selected,
-            }"
-            @update:model-value="updateCellModelValue"
-            @mousedown="onSelectionStart(rowIdx, colIdx)"
-            @mouseover="onSelectionContinue(rowIdx, colIdx)"
-          >
-            <template v-for="(_, slot) in $slots" #[slot]="scope">
-              <slot :name="slot" v-bind="scope ?? {}"></slot>
-            </template>
-          </osTableSheetCellGod>
-        </tr>
-      </component>
-    </table>
-  </div>
+          <template v-for="(_, slot) in $slots" #[slot]="scope">
+            <slot :name="slot" v-bind="scope ?? {}"></slot>
+          </template>
+        </osTableSheetCellGod>
+      </tr>
+    </component>
+  </table>
 </template>
 
 <script setup lang="ts">
@@ -339,13 +337,13 @@ function onCopy(clipboardEvent: ClipboardEvent) {
     colData.length = 0;
     for (let col = colStart; col <= colEnd; col++) {
       if (row <= numRowsBody.value)
-        colData.push(getCellModelValue(row, col).values.join(";;"));
+        colData.push(`"${getCellModelValue(row, col).values.join("\n")}"`);
     }
     rowData.push(colData.join("\t"));
   }
 
   // Copy text
-  clipboardEvent.clipboardData?.setData("text/plain", rowData.join("\n"));
+  clipboardEvent.clipboardData?.setData("text/plain", rowData.join("\r\n"));
   clipboardEvent.preventDefault();
 }
 
@@ -355,8 +353,8 @@ function onCopy(clipboardEvent: ClipboardEvent) {
  * @param clipboardEvent event that triggered paste.
  */
 function onPaste(clipboardEvent: ClipboardEvent) {
-  // Ensure one cell is selected
-  if (!selected.value) return;
+  // Ensure one cell is selected and not in readonly mode
+  if (props.readonly || !selected.value) return;
 
   // Get starting cell
   const rowStart = Math.min(selected.value?.rowFrom, selected.value?.rowTo),
@@ -365,14 +363,17 @@ function onPaste(clipboardEvent: ClipboardEvent) {
   // Replace data in table with input
   clipboardEvent.clipboardData
     ?.getData("text/plain")
-    .split(/\r?\n/)
+    .split(/\r\n/)
     .forEach((rowData, rowIndex) =>
       rowData.split(/\t/).forEach((colData, colIndex) => {
         if (rowStart + rowIndex <= numRowsBody.value + 1)
           updateCellModelValue({
             row: rowStart + rowIndex,
             col: colStart + colIndex,
-            values: colData.split(";;"),
+            values: (colData.match(/^"[^"]*(?:\n[^"]*)*"$/)
+              ? colData.slice(1, -1)
+              : colData
+            ).split("\n"),
           });
       }),
     );
