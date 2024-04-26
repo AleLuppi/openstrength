@@ -4,7 +4,7 @@
     <q-splitter
       :model-value="splitterModel"
       reverse
-      :limits="denseView ? [0, 0] : [0, 50]"
+      :limits="denseView || !selectedProgram ? [0, 0] : [0, 50]"
       style="height: 100%"
       :after-class="{ 'overflow-hidden': denseView }"
       @update:model-value="onSplitterDrag"
