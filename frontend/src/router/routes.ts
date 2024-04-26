@@ -163,6 +163,7 @@ const routes: RouteRecordRaw[] = [
         component: ProgramLibraryPage,
         meta: {
           title: "Program Library",
+          restrictAccessToLevel: 4,
           restrictAccessByRole: [UserRole.coach],
           redirectNotAuthorized: NamedRoutes.home,
         },
