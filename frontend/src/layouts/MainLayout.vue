@@ -54,6 +54,10 @@ const DrawerRightProgramBuilder = defineAsyncComponent(
 
 // Init plugin
 const route = useRoute();
+const hasProgramId = computed(() => {
+  return Boolean(route.params.programId);
+});
+
 
 // Get state
 const user = useUserStore();
@@ -66,7 +70,7 @@ const rightDrawerOpen = ref(false);
 const rightDrawerElement = computed(() => {
   switch (route.name) {
     case NamedRoutes.program:
-      return DrawerRightProgramBuilder;
+      return hasProgramId.value ? DrawerRightProgramBuilder : undefined;
     default:
       return undefined;
   }
