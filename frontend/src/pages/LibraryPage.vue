@@ -78,7 +78,8 @@
               </h4>
 
               <!-- Add new variant -->
-              <div class="row justify-center">
+              <div class="column justify-center">
+                 
                 <q-btn
                   :icon="$q.screen.gt.sm ? symOutlinedPlaylistAdd : 'add'"
                   :label="
