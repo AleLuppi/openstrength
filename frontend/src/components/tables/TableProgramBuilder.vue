@@ -134,6 +134,7 @@
                 <q-separator color="inherit" spaced="xs" />
               </div>
               <q-editor
+                v-if="!programExercise.exercise?.name"
                 :model-value="programExercise.exerciseNote ? programExercise.exerciseNote : ''"
                 :debounce="debounce"
                 :placeholder="$t('coach.program_management.builder.note_name')"
@@ -146,8 +147,22 @@
                     emitProgramExercise();
                   }
                 "
-              >
-              </q-editor>
+              />
+              <os-input
+                v-else
+                :model-value="programExercise.exerciseNote ?? '' "
+                :debounce="debounce"
+                type="textarea"
+                :placeholder="$t('coach.program_management.builder.note_name')"
+                hide-bottom-space
+                @update:model-value="
+                  (val) => {
+                    programExercise.exerciseNote = (val ?? '').toString();
+                    emitProgramExercise();
+                  }
+                "
+              />
+              
               <q-btn
                 icon="expand_less"
                 flat
@@ -179,7 +194,7 @@
               >
                 {{ programExercise.exerciseNote }}
               </p>
-              <div v-html="sanitizeHtml(programExercise.exerciseNote, {
+              <div v-if="!programExercise.exercise?.name" v-html="sanitizeHtml(programExercise.exerciseNote, {
                   allowedTags: ['b', 'u', 'i', 'br', 'div']
                 })" style="max-width: 50vw"></div>
             </div>
