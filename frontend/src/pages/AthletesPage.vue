@@ -430,13 +430,13 @@ import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { AthleteUser } from "@/helpers/users/user";
 import { Program } from "@/helpers/programs/program";
-import { MaxLift } from "@/helpers/maxlifts/maxlift";
 import {
   getAllAssignedPrograms,
   getAssignedProgram,
 } from "@/helpers/programs/athleteAssignment";
 import mixpanel from "mixpanel-browser";
-import { assignProgramToAthlete } from "@/helpers/programs/programManager";
+import useMaxlifts from "src/composables/useMaxlifts";
+import useProgramAssignment from "src/composables/useProgramAssignment";
 
 // Import components
 const TableExistingPrograms = defineAsyncComponent(
@@ -453,9 +453,6 @@ const FormAthleteAnagraphicInfo = defineAsyncComponent(
 );
 const FormAthleteProgramInfo = defineAsyncComponent(
   () => import("@/components/forms/FormAthleteProgramInfo.vue"),
-);
-const FormMaxLift = defineAsyncComponent(
-  () => import("@/components/forms/FormMaxLift.vue"),
 );
 
 // Init plugin
@@ -503,7 +500,6 @@ const athleteFormElement = ref<typeof FormAthleteAnagraphicInfo>();
 
 // Set additional athlete info ref
 const selectedTab = ref("programs");
-const maxliftFormElement = ref<typeof FormMaxLift>();
 const showAthleteDialog = ref(false); // whether to show dialog to add athlete
 
 // Set athlete data ref for new athlete dialog
@@ -513,20 +509,31 @@ const athleteNote = ref(""); // new athlete note
 
 // Set ref for program info
 const infoProgram = ref<Program>();
-const deletingProgram = ref<Program>();
-const showDialogDeleteProgram = ref(false);
 const denseView = computed(() => !$q.screen.gt.sm);
 
-// Set ref for max lift declarations
-const searchMaxLift = ref<string>();
-const updatingMaxLift = ref<MaxLift>();
-const showMaxLiftAddDialog = ref(false);
 
 // Get coach info
 const athletes = computed(() => coachInfo.athletes || []);
 const programs = computed(() => coachInfo.programs || []);
 const exercises = computed(() => coachInfo.exercises || []);
-const maxlifts = computed(() => coachInfo.maxlifts || []);
+
+
+// Get composables
+const { athleteMaxlifts,
+    updatingMaxLift, 
+    searchMaxLift, 
+    showMaxLiftAddDialog, 
+    FormMaxLift,
+    maxliftFormElement, 
+    saveMaxlift, 
+    onUpdateMaxLift } = useMaxlifts(selectedAthlete?.value)
+
+const { deletingProgram, 
+        showDialogDeleteProgram,
+        assignProgram,
+        deleteProgram, 
+        onProgramDelete} = useProgramAssignment(selectedAthlete?.value)
+
 
 // Update table selection
 watch(selectedAthlete, (athlete) =>
@@ -549,82 +556,8 @@ const athleteCurrentProgram = computed(() =>
     : undefined,
 );
 
-// Get maxlifts for the selected athlete
-const athleteMaxlifts = computed(() =>
-  maxlifts.value.filter(
-    (maxlift) => maxlift.athlete?.uid === selectedAthlete.value?.uid,
-  ),
-);
 
-/**
- * Create a new maxlift and assign to a coach.
- *
- * @param newMaxLift max lift instance that shall be saved.
- */
-function saveMaxlift(newMaxLift: MaxLift) {
-  // Get current maxlift and check if already instanciated on db
-  const isNew = !newMaxLift.uid;
 
-  // Update values
-  if (isNew) {
-    newMaxLift.athlete = selectedAthlete.value;
-    newMaxLift.coachId = user.uid;
-  }
-
-  // Save maxlift
-  newMaxLift.save({
-    onSuccess: () => {
-      if (isNew)
-        (coachInfo.maxlifts = coachInfo.maxlifts || []).push(newMaxLift);
-      maxliftFormElement.value?.reset();
-
-      // Register GA4 event
-      event("athleteview_maxlift_created", {
-        event_category: "documentation",
-        event_label: "New MaxLift Created in AthleteView",
-        value: 1,
-      });
-
-      // Mixpanel tracking
-      mixpanel.track(isNew ? "Maxlift Created" : "Maxlift Updated", {
-        Page: "AthleteView",
-        Exercise: newMaxLift.exercise?.name,
-        Type: newMaxLift.type?.toString(),
-      });
-    },
-    onError: () => {
-      $q.notify({
-        type: "negative",
-        message: i18n.t(
-          "coach.maxlift_management.list." +
-            (isNew ? "add_error" : "update_error"),
-        ),
-        position: "bottom",
-      });
-
-      // Mixpanel tracking
-      mixpanel.track(
-        "ERROR " + (isNew ? "Maxlift Created" : "Maxlift Updated"),
-        {
-          Page: "AthleteView",
-          Exercise: newMaxLift.exercise?.name,
-          Type: newMaxLift.type?.toString(),
-        },
-      );
-    },
-  });
-  showMaxLiftAddDialog.value = false;
-}
-
-/**
- * Open form with max lift info to allow coach to update them.
- *
- * @param maxlift instance that is being updated by coach.
- */
-function onUpdateMaxLift(maxlift: MaxLift) {
-  updatingMaxLift.value = maxlift;
-  showMaxLiftAddDialog.value = true;
-}
 
 /**
  * Allow athlete modification.
@@ -694,75 +627,7 @@ function clearAthlete() {
   showAthleteDialog.value = false;
 }
 
-/**
- * Set a program as the currently assigned program to selected athlete.
- *
- * @param program program that shall be set as currently ongoing.
- */
-function assignProgram(program: Program) {
-  if (selectedAthlete.value)
-    assignProgramToAthlete(program, selectedAthlete.value, {
-      onError: () => {
-        $q.notify({
-          type: "negative",
-          message: i18n.t(
-            "coach.program_management.builder.save_assignment_error",
-          ),
-          position: "bottom",
-        });
-      },
-    });
-}
 
-/**
- * Delete one program from list, upon confirmation.
- *
- * @param program program that may be deleted.
- */
-function onProgramDelete(program: Program) {
-  deletingProgram.value = program;
-  showDialogDeleteProgram.value = true;
-}
-
-/**
- * Actually delete the selected program template.
- *
- * @param program element that shall be removed.
- */
-function deleteProgram(program: Program) {
-  program.remove({
-    onAthleteUpdateSuccess: () => {
-      // Mixpanel tracking
-      mixpanel.track("Update Athlete", {
-        Type: "Removed program",
-      });
-    },
-    onAthleteUpdateError: () => {
-      // Mixpanel tracking
-      mixpanel.track("ERROR Update Athlete", {
-        Type: "Removing program",
-      });
-    },
-    onSuccess: () => {
-      coachInfo.programs = coachInfo.programs?.filter(
-        (coachProgram) => coachProgram != program,
-      );
-      deletingProgram.value = undefined;
-
-      // Register GA4 event
-      event("program_deleted", {
-        event_category: "documentation",
-        event_label: "Program Deleted",
-        value: 1,
-      });
-
-      // Mixpanel tracking
-      mixpanel.track("Program Deleted", {
-        Page: "ProgramView",
-      });
-    },
-  });
-}
 </script>
 
 <style scoped lang="scss">
