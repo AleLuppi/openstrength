@@ -7,6 +7,8 @@ import { ref, toRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { event } from "vue-gtag";
 import mixpanel from "mixpanel-browser";
+import useModalStore from "src/stores/useModalStore";
+import ModalDeleteProgram from "src/components/modals/ModalDeleteProgram.vue";
 
 export default function useProgramAssignment(selectedAthleteValue: AthleteUser | undefined){
     
@@ -18,6 +20,8 @@ export default function useProgramAssignment(selectedAthleteValue: AthleteUser |
    
     // Get store
     const coachInfo = useCoachInfoStore();
+    const store = useModalStore();
+
 
 
     /**
@@ -43,6 +47,8 @@ function assignProgram(program: Program) {
   const deletingProgram = ref<Program>();
   const showDialogDeleteProgram = ref(false);
 
+
+
   /**
    * Delete one program from list, upon confirmation.
    *
@@ -50,7 +56,16 @@ function assignProgram(program: Program) {
    */
   function onProgramDelete(program: Program) {
     deletingProgram.value = program;
-    showDialogDeleteProgram.value = true;
+    //showDialogDeleteProgram.value = true;
+
+    store.openModal({
+      component: ModalDeleteProgram,
+      props: { 
+        deletingProgram: program, 
+        athlete: selectedAthlete,
+       },
+    });
+
   }
   
   /**

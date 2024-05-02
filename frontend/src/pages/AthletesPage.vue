@@ -379,39 +379,6 @@
         </q-card>
       </q-dialog>
 
-      <!-- Dialog delete a program -->
-      <q-dialog
-        v-model="showDialogDeleteProgram"
-        @hide="deletingProgram = undefined"
-      >
-        <q-card class="q-pa-sm dialog-min-width">
-          <q-card-section class="row items-center q-pb-none">
-            <p>
-              {{
-                $t("coach.program_management.list.delete_program_confirm", {
-                  program: deletingProgram?.name,
-                })
-              }}
-            </p>
-          </q-card-section>
-
-          <q-card-actions align="right">
-            <q-btn
-              v-close-popup
-              flat
-              :label="$t('common.cancel')"
-              type="reset"
-              color="button-negative"
-            />
-            <q-btn
-              v-close-popup
-              :label="$t('coach.program_management.list.delete_proceed')"
-              color="button-negative"
-              @click="if (deletingProgram) deleteProgram(deletingProgram);"
-            />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
     </div>
   </q-page>
 </template>
@@ -528,10 +495,9 @@ const { athleteMaxlifts,
     saveMaxlift, 
     onUpdateMaxLift } = useMaxlifts(selectedAthlete?.value)
 
-const { deletingProgram, 
-        showDialogDeleteProgram,
+const { 
         assignProgram,
-        deleteProgram, 
+        
         onProgramDelete} = useProgramAssignment(selectedAthlete?.value)
 
 
