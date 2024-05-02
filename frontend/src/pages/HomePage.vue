@@ -2,6 +2,9 @@
   <q-page
     class="q-mx-auto q-px-md q-py-lg text-center column justify-center items-stretch"
   >
+  <q-btn @click="openInfoModal">Open info modal</q-btn>
+
+
     <div v-if="user.role == UserRole.athlete">
       <!-- Show coming soon in case of athlete -->
       <img :src="logoFullImage" :srcset="logoFullImage + ' 1.2x'" alt="Logo" />
@@ -151,7 +154,17 @@ import { useUserStore } from "@/stores/user";
 import { logoFullImage } from "@/assets/sources";
 import { UserRole } from "@/helpers/users/user";
 import { NamedRoutes } from "@/router";
+import InfoModalWindow from "src/components/modals/InfoModalWindow.vue";
+import useModalStore from "src/stores/useModalStore";
 
+const store = useModalStore();
+
+function openInfoModal() {
+  store.openModal({
+    component: InfoModalWindow,
+    props: { text: "Props have been successfully passed!" },
+  });
+}
 // Get user state
 const appStore = useAppStore();
 const user = useUserStore();

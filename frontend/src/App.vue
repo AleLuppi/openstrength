@@ -8,11 +8,15 @@
     <!-- Main content -->
     <router-view />
 
+    <!-- Modal component -->
+    <ModalWindow />
+    
     <!-- Global dialogs -->
     <q-dialog v-model="appStore.showDialogOnboarding" no-route-dismiss>
       <UserOnboarding @submit="onOnboardingSubmit"></UserOnboarding>
     </q-dialog>
   </div>
+ 
 </template>
 
 <script setup lang="ts">
@@ -33,6 +37,7 @@ import { addCallbackOnAuthStateChanged } from "@/helpers/users/auth";
 import { setLocale } from "@/helpers/locales";
 import { UserRole } from "@/helpers/users/user";
 import { onOnboardingSubmit } from "@/helpers/globalDialogs/manageOnboarding";
+import ModalWindow from "./components/modals/ModalWindow.vue";
 
 // Import components
 import osSplashScreen from "@/components/layout/SplashScreen.vue";
