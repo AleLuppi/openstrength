@@ -13,7 +13,13 @@
     style="position: relative"
     @click="handleClick"
   >
-    <div v-for="(cellValue, cellIdx) in modelValue.values" :key="cellIdx">
+    <slot
+      v-for="(cellValue, cellIdx) in modelValue.values"
+      :key="cellIdx"
+      :name="`cell-${modelValue.row}-${modelValue.col}-${cellIdx}`"
+      :cell-value="cellValue"
+      :cell-idx="cellIdx"
+    >
       <div v-if="typeof cellValue == 'string' || typeof cellValue == 'number'">
         <!-- Input for string or number values -->
         <q-input
@@ -37,7 +43,7 @@
             (config.useChip == true ||
               (config.useChip == 'single' && modelValue.values.length <= 1) ||
               (config.useChip == 'multiple' && modelValue.values.length > 1))
-              ? 'q-chip'
+              ? QChip
               : 'div'
           "
           v-else
@@ -68,7 +74,7 @@
           "
         />
       </div>
-    </div>
+    </slot>
 
     <!-- Placeholder -->
     <div v-if="modelValue.values.length == 0" class="text-grey-6">
@@ -86,7 +92,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue";
-import type { QInput } from "quasar";
+import { type QInput, QChip } from "quasar";
 import { TableSheetCell, TableSheetCellConfig } from "@/components/models";
 import { arrayEnsureList } from "@/helpers/array";
 
