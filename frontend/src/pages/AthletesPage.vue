@@ -59,7 +59,7 @@
         <!-- Dialog to add a new athlete -->
         <q-dialog
           v-model="showAthleteDialog"
-          @hide="updatingAthlete ? clearAthlete() : {}"
+          @hide="updatingAthlete ? resetForm() : {}"
         >
           <q-card class="q-pa-sm dialog-min-width">
             <q-card-section class="row items-center q-pb-none">
@@ -84,7 +84,7 @@
             <q-form
               class="q-my-md q-gutter-sm column"
               @submit="createAthlete()"
-              @reset="clearAthlete"
+              @reset="resetForm(); showAthleteDialog= false;"
             >
               <q-card-section class="q-gutter-x-xs">
                 <os-input
@@ -437,6 +437,7 @@ import {
 } from "@/helpers/programs/athleteAssignment";
 import mixpanel from "mixpanel-browser";
 import { assignProgramToAthlete } from "@/helpers/programs/programManager";
+import { useAthleteCreation } from "src/composables/useAthleteCreation";
 
 // Import components
 const TableExistingPrograms = defineAsyncComponent(
@@ -465,6 +466,14 @@ const i18n = useI18n();
 // Get store
 const user = useUserStore();
 const coachInfo = useCoachInfoStore();
+
+const {
+    athleteName,
+    athleteSurname,
+    athleteNote,
+    resetForm,
+    createAthlete
+  } = useAthleteCreation();
 
 // Set tab navigation info
 const allTabs = [
@@ -505,11 +514,6 @@ const athleteFormElement = ref<typeof FormAthleteAnagraphicInfo>();
 const selectedTab = ref("programs");
 const maxliftFormElement = ref<typeof FormMaxLift>();
 const showAthleteDialog = ref(false); // whether to show dialog to add athlete
-
-// Set athlete data ref for new athlete dialog
-const athleteName = ref(""); // new athlete name
-const athleteSurname = ref(""); // new athlete surname
-const athleteNote = ref(""); // new athlete note
 
 // Set ref for program info
 const infoProgram = ref<Program>();
@@ -555,6 +559,7 @@ const athleteMaxlifts = computed(() =>
     (maxlift) => maxlift.athlete?.uid === selectedAthlete.value?.uid,
   ),
 );
+
 
 /**
  * Create a new maxlift and assign to a coach.
@@ -635,64 +640,6 @@ function onAthleteSelection(athlete?: AthleteUser) {
   selectedAthlete.value = athlete;
 }
 
-/**
- * Create a new athlete user and assign logged coach to him/her.
- */
-function createAthlete() {
-  const newAthlete = new AthleteUser({
-    name: athleteName.value,
-    surname: athleteSurname.value,
-    coachId: user.uid,
-    coachNote: athleteNote.value,
-    coaches: user.uid ? [user.uid] : [],
-    coachesFrom: [new Date()],
-    coachesTo: [null],
-    assignedPrograms: [],
-    createdOn: new Date(),
-    createdBy: user.uid,
-  });
-  newAthlete.saveNew({
-    onSuccess: () => {
-      (coachInfo.athletes = coachInfo.athletes || []).push(newAthlete);
-      clearAthlete();
-
-      // Register GA4 event
-      event("new_athlete_created", {
-        event_category: "documentation",
-        event_label: "New Athlete added to Athlete library",
-        value: 1,
-      });
-
-      // Mixpanel tracking
-      mixpanel.track("New Athlete", {
-        Page: "AthleteView",
-      });
-    },
-    onError: () => {
-      $q.notify({
-        type: "negative",
-        message: i18n.t("coach.athlete_management.list.add_error"),
-        position: "bottom",
-      });
-
-      // Mixpanel tracking
-      mixpanel.track("ERROR New Athlete", {
-        Page: "AthleteView",
-      });
-    },
-  });
-  showAthleteDialog.value = false;
-}
-
-/**
- * Clear values in athlete insertion form.
- */
-function clearAthlete() {
-  athleteName.value = "";
-  athleteSurname.value = "";
-  athleteNote.value = "";
-  showAthleteDialog.value = false;
-}
 
 /**
  * Set a program as the currently assigned program to selected athlete.
