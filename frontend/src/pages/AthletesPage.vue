@@ -418,7 +418,6 @@ import {
 import { useI18n } from "vue-i18n";
 import { NamedRoutes } from "@/router";
 import { event } from "vue-gtag";
-import { useUserStore } from "@/stores/user";
 import { useCoachInfoStore } from "@/stores/coachInfo";
 import { AthleteUser } from "@/helpers/users/user";
 import { Program } from "@/helpers/programs/program";
@@ -430,6 +429,7 @@ import {
 import mixpanel from "mixpanel-browser";
 import { assignProgramToAthlete } from "@/helpers/programs/programManager";
 import { useAthleteCreation } from "src/composables/useAthleteCreation";
+import useMaxliftCreation from "src/composables/useMaxliftCreation";
 
 // Import components
 const TableExistingPrograms = defineAsyncComponent(
@@ -456,7 +456,7 @@ const $q = useQuasar();
 const i18n = useI18n();
 
 // Get store
-const user = useUserStore();
+//const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 
 const {
@@ -466,6 +466,7 @@ const {
     resetForm,
     createAthlete
   } = useAthleteCreation();
+
 
 // Set tab navigation info
 const allTabs = [
@@ -523,12 +524,16 @@ const programs = computed(() => coachInfo.programs || []);
 const exercises = computed(() => coachInfo.exercises || []);
 const maxlifts = computed(() => coachInfo.maxlifts || []);
 
+
 // Update table selection
 watch(selectedAthlete, (athlete) =>
   nextTick(() => {
     athleteTableElement.value?.selectRowByName(athlete?.name, true);
   }),
 );
+
+
+const { saveMaxlift } = useMaxliftCreation(selectedAthlete);
 
 // Get all programs for the selected athlete
 const athletePrograms = computed(() =>
@@ -557,7 +562,7 @@ const athleteMaxlifts = computed(() =>
  *
  * @param newMaxLift max lift instance that shall be saved.
  */
-function saveMaxlift(newMaxLift: MaxLift) {
+/* function saveMaxlift(newMaxLift: MaxLift) {
   // Get current maxlift and check if already instanciated on db
   const isNew = !newMaxLift.uid;
 
@@ -610,7 +615,7 @@ function saveMaxlift(newMaxLift: MaxLift) {
     },
   });
   showMaxLiftAddDialog.value = false;
-}
+} */
 
 /**
  * Open form with max lift info to allow coach to update them.
