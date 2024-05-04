@@ -22,7 +22,7 @@
                   color="button-primary"
                   :padding="$q.screen.gt.sm ? 'xs sm' : 'sm sm'"
                   @click="
-                    updatingAthlete = undefined;
+                    
                     showAthleteDialog = true;
                   "
                 />
@@ -59,16 +59,12 @@
         <!-- Dialog to add a new athlete -->
         <q-dialog
           v-model="showAthleteDialog"
-          @hide="updatingAthlete ? resetForm() : {}"
+          @hide="{}"
         >
           <q-card class="q-pa-sm dialog-min-width">
             <q-card-section class="row items-center q-pb-none">
               <h5>
-                {{
-                  updatingAthlete
-                    ? $t("coach.athlete_management.list.update")
-                    : $t("coach.athlete_management.list.add")
-                }}
+                     {{$t("coach.athlete_management.list.add") }}
               </h5>
               <q-space />
               <q-btn
@@ -106,11 +102,7 @@
               <q-card-actions align="right">
                 <q-btn flat :label="$t('common.cancel')" type="reset" />
                 <q-btn
-                  :label="
-                    updatingAthlete
-                      ? $t('coach.athlete_management.list.update_proceed')
-                      : $t('coach.athlete_management.list.add_proceed')
-                  "
+                  :label=" $t('coach.athlete_management.list.add_proceed')"
                   type="submit"
                 />
               </q-card-actions>
@@ -317,7 +309,7 @@
                       <FormMaxLift
                         ref="maxliftFormElement"
                         :maxlift="updatingMaxLift"
-                        :athlete="selectedAthlete ?? updatingAthlete"
+                        :athlete="selectedAthlete"
                         :exercises="exercises"
                         @submit="saveMaxlift"
                         @reset="showMaxLiftAddDialog = false"
@@ -505,7 +497,6 @@ const allTabs = [
 
 // Set athlete related ref
 const searchAthlete = ref<string>();
-const updatingAthlete = ref<AthleteUser>(); // athlete that is currently being updated
 const selectedAthlete = ref<AthleteUser>(); // athlete that is currently selected in left table
 const athleteTableElement = ref<typeof TableManagedAthletes>();
 const athleteFormElement = ref<typeof FormAthleteAnagraphicInfo>();

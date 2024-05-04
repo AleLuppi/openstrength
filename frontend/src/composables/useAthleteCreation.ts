@@ -4,6 +4,7 @@ import { useUserStore } from 'src/stores/user';
 import { useCoachInfoStore } from 'src/stores/coachInfo';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
+import mixpanel from "mixpanel-browser";
 
 /**
  * Allows creating a new athlete from its main data (name, surname, note)
