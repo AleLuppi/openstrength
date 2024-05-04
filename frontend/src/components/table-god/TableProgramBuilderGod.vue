@@ -190,18 +190,19 @@ const tableConfig: TableSheetCellConfig[] = [
     editSlot: "program-line",
     booleanIcon: ["check", "clear"],
     booleanIconUnchecked: ["check", "clear"],
-    placeholder: "vuoto",
+    placeholder: "",
   },
 ];
 </script>
 
 <style scoped lang="scss">
 .os-table-sheet:deep(.table-row-header) {
-  border-radius: 20px 20px 0 0;
-  padding-inline: 20px;
-  outline: solid 1px $primary;
-  background: rgba($primary, 0.3);
-
+  border-radius: 8px 8px 0 0;
+  padding-inline: 20px; 
+  outline: solid 1px $light;
+  background: rgba($lighter, 1);
+  
+  color: rgba($secondary, 1);
   &:first-child {
     visibility: hidden;
   }
@@ -209,16 +210,18 @@ const tableConfig: TableSheetCellConfig[] = [
 
 .os-table-sheet:deep(.table-col-header) {
   padding-inline: 20px;
-  outline: solid 1px $os-grey-cold-4;
-  background: $os-grey-cold-2;
+  outline: solid 1px $light;
+  background: $lighter;
+  color: rgba($secondary, 1);
+  font-weight: bold;
 }
 
 .os-table-sheet:deep(tr) {
   &:first-child td.table-col-header {
-    border-top-left-radius: 14px;
+    border-top-left-radius: 8px;
   }
   &:last-child td.table-col-header {
-    border-bottom-left-radius: 14px;
+    border-bottom-left-radius: 8px;
   }
 }
 </style>

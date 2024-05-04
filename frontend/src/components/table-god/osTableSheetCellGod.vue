@@ -47,7 +47,7 @@
               : 'div'
           "
           v-else
-          color="green-2"
+          color="lighter"
           dense
           style="margin-block: 1px"
         >
@@ -156,7 +156,7 @@ function handleClick(editIdx?: number) {
 <style scoped lang="scss">
 .cell {
   &:hover {
-    outline: 1px solid $grey-9;
+    outline: 1px solid $light-dark; 
   }
 
   &:deep(.q-field__control) {
