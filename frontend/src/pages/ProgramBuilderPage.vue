@@ -270,15 +270,18 @@
         </div>
 
         <!-- Show table to build program -->
-        <ProgramBuilderGod
-          v-show="isBuilderCompact"
-          v-if="selectedProgram && !coachInfo.whatLoading.includes('program')"
-          :model-value="selectedProgram"
-          :filter="programFilter"
-          readonly
-          class="q-mx-sm q-my-md"
-          style="border-radius: 24px"
-        />
+          <ProgramBuilderGod
+            v-show="isBuilderCompact"
+            v-if="selectedProgram && !coachInfo.whatLoading.includes('program')"
+            :model-value="selectedProgram"
+            :filter="programFilter"
+            readonly
+            class="shadow-2 q-my-sm q-pa-sm q-mx-md"
+            style="border-radius: 16px"
+            :style="`height: ${
+              programPageHeight - programManagerHeight - 8 * 2
+            }px`"
+          />
 
         <ProgramBuilder
           v-show="!isBuilderCompact"
@@ -291,7 +294,7 @@
           :dense="denseView"
           class="shadow-2 q-my-sm"
           :class="denseView ? 'q-py-xs q-px-sm q-mx-xs' : 'q-pa-sm q-mx-md'"
-          style="border-radius: 24px"
+          style="border-radius: 16px"
           :style="`height: ${
             programPageHeight - programManagerHeight - 8 * 2
           }px`"
