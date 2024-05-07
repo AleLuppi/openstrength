@@ -270,18 +270,15 @@
         </div>
 
         <!-- Show table to build program -->
-          <ProgramBuilderGod
-            v-show="isBuilderCompact"
-            v-if="selectedProgram && !coachInfo.whatLoading.includes('program')"
-            :model-value="selectedProgram"
-            :filter="programFilter"
-            readonly
-            class="shadow-2 q-my-sm q-pa-sm q-mx-md"
-            style="border-radius: 16px"
-            :style="`height: ${
-              programPageHeight - programManagerHeight - 8 * 2
-            }px`"
-          />
+        <ProgramBuilderGod
+          v-show="isBuilderCompact"
+          v-if="selectedProgram && !coachInfo.whatLoading.includes('program')"
+          :model-value="selectedProgram"
+          :filter="programFilter"
+          readonly
+          class="shadow-2 q-my-sm q-pa-sm q-mx-md"
+          style="border-radius: 16px"
+        />
 
         <ProgramBuilder
           v-show="!isBuilderCompact"
