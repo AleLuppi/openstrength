@@ -186,11 +186,11 @@ const tableConfig: TableSheetCellConfig[] = [
     rowFrom: 1,
     colFrom: 1,
     useChip: true,
+    chipColor: "lighter",
     editInline: false,
     editSlot: "program-line",
     booleanIcon: ["check", "clear"],
     booleanIconUnchecked: ["check", "clear"],
-    placeholder: "",
   },
 ];
 </script>
@@ -198,11 +198,11 @@ const tableConfig: TableSheetCellConfig[] = [
 <style scoped lang="scss">
 .os-table-sheet:deep(.table-row-header) {
   border-radius: 8px 8px 0 0;
-  padding-inline: 20px; 
+  padding-inline: 20px;
   outline: solid 1px $light;
   background: rgba($lighter, 1);
-  
   color: rgba($secondary, 1);
+
   &:first-child {
     visibility: hidden;
   }
