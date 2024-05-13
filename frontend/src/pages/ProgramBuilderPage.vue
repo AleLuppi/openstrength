@@ -275,7 +275,6 @@
           v-if="selectedProgram && !coachInfo.whatLoading.includes('program')"
           :model-value="selectedProgram"
           :filter="programFilter"
-          readonly
           class="shadow-2 q-my-sm q-pa-sm q-mx-md"
           style="border-radius: 16px"
         />

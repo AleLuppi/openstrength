@@ -17,12 +17,15 @@
       show-empty-line
       :readonly="readonly"
     >
+      <template #edit-program-line="editProps">
+        <PopupEditProgramBuilder v-bind="editProps" />
+      </template>
     </osTableSheetGod>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, defineAsyncComponent } from "vue";
 import osTableSheetGod from "@/components/table-god/osTableSheetGod.vue";
 import { TableSheetCell, TableSheetCellConfig } from "@/components/models";
 import { Program, ProgramExercise } from "@/helpers/programs/program";
@@ -32,6 +35,11 @@ import {
 } from "src/helpers/programs/linesManagement";
 import { arraySort, arraySortObjectsByField } from "src/helpers/array";
 import { convertLineToSchema } from "src/helpers/programs/converters";
+
+// Import components
+const PopupEditProgramBuilder = defineAsyncComponent(
+  () => import("@/components/table-god/PopupEditProgramBuilder.vue"),
+);
 
 // Define props
 const props = withDefaults(
