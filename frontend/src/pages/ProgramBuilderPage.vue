@@ -892,7 +892,7 @@ import {
   onMounted,
   nextTick,
   onBeforeUnmount,
-  defineAsyncComponent,
+  defineAsyncComponent
 } from "vue";
 import { debounce, QDialog, QCard, useQuasar } from "quasar";
 import { useI18n } from "vue-i18n";
@@ -905,7 +905,7 @@ import {
   ProgramExercise,
   ProgramFrozenView,
 } from "@/helpers/programs/program";
-import { MaxLift } from "@/helpers/maxlifts/maxlift";
+import { MaxLift, MaxLiftType } from "@/helpers/maxlifts/maxlift";
 import {
   getProgramUniqueWeeks,
   getProgramUniqueDays,
@@ -988,6 +988,12 @@ const user = useUserStore();
 const coachInfo = useCoachInfoStore();
 const coachActiveChanges = useCoachActiveChangesStore();
 
+
+
+
+
+
+
 // Set constants
 const UtilsOptions = {
   list: "list",
@@ -1067,6 +1073,70 @@ const allAssignedPrograms = computed(
     ) || [],
 );
 
+// TRACKING
+mixpanel.track("TOTAL PROGRAMS", {
+    AssignedPrograms: allAssignedPrograms.value?.length ?? 0,
+    ExerciseNumberAvg: allAssignedPrograms.value
+      ? allAssignedPrograms.value.map((program) => program.programExercises?.length ?? 0).reduce((acc, cur) => acc + cur, 0) /
+        allAssignedPrograms.value.length
+      : 0,
+    ExerciseNumberMax: allAssignedPrograms.value
+      ? Math.max(...allAssignedPrograms.value.map((program) => program.programExercises?.length ?? 0))
+      : 0,
+    ExerciseNumberMin: allAssignedPrograms.value
+      ? Math.min(...allAssignedPrograms.value.map((program) => program.programExercises?.length ?? 0))
+      : 0,
+    WeekNumberAvg: allAssignedPrograms.value
+      ? allAssignedPrograms.value.map((program) => getProgramUniqueWeeks(program).length).reduce((acc, cur) => acc + cur, 0) /
+        allAssignedPrograms.value.length
+      : 0,
+    WeekNumberMax: allAssignedPrograms.value
+      ? Math.max(...allAssignedPrograms.value.map((program) => getProgramUniqueWeeks(program).length))
+      : 0,
+    WeekNumberMin: allAssignedPrograms.value
+      ? Math.min(...allAssignedPrograms.value.map((program) => getProgramUniqueWeeks(program).length))
+      : 0,
+    DayNumberAvg: allAssignedPrograms.value
+      ? allAssignedPrograms.value.map((program) => getProgramUniqueDays(program).length).reduce((acc, cur) => acc + cur, 0) /
+        allAssignedPrograms.value.length
+      : 0,
+    DayNumberMax: allAssignedPrograms.value
+      ? Math.max(...allAssignedPrograms.value.map((program) => getProgramUniqueDays(program).length))
+      : 0,
+    DayNumberMin: allAssignedPrograms.value
+      ? Math.min(...allAssignedPrograms.value.map((program) => getProgramUniqueDays(program).length))
+      : 0,
+
+    FreeTextNumberAvg: allAssignedPrograms.value
+      ? allAssignedPrograms.value
+        .map((program) => program.programExercises?.filter((exercise) => exercise.textOnly)?.length ?? 0)
+        .reduce((acc, cur) => acc + cur, 0) / allAssignedPrograms.value.length
+      : 0,
+    FreeTextNumberMin: allAssignedPrograms.value
+      ? Math.min(
+        ...allAssignedPrograms.value.map((program) => program.programExercises?.filter((exercise) => exercise.textOnly)?.length ?? 0)
+      )
+      : 0,
+    FreeTextNumberMax: allAssignedPrograms.value
+      ? Math.max(
+        ...allAssignedPrograms.value.map((program) => program.programExercises?.filter((exercise) => exercise.textOnly)?.length ?? 0)
+      )
+      : 0,
+    LoadRefPerProgramAvg: allAssignedPrograms.value 
+      ? allAssignedPrograms.value.map((program) => program.getLines()?.filter((line)=>line.loadReference)?.length ?? 0).reduce((acc, cur) => acc + cur, 0)/allAssignedPrograms.value.length : 0,
+     
+    RepsRefPerProgramAvg: allAssignedPrograms.value 
+      ? allAssignedPrograms.value.map((program) => program.getLines()?.filter((line)=>line.repsReference)?.length ?? 0).reduce((acc, cur) => acc + cur, 0)/allAssignedPrograms.value.length : 0,
+     
+    SetsRefPerProgramAvg: allAssignedPrograms.value 
+      ? allAssignedPrograms.value.map((program) => program.getLines()?.filter((line)=>line.setsReference)?.length ?? 0).reduce((acc, cur) => acc + cur, 0)/allAssignedPrograms.value.length : 0,
+     
+    RpeRefPerProgramAvg: allAssignedPrograms.value 
+      ? allAssignedPrograms.value.map((program) => program.getLines()?.filter((line)=>line.rpeReference)?.length ?? 0).reduce((acc, cur) => acc + cur, 0)/allAssignedPrograms.value.length : 0,
+     
+  });
+
+
 // Get complete program filter
 const programFilter = computed({
   get() {
@@ -1102,6 +1172,13 @@ const athleteMaxlifts = computed(() =>
     (maxlift) => maxlift.athlete?.uid == selectedProgram.value?.athleteId,
   ),
 );
+
+mixpanel.track("TOTAL MAXLIFT", {
+    TotalRegistered: athleteMaxlifts.value?.length ?? 0,
+    Total1RM: athleteMaxlifts.value?.filter((maxlift) => maxlift.type === MaxLiftType._1RM).length ?? 0,
+  });
+
+
 
 // For template program, only show maxlifts referenced in program
 const showingAthleteMaxlifts = computed(() => {
@@ -1895,6 +1972,7 @@ onBeforeUnmount(() => {
   // Remove key press event listener
   document.addEventListener("keydown", keydownHandler);
 });
+
 </script>
 
 <style scoped lang="scss">
