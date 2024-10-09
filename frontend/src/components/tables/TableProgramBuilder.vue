@@ -232,7 +232,7 @@
       </div>
 
       <!-- Data table -->
-      <osTableSheet
+      <os-table-sheet
         v-model="exerciseData"
         :headers="
           programExercise.textOnly
@@ -431,7 +431,7 @@
             </q-menu>
           </q-btn>
         </template>
-      </osTableSheet>
+      </os-table-sheet>
     </div>
   </div>
 </template>

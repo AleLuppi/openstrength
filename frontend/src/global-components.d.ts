@@ -3,6 +3,7 @@ import osField from "@/components/basic/osField.vue";
 import osInput from "@/components/basic/osInput.vue";
 import osInputDate from "@/components/basic/osInputDate.vue";
 import osSelect from "@/components/basic/osSelect.vue";
+import osSelectInline from "@/components/basic/osSelectInline.vue";
 import osTable from "@/components/basic/osTable.vue";
 import osTableSheet from "@/components/basic/osTableSheet.vue";
 import osTextCopyable from "@/components/basic/osTextCopyable.vue";
@@ -19,6 +20,7 @@ declare module "@vue/runtime-core" {
     osInputDate: typeof osInputDate;
     osLazy: typeof QIntersection;
     osSelect: typeof osSelect;
+    osSelectInline: typeof osSelectInline;
     osTable: typeof osTable;
     osTableSheet: typeof osTableSheet;
     osTextCopyable: typeof osTextCopyable;

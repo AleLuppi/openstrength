@@ -180,3 +180,18 @@ export function arrayUniqueSubsequentValues<T>(arr: T[]): T[] {
     return out;
   }, []);
 }
+
+/**
+ * Ensure input value is an array.
+ *
+ * If input value is an array, return it, otherwise
+ * wrap it in an array containing the input value.
+ *
+ * @param val value that must be an array.
+ * @returns array containing input value.
+ */
+export function arrayEnsureList<T>(val: T | T[] | undefined): T[] | undefined {
+  if (val == undefined) return undefined;
+  if (Array.isArray(val)) return val;
+  return [val];
+}

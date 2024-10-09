@@ -1,4 +1,5 @@
 import { boot } from "quasar/wrappers";
+
 // Custom components to register
 import osButtonSupport from "@/components/basic/osButtonSupport.vue";
 import osField from "@/components/basic/osField.vue";
@@ -6,6 +7,7 @@ import osInput from "@/components/basic/osInput.vue";
 import osInputDate from "@/components/basic/osInputDate.vue";
 import osLazy from "@/components/basic/osLazy.vue";
 import osSelect from "@/components/basic/osSelect.vue";
+import OsSelectInline from "src/components/basic/osSelectInline.vue";
 import osSocialSharingItems from "@/components/basic/osSocialSharingItems.vue";
 import osTable from "@/components/basic/osTable.vue";
 import osTableSheet from "@/components/basic/osTableSheet.vue";
@@ -22,6 +24,7 @@ export default boot(async ({ app }) => {
   app.component("OsInputDate", osInputDate);
   app.component("OsLazy", osLazy);
   app.component("OsSelect", osSelect);
+  app.component("OsSelectInline", OsSelectInline);
   app.component("OsSocialSharingItems", osSocialSharingItems);
   app.component("OsTable", osTable);
   app.component("OsTableSheet", osTableSheet);

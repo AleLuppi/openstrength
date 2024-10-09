@@ -270,13 +270,14 @@
         </div>
 
         <!-- Show table to build program -->
-        <TableCompactProgram
+        <ProgramBuilderGod
           v-show="isBuilderCompact"
           v-if="selectedProgram && !coachInfo.whatLoading.includes('program')"
-          :program="selectedProgram"
+          :model-value="selectedProgram"
           :filter="programFilter"
-          class="q-px-lg q-py-md"
-        ></TableCompactProgram>
+          class="shadow-2 q-my-sm q-pa-sm q-mx-md"
+          style="border-radius: 16px"
+        />
 
         <ProgramBuilder
           v-show="!isBuilderCompact"
@@ -289,7 +290,7 @@
           :dense="denseView"
           class="shadow-2 q-my-sm"
           :class="denseView ? 'q-py-xs q-px-sm q-mx-xs' : 'q-pa-sm q-mx-md'"
-          style="border-radius: 24px"
+          style="border-radius: 16px"
           :style="`height: ${
             programPageHeight - programManagerHeight - 8 * 2
           }px`"
@@ -936,8 +937,9 @@ import { useAppStore } from "src/stores/app";
 const ProgramBuilder = defineAsyncComponent(
   () => import("@/components/ProgramBuilder.vue"),
 );
-const TableCompactProgram = defineAsyncComponent(
-  () => import("@/components/tables/TableCompactProgram.vue"),
+// FIXME
+const ProgramBuilderGod = defineAsyncComponent(
+  () => import("@/components/table-god/ProgramBuilderGod.vue"),
 );
 const SkeletonTableProgramBuilder = defineAsyncComponent(
   () => import("@/components/skeletons/SkeletonTableProgramBuilder.vue"),
