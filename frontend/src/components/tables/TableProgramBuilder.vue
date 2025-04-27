@@ -133,8 +133,24 @@
                 </os-select>
                 <q-separator color="inherit" spaced="xs" />
               </div>
+              <q-editor
+                v-if="!programExercise.exercise?.name"
+                :model-value="programExercise.exerciseNote ? programExercise.exerciseNote : ''"
+                :debounce="debounce"
+                :placeholder="$t('coach.program_management.builder.note_name')"
+                :toolbar="[['bold', 'italic', 'underline']]"
+                toolbar-text-color="secondary"               
+                hide-bottom-space
+                @update:model-value="
+                  (val) => {
+                    programExercise.exerciseNote = (val ?? '').toString();
+                    emitProgramExercise();
+                  }
+                "
+              />
               <os-input
-                :model-value="programExercise.exerciseNote"
+                v-else
+                :model-value="programExercise.exerciseNote ?? '' "
                 :debounce="debounce"
                 type="textarea"
                 :placeholder="$t('coach.program_management.builder.note_name')"
@@ -145,8 +161,8 @@
                     emitProgramExercise();
                   }
                 "
-              >
-              </os-input>
+              />
+              
               <q-btn
                 icon="expand_less"
                 flat
@@ -169,6 +185,7 @@
                 {{ variantName ? " - " + variantName : "" }}
               </p>
               <p
+              v-if="!programExercise.textOnly"
                 :class="{
                   'text-xs text-italic text-ellipsis':
                     !programExercise.textOnly,
@@ -177,6 +194,9 @@
               >
                 {{ programExercise.exerciseNote }}
               </p>
+              <div v-if="!programExercise.exercise?.name" v-html="sanitizeHtml(programExercise.exerciseNote, {
+                  allowedTags: ['b', 'u', 'i', 'br', 'div']
+                })" style="max-width: 50vw"></div>
             </div>
           </q-slide-transition>
         </div>
@@ -455,6 +475,7 @@ import {
   getExerciseVariantByName,
 } from "@/helpers/exercises/listManagement";
 import { arrayPushToNullable } from "@/helpers/array";
+import sanitizeHtml from 'sanitize-html';
 
 // Import components
 const FormProgramNewWeekDay = defineAsyncComponent(
